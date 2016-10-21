@@ -1,0 +1,165 @@
+// Ionic Variables and Theming. For more info, please see:
+// http://ionicframework.com/docs/v2/theming/
+@import "ionic.globals";
+// @import 'ionic.theme.dark.ios.scss';
+// @import 'ionic.theme.dark.md.scss';
+// @import 'ionic.theme.dark.wp.scss';
+
+// Shared Variables
+// --------------------------------------------------
+// To customize the look and feel of this app, you can override
+// the Sass variables found in Ionic's source scss files.
+// To view all the possible Ionic variables, see:
+// http://ionicframework.com/docs/v2/theming/overriding-ionic-variables/
+
+// Defaul Font:
+// ----------------------------------
+$font-family-base:                          "Lato" !default;
+$font-family-ios-base:                      "Lato" !default;
+$font-family-md-base:                       "Lato" !default;
+$font-family-wp-base:                       "Lato" !default;
+
+// Dark Theme
+// ----------------------------------
+// rgb( 56, 126, 245)
+// rgb(255, 201,   0)
+// rgb(245,  61,  61)
+// rgb(244, 244, 244)
+// rgb( 68,  68,  68)
+// rgb( 17, 193, 243)
+$colors: (
+  primary:                                  #387ef5,
+  secondary:                                #ffc900,
+  danger:                                   #f53d3d,
+  light:                                    #f4f4f4,
+  dark:                                     #444444,
+  favorite:                                 #11c1f3
+) !default;
+
+
+$text-color:                                #e6e6bb  !default; // rgb(230, 230, 187)
+$link-color:                                color($colors, primary)  !default;
+$background-color:                          #191919  !default;
+$subdued-text-color:                        #666  !default;
+
+$font-family-base:                          "Lato" !default;
+$font-size-base:                            14px  !default; // 1.4rem == 14px
+
+$content-padding:                           16px  !default;
+$content-margin:                            16px  !default;
+
+$toolbar-background:                        #606060  !default; // rgb(  96,  96,  96)
+$toolbar-border-color:                      color($colors, dark)  !default;
+$toolbar-text-color:                        $text-color  !default;
+$toolbar-active-color:                      $link-color  !default;
+$toolbar-inactive-color:                    #8c8c8c  !default;
+
+$list-text-color:                           $text-color  !default;
+$list-background-color:                     #242424  !default;
+$list-border-color:                         #000  !default;
+
+// Named Color Variables
+// --------------------------------------------------
+// Named colors makes it easy to reuse colors on various components.
+// It's highly recommended to change the default colors
+// to match your app's branding. Ionic uses a Sass map of
+// colors so you can add, rename and remove colors as needed.
+// The "primary" color is the only required color in the map.
+
+// rgb( 56, 126, 245)
+// rgb(255, 201,   0)
+// rgb(245,  61,  61)
+// rgb(244, 244, 244)
+// rgb( 68,  68,  68)
+// rgb( 17, 193, 243)
+$colors: (
+  primary:    #387ef5,
+  secondary:  #ffc900,
+  danger:     #f53d3d,
+  light:      #f4f4f4,
+  dark:       #444444,
+  favorite:   #11c1f3
+);
+
+$colors-ios: (
+  primary:    #387ef5,
+  secondary:  #ffc900,
+  danger:     #f53d3d,
+  light:      #f4f4f4,
+  dark:       #444444,
+  favorite:   #11c1f3
+);
+
+$colors-md: (
+  primary:    #387ef5,
+  secondary:  #ffc900,
+  danger:     #f53d3d,
+  light:      #f4f4f4,
+  dark:       #444444,
+  favorite:   #11c1f3
+);
+
+$colors-wp: (
+  primary:    #387ef5,
+  secondary:  #ffc900,
+  danger:     #f53d3d,
+  light:      #f4f4f4,
+  dark:       #444444,
+  favorite:   #11c1f3
+);
+
+// App iOS Variables
+// --------------------------------------------------
+// iOS only Sass variables can go here
+// iOS Toolbar
+// --------------------------------------------------
+
+$toolbar-ios-padding:                       4px !default;
+$toolbar-ios-button-font-size:              24px !default;
+
+$toolbar-ios-title-font-size:               24px !default;
+$toolbar-ios-title-font-weight:             300 !default;
+$toolbar-ios-title-text-align:              center !default;
+$toolbar-ios-title-text-color:              white !default;
+
+$toolbar-ios-button-color:                  white !default;
+$toolbar-ios-button-border-radius:          4px !default;
+
+
+
+// App Material Design Variables
+// --------------------------------------------------
+// Material Design only Sass variables can go here
+$toolbar-md-title-font-size:                24px !default;
+$toolbar-md-title-text-color:               white !default;
+
+
+
+// App Windows Variables
+// --------------------------------------------------
+// Windows only Sass variables can go here
+$toolbar-wp-title-font-size:                24px !default;
+$toolbar-wp-title-font-weight:              300 !default;
+$toolbar-wp-title-padding:                  0 6px !default;
+$toolbar-wp-title-text-color:               white !default;
+$toolbar-wp-title-text-transform:           uppercase !default;
+
+
+
+// App Theme
+// --------------------------------------------------
+// Ionic apps can have different themes applied, which can
+// then be future customized. This import comes last
+// so that the above variables are used and Ionic's
+// default are overridden.
+
+@import "ionic.theme.default";
+
+
+// Ionicons
+// --------------------------------------------------
+// The premium icon font for Ionic. For more info, please see:
+// http://ionicframework.com/docs/v2/ionicons/
+
+$ionicons-font-path: "../assets/fonts";
+@import "ionicons";
