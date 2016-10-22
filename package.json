@@ -1,8 +1,14 @@
 {
   "name": "onsitex",
+  "description": "OnSiteX: Ionic Angular2 NodeJS Mongo",
   "author": "Michael Bates",
-  "homepage": "http://ionicframework.com/",
+  "license": "UNLICENSED",
+  "homepage": "https://github.com/starmobiledevelopers/OnSiteX/",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/starmobiledevelopers/OnSiteX.git"
+  },
   "scripts": {
     "build": "ionic-app-scripts build",
     "watch": "ionic-app-scripts watch",
@@ -43,6 +49,5 @@
     "cordova-plugin-splashscreen",
     "ionic-plugin-keyboard"
   ],
-  "cordovaPlatforms": [],
-  "description": "OnSiteX: An Ionic project"
+  "cordovaPlatforms": ["android","browser","ios","windows"]
 }
