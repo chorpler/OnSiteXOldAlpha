@@ -4,24 +4,25 @@ import { AuthService                        } from '../../directives/auth.servic
 import { FormGroup, FormControl, Validators } from "@angular/forms"                  ;
 import { User                               } from "../../models/user.model"         ;
 
-//  /src/services/auth.service.ts
 @Component({
-  selector: 'page-onsite-login',
-  templateUrl: 'onsite-login.html'
+  selector: 'onsite-user',
+  templateUrl: 'onsite-user.html'
 })
-export class OnsiteLogin {
+export class OnSiteXUser {
   myForm: FormGroup;
 
-  constructor(public navCtrl: NavController, private authService: AuthService) {}
+    constructor(public navCtrl: NavController, private authService: AuthService) {}
 
-  onSubmit() {
-        const user = new User(this.myForm.value.email, this.myForm.value.password);
-        this.authService.signin(user)
+    onSubmit() {
+        const user = new User(
+            this.myForm.value.email,
+            this.myForm.value.password,
+            this.myForm.value.firstName,
+            this.myForm.value.lastName
+        );
+        this.authService.signup(user)
             .subscribe(
-                data => {
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('userId', data.userId);
-                },
+                data => console.log(data),
                 error => console.error(error)
             );
         this.myForm.reset();
@@ -29,6 +30,8 @@ export class OnsiteLogin {
 
     ngOnInit() {
         this.myForm = new FormGroup({
+            firstName: new FormControl(null, Validators.required),
+            lastName: new FormControl(null, Validators.required),
             email: new FormControl(null, [
                 Validators.required,
                 Validators.pattern("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
@@ -36,9 +39,4 @@ export class OnsiteLogin {
             password: new FormControl(null, Validators.required)
         });
     }
-
-  ionViewDidLoad() {
-    console.log('Hello OnsiteLogin Page');
-  }
-
 }

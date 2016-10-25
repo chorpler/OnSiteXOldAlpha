@@ -1,27 +1,25 @@
 import { Component, ViewChild } from    '@angular/core'       ;
 import { Nav, Platform        } from    'ionic-angular'       ;
 import { StatusBar            } from    'ionic-native'        ;
-// import { Page1                } from '../pages/page1/page1'   ;
-import { Page2                } from '../pages/page2/page2'   ;
-import {   AcctSettings        } from '../pages/acct-settings/acct-settings';
-import {   CalView            } from '../pages/cal-view/cal-view';
-import {   Home           } from '../pages/home/home';
-import {   Messages           } from '../pages/messages/messages';
-import {   MgmtHome           } from '../pages/mgmt-home/mgmt-home';
-import {   OnsiteLogin        } from '../pages/onsite-login/onsite-login';
-import {   Statistics         } from '../pages/statistics/statistics';
-import {   TechHome           } from '../pages/tech-home/tech-home';
-import {   TechReport         } from '../pages/tech-report/tech-report';
-import {   ToprReport         } from '../pages/topr-report/topr-report';
+import { OnSiteXUser          } from '../pages/onsite-user/onsite-user'   ;
+import { AcctSettings         } from '../pages/acct-settings/acct-settings';
+import { CalView              } from '../pages/cal-view/cal-view';
+import { Messages             } from '../pages/messages/messages';
+import { MgmtHome             } from '../pages/mgmt-home/mgmt-home';
+import { OnsiteLogin          } from '../pages/onsite-login/onsite-login';
+import { Statistics           } from '../pages/statistics/statistics';
+import { TechHome             } from '../pages/tech-home/tech-home';
+import { TechReport           } from '../pages/tech-report/tech-report';
+import { ToprReport           } from '../pages/topr-report/topr-report';
 
 
 @Component({
   templateUrl: 'app.html'
 })
-export class MyApp {
+export class OnSiteX {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = OnsiteLogin;
+  rootPage: any = OnSiteXUser;
 
   pages: Array<{ title: string, component: any }>;
 
@@ -30,18 +28,16 @@ export class MyApp {
 
   // used for an example of ngFor and navigation
     this.pages = [
-      // { title: 'Page One', component: Page1 },
-      { title: 'Page Two', component: Page2 },
-      { title: 'Settings', component: AcctSettings },
-      { title: 'Reports ', component: CalView },
-      { title: 'Home', component: Home },
-      { title: 'Messages', component: Messages },
-      { title: 'Managers Home ', component: MgmtHome },
-      { title: 'Login ', component: OnsiteLogin },
-      { title: 'Statistics', component: Statistics },
-      { title: 'Technicians Home', component: TechHome },
-      { title: 'Tech Report ', component: TechReport },
-      { title: 'Topper Report ', component: ToprReport }
+      { title: 'User Setup',       component: OnSiteXUser  },
+      { title: 'Login ',           component: OnsiteLogin  },
+      { title: 'Settings',         component: AcctSettings },
+      { title: 'Reports ',         component: CalView      },
+      { title: 'Messages',         component: Messages     },
+      { title: 'Managers Home ',   component: MgmtHome     },
+      { title: 'Statistics',       component: Statistics   },
+      { title: 'Technicians Home', component: TechHome     },
+      { title: 'Tech Report ',     component: TechReport   },
+      { title: 'Topper Report ',   component: ToprReport   }
 
     ];
 

@@ -1,27 +1,28 @@
-import { NgModule              } from   '@angular/core'        ;
-import { IonicApp, IonicModule } from   'ionic-angular'        ;
-import { MyApp                 } from './app.component'        ;
-// import { Page1                 } from '../pages/page1/page1'   ;
-import { Page2                 } from '../pages/page2/page2'   ;
-import {   AcctSettings        } from '../pages/acct-settings/acct-settings';
-import {   CalView             } from '../pages/cal-view/cal-view';
-import {   Home                } from '../pages/home/home';
-import {   Messages            } from '../pages/messages/messages';
-import {   MgmtHome            } from '../pages/mgmt-home/mgmt-home';
-import {   OnsiteLogin         } from '../pages/onsite-login/onsite-login';
-import {   Statistics          } from '../pages/statistics/statistics';
-import {   TechHome            } from '../pages/tech-home/tech-home';
-import {   TechReport          } from '../pages/tech-report/tech-report';
-import {   ToprReport          } from '../pages/topr-report/topr-report';
+import { NgModule                         } from   '@angular/core'                     ;
+import { IonicApp, IonicModule            } from   'ionic-angular'                     ;
+import { BrowserModule                    } from   '@angular/platform-browser'         ;
+import { FormsModule, ReactiveFormsModule } from   '@angular/forms'                    ;
+import { HttpModule                       } from   '@angular/http'                     ;
 
+import { OnSiteX                          } from './app.component'                     ;
+import { OnSiteXUser                      } from '../pages/onsite-user/onsite-user'    ;
+import { AcctSettings                     } from '../pages/acct-settings/acct-settings';
+import { CalView                          } from '../pages/cal-view/cal-view'          ;
+import { Messages                         } from '../pages/messages/messages'          ;
+import { MgmtHome                         } from '../pages/mgmt-home/mgmt-home'        ;
+import { OnsiteLogin                      } from '../pages/onsite-login/onsite-login'  ;
+import { Statistics                       } from '../pages/statistics/statistics'      ;
+import { TechHome                         } from '../pages/tech-home/tech-home'        ;
+import { TechReport                       } from '../pages/tech-report/tech-report'    ;
+import { ToprReport                       } from '../pages/topr-report/topr-report'    ;
+import { AuthService                      } from '../directives/auth.service'          ;
 
 @NgModule({
   declarations: [
-    MyApp,
-    Page2,
+    OnSiteX,
+    OnSiteXUser,
     AcctSettings,
     CalView,
-    Home,
     Messages,
     MgmtHome,
     OnsiteLogin,
@@ -31,15 +32,17 @@ import {   ToprReport          } from '../pages/topr-report/topr-report';
     ToprReport
   ],
   imports: [
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(OnSiteX),
+    BrowserModule,
+    FormsModule,
+    ReactiveFormsModule,
+    HttpModule
   ],
-  bootstrap: [IonicApp],
   entryComponents: [
-    MyApp,
-    Page2,
+    OnSiteX,
+    OnSiteXUser,
     AcctSettings,
     CalView,
-    Home,
     Messages,
     MgmtHome,
     OnsiteLogin,
@@ -48,6 +51,7 @@ import {   ToprReport          } from '../pages/topr-report/topr-report';
     TechReport,
     ToprReport
   ],
-  providers: []
+  providers: [AuthService],
+  bootstrap: [IonicApp]
 })
 export class AppModule { }
