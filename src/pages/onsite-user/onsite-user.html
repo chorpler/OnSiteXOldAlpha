@@ -7,23 +7,50 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
+
     <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
-        <div class="form-group">
-            <label for="firstName">First Name</label>
-            <input type="text" id="firstName" class="form-control" formControlName="firstName">
+
+        <div class="input-group">
+            <label id="firstName-lbl" class="label" for="firstName">First Name</label>
+            <input
+                type="text"
+                id="firstName"
+                formControlName="firstName">
         </div>
-        <div class="form-group">
-            <label for="lastName">Last Name</label>
-            <input type="text" id="lastName" class="form-control" formControlName="lastName">
+
+        <div class="input-group">
+            <label
+                id="lastName-lbl" class="label" for="lastName">Last Name</label>
+            <input
+                type="text"
+                id="lastName"
+                formControlName="lastName">
         </div>
-        <div class="form-group">
-            <label for="email">Mail</label>
-            <input type="email" id="email" class="form-control" formControlName="email">
+
+        <div class="input-group">
+            <label id="email-lbl" class="label" for="email">eMail</label>
+            <input
+                type="email"
+                id="email"
+                formControlName="email">
         </div>
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" class="form-control" formControlName="password">
+
+        <div class="input-group">
+            <label id="password-lbl" class="label" for="password">Password</label>
+            <input
+                type="password"
+                id="password"
+                formControlName="password">
         </div>
-        <button class="btn btn-primary" type="submit" [disabled]="!myForm.valid">Submit</button>
+
+        <div class="input-group"></div>
+
+        <button
+            class="button button-block button-ios-secondary"
+            type="submit"
+            [disabled]="!myForm.valid">Submit
+        </button>
+
     </form>
+
 </ion-content>

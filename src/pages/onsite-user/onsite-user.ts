@@ -3,9 +3,10 @@ import { NavController                      } from 'ionic-angular'              
 import { AuthService                        } from '../../directives/auth.service'   ;
 import { FormGroup, FormControl, Validators } from "@angular/forms"                  ;
 import { User                               } from "../../models/user.model"         ;
+import { OnsiteLogin                        } from '../onsite-login/onsite-login'    ;
 
 @Component({
-  selector: 'onsite-user',
+  selector: 'page-onsite-user',
   templateUrl: 'onsite-user.html'
 })
 export class OnSiteXUser {
@@ -23,7 +24,8 @@ export class OnSiteXUser {
         this.authService.signup(user)
             .subscribe(
                 data => console.log(data),
-                error => console.error(error)
+                error => console.error(error),
+                this.navCtrl.push(OnsiteLogin)
             );
         this.myForm.reset();
     }

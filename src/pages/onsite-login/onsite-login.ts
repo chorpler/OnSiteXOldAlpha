@@ -3,6 +3,7 @@ import { NavController                      } from 'ionic-angular'              
 import { AuthService                        } from '../../directives/auth.service'   ;
 import { FormGroup, FormControl, Validators } from "@angular/forms"                  ;
 import { User                               } from "../../models/user.model"         ;
+import { TechHome                           } from '../tech-home/tech-home'          ;
 
 //  /src/services/auth.service.ts
 @Component({
@@ -21,6 +22,7 @@ export class OnsiteLogin {
                 data => {
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('userId', data.userId);
+                    this.navCtrl.push(TechHome);
                 },
                 error => console.error(error)
             );

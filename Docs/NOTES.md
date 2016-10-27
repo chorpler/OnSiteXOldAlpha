@@ -56,3 +56,5 @@ let enum OnSiteClassification {
 }
 ```
 
+npm cache ls
+npm cache clean
