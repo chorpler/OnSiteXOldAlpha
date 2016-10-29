@@ -1,16 +1,16 @@
-import { Component, ViewChild } from    '@angular/core'       ;
-import { Nav, Platform        } from    'ionic-angular'       ;
-import { StatusBar            } from    'ionic-native'        ;
-import { OnSiteXUser          } from '../pages/onsite-user/onsite-user'   ;
+import { Component, ViewChild } from    '@angular/core'                    ;
+import { Nav, Platform        } from    'ionic-angular'                    ;
+import { StatusBar            } from    'ionic-native'                     ;
+import { OnSiteXUser          } from '../pages/onsite-user/onsite-user'    ;
 import { AcctSettings         } from '../pages/acct-settings/acct-settings';
-import { CalView              } from '../pages/cal-view/cal-view';
-import { Messages             } from '../pages/messages/messages';
-import { MgmtHome             } from '../pages/mgmt-home/mgmt-home';
-import { OnsiteLogin          } from '../pages/onsite-login/onsite-login';
-import { Statistics           } from '../pages/statistics/statistics';
-import { TechHome             } from '../pages/tech-home/tech-home';
-import { TechReport           } from '../pages/tech-report/tech-report';
-import { ToprReport           } from '../pages/topr-report/topr-report';
+import { CalView              } from '../pages/cal-view/cal-view'          ;
+import { Messages             } from '../pages/messages/messages'          ;
+import { MgmtHome             } from '../pages/mgmt-home/mgmt-home'        ;
+import { OnsiteLogin          } from '../pages/onsite-login/onsite-login'  ;
+import { Statistics           } from '../pages/statistics/statistics'      ;
+import { TechHome             } from '../pages/tech-home/tech-home'        ;
+import { TechReport           } from '../pages/tech-report/tech-report'    ;
+import { ToprReport           } from '../pages/topr-report/topr-report'    ;
 
 
 @Component({

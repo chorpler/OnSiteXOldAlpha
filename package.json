@@ -1,9 +1,8 @@
 {
-  "name": "onsitex",
-  "description": "OnSiteX: Mongo Angular2 Ionic NodeJS; a MAIN Stack App",
   "author": "Michael Bates",
-  "license": "UNLICENSED",
   "homepage": "https://github.com/starmobiledevelopers/OnSiteX/",
+  "license": "UNLICENSED",
+  "name": "onsitex",
   "private": true,
   "repository": {
     "type": "git",
@@ -11,35 +10,12 @@
   },
   "scripts": {
     "build": "ionic-app-scripts build",
-    "watch": "ionic-app-scripts watch",
-    "serve:before": "watch",
-    "emulate:before": "build",
-    "deploy:before": "build",
     "build:before": "build",
-    "run:before": "build"
-  },
-  "dependencies": {
-        "@angular/common": "2.1.1",
-    "@angular/compiler": "2.1.1",
-    "@angular/compiler-cli": "2.1.1",
-    "@angular/core": "2.1.1",
-    "@angular/forms": "2.1.1",
-    "@angular/http": "2.1.1",
-    "@angular/platform-browser": "2.1.1",
-    "@angular/platform-browser-dynamic": "2.1.1",
-    "@angular/platform-server": "2.1.1",
-    "@ionic/storage": "1.1.6",
-    "ionic-angular": "2.0.0-rc.1",
-    "ionic-native": "2.2.4",
-    "ionicons": "3.0.0",
-    "rxjs": "5.0.0-rc.1",
-    "zone.js": "0.6.26",
-    "moment": "2.15.2"
-  },
-  "devDependencies": {
-    "@ionic/app-scripts": "^0.0.36",
-    "tslint": "^4.0.0-dev.0",
-    "typescript": "^2.1.0-dev.20161019"
+    "deploy:before": "build",
+    "emulate:before": "build",
+    "run:before": "build",
+    "serve:before": "watch",
+    "watch": "ionic-app-scripts watch"
   },
   "cordovaPlugins": [
     "cordova-plugin-whitelist",
@@ -48,5 +24,31 @@
     "cordova-plugin-device",
     "cordova-plugin-splashscreen",
     "ionic-plugin-keyboard"
-  ]
+  ],
+  "dependencies": {
+    "@angular/common": "2.1.2",
+    "@angular/compiler": "2.1.2",
+    "@angular/compiler-cli": "2.1.2",
+    "@angular/core": "2.1.2",
+    "@angular/forms": "2.1.2",
+    "@angular/http": "2.1.2",
+    "@angular/platform-browser": "2.1.2",
+    "@angular/platform-browser-dynamic": "2.1.2",
+    "@angular/platform-server": "2.1.2",
+    "@ionic/storage": "1.1.6",
+    "@types/pouchdb": "^5.4.28",
+    "ionic-angular": "2.0.0-rc.1",
+    "ionic-native": "2.2.6",
+    "ionicons": "3.0.0",
+    "moment": "2.15.2",
+    "pouchdb": "^6.0.7",
+    "rxjs": "5.0.0-rc.1",
+    "zone.js": "0.6.26"
+  },
+  "description": "OnSiteX: PouchDB Angular2 NodeJS Ionic CouchDB; a PANIC Stack App",
+  "devDependencies": {
+    "@ionic/app-scripts": "^0.0.36",
+    "tslint": "^4.0.0-dev.0",
+    "typescript": "^2.1.0-dev.20161028"
+  }
 }
