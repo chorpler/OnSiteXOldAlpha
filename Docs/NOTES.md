@@ -7,6 +7,7 @@ create document:
 
 <nul (set/p z=) > pouch.functions.ts
 <nul (set/p z=) > user.config.user.ts
+<nul (set/p z=) > user.config.testuser.ts
 ```
 
 ## NPM Ref Commands

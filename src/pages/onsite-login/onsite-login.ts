@@ -1,6 +1,6 @@
 import { Component                          } from '@angular/core'                   ;
 import { NavController                      } from 'ionic-angular'                   ;
-import { AuthService                        } from '../../directives/auth.service'   ;
+import { AuthService                        } from '../../providers/auth.service'    ;
 import { FormGroup, FormControl, Validators } from "@angular/forms"                  ;
 import { User                               } from "../../models/user.model"         ;
 import { TechHome                           } from '../tech-home/tech-home'          ;
@@ -16,17 +16,17 @@ export class OnsiteLogin {
   constructor(public navCtrl: NavController, private authService: AuthService) {}
 
   onSubmit() {
-        const user = new User(this.myForm.value.email, this.myForm.value.password);
-        this.authService.signin(user)
-            .subscribe(
-                data => {
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('userId', data.userId);
-                    this.navCtrl.push(TechHome);
-                },
-                error => console.error(error)
-            );
-        this.myForm.reset();
+        // const user = new User(this.myForm.value.email, this.myForm.value.password);
+        // this.authService.signin(user)
+        //     .subscribe(
+        //         data => {
+        //             localStorage.setItem('token', data.token);
+        //             localStorage.setItem('userId', data.userId);
+        //             this.navCtrl.push(TechHome);
+        //         },
+        //         error => console.error(error)
+        //     );
+        // this.myForm.reset();
     }
 
     ngOnInit() {

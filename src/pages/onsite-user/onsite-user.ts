@@ -1,6 +1,6 @@
 import { Component                          } from '@angular/core'                   ;
 import { NavController                      } from 'ionic-angular'                   ;
-import { AuthService                        } from '../../directives/auth.service'   ;
+import { AuthService                        } from '../../providers/auth.service'   ;
 import { FormGroup, FormControl, Validators } from "@angular/forms"                  ;
 import { User                               } from "../../models/user.model"         ;
 import { OnsiteLogin                        } from '../onsite-login/onsite-login'    ;
@@ -15,19 +15,19 @@ export class OnSiteXUser {
     constructor(public navCtrl: NavController, private authService: AuthService) {}
 
     onSubmit() {
-        const user = new User(
-            this.myForm.value.email,
-            this.myForm.value.password,
-            this.myForm.value.firstName,
-            this.myForm.value.lastName
-        );
-        this.authService.signup(user)
-            .subscribe(
-                data => console.log(data),
-                error => console.error(error),
-                this.navCtrl.push(OnsiteLogin)
-            );
-        this.myForm.reset();
+        // const user = new User(
+        //     this.myForm.value.email,
+        //     this.myForm.value.password,
+        //     this.myForm.value.firstName,
+        //     this.myForm.value.lastName
+        // );
+        // this.authService.signup(user)
+        //     .subscribe(
+        //         data => console.log(data),
+        //         error => console.error(error),
+        //         this.navCtrl.push(OnsiteLogin)
+        //     );
+        // this.myForm.reset();
     }
 
     ngOnInit() {

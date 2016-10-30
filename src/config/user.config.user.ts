@@ -1,21 +1,29 @@
-import { USERCLASS, LOCPRIMRY, LOCSCNDRY, CLNTCMPNY         }  from  './user.config.constants' ;
-import { PYRLClASS, IDUCLASS, IDLOCPRM, IDLOC2ND, IDCOMPANY }  from  './user.config.constants' ;
+import { USERCLASS, LOCPRIMRY, LOCSCNDRY, CLNTCMPNY         } from  './user.config.constants' ;
+import { PYRLClASS, IDUCLASS, IDLOCPRM, IDLOC2ND, IDCOMPANY } from  './user.config.constants' ;
 
-export interface OnSiteXUSER {
-  firstName : string     ;
-  lastName  : string     ;
-  email     : string     ;
-  userClass : USERCLASS  ;
-  locPrimry : LOCPRIMRY  ;
-  locScndry : LOCSCNDRY  ;
-  clntCmpny : CLNTCMPNY  ;
-  pyrlClass : PYRLClASS  ;
-  idUClass  : IDUCLASS   ;
-  idLocPrm  : IDLOCPRM   ;
-  idLoc2nd  : IDLOC2ND   ;
-  idCompany : IDCOMPANY  ;
-
-  createUsr(lastName: string, firstName: string) {
-  let usr = this.lastName + ", " + this.firstName;
-  }
+export interface OSXU {
+  firstName?     : string;
+  lastName?      : string;
+  middleName?    : string;
+  namePrefix?    : string;
+  nameSuffix?    : string;
+  email?         : string;
+  userClass?     : string;
+  locPrimry?     : string;
+  locScndry?     : string;
+  clntCmpny?     : string;
+  pyrlClass?     : string;
+  idUClass?      : string;
+  idLocPrm?      : string;
+  idLoc2nd?      : string;
+  idCompany?     : string;
+  userClassIndx? : number;
+  locPrimryIndx? : number;
+  locScndryIndx? : number;
+  clntCmpnyIndx? : number;
+  pyrlClassIndx? : number;
+  idUClassIndx?  : string;
+  idLocPrmIndx?  : string;
+  idLoc2ndIndx?  : string;
+  idCompanyIndx? : string;
 }

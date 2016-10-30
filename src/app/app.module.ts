@@ -16,7 +16,7 @@ import { TechHome                         } from '../pages/tech-home/tech-home' 
 import { TechReport                       } from '../pages/tech-report/tech-report'    ;
 import { ToprReport                       } from '../pages/topr-report/topr-report'    ;
 import { AuthService                      } from '../providers/auth.service'           ;
-import { DbServices                       } from '../providers/db.services'            ;
+import { DbService                        } from '../providers/db.service'             ;
 
 @NgModule({
   declarations: [
@@ -52,7 +52,7 @@ import { DbServices                       } from '../providers/db.services'     
     TechReport,
     ToprReport
   ],
-  providers: [AuthService, DbServices],
+  providers: [ AuthService, DbService ],
   bootstrap: [IonicApp]
 })
 export class AppModule { }

@@ -1,4 +1,4 @@
-export const enum   USERCLASS {
+export enum   USERCLASS {
     'MANAGER'       = 10,
     'ADMIN'         = 11,
     'CONTRACTOR'    = 12,
@@ -7,7 +7,7 @@ export const enum   USERCLASS {
     'TOPPER'        = 15
 }
 
-export const enum   LOCPRIMRY {
+export enum   LOCPRIMRY {
     'WESLACO'       = 20,
     'ODESSA'        = 21,
     'ARTESIA'       = 22,
@@ -15,7 +15,7 @@ export const enum   LOCPRIMRY {
     'MATHIS'        = 24
 }
 
-export const enum   LOCSCNDRY {
+export enum   LOCSCNDRY {
     'HQ'            = 30,
     'NORTH'         = 31,
     'SOUTH'         = 32,
@@ -24,13 +24,13 @@ export const enum   LOCSCNDRY {
     'AUXILIARY'     = 35
 }
 
-export const enum   CLNTCMPNY {
+export enum   CLNTCMPNY {
     'SESA'          = 40,
     'HALLIBURTON'   = 41,
     'KEANE'         = 42
 }
 
-export const enum   PYRLClASS {
+export enum   PYRLClASS {
     'BILLABLE'      = 50,
     'EXPNSLABOR'    = 51,
     'TRNG'          = 52,
@@ -41,7 +41,7 @@ export const enum   PYRLClASS {
     'BONUS'         = 57
 }
 
-export const enum   IDUCLASS {
+export enum   IDUCLASS {
     'MGR'           = 10,
     'ADM'           = 11,
     'CON'           = 12,
@@ -50,7 +50,7 @@ export const enum   IDUCLASS {
     'TPR'           = 15
 }
 
-export const enum   IDLOCPRM {
+export enum   IDLOCPRM {
     'WES'           = 20,
     'ODE'           = 21,
     'ART'           = 22,
@@ -58,7 +58,7 @@ export const enum   IDLOCPRM {
     'MTH'           = 24
 }
 
-export const enum   IDLOC2ND {
+export enum   IDLOC2ND {
     'HQ0'           = 30,
     'NOR'           = 31,
     'SOU'           = 32,
@@ -67,7 +67,7 @@ export const enum   IDLOC2ND {
     'AUX'           = 35
 }
 
-export const enum   IDCOMPANY {
+export enum   IDCOMPANY {
     'SE'            = 40,
     'HB'            = 41,
     'KN'            = 42
