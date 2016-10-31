@@ -28,3 +28,11 @@ npm install --save @types/pouchdb
 npm install --save node-couchdb
 npm install --save @types/node-couchdb // none found
 ```
+
+```js
+let _aDate = new Date; _aDate; // Mon Oct 31 2016 01:07:27 GMT-0500 (CDT)
+let _bDate = JSON.parse(JSON.stringify(_aDate)); _bDate; // "2016-10-31T06:07:27.994Z"
+let _cDate = JSON.stringify(_aDate); _cDate; // ""2016-10-31T06:07:27.994Z""
+let _id = new Date().toISOString(); _id; // "2016-10-31T06:17:01.754Z"
+let _dDate = new Date().toString(); _dDate;
+```

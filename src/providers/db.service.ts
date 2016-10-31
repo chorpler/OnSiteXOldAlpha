@@ -14,7 +14,7 @@ export class DbService {
 
   constructor(public http: Http) {
     console.log('Hello DbService Provider');
-    this.db = new PouchDB('onSiteXDocDb');
+    this.db = new PouchDB('onSiteXDocDb', {auto_compaction : true, revs_limit : 100});
     this.remote = 'https://192.168.0.140/5984/onSiteXDocDb';
     let options = {
       live: true,
