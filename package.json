@@ -46,7 +46,7 @@
   },
   "description": "OnSiteX: PouchDB Angular2 NodeJS Ionic CouchDB; a PANIC Stack App",
   "devDependencies": {
-    "@ionic/app-scripts": "^0.0.36",
+    "@ionic/app-scripts": "^0.0.38",
     "@types/pouchdb": "^5.4.28",
     "tslint": "^4.0.0-dev.0",
     "typescript": "^2.1.0-dev.20161028"
