@@ -89,3 +89,103 @@ JSON.parse(JSON.stringify(_eDate));
 ```js
 DBNAME = [ 'OnSiteXUSR', 'OnSiteXDOC' ];
 ```
+
+
+```html
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle><ion-icon name="menu"></ion-icon></button>
+    <ion-title>Account Setup</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle><ion-icon name="menu"></ion-icon></button>
+    <ion-title>OnSiteX Login</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle><ion-icon name="menu"></ion-icon></button>
+    <ion-title>MGMT Home</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle><ion-icon name="menu"></ion-icon></button>
+    <ion-title>Technicians Home</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle><ion-icon name="menu"></ion-icon></button>
+    <ion-title>Tech Stats</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle><ion-icon name="menu"></ion-icon></button>
+    <ion-title>Technician Report</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle><ion-icon name="menu"></ion-icon></button>
+    <ion-title>Topper Report</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle><ion-icon name="menu"></ion-icon></button>
+    <ion-title>Account Settings</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<!-- Welcome Screen -->
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle><ion-icon name="menu"></ion-icon></button>
+    <ion-title>SESA OnSiteX</ion-title>
+  </ion-navbar>
+</ion-header>
+```
+
+#### Platform
+```js
+constructor(platform: Platform) {
+    this.platform = platform;
+
+if (this.platform.is('ios')) {
+      // This will only print when on iOS
+      console.log("I'm an iOS device!");
+    }
+}
+```
+
+|Platform  |Name Description                |
+|---       |---                             |
+|android   |on a device running Android.    |
+|cordova   |on a device running Cordova.    |
+|core      |on a desktop device.            |
+|ios       |on a device running iOS.        |
+|ipad      |on an iPad device.              |
+|iphone    |on an iPhone device.            |
+|mobile    |on a mobile device.             |
+|mobileweb |in a browser on a mobile device.|
+|phablet   |on a phablet device.            |
+|tablet    |on a tablet device.             |
+|windows   |on a device running Windows.    |

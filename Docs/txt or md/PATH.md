@@ -1,9 +1,5 @@
 PATH=
-C:\code\cmder\bin;
-C:\code\cmder\vendor\git-for-windows\cmd;
-C:\code\cmder\vendor\conemu-maximus5\ConEmu\Scripts;
-C:\code\cmder\vendor\conemu-maximus5;
-C:\code\cmder\vendor\conemu-maximus5\ConEmu;
+C:\ProgramData\Oracle\Java\javapath;
 C:\code\SUBLIM~1;
 C:\code\cmder\Cmder.exe;
 C:\code\SUBLIM~1\SUBLIM~1.EXE;
@@ -21,7 +17,4 @@ C:\code\Ruby23-x64\bin;
 C:\Users\Michael Bates\AppData\Local\Microsoft\WindowsApps;
 C:\code\Microsoft VS Code Insiders\bin;
 C:\Users\Michael Bates\AppData\Local\Pandoc\;
-C:\Users\Michael Bates\AppData\Roaming\npm;
-C:\code\cmder\vendor\git-for-windows\usr\bin;
-C:\code\cmder\vendor\git-for-windows\usr\share\vim\vim74;
-C:\code\cmder\
+C:\Users\Michael Bates\AppData\Roaming\npm
