@@ -10,11 +10,14 @@ import { TechMechReport          } from '../pages/tech-mech-report/tech.mech.rep
 import { TechToprReport          } from '../pages/tech-topr-report/tech.topr.report'        ;
 import { AcctSettingsPage        } from '../pages/acct-settings-page/acct.settings.page'    ;
 import { LandingPage             } from '../pages/landing-page/landing.page'                ;
+import { UserFormComponent } from '../components/user-form.component.ts';
+import { OnSiteXUser } from '../models/onsitexuser.class';
 
 
 
 @Component({
-  templateUrl: 'app.html'
+  templateUrl: 'app.html',
+  providers: [OnSiteXUser]
 })
 
 export class OnSiteX {

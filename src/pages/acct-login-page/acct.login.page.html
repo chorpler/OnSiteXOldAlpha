@@ -11,5 +11,23 @@
   </ion-navbar>
 </ion-header>
 <ion-content padding>
-
+<form id="login-form">
+            <div class="input-group">
+                <label class="label">Email: </label>
+                <input  type="email"
+                        class="form-control"
+                        [(ngModel)]="model.email"
+                        name="SESAemail"
+                        placeholder="name@company.com">
+            </div>
+            <div class="input-group">
+                <label class="label">Password: </label>
+                <input  type="Password"
+                        class="form-control"
+                        [(ngModel)]="model.password"
+                        name="SESAPassword"
+                        placeholder="Password">
+            </div>
+            <button id="login-button" type="submit" block="" ion-button="" class="button-ios-secondary">Log In</button>
+        </form>
 </ion-content>

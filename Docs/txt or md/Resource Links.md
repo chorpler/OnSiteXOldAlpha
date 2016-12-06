@@ -59,6 +59,7 @@
 
 ###Sublime Text 3
 Registration:
+
 ```text
 Thanks for purchasing a copy of Sublime Text! Your license key is:
 
@@ -110,6 +111,7 @@ PAssword: 5OR6GreenPigsRun
 ###Books to Read!
 #####The start of it all: Bell Laboratories and the phone system... great historical context
 - [**The Idea Factory:** Bell Labs and the Great Age of American Innovation](https://itunes.apple.com/us/book/the-idea-factory/id456070729?mt=11)
+
 #####The hacker stories: awesome adventures from the birth of the modern geek era
 - [**Exploding the Phone:** The Untold Story of the Teenagers and Outlaws who Hacked Ma Bell](https://itunes.apple.com/ca/book/exploding-the-phone/id570545460?mt=11)
 - [**Gohst in the Wires:** My Adventures as the World's Most Wanted Hacker](https://itunes.apple.com/us/book/ghost-in-the-wires/id395522097?mt=11)

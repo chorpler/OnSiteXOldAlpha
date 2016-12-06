@@ -1,5 +1,8 @@
-import { Component } from '@angular/core';
+import { Component     } from '@angular/core';
 import { NavController } from 'ionic-angular';
+import { NgModule      } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule   } from '@angular/forms';
 
 /*
   Generated class for the AcctLoginPage page.

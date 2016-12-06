@@ -1,9 +1,11 @@
-import { NgModule                         } from   '@angular/core'                                   ;
+// Framework Modules:
+import { NgModule } from '@angular/core';
 import { IonicApp, IonicModule            } from   'ionic-angular'                                   ;
 import { BrowserModule                    } from   '@angular/platform-browser'                       ;
 import { FormsModule, ReactiveFormsModule } from   '@angular/forms'                                  ;
 import { HttpModule                       } from   '@angular/http'                                   ;
 
+// App Modules:
 import { OnSiteX                          } from  './app.component'                                  ;
 import { AcctSetupPage                    } from '../pages/acct-setup-page/acct.setup.page'          ;
 import { AcctLoginPage                    } from '../pages/acct-login-page/acct.login.page'          ;
@@ -15,11 +17,22 @@ import { TechToprReport                   } from '../pages/tech-topr-report/tech
 import { AcctSettingsPage                 } from '../pages/acct-settings-page/acct.settings.page'    ;
 import { LandingPage                      } from '../pages/landing-page/landing.page'                ;
 import { TinoMsgsAlert                    } from '../components/tino.msgs.alert'                     ;
-import { UserComponent                    } from '../components/user.component'                      ;
+import { UserFormComponent                } from '../components/user-form.component'                 ;
 import { AuthSrvc                         } from '../providers/auth.srvc'                            ;
 import { DbSrvc                           } from '../providers/db.srvc'                              ;
+import { OnSiteXUser                      } from '../models/onsitexuser.class'                       ;
 
-
+/**
+ * interface NgModule {
+ *    declarations : Array<Type<any>|any[]>
+ *    entryComponents : Array<Type<any>|any[]>
+ *    imports : Array<Type<any>|ModuleWithProviders|any[]>
+ *    exports : Array<Type<any>|any[]>
+ *    providers : Provider[]
+ *    schemas : Array<SchemaMetadata|any[]> id : string
+ *    bootstrap : Array<Type<any>|any[]>
+ * }
+ */
 @NgModule({
   declarations:    [ AcctSetupPage                ,
                      AcctLoginPage                ,
@@ -31,6 +44,7 @@ import { DbSrvc                           } from '../providers/db.srvc'         
                      AcctSettingsPage             ,
                      LandingPage                  ,
                      OnSiteX                      ,
+                     UserFormComponent            ,
                      TinoMsgsAlert                ],
 
   entryComponents: [ AcctSetupPage                ,
@@ -49,8 +63,13 @@ import { DbSrvc                           } from '../providers/db.srvc'         
                      ReactiveFormsModule          ,
                      HttpModule                    ],
 
+  exports:         [ UserFormComponent             ],
+
   providers:       [ AuthSrvc                     ,
-                     DbSrvc                        ],
+                     DbSrvc,
+                     OnSiteXUser                   ],
+
+  schemas:         [                               ],
 
   bootstrap:       [ IonicApp                      ]
 
