@@ -1,0 +1,114 @@
+// UPDATE 2015-04-26: cordova 5.0.0 now out. (npm install -g cordova)
+// Camera, Console, Geolocation, and Statusbar plugins now all produce
+// error/warning messages when 'ionic hooks add' and 'ionic platform ios'
+// commands are used to install hooks, add platforms/ios, and download and
+// generate the plugins.
+// Follow the commands below to fix this. If you are getting an EACCES error
+// while trying to run "ionic platform ios" even though your owner/permission
+// settings seem to be correct, or are getting it even with sudo, you may need
+// to remove the hooks/ directory as well as platforms/, then run
+// 
+// ionic hooks add
+// ionic platform ios
+//
+// This will install the hooks correctly and fix that problem, plus install your 
+// plugins and platforms directory. (Note: it may not actually have outdated plugins
+// such as the org.apache.cordova.* versions. In this case, only run the last 
+// commands, the ones that start with "cordova plugin add", because the first ones, the
+// 'cordova plugin rm" commands, will give errors if those plugins don't exist.
+//
+//
+//
+//
+//
+//
+// ORIGINAL:
+//
+// The folllowing commands should be used to add the app's Cordova plugins
+// for use with Ionic and ngCordova. The app's plugins, in command order,
+// are:
+// - Camera
+//   (http://ngcordova.com/docs/plugins/camera/)
+// - Geolocation
+//   (http://ngcordova.com/docs/plugins/geolocation/)
+// - StatusBar
+//   (http://ngcordova.com/docs/plugins/statusbar/)
+// The "Console", "Device" and "Keyboard" plugins are preinstalled, I guess..
+//
+// NOTE:
+// Run these commands from the main project directory (the one with the
+// www directory and config.xml in it), not the www directory itself!
+// cordova plugin add org.apache.cordova.camera
+// cordova plugin add org.apache.cordova.geolocation
+// cordova plugin add org.apache.cordova.statusbar
+// NEW commands  if those plugins were installed:
+
+// cordova plugin rm org.apache.cordova.geolocation --save
+// cordova plugin rm org.apache.cordova.statusbar --save
+// cordova plugin rm org.apache.cordova.camera --save
+// cordova plugin rm org.apache.cordova.console --save
+// cordova plugin rm org.apache.cordova.file --save
+// cordova plugin rm cordova-plugin-certificates --save
+
+// Ionic Deploy startup:
+// ionic add ionic-service-core
+// ionic add ionic-service-deploy
+
+
+// # cordova plugin add https://github.com/brodysoft/Cordova-SQLitePlugin.git --save
+cordova plugin rm com.synconset.cordovaHTTP --save
+cordova plugin rm cordova-plugin-camera --save
+cordova plugin rm cordova-plugin-console --save
+cordova plugin rm cordova-plugin-crosswalk-webview --save
+cordova plugin rm cordova-plugin-datepicker --save
+cordova plugin rm cordova-plugin-dialogs --save
+cordova plugin rm cordova-plugin-file --save
+cordova plugin rm cordova-plugin-file-transfer --save
+cordova plugin rm cordova-plugin-geolocation --save
+cordova plugin rm cordova-plugin-sqlite --save
+cordova plugin rm cordova-sqlite-storage --save
+cordova plugin rm cordova-plugin-statusbar --save
+cordova plugin rm cordova-plugin-whitelist --save
+cordova plugin rm com.ionic.keyboard --save
+cordova plugin rm de.appplant.cordova.plugin.email-composer --save
+cordova plugin rm de.appplant.cordova.plugin.local-notification --save
+cordova plugin rm io.litehelpers.cordova.sqlite --save
+cordova plugin rm uk.co.whiteoctober.cordova.appversion --save
+cordova plugin rm org.transistorsoft.cordova.background-geolocation --save
+cordova plugin rm com.transistorsoft.cordova.background-geolocation --save
+cordova plugin rm info.protonet.imageresizer --save
+cordova plugin rm cordova-plugin-touchid --save
+cordova plugin rm ionic-plugins-deploy --save
+
+#cordova plugin add cordova-plugin-crosswalk-webview --save
+#cordova plugin add https://github.com/VitaliiBlagodir/cordova-plugin-datepicker.git --save
+#cordova plugin add https://github.com/protonet/cordova-plugin-image-resizer.git --save
+#cordova plugin add cordova-plugin-sqlite --save
+cordova plugin add cordova-plugin-geolocation --save
+cordova plugin add cordova-plugin-statusbar --save
+cordova plugin add cordova-plugin-camera --save
+cordova plugin add cordova-plugin-console --save
+cordova plugin add cordova-plugin-dialogs --save
+cordova plugin add cordova-plugin-device --save
+cordova plugin add cordova-plugin-file --save
+cordova plugin add cordova-plugin-file-transfer --save
+cordova plugin add cordova-plugin-whitelist --save
+cordova plugin add ionic-plugin-keyboard --save
+cordova plugin add https://github.com/litehelpers/Cordova-sqlite-storage.git --save
+cordova plugin add https://github.com/starmobiledevelopers/cordova-HTTP --save
+cordova plugin add https://github.com/katzer/cordova-plugin-email-composer.git --save
+cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications.git --save
+cordova plugin add https://github.com/whiteoctober/cordova-plugin-app-version.git --save
+cordova plugin add https://github.com/leecrossley/cordova-plugin-touchid.git --save
+cordova plugin add https://starmobiledevelopers:DorothyinKansa5@github.com/transistorsoft/cordova-background-geolocation.git --save
+ionic plugin add https://github.com/driftyco/ionic-plugins-deploy --save
+ionic plugin add https://github.com/phonegap-build/PushPlugin.git --save
+
+
+
+
+
+
+
+# Run this next one if any problems with ios building occur
+cordova prepare ios

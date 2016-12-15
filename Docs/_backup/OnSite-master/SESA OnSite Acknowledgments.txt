@@ -1,0 +1,16 @@
+SESA's mobile phone app, OnSite, enables our technicians to send diagnostic and repair information back to our office immediately, and makes the process of time tracking and assigning time to work orders practically painless. At the moment, OnSite is still in testing, and has only been deployed to four employees at two sites, but the results are looking quite promising.
+
+SESA OnSite would not have been possible without the contributions of many people. We would particularly like to thank:
+ 
+ 
+  * Apache Cordova. Ultimately, this is what powers OnSite. Cordova (also known as Adobe PhoneGap) lets you take a mobile web site and convert it to a real mobile app. This means everybody who knows how to do web sites (HTML, CSS, and JavaScript) can develop complete apps for many different phone types (iPhones, Androids, Windows Phones, Blackberries, etc.) without having to learn the details of each platform. The process isn't perfect yet, but it works surprisingly well. And when you have dozens of technicians who each prefer a particular type of phone, it's extremely handy.
+
+   * DriftyCo, the makers of the Ionic Framework. We found this to be a very nice platform for creating the GUI and for helping you create the behind-the-scenes stuff like program logic. AngularJS is a bit tricky at first, but once you get the hang of it, it works very well for mobile apps.
+   
+   * Apache CouchDB. They've made the process of having a database and a web server that your app communicates with much simpler. You don't even have to have a separate web server, since CouchDB handles all of that on its own!
+   
+   * PouchDB, the mobile app version of CouchDB. Using PouchDB, the app can store data locally and sync it to your server with basically no effort. Capital work, PouchDB team!
+   
+   * spViewer and their NoSQL Viewer. SQL servers like MySQL, SQL Server, and Oracle may not be as easy and reliable as CouchDB and the other NoSQL database servers, but they do have one advantage: plenty of tools for working with them. Navicat, for instance, makes the process of running a MySQL server quite nice, with its GUI and import/export filters and everything. CouchDB has a web interface called Futon (or Fauxton, the newer version), but there's a definite lack of third-party GUI utilities for dealing with your data. And since CouchDB stores free-form documents, not row-and-column data like a SQL database, it becomes rather annoying to do a simple import of a collection of documents, for instance. Fortunately, spViewer's NoSQL Viewer fills this gap extremely well, and makes dealing with the data our mobile app has collected much easier for our administrative staff. Thanks for seeing such a need and filling it, spViewer team!
+   
+   * Kerri Shotts and Packt Publishing, for the book "PhoneGap for Enterprise." This is a vital resource if you want to create a mobile app for an enterprise environment. This book was chock full of information, most importantly regarding how to properly secure your app, the server that supports it, and the data they generate and store.

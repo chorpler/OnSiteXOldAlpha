@@ -1,0 +1,113 @@
+Pre-authorization document - 
+8200063936
+Company Name:
+ Hall. Energy Srvc., Inc.
+Date:
+ 04/06/2015
+Vendor information
+Vendor code:
+ 1232314
+Vendor name:
+ S E S A  FLEET SERVICES LLC
+Vendor address:
+2606 E BUSINESS 83 STE 4
+WESLACO, TX
+US - 78596
+Vendor Phone:
+ 956-463-2727
+Vendor Email:
+tvela@sesafleetservices.com
+Contract number:
+ 4600660971
+Payment Terms: 
+2% in 20 Days, net 60 Inv rec
+Total amount:
+ 0.00  USD
+Contact Information:
+Requestor name:
+ Breht Telles
+Email Address:
+  
+Breht.Telles@Halliburton.com
+Telephone number:
+ 5753920771
+Billing information:
+Accounts Payable Department
+Halliburton Energy Services
+Mail Stop:1100
+PO Box 4960
+Portland, OR, 97208-4960, US
+Authorization number:
+ 8200063936
+Ship to Information:
+Plant Name:
+ Hobbs, NM, USA
+Street Address:
+ 5801 Lovington Highway
+Hobbs, NM
+US - 88240
+Delivery Date : 04/07/2015
+Note: 
+Please submit authorization 
+number from this document on 
+your invoice to avoid invoice 
+rejection or
+delayed payments. Please submit
+ only one invoice per 
+Pre-authorization document
+Item
+#
+Vendor Service
+Number
+Description
+Quantity /
+Unit
+Estimated
+Total Item
+Price
+Cost Object (GL / Category
+/ Cost Object) 
+    1
+REPAIRS
+1.00 / EA
+455.00 USD
+550420/Order/313113523(
+100.00%)
+    2
+REPAIRS
+1.00 / EA
+65.00 USD
+550420/Order/313113528(
+100.00%)
+    3
+REPAIRS
+1.00 / EA
+65.00 USD
+550420/Order/313113526(
+100.00%)
+    4
+REPAIRS
+1.00 / EA
+65.00 USD
+550420/Order/313113530(
+100.00%)
+Item # 1 : REPAIRS ( MORE 
+DETAILS )
+313113523
+Page 1 OF 
+2  
+----------------Page (0) Break----------------
+Pre-authorization document - 
+8200063936
+Item # 2 : REPAIRS ( MORE 
+DETAILS )
+313113528
+Item # 3 : REPAIRS ( MORE 
+DETAILS )
+313113526
+Item # 4 : REPAIRS ( MORE 
+DETAILS )
+313113530
+Page 2 OF 
+2  
+----------------Page (1) Break----------------

@@ -1,0 +1,570 @@
+[{
+    "_id": "00001",
+    "_rev": "8-bd497ecb36437acde5f24a8992a51a8e",
+    "id": 1,
+    "locname": "Halliburton Alice",
+    "customer_code": "HB",
+    "location_code": "ALI1",
+    "client": "Halliburton",
+    "street": "850 Commerce Rd.",
+    "city": "Alice",
+    "state": "TX",
+    "zip": 78332,
+    "within": 525,
+    "travel_time": 0,
+    "per_diem_rate": 40,
+    "requires_preauth": "false",
+    "requires_preauth_pertech": "false",
+    "requires_invoice_woreports": "false",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": 4600660971
+}, {
+    "_id": "00002",
+    "_rev": "1-915cab765f8d33371cfe4461ec7d5df7",
+    "id": 2,
+    "locname": "Halliburton Artesia",
+    "customer_code": "HB",
+    "location_code": "ART1",
+    "client": "Halliburton",
+    "street": "2311 S. First Street",
+    "city": "Artesia",
+    "state": "NM",
+    "zip": 88210,
+    "within": 525,
+    "travel_time": 8,
+    "per_diem_rate": 40,
+    "requires_preauth": "true",
+    "requires_preauth_pertech": "false",
+    "requires_invoice_woreports": "false",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": 4600660971
+}, {
+    "_id": "00003",
+    "_rev": "1-c904a35d7f3bb7552433e978801ad57c",
+    "id": 3,
+    "locname": "Halliburton Caldwell",
+    "customer_code": "HB",
+    "location_code": "CAL1",
+    "client": "Halliburton",
+    "street": "1109 Foundation Road",
+    "city": "Caldwell",
+    "state": "TX",
+    "zip": 77836,
+    "within": 525,
+    "travel_time": 4,
+    "per_diem_rate": 40,
+    "requires_preauth": "true",
+    "requires_preauth_pertech": "false",
+    "requires_invoice_woreports": "false",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": 4600660971
+}, {
+    "_id": "00004",
+    "_rev": "1-03717e8859bfc73d9e677aa06ddf067b",
+    "id": 4,
+    "locname": "Halliburton Fresno",
+    "customer_code": "HB",
+    "location_code": "FRE1",
+    "client": "Halliburton",
+    "street": "330 W. Sycamore Rd",
+    "city": "Fresno",
+    "state": "TX",
+    "zip": 77545,
+    "within": 525,
+    "travel_time": 4,
+    "per_diem_rate": 40,
+    "requires_preauth": "false",
+    "requires_preauth_pertech": "false",
+    "requires_invoice_woreports": "false",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": 4600660971
+}, {
+    "_id": "00005",
+    "_rev": "3-a0e19e70d9bb207cd4db36bc00cc232e",
+    "id": 5,
+    "locname": "Halliburton Hobbs",
+    "customer_code": "HB",
+    "location_code": "HOB1",
+    "client": "Halliburton",
+    "street": "5801 Lovington Hwy.",
+    "city": "Hobbs",
+    "state": "NM",
+    "zip": 88240,
+    "within": 525,
+    "travel_time": 8,
+    "per_diem_rate": 40,
+    "requires_preauth": "true",
+    "requires_preauth_pertech": "false",
+    "requires_invoice_woreports": "false",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": 4600660971
+}, {
+    "_id": "00006",
+    "_rev": "1-6ac514f5ee63ded5b1895b10c80e3b58",
+    "id": 6,
+    "locname": "Halliburton Kilgore",
+    "customer_code": "HB",
+    "location_code": "KIL1",
+    "client": "Halliburton",
+    "street": "212 Knowles St.",
+    "city": "Kilgore",
+    "state": "TX",
+    "zip": 75662,
+    "within": 525,
+    "travel_time": 6,
+    "per_diem_rate": 40,
+    "requires_preauth": "false",
+    "requires_preauth_pertech": "false",
+    "requires_invoice_woreports": "false",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": 4600660971
+}, {
+    "_id": "00007",
+    "_rev": "1-1d293aef000d376aa7ea8e8176bb67c9",
+    "id": 7,
+    "locname": "Halliburton Laredo",
+    "customer_code": "HB",
+    "location_code": "LAR1",
+    "client": "Halliburton",
+    "street": "P.O Box 3350",
+    "city": "Laredo",
+    "state": "TX",
+    "zip": 78044,
+    "within": 525,
+    "travel_time": 0,
+    "per_diem_rate": 40,
+    "requires_preauth": "false",
+    "requires_preauth_pertech": "false",
+    "requires_invoice_woreports": "false",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": 4600660971
+}, {
+    "_id": "00008",
+    "_rev": "1-844b0a8ad097c99a49d9198ec0832f7c",
+    "id": 8,
+    "locname": "Halliburton Odessa",
+    "customer_code": "HB",
+    "location_code": "ODE1",
+    "client": "Halliburton",
+    "street": "6155 W Murphy St.",
+    "city": "Odessa",
+    "state": "TX",
+    "zip": 79763,
+    "within": 525,
+    "travel_time": 6,
+    "per_diem_rate": 40,
+    "requires_preauth": "false",
+    "requires_preauth_pertech": "false",
+    "requires_invoice_woreports": "false",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": 4600660971
+}, {
+    "_id": "00009",
+    "_rev": "2-11819cc093d75caed08bb72ec5d6c953",
+    "id": 9,
+    "locname": "Halliburton Elmendorf",
+    "customer_code": "HB",
+    "location_code": "ELM1",
+    "client": "Halliburton",
+    "street": "4375 S. Loop 1604",
+    "city": "Elmendorf",
+    "state": "TX",
+    "zip": 78112,
+    "within": 525,
+    "travel_time": 0,
+    "per_diem_rate": 40,
+    "requires_preauth": "false",
+    "requires_preauth_pertech": "false",
+    "requires_invoice_woreports": "false",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": 4600660971
+}, {
+    "_id": "00010",
+    "_rev": "1-a6f699b5ab015cead41a719f43a3eefc",
+    "id": 10,
+    "locname": "Halliburton Victoria",
+    "customer_code": "HB",
+    "location_code": "VIC1",
+    "client": "Halliburton",
+    "street": "101 Holt Rd.",
+    "city": "Victoria",
+    "state": "TX",
+    "zip": 77905,
+    "within": 525,
+    "travel_time": 0,
+    "per_diem_rate": 40,
+    "requires_preauth": "false",
+    "requires_preauth_pertech": "false",
+    "requires_invoice_woreports": "false",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": 4600660971
+}, {
+    "_id": "00011",
+    "_rev": "1-220b94f6b154773c244bb63f2a678572",
+    "id": 11,
+    "locname": "Halliburton Mission",
+    "customer_code": "HB",
+    "location_code": "MIS1",
+    "client": "Halliburton",
+    "street": "735 N. Inspiration Rd",
+    "city": "Mission",
+    "state": "TX",
+    "zip": 78572,
+    "within": 525,
+    "travel_time": 0,
+    "per_diem_rate": 40,
+    "requires_preauth": "false",
+    "requires_preauth_pertech": "false",
+    "requires_invoice_woreports": "false",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": 4600660971
+}, {
+    "_id": "00012",
+    "_rev": "4-f9616306d8a631335e7ec92ce8c79af9",
+    "id": 12,
+    "locname": "Halliburton Alvarado",
+    "customer_code": "HB",
+    "location_code": "ALV1",
+    "client": "Halliburton",
+    "street": "3045 CR 401",
+    "city": "Alvarado",
+    "state": "TX",
+    "zip": 76009,
+    "within": 525,
+    "travel_time": 4,
+    "per_diem_rate": 40,
+    "requires_preauth": "true",
+    "requires_preauth_pertech": "false",
+    "requires_invoice_woreports": "true",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": 4600660971
+}, {
+    "_id": "00013",
+    "id": 13,
+    "locname": "Halliburton Duncan",
+    "customer_code": "HB",
+    "location_code": "DUN1",
+    "client": "Halliburton",
+    "street": "215 W. Bois D'Arc Ave.",
+    "city": "Duncan",
+    "state": "OK",
+    "zip": 73533,
+    "within": 525,
+    "travel_time": 8,
+    "per_diem_rate": 40,
+    "requires_preauth": "true",
+    "requires_preauth_pertech": "true",
+    "requires_invoice_woreports": "true",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": 4600660971
+}, {
+    "_id": "00014",
+    "id": 14,
+    "locname": "Halliburton El Reno",
+    "customer_code": "HB",
+    "location_code": "MIS1",
+    "client": "Halliburton",
+    "street": "6100 W. Hwy 66",
+    "city": "El Reno",
+    "state": "OK",
+    "zip": 73036,
+    "within": 525,
+    "travel_time": 8,
+    "per_diem_rate": 40,
+    "requires_preauth": "true",
+    "requires_preauth_pertech": "false",
+    "requires_invoice_woreports": "false",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": 4600660971
+}, {
+    "_id": "00015",
+    "id": 15,
+    "locname": "Halliburton Zainesville",
+    "customer_code": "HB",
+    "location_code": "ZAI1",
+    "client": "Halliburton",
+    "street": "4999 East Pointe Dr",
+    "city": "Zainesville",
+    "state": "OH",
+    "zip": 43701,
+    "within": 525,
+    "travel_time": 16,
+    "per_diem_rate": 40,
+    "requires_preauth": "false",
+    "requires_preauth_pertech": "false",
+    "requires_invoice_woreports": "true",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": 4600660971
+}, {
+    "_id": "00016",
+    "_rev": "1-4b7cb26aa0301e84fc1703e936aa17e9",
+    "id": 16,
+    "locname": "Platinum Pressure Pumping Elmendorf",
+    "customer_code": "PP",
+    "location_code": "ELM2",
+    "client": "Platinum Pressure Pumping",
+    "street": "14910 Streich Road",
+    "city": "Elmendorf",
+    "state": "TX",
+    "zip": 78112,
+    "within": 525,
+    "travel_time": 0,
+    "per_diem_rate": 40,
+    "requires_preauth": "false",
+    "requires_preauth_pertech": "false",
+    "requires_invoice_woreports": "false",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": null
+}, {
+    "_id": "00017",
+    "_rev": "4-98c4d9520074a7af1c8a0b60ce7a9e82",
+    "id": 17,
+    "locname": "Casa Bonita Lakewood",
+    "customer_code": "CA",
+    "location_code": "CABO",
+    "client": "Casa Bonita",
+    "street": "6715 W. Colfax Ave",
+    "city": "Lakewood",
+    "state": "CO",
+    "zip": 80214,
+    "within": 525,
+    "travel_time": 0,
+    "per_diem_rate": 0,
+    "requires_preauth": "false",
+    "requires_preauth_pertech": "false",
+    "requires_invoice_woreports": "false",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": null
+}, {
+    "_id": "00018",
+    "_rev": "1-e5556379f61cfc9ceda30e06cbbaee43",
+    "id": 18,
+    "locname": "TRICAN Longview",
+    "customer_code": "TR",
+    "location_code": "LON1",
+    "client": "TRICAN",
+    "street": "4836 West Loop 281 South",
+    "city": "Longview",
+    "state": "TX",
+    "zip": 75603,
+    "within": 525,
+    "travel_time": 0,
+    "per_diem_rate": 40,
+    "requires_preauth": "false",
+    "requires_preauth_pertech": "false",
+    "requires_invoice_woreports": "false",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": null
+}, {
+    "_id": "00019",
+    "_rev": "2-bbee56d818ff44c250a946bccdd4197d",
+    "id": 19,
+    "locname": "Star Mobile Developers Boulder City",
+    "customer_code": "SM",
+    "location_code": "BOU1",
+    "client": "Star Mobile Developers",
+    "street": "1310 Georgia Ave #D",
+    "city": "Boulder City",
+    "state": "NV",
+    "zip": 89005,
+    "within": 525,
+    "travel_time": 23,
+    "per_diem_rate": 75,
+    "requires_preauth": "false",
+    "requires_preauth_pertech": "false",
+    "requires_invoice_woreports": "false",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": null
+}, {
+    "_id": "00020",
+    "_rev": "2-e4c83810730ae1481670bd47c9eb231b",
+    "id": 20,
+    "locname": "Star Mobile Developers Plano",
+    "customer_code": "SM",
+    "location_code": "PLA1",
+    "client": "Star Mobile Developers",
+    "street": "2501 Allegro Lane",
+    "city": "Plano",
+    "state": "TX",
+    "zip": 75025,
+    "within": 525,
+    "travel_time": 15,
+    "per_diem_rate": 75,
+    "requires_preauth": "false",
+    "requires_preauth_pertech": "false",
+    "requires_invoice_woreports": "false",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": null
+}, {
+    "_id": "00021",
+    "_rev": "1-4423eecd127e2f23c08c0bd003980891",
+    "id": 21,
+    "locname": "Star Mobile Developers Port Isabel",
+    "customer_code": "SM",
+    "location_code": "POR1",
+    "client": "Star Mobile Developers",
+    "street": "149 Windward Drive",
+    "city": "Port Isabel",
+    "state": "TX",
+    "zip": 78578,
+    "within": 525,
+    "travel_time": 15,
+    "per_diem_rate": 75,
+    "requires_preauth": "false",
+    "requires_preauth_pertech": "false",
+    "requires_invoice_woreports": "false",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": null
+}, {
+    "_id": "00022",
+    "_rev": "1-5a1cc31e9dc38ce60c2ab4a3f45dbe25",
+    "id": 22,
+    "locname": "SESA Fleet Services Weslaco",
+    "customer_code": "SF",
+    "location_code": "SESA",
+    "client": "SESA Fleet Services",
+    "street": "2801 Corporate Drive",
+    "city": "Weslaco",
+    "state": "TX",
+    "zip": 78599,
+    "within": 525,
+    "travel_time": 0,
+    "per_diem_rate": 0,
+    "requires_preauth": "false",
+    "requires_preauth_pertech": "false",
+    "requires_invoice_woreports": "false",
+    "shifts": {
+        "day": {
+            "start": "0700",
+            "end": "1900"
+        },
+        "night": { "start": "1900", "end": "0700" }
+    },
+    "AccountNumber": null
+}]

@@ -1,0 +1,98 @@
+var listOfMethods = {
+	setEnabled: function(willEnable, callback, fail) {},
+	getEnabled: function() {},
+	setPace: function(willStart) {},
+	getPace: function() {},
+	sync: function(success, failure) {},
+	finish: function(taskId) {},
+	onLocation: function(callback) {},
+	onMotionChange: function(callback, failure) {},
+	onGeofence: function(callback) {},
+	getConfig: function() {},
+	getSettings: function(group) {},
+	get: function(key) {},
+	set: function(key, value) {},
+	configurePlugin: function(bgGeoPlugin) {},
+	getPlugin: function() {},
+	addGeofence: function(data, callback) {},
+	removeGeofence: function(identifier) {},
+	getCurrentPosition: function(callback, failure) {},
+	playSound: function(action) {},
+	getPos: function() {},
+	getPositionPromise: function() {}
+}
+
+Correct me if my understanding is wrong, but all the source code we get is for the plugin and not for the iOS/Android library that does the native functionality?
+Javascript
+
+We've been doing Javascript MVC UI a long time. We're particularly fond of Sencha's Touch & ExtJS but we also like Google's Angular a lot.
+Sencha logo Angularjs logo
+Mobile
+
+Cordova's new plugin architecture is great. We've contributed a number of custom plugins ourselves, especially background-geolocation.
+Cordova logo Phonegap logo
+Server
+
+We spend a lot of time with Nodejs, Ruby/Rails, Heroku, EC2. We created the ruby Gem sencha-model interfacing Sencha with ActiveRecord.
+Rails logo Node logo
+ Chatting with Chris.
+Hi! Can we answer a question for you?
+VisitorHeh. That was a startling, but pretty cool, popup of you when I came to the transistorsoft site.
+
+Please stand by
+
+Chris has joined the chat!
+Chrisyea, that's automated.
+VisitorI was actually coming to get your e-mail address to send you a question, but hey, this is pretty handy!
+Chrisare you a current customer?
+VisitorI have a premium license for the Background Geolocation plugin (starmobiledevelopers)
+Chrislemme guess: you can't access the repo?
+VisitorAnd I was just curious -- is there a .... heh heh ... no, I have no problem there.
+As far as I know.
+Chrisyea, you're good
+question?
+VisitorI've been meaning to ask you for a while -- is there a way to customize what gets saved to SQLite / uploaded to the configured address? I'd like to include some user data.
+I mean, I could presumably do it in the callback, but you've already set up a pretty awesome system.
+ChrisbgGeo.setConfig({params: {user_id: App.getUser().getId()}})
+VisitorExcellent. Thanks for the tip!
+ChrisI like to add cordova.device info to my params
+{
+"device": {
+"available": true,
+"platform": "Android",
+"version": "5.1.1",
+"uuid": "125c663531f37f55",
+"cordova": "4.0.2",
+"model": "Nexus 5",
+"manufacturer": "LGE"
+},
+"location": {
+"activity": {
+"type": "on_foot",
+"confidence": 100
+},
+"battery": {
+"is_charging": false,
+"level": 0.9599999785423279
+},
+"is_moving": true,
+"uuid": "a50b4eb6-6f59-42ee-92d5-656ebd45c950",
+"coords": {
+"latitude": 45.5198427,
+"longitude": -73.6174167,
+"accuracy": 3.9000000953674316,
+"speed": 1.75,
+"heading": 210,
+"altitude": 40
+},
+"timestamp": "2015-09-23T18:42:01.937Z"
+}
+}
+bgGeo.setConfig({params: {device: cordova.device}})
+VisitorYes, I plan to include that too. Although I may end up switching to my own UUID for each device, depending on how well the ng-persist add-on works at actually persisting despite app uninstall/reinstall cycles...
+At least, for the iOS folk.
+Now that the device ID changes every time you uninstall every app from a vendor, as I understand it.
+ChrisDid you buy the "Premium Support"?
+http://shop.transistorsoft.com/products/copy-of-cordova-background-geolocation-premium-license-basic-support
+VisitorNo, just the cheaper version. But my client may end up authorizing that too. They're supposed to have lots of oil money.
+ChrisOk. you don't get to talk to me on this channel until you do 

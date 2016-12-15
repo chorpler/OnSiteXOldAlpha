@@ -21,12 +21,11 @@ export class UserFormComponent implements OnInit {
     console.log('Hello UserComponent Component');
   }
 
+  submitted = false;
+  
   onSubmit() {
     this._authSrvc.signup(this.onSiteUser)
-        .subscribe(
-            data => console.log(data),
-            error => console.error(error)
-        );
+        this.submitted = true;
     this.onSiteUserForm.reset();
   };
 
