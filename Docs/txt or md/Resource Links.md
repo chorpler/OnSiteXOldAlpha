@@ -100,6 +100,10 @@ SUBLIME HQ PTY LTD
 ###CouchDB Login
 Username: SESA_Admin
 Password: 15GDJ741399M6X3o496B87M07i2NVICG
+Username: onsitesrvradmin
+Password: q1G92147wS794s630Z96ZRX3IGQOI
+Username: onsiteadmin
+Password: SpindlyRachetsDuJour93IXIIIDucks
 ###CouchDB Technician/SESA
 Username: sesaTech
 Password: SpindlyRachetsDuJour93IXIIIDucks

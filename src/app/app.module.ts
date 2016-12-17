@@ -24,13 +24,13 @@ import { OnSiteXUser                      } from '../models/onsitexuser.class'  
 
 /**
  * interface NgModule {
- *    declarations : Array<Type<any>|any[]>
- *    entryComponents : Array<Type<any>|any[]>
- *    imports : Array<Type<any>|ModuleWithProviders|any[]>
- *    exports : Array<Type<any>|any[]>
- *    providers : Provider[]
- *    schemas : Array<SchemaMetadata|any[]> id : string
- *    bootstrap : Array<Type<any>|any[]>
+ *    declarations    : Array<Type<any>|any                     [ ]>
+ *    entryComponents : Array<Type<any>|any                     [ ]>
+ *    imports         : Array<Type<any>|ModuleWithProviders|any [ ]>
+ *    exports         : Array<Type<any>|any                     [ ]>
+ *    providers       : Provider                                [ ]
+ *    schemas         : Array<SchemaMetadata|any                [ ]> id : string
+ *    bootstrap       : Array<Type<any>|any                     [ ]>
  * }
  */
 @NgModule({
