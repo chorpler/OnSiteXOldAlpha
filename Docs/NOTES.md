@@ -189,3 +189,8 @@ if (this.platform.is('ios')) {
 |phablet   |on a phablet device.            |
 |tablet    |on a tablet device.             |
 |windows   |on a device running Windows.    |
+
+
+## VS Code Align to cursor
+ 1. multi cursor: Alt+mouse1
+ 2. align: ctrl+alt+a

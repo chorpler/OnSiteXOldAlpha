@@ -1,0 +1,1 @@
+export const PostTmpUsrUrl = 'http://onsiteuser:sesatech@192.168.0.140:5984/tmp';

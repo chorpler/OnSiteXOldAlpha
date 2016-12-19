@@ -1,5 +1,5 @@
 // Framework Modules:
-import { NgModule } from '@angular/core';
+import { NgModule                         } from '@angular/core'                                     ;
 import { IonicApp, IonicModule            } from   'ionic-angular'                                   ;
 import { BrowserModule                    } from   '@angular/platform-browser'                       ;
 import { FormsModule, ReactiveFormsModule } from   '@angular/forms'                                  ;
@@ -20,7 +20,8 @@ import { TinoMsgsAlert                    } from '../components/tino.msgs.alert'
 import { UserFormComponent                } from '../components/user-form.component'                 ;
 import { AuthSrvc                         } from '../providers/auth.srvc'                            ;
 import { DbSrvc                           } from '../providers/db.srvc'                              ;
-import { OnSiteXUser                      } from '../models/onsitexuser.class'                       ;
+import { PostTmpUser                      } from '../providers/post.tmp.user'                        ;
+import { OnSiteXStorage                   } from '../providers/secure.storage'                       ;
 
 /**
  * interface NgModule {
@@ -45,7 +46,7 @@ import { OnSiteXUser                      } from '../models/onsitexuser.class'  
                      LandingPage                  ,
                      OnSiteX                      ,
                      UserFormComponent            ,
-                     TinoMsgsAlert                ],
+                     TinoMsgsAlert                 ],
 
   entryComponents: [ AcctSetupPage                ,
                      AcctLoginPage                ,
@@ -66,8 +67,9 @@ import { OnSiteXUser                      } from '../models/onsitexuser.class'  
   exports:         [ UserFormComponent             ],
 
   providers:       [ AuthSrvc                     ,
-                     DbSrvc,
-                     OnSiteXUser                   ],
+                     DbSrvc                       ,
+                     PostTmpUser                  ,
+                     OnSiteXStorage               ],
 
   schemas:         [                               ],
 
