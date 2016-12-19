@@ -22,7 +22,7 @@
 User Enters First & Last Name, Email and Password.
  - Password is user created
  - No restrictions on account creation (anyone who has the app can create a user account)
-   - Creates a DB User in `tempUserDB`.https://github.com/driftyco/ionic-conference-app
+   - Creates a DB User in `tempUserDB`.
    - `UserDB` database: controls DB post permissions
  - DB User is edited internally: to assign POST GET permissions to the `reportsDB`.
  - UserID is generated and saved to `userDB` with name/email acct, then that "user" can POST/GET to/from `reportsDB`

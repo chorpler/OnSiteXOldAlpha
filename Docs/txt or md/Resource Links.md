@@ -76,18 +76,12 @@ DAE69F64 1E349B2F 5D65AD52 930FC1DF
 8A85D592 55F2214F 37664E07 2A0D6D68
 479E459E 596A4586 E7C3CBED BF0324C6
 ------ END LICENSE ------
-Entering the license details:
 
-1. Open Sublime Text, and select Help/Enter License from the menu.
-2. Copy the license above (including the BEGIN LICENSE and END LICENSE lines) and paste them into the license box.
-3. Press the Use License button and Sublime Text will enter into licensed mode.
-
-Please find your invoice attached to this email.
-
-Regards,
-
-Sales
 SUBLIME HQ PTY LTD
+```
+
+```Package Control
+import urllib.request,os,hashlib; h = 'df21e130d211cfc94d9b0905775a7c0f' + '1e3d39e33b79698005270310898eea76'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)
 ```
 
 ###Utilities
