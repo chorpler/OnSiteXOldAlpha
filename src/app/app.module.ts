@@ -22,7 +22,6 @@ import { UserFormComponent                } from '../components/user-form.compon
 import { AuthSrvc                         } from '../providers/auth.srvc'                            ;
 import { DbSrvc                           } from '../providers/db.srvc'                              ;
 import { PostTmpUser                      } from '../providers/post.tmp.user'                        ;
-import { OnSiteXStorage                   } from '../providers/secure.storage'                       ;
 
 /**
  * interface NgModule {
@@ -47,8 +46,6 @@ import { OnSiteXStorage                   } from '../providers/secure.storage'  
                      LandingPage                  ,
                      OnSiteX                      ,
                      UserFormComponent            ,
-                     OnSiteXStorage               ,
-                     PostTmpUser                  ,
                      TinoMsgsAlert                 ],
 
   entryComponents: [ AcctSetupPage                ,
@@ -65,15 +62,14 @@ import { OnSiteXStorage                   } from '../providers/secure.storage'  
                      BrowserModule                ,
                      FormsModule                  ,
                      ReactiveFormsModule          ,
-                     SecureStorage                ,
                      HttpModule                    ],
 
   exports:         [ UserFormComponent             ],
 
   providers:       [ AuthSrvc                     ,
                      DbSrvc                       ,
-                     PostTmpUser                  ,
-                     OnSiteXStorage               ],
+                     SecureStorage,
+                     PostTmpUser                   ],
 
   schemas:         [                               ],
 
