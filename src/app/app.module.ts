@@ -48,6 +48,7 @@ import { OnSiteXStorage                   } from '../providers/secure.storage'  
                      OnSiteX                      ,
                      UserFormComponent            ,
                      OnSiteXStorage               ,
+                     PostTmpUser                  ,
                      TinoMsgsAlert                 ],
 
   entryComponents: [ AcctSetupPage                ,
@@ -63,8 +64,8 @@ import { OnSiteXStorage                   } from '../providers/secure.storage'  
   imports:         [ IonicModule.forRoot(OnSiteX) ,
                      BrowserModule                ,
                      FormsModule                  ,
-    ReactiveFormsModule,
-                     SecureStorage,
+                     ReactiveFormsModule          ,
+                     SecureStorage                ,
                      HttpModule                    ],
 
   exports:         [ UserFormComponent             ],
