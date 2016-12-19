@@ -106,6 +106,9 @@ Password: SpindlyRachetsDuJour93IXIIIDucks
 Username: SESAServerAdmin
 PAssword: 5OR6GreenPigsRun
 
+###Apple ID Dev
+baldbuilders@gmail.com 5OR6GreenPigsRun
+
 ###Books to Read!
 #####The start of it all: Bell Laboratories and the phone system... great historical context
 - [**The Idea Factory:** Bell Labs and the Great Age of American Innovation](https://itunes.apple.com/us/book/the-idea-factory/id456070729?mt=11)
