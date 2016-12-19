@@ -20,7 +20,7 @@ landing-page {
         margin: 3px 0px 3px 0px;
         font-size: 12px;
         line-height: 12px;
-        color: dimgrey;
+        color: #cccccc;
         span {
           font-style: italic;
           color: white;
@@ -42,5 +42,10 @@ landing-page {
     width: 60px;
     text-align: right;
     padding-right: 1px
+  }
+  form button.button-full-md,
+  form button.button-full-wp,
+  form button.button-full-ios {
+    margin-top: 2.5vmin;
   }
 }

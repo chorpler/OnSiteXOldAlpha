@@ -3,6 +3,7 @@ import { FormGroup, Validators, FormBuilder } from "@angular/forms"             
 import { NavController                      } from 'ionic-angular'                 ;
 import { EmailValidator                     } from '../../config/validators'       ;
 import { PostTmpUser                        } from '../../providers/post.tmp.user' ;
+import { OnSiteXStorage                     } from '../../providers/secure.storage';
 
 @Component({
   selector: 'landing-page',
@@ -18,6 +19,7 @@ export class LandingPage {
   //  private _sStore     : OnSiteXStorage,
   constructor( private _formBuilder: FormBuilder,
                private _postusr    : PostTmpUser,
+               public  ss          : OnSiteXStorage,
                public  navCtrl     : NavController   ) {
     
     this.acctCreateForm();
@@ -33,6 +35,12 @@ export class LandingPage {
   }
 
   onSubmit(formData: any) {
+    const userStor = 'OnSiteUser';
+    this.ss.ssCreate(userStor);
+    this.ss.ssSet('username', formData.username);
+    this.ss.ssSet('email', formData.email);
+    this.ss.ssSet('password', formData.password);
+
     this._postusr.createTmpUser(formData)
       .subscribe(
         data  => console.log( data  ),

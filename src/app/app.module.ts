@@ -3,7 +3,8 @@ import { NgModule                         } from '@angular/core'                
 import { IonicApp, IonicModule            } from   'ionic-angular'                                   ;
 import { BrowserModule                    } from   '@angular/platform-browser'                       ;
 import { FormsModule, ReactiveFormsModule } from   '@angular/forms'                                  ;
-import { HttpModule                       } from   '@angular/http'                                   ;
+import { HttpModule } from '@angular/http';
+import { SecureStorage    } from 'ionic-native'    ;
 
 // App Modules:
 import { OnSiteX                          } from  './app.component'                                  ;
@@ -46,6 +47,7 @@ import { OnSiteXStorage                   } from '../providers/secure.storage'  
                      LandingPage                  ,
                      OnSiteX                      ,
                      UserFormComponent            ,
+                     OnSiteXStorage               ,
                      TinoMsgsAlert                 ],
 
   entryComponents: [ AcctSetupPage                ,
@@ -61,7 +63,8 @@ import { OnSiteXStorage                   } from '../providers/secure.storage'  
   imports:         [ IonicModule.forRoot(OnSiteX) ,
                      BrowserModule                ,
                      FormsModule                  ,
-                     ReactiveFormsModule          ,
+    ReactiveFormsModule,
+                     SecureStorage,
                      HttpModule                    ],
 
   exports:         [ UserFormComponent             ],
