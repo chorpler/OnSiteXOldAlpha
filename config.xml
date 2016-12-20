@@ -13,9 +13,7 @@
   <allow-intent href="geo:*"/>
   <platform name="android">
     <allow-intent href="market:*"/>
-    <uses-sdk android:minSdkVersion="25"
-          android:targetSdkVersion="25"
-          android:maxSdkVersion="25" />
+    <uses-sdk android:minSdkVersion="25" android:targetSdkVersion="25" android:maxSdkVersion="25"/>
   </platform>
   <platform name="ios">
     <allow-intent href="itms:*"/>
@@ -40,4 +38,5 @@
   <plugin name="cordova-plugin-statusbar" spec="~2.2.0"/>
   <plugin name="ionic-plugin-keyboard" spec="~2.2.1"/>
   <allow-navigation href="http://localhost:8100"/>
+  <allow-navigation href="http://192.168.0.140:8100"/>
 </widget>
