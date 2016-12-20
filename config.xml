@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.sesaonsite.onsitex1005" version="10.0.5" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>OnSiteX                                                                                           </name>
   <description>SESA OnSite                                                                         </description>
   <author email="michael.a.bates@gmail.com" href="https://sesaonsite.com/">Bald Builders LLC            </author>
@@ -13,6 +13,9 @@
   <allow-intent href="geo:*"/>
   <platform name="android">
     <allow-intent href="market:*"/>
+    <uses-sdk android:minSdkVersion="25"
+          android:targetSdkVersion="25"
+          android:maxSdkVersion="25" />
   </platform>
   <platform name="ios">
     <allow-intent href="itms:*"/>
@@ -36,5 +39,5 @@
   <plugin name="cordova-plugin-splashscreen" spec="~4.0.0"/>
   <plugin name="cordova-plugin-statusbar" spec="~2.2.0"/>
   <plugin name="ionic-plugin-keyboard" spec="~2.2.1"/>
-  <allow-navigation href="http://192.168.0.130:8100"/>
+  <allow-navigation href="http://localhost:8100"/>
 </widget>
