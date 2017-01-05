@@ -1,6 +1,6 @@
 {
-  "name": "OnSiteX",
-  "app_id": "",
+  "name": "OnSiteXI",
+  "app_id": "com.sesaonsite.onsitex1005",
   "v2": true,
   "typescript": true,
   "gulpStartupTasks": [

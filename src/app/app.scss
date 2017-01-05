@@ -24,7 +24,7 @@ body {
     left: 0;
     z-index: 0;
     display: block;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 300;
     width: 100vw;
     height: 100vh;
@@ -63,4 +63,12 @@ ion-content.content-wp,
 .content-wp {
     background: transparent url(../assets/images/bluebkgportrait.jpg) no-repeat fixed center;
     background-size: cover;
+}
+
+div.toolbar-content.toolbar-content-ios,
+ion-title.title.title-ios,
+ios.ion-title {
+  text-align: left;
+  padding-left: 12px;
+  padding-right: 12px;
 }

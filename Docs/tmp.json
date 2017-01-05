@@ -1,0 +1,21 @@
+on a device running Android.
+on a device running Cordova.
+on a desktop device.
+on a device running iOS.
+on an iPad device.
+on an iPhone device.
+on a mobile device.
+in a browser on a mobile device.
+on a phablet device.
+on a tablet device.
+on a device running Windows.
+
+  // "scripts": {
+  //   "build": "ionic-app-scripts build",
+  //   "watch": "ionic-app-scripts watch",
+  //   "serve:before": "watch",
+  //   "emulate:before": "build",
+  //   "deploy:before": "build",
+  //   "build:before": "build",
+  //   "run:before": "build"
+  // },

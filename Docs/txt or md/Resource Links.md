@@ -120,3 +120,12 @@ baldbuilders@gmail.com 5OR6GreenPigsRun
 
 ###Great Place to Shop for Computer Parts!
 - [Other World Computing](https://www.macsales.com/)
+
+### Steam
+hachero: xRJ0EJtL
+
+
+
+Sins of a Solar Empire - Diplomacy: Product key: ED847-E8257-2F9BF-1D9F1-698EB-73D6A
+Sins of a Solar Empire (Digital Download): Product key: E4E80-645D0-A55D0-126B0-A837E-FBFDA
+Sins of a Solar Empire: Entrenchment: Product key: A2A58-2EF52-26802-99140-C8075-ECC5C

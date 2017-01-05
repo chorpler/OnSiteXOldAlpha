@@ -1,80 +1,84 @@
 // Framework Modules:
-import { NgModule                         } from '@angular/core'                                     ;
-import { IonicApp, IonicModule            } from   'ionic-angular'                                   ;
-import { BrowserModule                    } from   '@angular/platform-browser'                       ;
-import { FormsModule, ReactiveFormsModule } from   '@angular/forms'                                  ;
-import { HttpModule } from '@angular/http';
-import { SecureStorage    } from 'ionic-native'    ;
 
-// App Modules:
-import { OnSiteX                          } from  './app.component'                                  ;
-import { AcctSetupPage                    } from '../pages/acct-setup-page/acct.setup.page'          ;
-import { AcctLoginPage                    } from '../pages/acct-login-page/acct.login.page'          ;
-import { UserMgmtHomePage                 } from '../pages/user-mgmt-home-page/user.mgmt.home.page'  ;
-import { UserMechHomePage                 } from '../pages/user-mech-home-page/user.mech.home.page'  ;
-import { UserTechStatsPage                } from '../pages/user-tech-stats-page/user.tech.stats.page';
-import { TechMechReport                   } from '../pages/tech-mech-report/tech.mech.report'        ;
-import { TechToprReport                   } from '../pages/tech-topr-report/tech.topr.report'        ;
-import { AcctSettingsPage                 } from '../pages/acct-settings-page/acct.settings.page'    ;
-import { LandingPage                      } from '../pages/landing-page/landing.page'                ;
-import { TinoMsgsAlert                    } from '../components/tino.msgs.alert'                     ;
-import { UserFormComponent                } from '../components/user-form.component'                 ;
-import { AuthSrvc                         } from '../providers/auth.srvc'                            ;
-import { DbSrvc                           } from '../providers/db.srvc'                              ;
-import { PostTmpUser                      } from '../providers/post.tmp.user'                        ;
+import { BrowserModule       } from '@angular/platform-browser'  ;
+import { FormsModule         } from '@angular/forms'             ;
+import { ReactiveFormsModule } from '@angular/forms'             ;
+import { HttpModule          } from '@angular/http'              ;
+import { NgModule            } from '@angular/core'              ;
+import { ErrorHandler        } from '@angular/core'              ;
+import { IonicApp            } from 'ionic-angular'              ;
+import { IonicModule         } from 'ionic-angular'              ;
+import { IonicErrorHandler   } from 'ionic-angular'              ;
+import { InMemoryWebApiModule } from 'angular-in-memory-web-api' ;
+import { InMemoryDataService }  from '../providers/in-memory-data-service';
+
+// OnSiteX Modules
+import { OnSiteX             } from './app.component'            ;
+import { SettingsPage        } from '../pages/settings/settings' ;
+import { LoginPage           } from '../pages/login/login'       ;
+import { HomePage            } from '../pages/home/home'         ;
+import { StatsPage           } from '../pages/stats/stats'       ;
+import { ReportsPage         } from '../pages/reports/reports'   ;
+import { MsgsPage            } from '../pages/msgs/msgs'         ;
+import { ShiftPage           } from '../pages/shift/shift'       ;
+import { AppInfoPage         } from '../pages/app-info/app-info' ;
+import { AuthSrvcs           } from '../providers/auth-srvcs'    ;
+import { DBSrvcs             } from '../providers/db-srvcs'      ;
+import { UtilSrvcs           } from '../providers/util-srvcs'    ;
+import { AuthTestUser        } from '../providers/auth-test-user';
+
 
 /**
  * interface NgModule {
- *    declarations    : Array<Type<any>|any                     [ ]>
- *    entryComponents : Array<Type<any>|any                     [ ]>
+ *    declarations    : Array<Type<any>|any [ ]>
+ *    entryComponents : Array<Type<any>|any [ ]>
  *    imports         : Array<Type<any>|ModuleWithProviders|any [ ]>
- *    exports         : Array<Type<any>|any                     [ ]>
- *    providers       : Provider                                [ ]
- *    schemas         : Array<SchemaMetadata|any                [ ]> id : string
- *    bootstrap       : Array<Type<any>|any                     [ ]>
+ *    exports         : Array<Type<any>|any [ ]>
+ *    providers       : Provider [ ]
+ *    schemas         : Array<SchemaMetadata|any [ ]> id : string
+ *    bootstrap       : Array<Type<any>|any [ ]>
  * }
  */
+
 @NgModule({
-  declarations:    [ AcctSetupPage                ,
-                     AcctLoginPage                ,
-                     UserMgmtHomePage             ,
-                     UserMechHomePage             ,
-                     UserTechStatsPage            ,
-                     TechMechReport               ,
-                     TechToprReport               ,
-                     AcctSettingsPage             ,
-                     LandingPage                  ,
-                     OnSiteX                      ,
-                     UserFormComponent            ,
-                     TinoMsgsAlert                 ],
+  declarations: [ SettingsPage,
+                  LoginPage,
+                  HomePage,
+                  StatsPage,
+                  ReportsPage,
+                  MsgsPage,
+                  ShiftPage,
+                  AppInfoPage,
+                  OnSiteX],
 
-  entryComponents: [ AcctSetupPage                ,
-                     AcctLoginPage                ,
-                     UserMgmtHomePage             ,
-                     UserMechHomePage             ,
-                     UserTechStatsPage            ,
-                     TechMechReport               ,
-                     TechToprReport               ,
-                     AcctSettingsPage             ,
-                     LandingPage                   ],
+entryComponents: [ SettingsPage,
+                   LoginPage,
+                   HomePage,
+                   StatsPage,
+                   ReportsPage,
+                   MsgsPage,
+                   ShiftPage,
+                   AppInfoPage],
 
-  imports:         [ IonicModule.forRoot(OnSiteX) ,
-                     BrowserModule                ,
-                     FormsModule                  ,
-                     ReactiveFormsModule          ,
-                     HttpModule                    ],
+imports:         [ IonicModule.forRoot(OnSiteX),
+                   InMemoryWebApiModule.forRoot(InMemoryDataService),
+                   BrowserModule,
+                   FormsModule,
+                   ReactiveFormsModule,
+                   HttpModule    ],
 
-  exports:         [ UserFormComponent             ],
+exports:         [             ],
 
-  providers:       [ AuthSrvc                     ,
-                     DbSrvc                       ,
-                     SecureStorage,
-                     PostTmpUser                   ],
+providers:       [ AuthSrvcs,
+                   DBSrvcs,
+                   UtilSrvcs,
+                  { provide: ErrorHandler,
+                  useClass: IonicErrorHandler },
+                  AuthTestUser ],
 
-  schemas:         [                               ],
+schemas:         [             ],
 
-  bootstrap:       [ IonicApp                      ]
+bootstrap:       [ IonicApp    ]
 
 })
-
-export class AppModule {  }
+export class AppModule {}

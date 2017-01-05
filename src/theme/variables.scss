@@ -43,7 +43,9 @@ $colors: (
   light:      #f4f4f4,
   dark:       #353535,
   med-dark:   #565656,
-  favorite:   #11c1f3
+  favorite:   #11c1f3,
+  splash:     #10CF9B
+
 
 ) !default;
 
@@ -78,7 +80,8 @@ $colors-ios: (
   danger:     #f53d3d,
   light:      #f4f4f4,
   dark:       #444444,
-  favorite:   #11c1f3
+  favorite:   #11c1f3,
+  splash:     #10CF9B
 );
 
 $colors-md: (
@@ -87,7 +90,8 @@ $colors-md: (
   danger:     #f53d3d,
   light:      #f4f4f4,
   dark:       #444444,
-  favorite:   #11c1f3
+  favorite:   #11c1f3,
+  splash:     #10CF9B
 );
 
 $colors-wp: (
@@ -96,7 +100,8 @@ $colors-wp: (
   danger:     #f53d3d,
   light:      #f4f4f4,
   dark:       #444444,
-  favorite:   #11c1f3
+  favorite:   #11c1f3,
+  splash:     #10CF9B
 );
 
 // App iOS Variables
@@ -108,9 +113,9 @@ $colors-wp: (
 $toolbar-ios-padding:                       4px !default;
 $toolbar-ios-button-font-size:              24px !default;
 
-$toolbar-ios-title-font-size:               24px !default;
+$toolbar-ios-title-font-size:               20px !default;
 $toolbar-ios-title-font-weight:             300 !default;
-$toolbar-ios-title-text-align:              center !default;
+$toolbar-ios-title-text-align:              left !default;
 $toolbar-ios-title-text-color:              white !default;
 
 $toolbar-ios-button-color:                  white !default;
@@ -121,7 +126,7 @@ $toolbar-ios-button-border-radius:          4px !default;
 // App Material Design Variables
 // --------------------------------------------------
 // Material Design only Sass variables can go here
-$toolbar-md-title-font-size:                24px !default;
+$toolbar-md-title-font-size:                20px !default;
 $toolbar-md-title-text-color:               white !default;
 
 
@@ -129,7 +134,7 @@ $toolbar-md-title-text-color:               white !default;
 // App Windows Variables
 // --------------------------------------------------
 // Windows only Sass variables can go here
-$toolbar-wp-title-font-size:                24px !default;
+$toolbar-wp-title-font-size:                20px !default;
 $toolbar-wp-title-font-weight:              300 !default;
 $toolbar-wp-title-padding:                  0 6px !default;
 $toolbar-wp-title-text-color:               white !default;

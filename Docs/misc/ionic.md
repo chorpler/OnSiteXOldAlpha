@@ -3,233 +3,254 @@ C:\_s\A2\OnSiteX
 λ ionic start --help
 (node:268) fs: re-evaluating native module sources is not supported. If you are using the graceful-fs module, please update it to a more recent version.
 
+```json
+//   _             _
+//  (_)           (_)
+//  _  ___  _ __  _  ___
+//  | |/ _ \| '_ \| |/ __|
+//  | | (_) | | | | | (__
+//  |_|\___/|_| |_|_|\___|  CLI v2.1.13
+//
+//  =======================
+```
+
 ```ini
-;   _             _
-;  (_)           (_)
-;   _  ___  _ __  _  ___
-;  | |/ _ \| '_ \| |/ __|
-;  | | (_) | | | | | (__
-;  |_|\___/|_| |_|_|\___|  CLI v2.0.0
+ionic start OnSiteXI sidemenu --skip-npm -s -v
+ionic start OnSiteConsoleX sidemenu --skip-npm -s -v
 
-; =======================
+  start [options] <PATH> [template] .............  Starts a new Ionic project in the specified PATH
+                                                   [options] any flags for the command
+                                                   <PATH> directory for the new project
+                                                   [template] Starter templates can either come from a named template,
+  (ex: tabs, sidemenu, blank),
+  a Github repo, a Codepen url, or a local directory.
+  Codepen url, ex: http://codepen.io/ionic/pen/odqCz
+  Defaults to Ionic "tabs" starter template
+        [--appname|-a]  .........................  Human readable name for the app (Use quotes around the name)
 
-ionic start OnSiteX sidemenu --v2 --sass --skip-npm
-ionic start --v2 --sass --template blank "OnSiteX" --appname --skip-npm
+        [--id|-i]  ..............................  Package name for <widget id> config, ex: com.mycompany.myapp
 
-start [options] <PATH> [template] .............  Starts a new Ionic project in the specified PATH
-                                                 [options] any flags for the command
-                                                 <PATH> directory for the new project
-                                                 [template] Starter templates can either come from a named template,
-                                                            (ex: tabs, sidemenu, blank),
-                                                            a Github repo, a Codepen url, or a local directory.
-                                                            Codepen url, ex: http://codepen.io/ionic/pen/odqCz
-                                                            Defaults to Ionic "tabs" starter template
-      [--appname|-a]  .........................  Human readable name for the app (Use quotes around the name)
+        [--skip-npm]  ...........................  Skip npm package installation
 
-      [--id|-i]  ..............................  Package name for <widget id> config, ex: com.mycompany.myapp
+        [--no-cordova|-w]  ......................  Create a basic structure without Cordova requirements
 
-      [--skip-npm]  ...........................  Skip npm package installation
+        [--sass|-s]  ............................  Setup the project to use Sass CSS precompiling
 
-      [--no-cordova|-w]  ......................  Create a basic structure without Cordova requirements
+        [--list|-l]  ............................  List starter templates available
 
-      [--sass|-s]  ............................  Setup the project to use Sass CSS precompiling
+        [--io-app-id]  ..........................  The Ionic.io app ID to use
 
-      [--list|-l]  ............................  List starter templates available
+        [--template|-t]  ........................  Project starter template
 
-      [--io-app-id]  ..........................  The Ionic.io app ID to use
+        [--v2|-v]  ..............................  Start a Ionic v2 project
 
-      [--template|-t]  ........................  Project starter template
+        [--zip-file|-z]  ........................  URL to download zipfile for starter template
 
-      [--v2|-v]  ..............................  Start a Ionic v2 project
+  serve [options] ...............................  Start a local development server for app dev/testing
+        [--consolelogs|-c]  .....................  Print app console logs to Ionic CLI
 
-      [--zip-file|-z]  ........................  URL to download zipfile for starter template
+        [--serverlogs|-s]  ......................  Print dev server logs to Ionic CLI
 
-serve [options] ...............................  Start a local development server for app dev/testing
-      [--consolelogs|-c]  .....................  Print app console logs to Ionic CLI
+        [--port|-p]  ............................  Dev server HTTP port (8100 default)
 
-      [--serverlogs|-s]  ......................  Print dev server logs to Ionic CLI
+        [--livereload-port|-r]  .................  Live Reload port (35729 default)
 
-      [--port|-p]  ............................  Dev server HTTP port (8100 default)
+        [--nobrowser|-b]  .......................  Disable launching a browser
 
-      [--livereload-port|-r]  .................  Live Reload port (35729 default)
+        [--nolivereload|-d]  ....................  Do not start live reload
 
-      [--nobrowser|-b]  .......................  Disable launching a browser
+        [--noproxy|-x]  .........................  Do not add proxies
 
-      [--nolivereload|-d]  ....................  Do not start live reload
+        [--address]  ............................  Use specific address or return with failure
 
-      [--noproxy|-x]  .........................  Do not add proxies
+        [--all|-a]  .............................  Have the server listen on all addresses (0.0.0.0)
 
-      [--address]  ............................  Use specific address or return with failure
+        [--browser|-w]  .........................  Specifies the browser to use (safari, firefox, chrome)
 
-      [--all|-a]  .............................  Have the server listen on all addresses (0.0.0.0)
+        [--browseroption|-o]  ...................  Specifies a path to open to (/#/tab/dash)
 
-      [--browser|-w]  .........................  Specifies the browser to use (safari, firefox, chrome)
+        [--lab|-l]  .............................  Test your apps on multiple screen sizes and platform types
 
-      [--browseroption|-o]  ...................  Specifies a path to open to (/#/tab/dash)
+        [--nogulp]  .............................  Disable running gulp during serve
 
-      [--lab|-l]  .............................  Test your apps on multiple screen sizes and platform types
+        [--platform|-t]  ........................  Start serve with a specific platform (ios/android)
 
-      [--nogulp]  .............................  Disable running gulp during serve
+  setup [sass] ..................................  Configure the project with a build tool (beta)
+                                                   [sass] Setup the project to use Sass CSS precompiling
+  generate ......................................  Generate pages and components
+           [--list]  ............................  List available generators
 
-      [--platform|-t]  ........................  Start serve with a specific platform (ios/android)
+           [--includeSpec]  .....................  Create test spec basic to pages, components, directives, pipes and providers
 
-setup [sass] ..................................  Configure the project with a build tool (beta)
-                                                 [sass] Setup the project to use Sass CSS precompiling
-generate ......................................  Generate pages and components
-         [--list]  ............................  List available generators
+           [--skipScss]  ........................  Not create scss for components and pages
 
-         [--typescript|--ts]  .................  (with --v2 only) Use TypeScript in generation
+           [--componentsDir]  ...................  Path directory target is created component
 
-platform <PLATFORM> [options] .................  Add platform target for building an Ionic app
-         [--noresources|-r]  ..................  Do not add default Ionic icons and splash screen resources
+           [--directivesDir]  ...................  Path directory target is created directive
 
-         [--nosave|-e]  .......................  Do not save the platform to the package.json file
+           [--pagesDir]  ........................  Path directory target is created page
 
-run <PLATFORM> [options] ......................  Run an Ionic project on a connected device
-    [--livereload|-l]  ........................  Live reload app dev files from the device (beta)
+           [--pipesDir]  ........................  Path directory target is created pipe
 
-    [--address]  ..............................  Use specific address (livereload req.)
+           [--providersDir]  ....................  Path directory target is created provider
 
-    [--port|-p]  ..............................  Dev server HTTP port (8100 default, livereload req.)
+           [--templateDir]  .....................  Path directory templates custom to pages, components, directives, pipes and providers
 
-    [--livereload-port|-r]  ...................  Live Reload port (35729 default, livereload req.)
+  platform <PLATFORM> [options] .................  Add platform target for building an Ionic app
+           [--noresources|-r]  ..................  Do not add default Ionic icons and splash screen resources
 
-    [--consolelogs|-c]  .......................  Print app console logs to Ionic CLI (livereload req.)
+           [--nosave|-e]  .......................  Do not save the platform to the package.json file
 
-    [--serverlogs|-s]  ........................  Print dev server logs to Ionic CLI (livereload req.)
+  run <PLATFORM> [options] ......................  Run an Ionic project on a connected device
+      [--livereload|-l]  ........................  Live reload app dev files from the device (beta)
 
-    [--debug|--release]  ......................
+      [--address]  ..............................  Use specific address (livereload req.)
 
-    [--device|--emulator|--target=FOO]
+      [--port|-p]  ..............................  Dev server HTTP port (8100 default, livereload req.)
 
-emulate <PLATFORM> [options] ..................  Emulate an Ionic project on a simulator or emulator
-        [--livereload|-l]  ....................  Live reload app dev files from the device (beta)
+      [--livereload-port|-r]  ...................  Live Reload port (35729 default, livereload req.)
 
-        [--address]  ..........................  Use specific address (livereload req.)
+      [--consolelogs|-c]  .......................  Print app console logs to Ionic CLI (livereload req.)
 
-        [--port|-p]  ..........................  Dev server HTTP port (8100 default, livereload req.)
+      [--serverlogs|-s]  ........................  Print dev server logs to Ionic CLI (livereload req.)
 
-        [--livereload-port|-r]  ...............  Live Reload port (35729 default, livereload req.)
+      [--debug|--release]  ......................
 
-        [--consolelogs|-c]  ...................  Print app console logs to Ionic CLI (livereload req.)
+      [--device|--emulator|--target=FOO]
 
-        [--serverlogs|-s]  ....................  Print dev server logs to Ionic CLI (livereload req.)
+  emulate <PLATFORM> [options] ..................  Emulate an Ionic project on a simulator or emulator
+          [--livereload|-l]  ....................  Live reload app dev files from the device (beta)
 
-        [--debug|--release]  ..................
+          [--address]  ..........................  Use specific address (livereload req.)
 
-        [--device|--emulator|--target=FOO]
+          [--port|-p]  ..........................  Dev server HTTP port (8100 default, livereload req.)
 
-build <PLATFORM> [options] ....................  Build (prepare + compile) an Ionic project for a given platform.
+          [--livereload-port|-r]  ...............  Live Reload port (35729 default, livereload req.)
 
-      [--nohooks|-n]  .........................  Do not add default Ionic hooks for Cordova
+          [--consolelogs|-c]  ...................  Print app console logs to Ionic CLI (livereload req.)
 
-plugin add [options] <SPEC> ...................  Add a Cordova plugin
-                                                 <SPEC> Can be a plugin ID, a local path, or a git URL.
-       [--searchpath <directory>]  ............  When looking up plugins by ID, look in this directory
-                                                 and subdirectories first for the plugin before
-                                                 looking it up in the registry.
+          [--serverlogs|-s]  ....................  Print dev server logs to Ionic CLI (livereload req.)
 
-       [--nosave|-e]  .........................  Do not save the plugin to the package.json file
+          [--debug|--release]  ..................
 
-resources .....................................  Automatically create icon and splash screen resources (beta)
-                      Put your images in the ./resources directory, named splash or icon.
-                      Accepted file types are .png, .ai, and .psd.
-                      Icons should be 192x192 px without rounded corners.
-                      Splashscreens should be 2208x2208 px, with the image centered in the middle.
+          [--device|--emulator|--target=FOO]
 
-          [--icon|-i]  ........................  Generate icon resources
+  build <PLATFORM> [options] ....................  Build (prepare + compile) an Ionic project for a given platform.
 
-          [--splash|-s]  ......................  Generate splash screen resources
+        [--nohooks|-n]  .........................  Do not add default Ionic hooks for Cordova
 
-upload ........................................  Upload an app to your Ionic account
-       [--email|-e]  ..........................  Ionic account email
+  plugin add [options] <SPEC> ...................  Add a Cordova plugin
+                                                   <SPEC> Can be a plugin ID, a local path, or a git URL.
+         [--searchpath <directory>]  ............  When looking up plugins by ID, look in this directory
+  and subdirectories first for the plugin before
+  looking it up in the registry.
 
-       [--password|-p]  .......................  Ionic account password
+         [--nosave|-e]  .........................  Do not save the plugin to the package.json file
 
-       [--note]  ..............................  The note to signify the upload
+  resources .....................................  Automatically create icon and splash screen resources (beta)
+                        Put your images in the ./resources directory, named splash or icon.
+                        Accepted file types are .png, .ai, and .psd.
+                        Icons should be 192x192 px without rounded corners.
+                        Splashscreens should be 2208x2208 px, with the image centered in the middle.
 
-       [--deploy <channel_tag>]  ..............  Deploys the upload to the given channel. Defaults to the Dev channel
+            [--icon|-i]  ........................  Generate icon resources
 
-share <EMAIL> .................................  Share an app with a client, co-worker, friend, or customer
-                                                 <EMAIL> The email to share the app with
-lib [options] [update] ........................  Gets Ionic library version or updates the Ionic library
-                                                 [update] Updates the Ionic Framework in www/lib/ionic
-    [--version|-v]  ...........................  Specific Ionic version
-                                                 Otherwise it defaults to the latest version
+            [--splash|-s]  ......................  Generate splash screen resources
 
-io <command> ..................................  Integrate your app with the ionic.io platform services (alpha)
-                                                 <command> init
-security <command> [options] ..................  Store your app's credentials for the Ionic Platform (alpha)
-                                                 <command> profiles list, profiles add "<name>", credentials android, or credentials ios
-         [--profile <tag>]  ...................  (credentials <platform>) Specify the profile on which these credentials are saved
+  upload ........................................  Upload an app to your Ionic account
+         [--email|-e]  ..........................  Ionic account email
 
-         [--keystore|-s <path>]  ..............  (credentials android) Specify the location of your keystore file
+         [--password|-p]  .......................  Ionic account password
 
-         [--keystore-password|-p <password>]  .  (credentials android) Specify your keystore password (exclude for prompt)
+         [--note]  ..............................  The note to signify the upload
 
-         [--key-alias|-k <alias>]  ............  (credentials android) Specify your key alias for this app
+         [--deploy <channel_tag>]  ..............  Deploys the upload to the given channel. Defaults to the Dev channel
 
-         [--key-password|-w <password>]  ......  (credentials android) Specify your key password for this app (exclude for prompt)
+  share <EMAIL> .................................  Share an app with a client, co-worker, friend, or customer
+                                                   <EMAIL> The email to share the app with
+  lib [options] [update] ........................  Gets Ionic library version or updates the Ionic library
+                                                   [update] Updates the Ionic Framework in www/lib/ionic
+      [--version|-v]  ...........................  Specific Ionic version
+  Otherwise it defaults to the latest version
 
-         [--cert|-c <path>]  ..................  (credentials ios) Specify the location of your .p12 file
+  login .........................................  Login to your Ionic account
+        [--email|-e]  ...........................  Ionic account email
 
-         [--cert-password|-p <password>]  .....  (credentials ios) Specify your certificate password (exclude for prompt)
+        [--password|-p]  ........................  Ionic account password
 
-         [--provisioning-profile|-r <path>]  ..  (credentials ios) Specify the location of your .mobileprovision file
+  io <command> ..................................  Integrate your app with Ionic Cloud services
+                                                   <command> init
+  security <command> [options] ..................  Store your app's credentials for the Ionic Cloud
+                                                   <command> profiles list, profiles add "<name>", credentials android, or credentials ios
+           [--profile <tag>]  ...................  (credentials <platform>) Specify the profile on which these credentials are saved
 
-push ..........................................  Upload APNS and GCM credentials to Ionic Push (alpha)
-     [--ios-dev-cert]  ........................  Upload your development .p12 file to Ionic Push
+           [--keystore|-s <path>]  ..............  (credentials android) Specify the location of your keystore file
 
-     [--ios-prod-cert]  .......................  Upload your production .p12 file to Ionic Push
+           [--keystore-password|-p <password>]  .  (credentials android) Specify your keystore password (exclude for prompt)
 
-     [--production-mode=y,n]  .................  Tell Ionic Push to use production (y) or sandbox (n) APNS servers
+           [--key-alias|-k <alias>]  ............  (credentials android) Specify your key alias for this app
 
-     [--google-api-key <your-gcm-api-key>]  ...  Set your app's GCM API key on Ionic Push
+           [--key-password|-w <password>]  ......  (credentials android) Specify your key password for this app (exclude for prompt)
 
-package <command> [options] ...................  Use Ionic Package to build your app (alpha)
-                                                 <command> build android, build ios, list, info, or download
-        [--release]  ..........................  (build <platform>) Mark this build as a release
+           [--cert|-c <path>]  ..................  (credentials ios) Specify the location of your .p12 file
 
-        [--profile|-p <tag>]  .................  (build <platform>) Specify the Security Profile to use with this build
+           [--cert-password|-p <password>]  .....  (credentials ios) Specify your certificate password (exclude for prompt)
 
-        [--noresources]  ......................  (build <platform>) Do not generate icon and splash screen resources during this build
+           [--provisioning-profile|-r <path>]  ..  (credentials ios) Specify the location of your .mobileprovision file
 
-        [--destination|-d <path>]  ............  (download) Specify the destination directory to download your packaged app.
+  push ..........................................  Upload APNS and GCM credentials to Ionic Push
+       [--ios-dev-cert]  ........................  Upload your development .p12 file to Ionic Push
 
-config <command> [key] [value] ................  Set configuration variables for your ionic app (alpha)
-                                                 <command> set, unset, build, or info
-                                                 [key] The key to set
-                                                 [value] The value to set
-service add [options] <SPEC> ..................  Add an Ionic service package and install any required plugins
-                                                 <SPEC> Can be a service name or a git url
-add [name] ....................................  Add an Ion, bower component, or addon to the project
-                                                 [name] The name of the ion, bower component, or addon you wish to install
-remove [name] .................................  Remove an Ion, bower component, or addon from the project
-                                                 [name] The name of the Ion, bower component, or addon you wish to remove
-list ..........................................  List Ions, bower components, or addons in the project
-info ..........................................  List information about the users runtime environment
-help [command] ................................  Provides help for a certain command
-                                                 [command] The command you desire help with
-link [appId] ..................................  Sets your Ionic App ID for your project
-                                                 [appId] The app ID you wish to set for this project
-     [--reset|-r]  ............................  This will reset the Ionic App ID
+       [--ios-prod-cert]  .......................  Upload your production .p12 file to Ionic Push
 
-hooks [add|remove|permissions|perm] ...........  Manage your Ionic Cordova hooks
-                                                 [add|remove|permissions|perm] Add, remove, or modify permissions on the default Ionic Cordova hooks
-state <COMMAND> ...............................  Saves or restores state of your Ionic Application using the package.json file
-                                                 <COMMAND> [ save | restore | clear | reset ]
-      [save]  .................................  Save the platforms and plugins into package.json
+       [--production-mode=y,n]  .................  Tell Ionic Push to use production (y) or sandbox (n) APNS servers
 
-      [restore]  ..............................  Restore the platforms and plugins from package.json
+       [--google-api-key <your-gcm-api-key>]  ...  Set your app's GCM API key on Ionic Push
 
-      [clear]  ................................  Clear the package.json of cordovaPlugins and cordovaPlatforms, as well as clear out the platforms and plugins folders
+  package <command> [options] ...................  Use Ionic Package to build your app
+                                                   <command> build android, build ios, list, info, or download
+          [--release]  ..........................  (build <platform>) Mark this build as a release
 
-      [reset]  ................................  Clear out the platforms and plugins directories, and reinstall plugins and platforms
+          [--profile|-p <tag>]  .................  (build <platform>) Specify the Security Profile to use with this build
 
-      [--plugins]  ............................  Only do operations with plugins
+          [--noresources]  ......................  (build <platform>) Do not generate icon and splash screen resources during this build
 
-      [--platforms]  ..........................  Only do operations with platforms
+          [--destination|-d <path>]  ............  (download) Specify the destination directory to download your packaged app.
 
-docs <TOPIC> ..................................  Opens up the documentation for Ionic
-                                                 <TOPIC> the topic to view help documentation for. Use "ls" to view all topics
+  config <command> [key] [value] ................  Set configuration variables for your ionic app
+                                                   <command> set, unset, build, or info
+                                                   [key] The key to set
+                                                   [value] The value to set
+  service add [options] <SPEC> ..................  Add an Ionic service package and install any required plugins
+                                                   <SPEC> Can be a service name or a git url
+  add [name] ....................................  Add an Ion, bower component, or addon to the project
+                                                   [name] The name of the ion, bower component, or addon you wish to install
+  remove [name] .................................  Remove an Ion, bower component, or addon from the project
+                                                   [name] The name of the Ion, bower component, or addon you wish to remove
+  list ..........................................  List Ions, bower components, or addons in the project
+  info ..........................................  List information about the users runtime environment
+  help [command] ................................  Provides help for a certain command
+                                                   [command] The command you desire help with
+  link [appId] ..................................  Sets your Ionic App ID for your project
+                                                   [appId] The app ID you wish to set for this project
+       [--reset|-r]  ............................  This will reset the Ionic App ID
+
+  hooks [add|remove|permissions|perm] ...........  Manage your Ionic Cordova hooks
+                                                   [add|remove|permissions|perm] Add, remove, or modify permissions on the default Ionic Cordova hooks
+  state <COMMAND> ...............................  Saves or restores state of your Ionic Application using the package.json file
+                                                   <COMMAND> [ save | restore | clear | reset ]
+        [save]  .................................  Save the platforms and plugins into package.json
+
+        [restore]  ..............................  Restore the platforms and plugins from package.json
+
+        [clear]  ................................  Clear the package.json of cordovaPlugins and cordovaPlatforms, as well as clear out the platforms and plugins folders
+
+        [reset]  ................................  Clear out the platforms and plugins directories, and reinstall plugins and platforms
+
+        [--plugins]  ............................  Only do operations with plugins
+
+        [--platforms]  ..........................  Only do operations with platforms
+
+  docs <TOPIC> ..................................  Opens up the documentation for Ionic
+                                                   <TOPIC> the topic to view help documentation for. Use "ls" to view all topics
 ```
