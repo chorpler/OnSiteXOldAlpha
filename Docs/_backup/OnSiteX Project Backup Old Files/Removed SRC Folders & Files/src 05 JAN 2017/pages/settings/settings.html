@@ -1,0 +1,59 @@
+<ion-header>
+    <ion-navbar>
+        <button ion-button menuToggle>
+            <ion-icon name="menu"></ion-icon>
+        </button>
+        <ion-title>
+            {{title}}
+        </ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content padding>
+    <ion-list>
+        <ion-item>
+            <ion-label stacked>Company</ion-label>
+            <ion-input type="text" value={{company}}></ion-input>
+            <!--<ion-select >{{company}}
+                <ion-option *ngFor="let company of clntCmpny">
+                    {{company}}
+                </ion-option>
+            </ion-select>-->
+        </ion-item>
+        <ion-item>
+            <ion-label stacked>WorkSite Main</ion-label>
+            <ion-input type="text" value={{loc1}}></ion-input>
+            <!--<ion-select [(ngModel)]="loc1" >{{loc1}}
+                <ion-option *ngFor="let loc1 of locPrimry">
+                    {{loc1}}
+                </ion-option>
+            </ion-select>-->
+        </ion-item>
+        <ion-item>
+            <ion-label stacked>WorkSite Secondary Location Name</ion-label>
+            <ion-input type="text" value={{loc2}} placeholder="if none, leave blank"></ion-input>
+            <!--<ion-select [(ngModel)]="loc2" >{{loc2}}
+                <ion-option *ngFor="let loc2 of locScndry">
+                    {{loc2}}
+                </ion-option>
+            </ion-select>-->
+        </ion-item>
+        <ion-item>
+            <ion-label stacked>Technician Type</ion-label>
+            <ion-input type="text" value={{techClass}}></ion-input>
+            <!--<ion-select [(ngModel)]="techClass" >{{techClass}}
+                <ion-option *ngFor="let techClass of userClass">
+                    {{techClass}}
+                </ion-option>
+            </ion-select>-->
+        </ion-item>
+        <ion-item>
+            <ion-label stacked>Report Hours Classification</ion-label>
+            <ion-input type="text" value={{hrsClass}} [(ngModel)]='hrsClass' ></ion-input>
+            <!--<ion-select [(ngModel)]="hrsClass" >{{hrsClass}}
+                <ion-option *ngFor="let hrsClass of pyrlClass">
+                    {{hrsClass}}
+                </ion-option>
+            </ion-select>-->
+        </ion-item>
+    </ion-list>
+</ion-content>

@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle><ion-icon name="menu"></ion-icon></button>
+    <ion-title>Home</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+ <ion-card>
+  <ion-card-header>
+    User Info:
+  </ion-card-header>
+  <ion-list>
+    <ion-item>UserName: <span>  {{username}} </span></ion-item>
+    <ion-item>E-Mail:   <span>  {{email}}    </span></ion-item>
+    <ion-item>Password: <span>  {{password}} </span></ion-item>
+  </ion-list>
+</ion-card>
+  <form [formGroup]="myForm" (ngSubmit)="onSubmit(myForm.value)">
+    <ion-list>
+      <ion-item class="form-group">
+        <ion-label for="username">Username</ion-label>
+        <ion-input type="text"
+                   id="username"
+                   [formControl]="myForm.controls['username']"
+                   [(ngModel)]="username">
+        </ion-input>
+      </ion-item>
+      <ion-item class="form-group">
+        <ion-label for="email">E-Mail</ion-label>
+        <ion-input type="text"
+                   id="email"
+                   [formControl]="myForm.controls['email']"
+                   [(ngModel)]="email">
+        </ion-input>
+      </ion-item>
+      <ion-item id="invalid-email"
+                *ngIf="!myForm.controls['email'].valid"> 
+                Invalid email 
+      </ion-item>
+      <ion-item class="form-group">
+        <ion-label for="password">Password</ion-label>
+        <ion-input type="password"
+                   id="password"
+                   [formControl]="myForm.controls['password']"
+                   [(ngModel)]="password">
+        </ion-input>
+      </ion-item>
+      <button type="submit" ion-button full [disabled]="!myForm.valid">Submit</button>
+    </ion-list>
+  </form>
+</ion-content>

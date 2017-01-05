@@ -1,0 +1,51 @@
+landing-page {
+  #invalid-email {
+    color: orangered;
+    font-style: italic;
+  }
+  .card-header-md,
+  .card-header-wp,
+  .card-header-ios {
+    color: white;
+  }
+  ion-card ion-list {
+    ion-item.item.item-block.item-wp, 
+    ion-item.item.item-block.item-md, 
+    ion-item.item.item-block.item-ios {
+      min-height: 15px;
+      height: 20px;
+      ion-label.label.label-md,
+      ion-label.label.label-ios,
+      ion-label.label.label-wp {
+        margin: 3px 0px 3px 0px;
+        font-size: 12px;
+        line-height: 12px;
+        color: #cccccc;
+        span {
+          font-style: italic;
+          color: white;
+        }
+        div.item-inner,
+        div.input-wrapper {
+          min-height: 15px;
+          max-height: 18px;
+        }
+      }
+    }
+    
+  }
+  form ion-list ion-label,
+  form ion-list ion-input {
+    font-size: 13px;
+  }
+  form ion-list ion-label {
+    width: 60px;
+    text-align: right;
+    padding-right: 1px
+  }
+  form button.button-full-md,
+  form button.button-full-wp,
+  form button.button-full-ios {
+    margin-top: 2.5vmin;
+  }
+}
