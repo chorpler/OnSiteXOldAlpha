@@ -22,7 +22,7 @@ export class OnSiteX {
   title: string = 'OnSiteX';
   
 
-  rootPage: any = SettingsPage;
+  rootPage: any = LoginPage;
   pages: Array<{ title: string, component: any }>;
 
   constructor(public platform: Platform ) {

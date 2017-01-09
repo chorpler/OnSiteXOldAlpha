@@ -7,6 +7,8 @@ import { LOCSCNDRY, USERCLASS, PYRLCLASS } from '../../config/config.constants.c
 import { ReportClass                   } from '../../config/config.interface.user.report.class';
 import { AuthTestUser } from '../../providers/auth-test-user';
 import { OSXU } from '../../config/user.config.user';
+import { RMNTH, RWKD, RMNTHD, RYR, RHR } from '../../config/config.date.object.onsite';
+import { RMN, RSC, RTM, ROFFST, RTZS   } from '../../config/config.date.object.onsite';
 
 
 @Component({
@@ -15,7 +17,7 @@ import { OSXU } from '../../config/user.config.user';
 })
 
 export class SettingsPage implements OnInit {
-  title    : string    = 'Settings'; 
+  title     : string    = 'Settings'; 
 
   onSiteUsr : OSXU      ; 
   data      : Array<any>; 
@@ -24,10 +26,20 @@ export class SettingsPage implements OnInit {
   loc2      : string    ; 
   techClass : string    ; 
   technician: string    ; 
-  hrsClass  : string    ;
-  date      : any       ;
-  _arrD     : Array<any> = [];
+  hrsClass  : string    ; 
+  date      : any       ; 
+  _arrD     : Array<any>= []; 
   dstr      : string    ;
+  month     : any;
+  weekDay   : any;
+  mDay      : any;
+  year      : any;
+  hours     : any;
+  min       : any;
+  sec       : any;
+  time      : any;
+  gmtOffSet : any;
+  tmZoneStr : any;
 
 
   constructor( public navCtrl: NavController, public navParams: NavParams, public _testUserSrvc: AuthTestUser) { }
@@ -66,13 +78,20 @@ export class SettingsPage implements OnInit {
     this.loc2       = this.onSiteUsr.loc2        ; 
     this.company    = this.onSiteUsr.clntCmpny   ; 
     this.techClass  = this.onSiteUsr.userClass   ; 
-    this.hrsClass   = this.onSiteUsr.pyrlClass   ; 
+    this.hrsClass   = this.onSiteUsr.pyrlClass   ;
   } 
   dateStuff() {
-    this.date = Date();
-    this.date;
-    this.dstr = this.date.toString();
-    console.log(this.date);
-    console.log(this.dstr);
+    this.date = Date(); this.date; this.dstr = this.date.toString();
+    let prsMonth     = RMNTH.exec(  this.dstr ); this.month     = prsMonth[     0 ];
+    let prsWeekday   = RWKD.exec(   this.dstr ); this.weekDay   = prsWeekday[   0 ];
+    let prsMday      = RMNTHD.exec( this.dstr ); this.mDay      = prsMday[      0 ];
+    let prsYear      = RYR.exec(    this.dstr ); this.year      = prsYear[      0 ];
+    let prsHours     = RHR.exec(    this.dstr ); this.hours     = prsHours[     0 ];
+    let prsMin       = RMN.exec(    this.dstr ); this.min       = prsMin[       0 ];
+    let prsSec       = RSC.exec(    this.dstr ); this.sec       = prsSec[       0 ];
+    let prsTime      = RTM.exec(    this.dstr ); this.time      = prsTime[      0 ];
+    let prsGmtoffset = ROFFST.exec( this.dstr ); this.gmtOffSet = prsGmtoffset[ 0 ];
+    let prsTmzonestr = RTZS.exec(   this.dstr ); this.tmZoneStr = prsTmzonestr[ 0 ];
   }
 }
+

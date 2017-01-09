@@ -1,0 +1,10 @@
+export const RMNTH  = /(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/;
+export const RWKD   = /(Mon|Tue|Wed|Thu|Fri|Sat|Sun)/;
+export const RMNTHD = /\d{2}(?=\s\d{4}\s)/;
+export const RYR    = /\d{4}(?=\s\d{2}:)/;
+export const RHR    = /\d{2}(?=:\d{2}:\d{2})/;
+export const RMN    = /\d{2}(?=:\d{2}\s)/;
+export const RSC    = /\d{2}(?=\s\D{3}-)/;
+export const RTM    = /\d{2}:\d{2}:\d{2}(?=\s\D{3}-)/;
+export const ROFFST = /\D{3}-\d*(?=\s\()/;
+export const RTZS   = /\(\D*\s*(?=)/ ;
