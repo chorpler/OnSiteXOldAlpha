@@ -24,7 +24,10 @@ export class SettingsPage implements OnInit {
   loc2      : string    ; 
   techClass : string    ; 
   technician: string    ; 
-  hrsClass  : string    ; 
+  hrsClass  : string    ;
+  date      : any       ;
+  _arrD     : Array<any> = [];
+  dstr      : string    ;
 
 
   constructor( public navCtrl: NavController, public navParams: NavParams, public _testUserSrvc: AuthTestUser) { }
@@ -45,6 +48,7 @@ export class SettingsPage implements OnInit {
  
  ngOnInit() {
     this.getTestUser();
+    this.dateStuff();
   }
 
   getTestUser() {
@@ -64,5 +68,11 @@ export class SettingsPage implements OnInit {
     this.techClass  = this.onSiteUsr.userClass   ; 
     this.hrsClass   = this.onSiteUsr.pyrlClass   ; 
   } 
-
+  dateStuff() {
+    this.date = Date();
+    this.date;
+    this.dstr = this.date.toString();
+    console.log(this.date);
+    console.log(this.dstr);
+  }
 }
