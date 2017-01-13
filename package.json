@@ -54,7 +54,7 @@
   "devDependencies": {
     "@ionic/app-scripts": "1.0.0",
     "@types/cordova": "0.0.34",
-    "@types/pouchdb": "^5.4.28",
+    "@types/pouchdb": "5.4.28",
     "angular-in-memory-web-api": "^0.2.4",
     "node-sass": "^4.2.0",
     "typescript": "^2.2.0-dev.20170109"
