@@ -18,6 +18,8 @@ C:\_s\A2\OnSiteX
 ionic start OnSiteXI sidemenu --skip-npm -s -v
 ionic start OnSiteConsoleX sidemenu --skip-npm -s -v
 
+ionic run browser -l -s -c
+
   start [options] <PATH> [template] .............  Starts a new Ionic project in the specified PATH
                                                    [options] any flags for the command
                                                    <PATH> directory for the new project

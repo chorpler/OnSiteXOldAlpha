@@ -194,3 +194,9 @@ if (this.platform.is('ios')) {
 ## VS Code Align to cursor
  1. multi cursor: Alt+mouse1
  2. align: ctrl+alt+a
+
+## Login
+
+Use Native storage
+check if user exists => user = local user
+else set user

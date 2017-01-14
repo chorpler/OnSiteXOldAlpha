@@ -3,7 +3,7 @@
   <name>OnSiteX                                                                               </name>
   <description>SESA OnSite                                                             </description>
   <author email="michael.a.bates@gmail.com" href="https://sesaonsite.com/">Bald Builders LLC</author>
-  <content src="index.html"/>
+  <content src="http://192.168.0.131:8000" original-src="index.html"/>
   <access origin="*"/>
   <allow-intent href="http://*/*"/>
   <allow-intent href="https://*/*"/>
@@ -87,5 +87,6 @@
   <allow-navigation href="http://localhost:8100"/>
   <allow-navigation href="http://192.168.0.140:8100"/>
   <allow-navigation href="http://192.168.0.130:8100"/>
+  <allow-navigation href="http://192.168.0.131:8000"/>
   <icon src="resources\ios\icon\icon-small@3x.png"/>
 </widget>

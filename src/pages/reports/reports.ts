@@ -2,10 +2,9 @@ import { Component                } from '@angular/core'  ;
 import { NavController, NavParams } from 'ionic-angular'  ;
 import { FormBuilder, FormGroup   } from '@angular/forms' ;
 import { Validators, FormControl  } from '@angular/forms' ;
-import { Observable               } from "rxjs/Rx"        ;
-import { AuthTestUser } from '../../providers/auth-test-user';
-import { OSXU } from '../../config/user.config.user';
-import { DBSrvcs } from '../../providers/db-srvcs';
+import { Observable} from "rxjs/Rx"                      ; 
+import { OSXU      } from '../../config/user.config.user'; 
+import { DBSrvcs   } from '../../providers/db-srvcs'     ; 
 
 @Component({
   selector: 'page-reports',
@@ -17,23 +16,22 @@ export class ReportsPage {
 
   items: any;
 
-  constructor(public dbservcies: DBSrvcs){  }
+  constructor(public dbservices: DBSrvcs){  }
 
   ionViewDidLoad(){
     this.items = [];
-    this.dbservcies.getDocuments()
+    this.dbservices.getDocuments()
       .then( (result) => { this.items = result; } );
   }
  
   addData(){
     let date = new Date();
-    let docId = date.toDateString();
     let newDoc = {
-      '_id': docId,
+      '_id': date,
       'message': date.getTime()
     };
 
-    this.dbservcies.addDocument(newDoc);
+    this.dbservices.addDocument(newDoc);
   }
 
 }
