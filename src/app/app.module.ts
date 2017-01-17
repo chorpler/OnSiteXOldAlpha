@@ -26,6 +26,7 @@ import { AuthSrvcs           } from '../providers/auth-srvcs'    ;
 import { DBSrvcs             } from '../providers/db-srvcs'      ;
 import { UtilSrvcs           } from '../providers/util-srvcs'    ;
 import { AuthTestUser        } from '../providers/auth-test-user';
+import { AddUsersSrvc        } from '../providers/add.dbusers.service';
 
 
 /**
@@ -74,7 +75,8 @@ providers:       [ AuthSrvcs,
                    UtilSrvcs,
                   { provide: ErrorHandler,
                   useClass: IonicErrorHandler },
-                  AuthTestUser ],
+                  AuthTestUser,
+                  AddUsersSrvc ],
 
 schemas:         [             ],
 

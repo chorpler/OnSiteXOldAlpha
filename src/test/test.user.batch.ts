@@ -1,5 +1,4 @@
-{
-  "docs": [
+export const usersDocs = [
     {
       "_id": "org.couchdb.user:Sandstorm",
       "avatarName": "Sandstorm",
@@ -750,5 +749,4 @@
       "userClass": "M-TECH",
       "userUuid": "Vela217Heriberto"
     }
-  ]
-}
+]

@@ -2,37 +2,54 @@ import { Injectable, NgZone } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import * as PouchDB from 'pouchdb';
+import { NativeStorage } from 'ionic-native';
 
 
 @Injectable()
 export class AuthSrvcs {
 
-  data    : any; 
-  db      : any; 
-  username: any; 
-  password: any; 
-  remote  : any;
-  
+  data: any;
+  userDb: any;
+  username: any;
+  password: any;
+  remote: any;
+  options: any;
+  // idPrefix = "org.couchdb.user:";
+  docId = "org.couchdb.user:Omega";
+
 
   constructor(public http: Http, public zone: NgZone) {
 
-      this.db = new PouchDB('test_pouch-connections');
-      this.username = 'sesatech';
-      this.password = 'sesatech';
-      this.remote = 'http://martiancouch.hplx.net/test_pouch-connections';
- 
-      let options = {
-        live      : true, 
-        retry     : true, 
-        continuous: true, 
-        auth      : { username: this.username, password: this.password }
-      };
-  
-      this.db.sync(this.remote, options);
- 
+    this.userDb = new PouchDB('notusers');
+    this.username = 'Mike';
+    this.password = 'Dorothyinkansas4life';
+    this.remote = 'http://martiancouch.hplx.net/notusers';
+
+    this.options = {
+      live: true,
+      retry: true,
+      continuous: false,
+      auth: { username: this.username, password: this.password }
+    };
+    this.userDb.sync(this.remote, this.options);
   }
 
-  login() {}
+  ionViewDidLoad() { }
+
+  // login(docId: string, auth: { username: any, password: any }) {
+  //   this.docId = this.idPrefix + this.username;
+
+  //   return new Promise(resolve => {
+  //     this.userDb.get( this.remote, this.docId, this.options)
+  //       .then((response) => {
+  //         this.data;
+  //         console.log(this.data);
+  //       })
+  //   })
+  // }
+  login() {
+    console.log(this.docId);
+  }
 }
 
 

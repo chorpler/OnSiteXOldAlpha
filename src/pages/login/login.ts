@@ -5,6 +5,8 @@ import { NavController, NavParams } from 'ionic-angular';
 import { Platform                 } from 'ionic-angular';
 import { AuthSrvcs                } from '../../providers/auth-srvcs';
 import { HomePage                 } from '../home/home';
+import { FormBuilder, FormGroup   } from '@angular/forms';
+import { AbstractControl          } from '@angular/forms';
 
 
 @Component({
@@ -14,17 +16,45 @@ import { HomePage                 } from '../home/home';
 })
 
 export class LoginPage {
-    title    : string  = 'Login';
-    username : string;
-    password : string;
-    constructor(public nav: NavController,public navParams: NavParams, public platform: Platform, public http: Http, public _auth: AuthSrvcs) {
+    title      : string           = 'Login'; 
+    username   : AbstractControl  ; 
+    password   : AbstractControl  ; 
+    onSiteLogin: FormGroup        ; 
+    idPrefix   = "org.couchdb.user:"      ; 
+    docId      : string           ; 
+
+    OSXuserLogin = {
+      username: '',
+      password: ''
+    };
+
+    constructor(  public nav: NavController,
+                  public navParams: NavParams, 
+                  public platform: Platform, 
+                  public http: Http, 
+                  public _auth: AuthSrvcs,
+                  public fb: FormBuilder) {
+       
+      this.onSiteLogin = fb.group({
+        'username': [''],
+        'password': [''] 
+      });
+
+      this.username = this.onSiteLogin.controls['username'];
+      this.password = this.onSiteLogin.controls['password'];
     }
 
-    login() {
-        // this._auth.login(this.username, this.password)
-        // .subscribe( data => { this.nav.setRoot(HomePage); } )
-       }
+    onSubmit(docId, OSXuserLogin: { username, password } ) {
+      this.OSXuserLogin = OSXuserLogin;
+      this.docId = this.idPrefix + this.username;
+      console.log('Form Input' + this.OSXuserLogin);
+      this._auth.login();
     }
+
+
+}
+
+
 /**
  * 
 import { NativeStorage } from 'ionic-native';
@@ -40,4 +70,6 @@ NativeStorage.getItem('myitem')
     data => console.log(data),
     error => console.error(error)
   );
+
+  { FormBuilder, FormGroup }
  */
