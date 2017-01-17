@@ -1,10 +1,9 @@
-import { Component                } from '@angular/core'  ;
-import { NavController, NavParams } from 'ionic-angular'  ;
-import { FormBuilder, FormGroup   } from '@angular/forms' ;
-import { Validators, FormControl  } from '@angular/forms' ;
-import { Observable} from "rxjs/Rx"                      ; 
-import { OSXU      } from '../../config/user.config.user'; 
-import { DBSrvcs   } from '../../providers/db-srvcs'     ; 
+import { Component                } from '@angular/core'                 ;
+import { NavController, NavParams } from 'ionic-angular'                 ;
+import { FormBuilder, FormGroup   } from '@angular/forms'                ;
+import { Validators, FormControl  } from '@angular/forms'                ;
+import { Observable               } from "rxjs/Rx"                       ;
+import { DBSrvcs                  } from '../../providers/db-srvcs'      ;
 
 @Component({
   selector: 'page-reports',

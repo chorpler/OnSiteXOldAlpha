@@ -3,8 +3,6 @@ import { NavController, NavParams                } from 'ionic-angular'         
 import { FormBuilder  , FormGroup                } from '@angular/forms'                ; 
 import { Validators   , FormControl              } from '@angular/forms'                ; 
 import { Observable                              } from "rxjs/Rx"                       ;
-import { AuthTestUser                            } from '../../providers/auth-test-user'; 
-import { OSXU                                    } from '../../config/user.config.user' ; 
 import { DBSrvcs                                 } from '../../providers/db-srvcs'      ; 
 
 @Component({

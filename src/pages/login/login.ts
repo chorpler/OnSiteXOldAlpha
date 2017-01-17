@@ -1,12 +1,12 @@
-import { Component                } from '@angular/core';
-import { Http                     } from '@angular/http';
-import { NativeStorage            } from 'ionic-native';
-import { NavController, NavParams } from 'ionic-angular';
-import { Platform                 } from 'ionic-angular';
-import { AuthSrvcs                } from '../../providers/auth-srvcs';
-import { HomePage                 } from '../home/home';
-import { FormBuilder, FormGroup   } from '@angular/forms';
-import { AbstractControl          } from '@angular/forms';
+import { Component                } from '@angular/core'              ;
+import { Http                     } from '@angular/http'              ;
+import { NativeStorage            } from 'ionic-native'               ;
+import { NavController, NavParams } from 'ionic-angular'              ;
+import { Platform                 } from 'ionic-angular'              ;
+import { AuthSrvcs                } from '../../providers/auth-srvcs' ;
+import { HomePage                 } from '../home/home'               ;
+import { FormBuilder, FormGroup   } from '@angular/forms'             ;
+import { AbstractControl          } from '@angular/forms'             ;
 
 
 @Component({
@@ -16,11 +16,10 @@ import { AbstractControl          } from '@angular/forms';
 })
 
 export class LoginPage {
-    title      : string           = 'Login'; 
+    title      : string  = 'Login'; 
     username   : AbstractControl  ; 
     password   : AbstractControl  ; 
     onSiteLogin: FormGroup        ; 
-    idPrefix   = "org.couchdb.user:"      ; 
     docId      : string           ; 
 
     OSXuserLogin = {
