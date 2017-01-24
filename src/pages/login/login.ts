@@ -43,12 +43,11 @@ export class LoginPage {
       this.password = this.onSiteLogin.controls['password'];
     }
 
-    onSubmit(docId, OSXuserLogin: { username, password } ) {
-      this.OSXuserLogin = OSXuserLogin;
-      this.docId = this.idPrefix + this.username;
-      console.log('Form Input' + this.OSXuserLogin);
-      this._auth.login();
-    }
+    // onSubmit(docId, OSXuserLogin: { username, password } ) {
+    //   this.OSXuserLogin = OSXuserLogin;
+    //   console.log('Form Input' + this.OSXuserLogin);
+    //   this._auth.login();
+    // }
 
 
 }

@@ -7,19 +7,16 @@
     </ion-navbar>
 </ion-header>
 <ion-content padding>
-        <button ion-button full icon-left large color="favorite">
-            <ion-icon name="document" color="secondary"></ion-icon>
-            New Work Order
-        </button>
-        <button ion-button full icon-left large color="secondary">
-            <ion-icon name="create"></ion-icon>
-            Open Work Orders
-        </button>
-    <button ion-button large full icon-left color="Primary">
-        <ion-icon name="calendar"></ion-icon>
-        Shift
-    </button>
-    <button id="upload-docs" ion-button icon-only full large color="splash">
-        <ion-icon name="cloud-upload"></ion-icon>
-    </button>
+    <ion-list no-border>
+        <ion-list-header color="dark">{{today}}</ion-list-header>
+        <button ion-item icon-left color="Primary"(click)="newReport()"><ion-icon name="document" color="splash"></ion-icon>New<ion-note item-right color="splash">Create New Work Order</ion-note></button>
+        <button ion-item icon-left color="Primary"(click)="openReports()"><ion-icon name="create" color="secondary"></ion-icon>Edit<ion-note item-right color="secondary">Open Work Orders</ion-note></button>
+        <hr><ion-list-header color="dark">Schedule/Past Reports</ion-list-header>
+        <button ion-item icon-left color="Primary"(click)="viewCalendar()"><ion-icon name="calendar" color="favorite"></ion-icon>Schedule<ion-note item-right color="favorite">Calendar View</ion-note></button>
+        <hr><ion-list-header color="dark">Report: Technician Information</ion-list-header>
+        <button ion-item icon-left color="Primary"(click)="shiftsPage()"><ion-icon name="clock" color="secondary"></ion-icon>Shift<ion-note item-right color="secondary">Shift Info</ion-note></button>
+        <button ion-item icon-left color="Primary"(click)="settings()"><ion-icon name="settings" color="secondary"></ion-icon>Settings<ion-note item-right color="secondary">User/Report Settings</ion-note></button>
+        <hr><ion-list-header color="dark">Complete Shift:</ion-list-header>
+        <button ion-item icon-left color="Primary"(click)="uploadReports()"><ion-icon name="cloud-upload" color="favorite"></ion-icon>Upload<ion-note item-right color="favorite">Upload Reports</ion-note></button>
+    </ion-list>
 </ion-content>

@@ -44,7 +44,9 @@ export class TimeSrvc {
     let prsGmtoffset = XGMTOFFSET.exec( this.dstr );  this.gmtOffset = prsGmtoffset[ 0 ];
     let prsTmzonestr =  XTIMEZONE.exec( this.dstr );  this.tmZoneStr = prsTmzonestr[ 0 ];
 
-    return this.month, this.weekDay, this.mDay, this.year, this.hours, this.min, this.sec, this.time, this.gmtOffset, this.tmZoneStr;
+    this._arrD = [ this.month, this.weekDay, this.mDay, this.year, this.hours, this.min, this.sec, this.time, this.gmtOffset, this.tmZoneStr ];
+
+    return this._arrD;
   }
 
 }

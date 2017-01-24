@@ -1,10 +1,10 @@
 import { Component, OnInit               } from '@angular/core'                                   ;
 import { NavController, NavParams        } from 'ionic-angular'                                   ;
-import { Assignment                      } from '../../config/config.interface.techassignment'    ;
-import { Assignments                     } from '../../config/config.constants.assignments'       ;
-import { CLNTCMPNY, LOCPRIMRY            } from '../../config/config.constants.class'             ;
-import { LOCSCNDRY, USERCLASS, PYRLCLASS } from '../../config/config.constants.class'             ;
-import { ReportClass                     } from '../../config/config.interface.user.report.class' ;
+// import { Assignment                      } from '../../config/config.interface.techassignment'    ;
+// import { Assignments                     } from '../../config/config.constants.assignments'       ;
+// import { CLNTCMPNY, LOCPRIMRY            } from '../../config/config.constants.class'             ;
+// import { LOCSCNDRY, USERCLASS, PYRLCLASS } from '../../config/config.constants.class'             ;
+// import { ReportClass                     } from '../../config/config.interface.user.report.class' ;
 
 @Component({
   selector: 'page-settings',
@@ -44,15 +44,15 @@ export class SettingsPage implements OnInit {
   getTestUser() { }
 
   retUserData(data) {
-    console.log(this.data);
-    console.log(this.data[0]);
-    this.onSiteUsr  = this.data[ 0 ]; 
-    this.technician = this.onSiteUsr.lastName + ', ' + this.onSiteUsr.firstName; 
-    this.loc1       = this.onSiteUsr.loc1        ; 
-    this.loc2       = this.onSiteUsr.loc2        ; 
-    this.company    = this.onSiteUsr.clntCmpny   ; 
-    this.techClass  = this.onSiteUsr.userClass   ; 
-    this.hrsClass   = this.onSiteUsr.pyrlClass   ;
+    // console.log(this.data);
+    // console.log(this.data[0]);
+    // this.onSiteUsr  = this.data[ 0 ]; 
+    // this.technician = this.onSiteUsr.lastName + ', ' + this.onSiteUsr.firstName; 
+    // this.loc1       = this.onSiteUsr.loc1        ; 
+    // this.loc2       = this.onSiteUsr.loc2        ; 
+    // this.company    = this.onSiteUsr.clntCmpny   ; 
+    // this.techClass  = this.onSiteUsr.userClass   ; 
+    // this.hrsClass   = this.onSiteUsr.pyrlClass   ;
   }
 }
 

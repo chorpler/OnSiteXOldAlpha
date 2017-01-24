@@ -11,6 +11,9 @@ import { ReportsPage } from '../pages/reports/reports';
 import { MsgsPage } from '../pages/msgs/msgs';
 import { ShiftPage } from '../pages/shift/shift';
 import { AppInfoPage } from '../pages/app-info/app-info';
+import { OpenReportsPage } from '../pages/reports/open-reports';
+import { ViewCalendarPage } from '../pages/view-calendar/view-calendar';
+import { UploadReportsPage } from '../pages/upload-reports/upload-reports';
 
 
 @Component({
@@ -22,7 +25,7 @@ export class OnSiteX {
   title: string = 'OnSiteX';
   
 
-  rootPage: any = LoginPage;
+  rootPage: any = HomePage;
   pages: Array<{ title: string, component: any }>;
 
   constructor(public platform: Platform ) {
@@ -30,14 +33,17 @@ export class OnSiteX {
 
     // used for an example of ngFor and navigation
     this.pages = [
-      { title: 'Settings', component: SettingsPage}, 
-      { title: 'Login'   , component: LoginPage   }, 
-      { title: 'Home'    , component: HomePage    }, 
-      { title: 'Stats'   , component: StatsPage   }, 
-      { title: 'Reports' , component: ReportsPage }, 
-      { title: 'Messages', component: MsgsPage    }, 
-      { title: 'Shift'   , component: ShiftPage   }, 
-      { title: 'Info'    , component: AppInfoPage } 
+      { title: 'Settings'    , component: SettingsPage     }, 
+      { title: 'Login'       , component: LoginPage        }, 
+      { title: 'Home'        , component: HomePage         }, 
+      { title: 'Stats'       , component: StatsPage        }, 
+      { title: 'Reports'     , component: ReportsPage      }, 
+      { title: 'Open Reports', component: OpenReportsPage  }, 
+      { title: 'Calendar'    , component: ViewCalendarPage }, 
+      { title: 'Upload'      , component: UploadReportsPage}, 
+      { title: 'Messages'    , component: MsgsPage         }, 
+      { title: 'Shift'       , component: ShiftPage        }, 
+      { title: 'Info'        , component: AppInfoPage      } 
     ];
 
   }

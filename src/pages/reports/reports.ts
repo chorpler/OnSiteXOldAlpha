@@ -3,7 +3,6 @@ import { NavController, NavParams } from 'ionic-angular'                 ;
 import { FormBuilder, FormGroup   } from '@angular/forms'                ;
 import { Validators, FormControl  } from '@angular/forms'                ;
 import { Observable               } from "rxjs/Rx"                       ;
-import { DBSrvcs                  } from '../../providers/db-srvcs'      ;
 
 @Component({
   selector: 'page-reports',
@@ -14,23 +13,14 @@ import { DBSrvcs                  } from '../../providers/db-srvcs'      ;
 export class ReportsPage {
 
   items: any;
+  date = new Date();
+  newDoc: {};
 
-  constructor(public dbservices: DBSrvcs){  }
+  constructor(public navCtrl: NavController){  }
 
-  ionViewDidLoad(){
-    this.items = [];
-    this.dbservices.getDocuments()
-      .then( (result) => { this.items = result; } );
-  }
+  ionViewDidLoad(){ }
  
-  addData(){
-    let date = new Date();
-    let newDoc = {
-      '_id': date,
-      'message': date.getTime()
-    };
 
-    this.dbservices.addDocument(newDoc);
-  }
+
 
 }

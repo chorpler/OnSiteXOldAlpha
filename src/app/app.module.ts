@@ -16,12 +16,16 @@ import { LoginPage           } from '../pages/login/login'       ;
 import { HomePage            } from '../pages/home/home'         ;
 import { StatsPage           } from '../pages/stats/stats'       ;
 import { ReportsPage         } from '../pages/reports/reports'   ;
+import { OpenReportsPage     } from '../pages/reports/open-reports';
+import { ViewCalendarPage    } from '../pages/view-calendar/view-calendar';
+import { UploadReportsPage   } from '../pages/upload-reports/upload-reports';
 import { MsgsPage            } from '../pages/msgs/msgs'         ;
 import { ShiftPage           } from '../pages/shift/shift'       ;
 import { AppInfoPage         } from '../pages/app-info/app-info' ;
 import { AuthSrvcs           } from '../providers/auth-srvcs'    ;
 import { DBSrvcs             } from '../providers/db-srvcs'      ;
-import { TimeSrvc            } from '../'
+import { TimeSrvc            } from '../providers/time-parse-srvc';
+
 
 
 
@@ -35,6 +39,8 @@ import { TimeSrvc            } from '../'
  *  providers       :                  Provider [ ]
  *  schemas         :  SchemaMetadata [ ] | any [ ]
  *  bootstrap       :                       any [ ]
+ * 
+ * @ionic: Add pages to declarations[] and entryComponents[]
  */
 
 @NgModule({
@@ -42,12 +48,17 @@ declarations    : [ SettingsPage, LoginPage,
                     HomePage, StatsPage,
                     ReportsPage,  MsgsPage,
                     ShiftPage, AppInfoPage,
-                    OnSiteX                       ],
+                    OnSiteX, OpenReportsPage,
+                    ViewCalendarPage, 
+                    UploadReportsPage             ],
 
 entryComponents : [ SettingsPage, LoginPage,
                     HomePage, StatsPage,
                     ReportsPage, MsgsPage,
-                    ShiftPage, AppInfoPage        ],
+                    ShiftPage, AppInfoPage,
+                    OpenReportsPage,
+                    ViewCalendarPage, 
+                    UploadReportsPage             ],
 
 imports         : [ IonicModule.forRoot(OnSiteX),
                     BrowserModule, FormsModule,
@@ -56,7 +67,7 @@ imports         : [ IonicModule.forRoot(OnSiteX),
 
 exports         : [                               ],
 
-providers       : [ AuthSrvcs, DBSrvcs,
+providers       : [ AuthSrvcs, DBSrvcs, TimeSrvc,
                    {
                      provide: ErrorHandler,
                      useClass : IonicErrorHandler

@@ -23,8 +23,8 @@ export class AuthSrvcs {
     this.userDb       = new PouchDB('notusers')                 ;
     this.username     = 'Mike'                                  ;
     this.password     = 'Dorothyinkansas4life'                  ;
-    this.remote       = 'http://martiancouch.hplx.net/notusers' ;
-    this.docId        = 'org.couchdb.user:testUser005'          ;
+    // this.remote       = 'http://martiancouch.hplx.net/notusers' ;
+    // this.docId        = 'org.couchdb.user:testUser005'          ;
 
     this.options = {
       live       : true,
@@ -33,13 +33,15 @@ export class AuthSrvcs {
       auth: { username: this.username, password: this.password }
     };
 
-    this.userDb.sync(this.remote, this.options);
+    // this.userDb.sync(this.remote, this.options);
   }
 
 // -------------- AuthSrvcs METHODS------------------------
 
   ionViewDidLoad() { }
 
-  login() {  console.log(this.docId); }
+  login() {  
+    // console.log(this.docId); 
+  }
 
 } // Close exported Class: AuthSrvcs
