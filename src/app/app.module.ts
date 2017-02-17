@@ -25,6 +25,7 @@ import { AppInfoPage         } from '../pages/app-info/app-info' ;
 import { AuthSrvcs           } from '../providers/auth-srvcs'    ;
 import { DBSrvcs             } from '../providers/db-srvcs'      ;
 import { TimeSrvc            } from '../providers/time-parse-srvc';
+import { DbBulkuploadSrvc    } from '../providers/db-bulkupload-srvc';
 
 
 
@@ -68,6 +69,7 @@ imports         : [ IonicModule.forRoot(OnSiteX),
 exports         : [                               ],
 
 providers       : [ AuthSrvcs, DBSrvcs, TimeSrvc,
+                    DbBulkuploadSrvc,
                    {
                      provide: ErrorHandler,
                      useClass : IonicErrorHandler

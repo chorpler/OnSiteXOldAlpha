@@ -1,19 +1,19 @@
-import { Component } from '@angular/core';
-import { ViewChild } from '@angular/core';
-import { Nav, Platform } from 'ionic-angular';
-import { StatusBar } from 'ionic-native';
-import { Splashscreen } from 'ionic-native';
-import { SettingsPage } from '../pages/settings/settings';
-import { LoginPage } from '../pages/login/login';
-import { HomePage } from '../pages/home/home';
-import { StatsPage } from '../pages/stats/stats';
-import { ReportsPage } from '../pages/reports/reports';
-import { MsgsPage } from '../pages/msgs/msgs';
-import { ShiftPage } from '../pages/shift/shift';
-import { AppInfoPage } from '../pages/app-info/app-info';
-import { OpenReportsPage } from '../pages/reports/open-reports';
-import { ViewCalendarPage } from '../pages/view-calendar/view-calendar';
-import { UploadReportsPage } from '../pages/upload-reports/upload-reports';
+import { Component         } from '@angular/core'                          ;
+import { ViewChild         } from '@angular/core'                          ;
+import { Nav, Platform     } from 'ionic-angular'                          ;
+import { StatusBar         } from 'ionic-native'                           ;
+import { Splashscreen      } from 'ionic-native'                           ;
+import { SettingsPage      } from '../pages/settings/settings'             ;
+import { LoginPage         } from '../pages/login/login'                   ;
+import { HomePage          } from '../pages/home/home'                     ;
+import { StatsPage         } from '../pages/stats/stats'                   ;
+import { ReportsPage       } from '../pages/reports/reports'               ;
+import { MsgsPage          } from '../pages/msgs/msgs'                     ;
+import { ShiftPage         } from '../pages/shift/shift'                   ;
+import { AppInfoPage       } from '../pages/app-info/app-info'             ;
+import { OpenReportsPage   } from '../pages/reports/open-reports'          ;
+import { ViewCalendarPage  } from '../pages/view-calendar/view-calendar'   ;
+import { UploadReportsPage } from '../pages/upload-reports/upload-reports' ;
 
 
 @Component({
