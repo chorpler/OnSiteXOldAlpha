@@ -1,50 +1,41 @@
 import { NgModule, ErrorHandler } from '@angular/core';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
+import { Storage } from "@ionic/storage";
+
 import { MyApp } from './app.component';
-import { EditRecipePage } from "../pages/edit-recipe/edit-recipe";
-import { RecipePage } from "../pages/recipe/recipe";
-import { RecipesPage } from "../pages/recipes/recipes";
-import { ShoppingListPage } from "../pages/shopping-list/shopping-list";
-import { TabsPage } from "../pages/tabs/tabs";
-import { ShoppingListService } from "../services/shopping-list";
-import { RecipesService } from "../services/recipes";
-import { SigninPage } from "../pages/signin/signin";
-import { SignupPage } from "../pages/signup/signup";
-import { AuthService } from "../services/auth";
-import { DatabaseOptionsPage } from "../pages/database-options/database-options";
+import { HomePage } from '../pages/home/home';
+import { AddPlacePage } from "../pages/add-place/add-place";
+import { PlacePage } from "../pages/place/place";
+import { SetLocationPage } from "../pages/set-location/set-location";
+import { AgmCoreModule } from "angular2-google-maps/core";
+import { PlacesService } from "../services/places";
 
 @NgModule({
   declarations: [
     MyApp,
-    EditRecipePage,
-    RecipePage,
-    RecipesPage,
-    ShoppingListPage,
-    TabsPage,
-    SigninPage,
-    SignupPage,
-    DatabaseOptionsPage
+    HomePage,
+    AddPlacePage,
+    PlacePage,
+    SetLocationPage
   ],
   imports: [
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
+    AgmCoreModule.forRoot({
+      apiKey: 'AIzaSyAjhfqVx1U9E3Ssy2DMNl0H1nGaa3Tqv7s'
+    })
   ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    EditRecipePage,
-    RecipePage,
-    RecipesPage,
-    ShoppingListPage,
-    TabsPage,
-    SigninPage,
-    SignupPage,
-    DatabaseOptionsPage
+    HomePage,
+    AddPlacePage,
+    PlacePage,
+    SetLocationPage
   ],
   providers: [
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    ShoppingListService,
-    RecipesService,
-    AuthService
+    PlacesService,
+    Storage
   ]
 })
 export class AppModule {

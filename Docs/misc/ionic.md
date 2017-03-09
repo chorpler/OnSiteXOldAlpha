@@ -17,6 +17,7 @@ C:\_s\A2\OnSiteX
 ```ini
 ionic start OnSiteXI sidemenu --skip-npm -s -v
 ionic start OnSiteConsoleX sidemenu --skip-npm -s -v
+ionic start Schedule sidemenu --skip-npm -s -v
 
 ionic run browser -l -s -c
 
