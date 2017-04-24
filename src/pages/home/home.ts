@@ -1,46 +1,25 @@
-import { Component        } from '@angular/core'                   ; 
-import { NavController    } from 'ionic-angular'                   ; 
-import { NavParams        } from 'ionic-angular'                   ; 
-import { TimeSrvc         } from '../../providers/time-parse-srvc' ; 
-import { ReportsPage      } from '../reports/reports'              ; 
-import { OpenReportsPage  } from '../reports/open-reports'         ; 
-import { ViewCalendarPage } from '../view-calendar/view-calendar'  ; 
-import { UploadReportsPage} from '../upload-reports/upload-reports'; 
-import { ShiftPage        } from '../shift/shift'                  ;
+import { Component } from '@angular/core';
+import { IonicPage, NavController} from 'ionic-angular';
+import { Platform } from 'ionic-angular';
 
+@IonicPage({name: 'OnSiteHome'})
 
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
 })
 export class HomePage {
-title  : string = 'Home'; 
-arrDate: any[   ]       ; 
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public tmStuff: TimeSrvc) {}
-
-  ionViewDidLoad() {
-    this.arrDate = this.tmStuff.getParsedDate();
-    console.log('ionViewDidLoad HomePage');
+  title ='OnSite Home';
+  
+  constructor(public navCtrl: NavController, public plt: Platform) { 
+    console.log(this.plt.platforms());
   }
 
-  newReport(){
-    this.navCtrl.push(ReportsPage);
-  }
+  onNewWorkOrder() {this.navCtrl.push('Work Order Form', {mode: 'New'});}
+  onLogin() {this.navCtrl.push('Login');}
+  // onNewJobForm() {this.navCtrl.push('Work Order', {mode: 'New'});}
+  onSettings() {this.navCtrl.push('Report Settings');}
 
-  openReports(){
-    this.navCtrl.push(OpenReportsPage);
-  }
-
-  viewCalendar(){
-    this.navCtrl.push(ViewCalendarPage);
-  }
-
-  uploadReports(){
-    this.navCtrl.push(UploadReportsPage);
-  }
-
-  shiftsPage(){
-    this.navCtrl.push(ShiftPage);
-  }
 }
+// 'Work Order Form'

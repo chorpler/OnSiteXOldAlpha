@@ -1,73 +1,24 @@
-import { Component                } from '@angular/core'              ;
-import { Http                     } from '@angular/http'              ;
-import { NativeStorage            } from 'ionic-native'               ;
-import { NavController, NavParams } from 'ionic-angular'              ;
-import { Platform                 } from 'ionic-angular'              ;
-import { AuthSrvcs                } from '../../providers/auth-srvcs' ;
-import { HomePage                 } from '../home/home'               ;
-import { FormBuilder, FormGroup   } from '@angular/forms'             ;
-import { AbstractControl          } from '@angular/forms'             ;
-
-
-@Component({
-  selector    : 'page-login',
-  templateUrl : 'login.html',
-  providers   : [AuthSrvcs]
-})
-
-export class LoginPage {
-    title      : string  = 'Login'; 
-    username   : AbstractControl  ; 
-    password   : AbstractControl  ; 
-    onSiteLogin: FormGroup        ; 
-    docId      : string           ; 
-
-    OSXuserLogin = {
-      username: '',
-      password: ''
-    };
-
-    constructor(  public nav: NavController,
-                  public navParams: NavParams, 
-                  public platform: Platform, 
-                  public http: Http, 
-                  public _auth: AuthSrvcs,
-                  public fb: FormBuilder) {
-       
-      this.onSiteLogin = fb.group({
-        'username': [''],
-        'password': [''] 
-      });
-
-      this.username = this.onSiteLogin.controls['username'];
-      this.password = this.onSiteLogin.controls['password'];
-    }
-
-    // onSubmit(docId, OSXuserLogin: { username, password } ) {
-    //   this.OSXuserLogin = OSXuserLogin;
-    //   console.log('Form Input' + this.OSXuserLogin);
-    //   this._auth.login();
-    // }
-
-
-}
-
+import { Component } from '@angular/core';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 /**
- * 
-import { NativeStorage } from 'ionic-native';
-
-NativeStorage.setItem('myitem', {property: 'value', anotherProperty: 'anotherValue'})
-  .then(
-    () => console.log('Stored item!'),
-    error => console.error('Error storing item', error)
-  );
-
-NativeStorage.getItem('myitem')
-  .then(
-    data => console.log(data),
-    error => console.error(error)
-  );
-
-  { FormBuilder, FormGroup }
+ * Generated class for the Login page.
+ *
+ * See http://ionicframework.com/docs/components/#navigation for more info
+ * on Ionic pages and navigation.
  */
+@IonicPage({name: 'Login'})
+@Component({
+  selector: 'page-login',
+  templateUrl: 'login.html',
+})
+export class Login {
+
+  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  }
+
+  ionViewDidLoad() {
+    console.log('ionViewDidLoad Login');
+  }
+
+}
