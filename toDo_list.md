@@ -33,3 +33,19 @@ export class ExamplePage implements OnInit{
 		this.userData = this.navParams;
 	}
 }
+```
+
+#Use local docs to store user data (user Profile)
+service: ProfileSettings
+store locally [
+username,
+password,
+firstName,
+lastName,
+technician,
+client,
+techLocation,
+techLocID,
+techJobClass,
+...
+]

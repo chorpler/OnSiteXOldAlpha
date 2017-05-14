@@ -14,17 +14,17 @@
 
 
 <ion-content padding>
-  <p class="hdrDate"> Today:  <span class="date">{{ setDate | date:'EEE, MMM dd yyyy'}}</span>,  Time:  <span class="time">{{setDate| date:'HH:mm'}} </span> </p>
+  <p class="hdrDate"> Today:  <span class="date">{{ setDate | date:'EEE, MMM dd yyyy'}}</span>,  Time:  <span class="time"> {{setDate| date:'HH:mm'}} </span> </p>
   <form [formGroup]="workOrder" (ngSubmit)="onSubmit()">
     <ion-list>
 
       <ion-item>
         <ion-label>Start Date</ion-label>
-        <ion-datetime displayFormat="DDD, MMM DD YYYY" yearValues="2017" placeholder="{{ setDate | date:'EEE, MMM dd yyyy'}}" formControlName="rprtDate"></ion-datetime>
+        <ion-datetime displayFormat="DDD, MMM DD YYYY" yearValues="2017" formControlName="rprtDate"></ion-datetime>
       </ion-item>
       <ion-item>
         <ion-label>Start Time</ion-label>
-        <ion-datetime displayFormat="HH:mm" pickerFormat="HH:mm" placeholder="{{setDate| date:'HH:mm'}}" minuteValues="00,15,30,45" formControlName="timeStarts"></ion-datetime>
+        <ion-datetime displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="00,15,30,45" formControlName="timeStarts"></ion-datetime>
       </ion-item>
       <ion-item>
         <ion-label floating>JOB HRS: (Decimal Hours) </ion-label>
@@ -47,3 +47,9 @@
     <button type="submit" ion-button block>Submit {{title}} </button>
   </form>
 </ion-content>
+
+
+<!--
+   placeholder="{{ setDate | date:'EEE, MMM dd yyyy'}}"
+   placeholder="{{setDate| date:'HH:mm'}}" 
+-->
