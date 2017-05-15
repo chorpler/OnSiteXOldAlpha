@@ -41,7 +41,15 @@ export class DBSrvcs {
 
   addDoc( doc ){ this.db.put( doc ); }
 
-  getDoc( doc ){ this.db.get( doc ); }
+  getDoc( doc ){ 
+    return new Promise( resolve => {
+      this.db.get( doc )
+      .catch( (error ) => {
+        if( error.status = '404') { this.addDoc( doc ); }
+        else { console.log( error )}
+      })
+    })
+  }
 
   allDoc(    ){
     return new Promise( resolve => {

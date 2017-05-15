@@ -1,0 +1,144 @@
+[
+  {
+    "caption": "-"
+  },
+  {
+    "caption": "Align By",
+    "children": [
+      {
+        "args": {
+          "user_input": "}"
+        },
+        "caption": "Close Curly }",
+        "command": "align_tab"
+      },
+      {
+        "args": {
+          "user_input": ":"
+        },
+        "caption": "COLON :",
+        "command": "align_tab"
+      },
+      {
+        "args": {
+          "user_input": ","
+        },
+        "caption": "COMMA ','",
+        "command": "align_tab"
+      },
+      {
+        "args": {
+          "user_input": ";"
+        },
+        "caption": "Semicolon ';'",
+        "command": "align_tab"
+      },
+      {
+        "args": {
+          "user_input": "]"
+        },
+        "caption": "Close Square ']'",
+        "command": "align_tab"
+      },
+      {
+        "args": {
+          "user_input": "src"
+        },
+        "caption": "src property 'src'",
+        "command": "align_tab"
+      },
+      {
+        "args": {
+          "user_input": "density"
+        },
+        "caption": "density property 'density'",
+        "command": "align_tab"
+      },
+      {
+        "args": {
+          "user_input": "width"
+        },
+        "caption": "width property 'width'",
+        "command": "align_tab"
+      },
+      {
+        "args": {
+          "user_input": "height"
+        },
+        "caption": "height property 'height'",
+        "command": "align_tab"
+      },
+      {
+        "args": {
+          "user_input": "/>"
+        },
+        "caption": "Close html tag '/>'",
+        "command": "align_tab"
+      },
+      {
+        "args": {
+          "user_input": "name"
+        },
+        "caption": "name property 'name'",
+        "command": "align_tab"
+      },
+      {
+        "args": {
+          "user_input": "spec"
+        },
+        "caption": "spec property 'spec'",
+        "command": "align_tab"
+      },
+      {
+        "args": {
+          "user_input": "href"
+        },
+        "caption": "href property 'href'",
+        "command": "align_tab"
+      },
+      {
+        "args": {
+          "user_input": "value"
+        },
+        "caption": "value 'value'",
+        "command": "align_tab"
+      },
+      {
+        "args": {
+          "user_input": "this"
+        },
+        "caption": "this 'this'",
+        "command": "align_tab"
+      },
+      {
+        "args": {
+          "user_input": "0"
+        },
+        "caption": "ZERO '0'",
+        "command": "align_tab"
+      },
+      {
+        "args": {
+          "user_input": "="
+        },
+        "caption": "EQUAL '='",
+        "command": "align_tab"
+      },
+      {
+        "args": {
+          "user_input": "from"
+        },
+        "caption": "from 'from'",
+        "command": "align_tab"
+      },
+      {
+        "args": {
+          "user_input": ")"
+        },
+        "caption": "CLOSE BRACE ')'",
+        "command": "align_tab"
+      }
+    ],
+    "id": "aligntab"
+  }
+]

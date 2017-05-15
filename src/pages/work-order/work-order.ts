@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators } from "@angular/forms";
+import { Component, OnInit                   } from '@angular/core';
+import { FormGroup, FormControl, Validators  } from "@angular/forms";
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { DBSrvcs                             } from '../../providers/db-srvcs';
 
 @IonicPage({ name: 'Work Order Form' })
 
@@ -11,11 +12,14 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 export class WorkOrder implements OnInit {
 
-  setDate = new Date();
-  year = this.setDate.getFullYear();
-  mode     : string   = 'New'; 
-  workOrder: FormGroup; 
-  repairHrs: number   ; 
+  setDate      = new Date()                ; 
+  year         = this.setDate.getFullYear(); 
+  mode         : string                    = 'New'; 
+  workOrder    : FormGroup                 ; 
+  repairHrs    : number                    ; 
+  profile      : any                       ; 
+  tmpReportData: any                       ; 
+  docID        : string                    ;
 
   strtHrs   ; 
   strtMin   ; 
@@ -28,8 +32,9 @@ export class WorkOrder implements OnInit {
   rprtDate  ; 
   timeStarts; 
   timeEnds  ;
+  // , private dbSrvcs: DBSrvcs
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) { }
+  constructor(public navCtrl: NavController, public navParams: NavParams ) { }
 
   ionViewDidLoad() { console.log('ionViewDidLoad WorkOrder'); }
 
@@ -58,6 +63,7 @@ export class WorkOrder implements OnInit {
     const workOrderData = this.workOrder.value;
     this.calcEndTime(workOrderData);
     console.log(workOrderData);
+
   }
 
 /**
@@ -125,5 +131,32 @@ export class WorkOrder implements OnInit {
 
     workOrderData.repairHrs = this.hrsHrs + ':' + this.hrsMin;
   }
+
+  // genReportID() {
+  //   let firstInitial = this.profile.firstName.slice(0,1);
+  //   let lastInitial = this.profile.lastName.slice(0,1);
+  //   this.docID = 
+  // }
+
+  // processWO() {
+  //   const workOrderData = this.workOrder.value;
+  //   this.calcEndTime(workOrderData);
+  //   console.log(workOrderData);
+  //   this.genReportID();
+
+  //   this.dbSrvcs.getDoc( '_local/techProfile')
+  //   .then( res => ( this.profile = res ) );
+  //   if( typeof this.profile.updated == 'undefined' || this.profile.updated === false ) {
+  //     this.tmpReportData = workOrderData;
+  //     this.tmpReportData._id = '_local/tmpReport';
+  //     this.dbSrvcs.addDoc( this.tmpReportData ) 
+  //   } else {
+  //     this.tmpReportData = workOrderData;
+  //     this.tmpReportData.profile = this.profile;
+  //     this.tmpReportData._id = this.docID;
+  //     this.dbSrvcs.addDoc( this.docID );
+  //     console.log( this.tmpReportData );
+  //   }
+  // }
 
 }
