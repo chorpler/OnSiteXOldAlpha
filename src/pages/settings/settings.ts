@@ -38,15 +38,15 @@ export class Settings implements OnInit {
 
   private initializeForm() {
     this.techSettings = new FormGroup({
-      'lastName'      : new FormControl('Blow', Validators.required), 
-      'firstName'     : new FormControl('Joe', Validators.required), 
-      'client'        : new FormControl("SESA", Validators.required), 
-      'location'      : new FormControl('Weslaco', Validators.required), 
-      'locID'         : new FormControl('MNSHOP', Validators.required), 
-      'loc2nd'        : new FormControl('NA', Validators.required),
-      'shift'         : new FormControl('AM', Validators.required), 
-      'shiftLength'   : new FormControl(12, Validators.required), 
-      'shiftStartTime': new FormControl(7, Validators.required)
+      'lastName'      : new FormControl(this.lastName             , Validators.required) ,
+      'firstName'     : new FormControl(this.firstName            , Validators.required) ,
+      'client'        : new FormControl(this.selClient[1]         , Validators.required) ,
+      'location'      : new FormControl(this.selLocation[1]       , Validators.required) ,
+      'locID'         : new FormControl(this.selLocID[1]          , Validators.required) ,
+      'loc2nd'        : new FormControl(this.selLoc2nd[2]         , Validators.required) ,
+      'shift'         : new FormControl(this.selShift[1]          , Validators.required) ,
+      'shiftLength'   : new FormControl(this.selShiftLength[4]    , Validators.required) ,
+      'shiftStartTime': new FormControl(this.selShiftStartTime[7] , Validators.required)
     })
   }
 

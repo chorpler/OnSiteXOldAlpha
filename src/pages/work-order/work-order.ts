@@ -2,6 +2,7 @@ import { Component, OnInit                   } from '@angular/core';
 import { FormGroup, FormControl, Validators  } from "@angular/forms";
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { DBSrvcs                             } from '../../providers/db-srvcs';
+import { TimeSrvc                            } from '../../providers/time-parse-srvc';
 
 @IonicPage({ name: 'Work Order Form' })
 
@@ -12,14 +13,16 @@ import { DBSrvcs                             } from '../../providers/db-srvcs';
 
 export class WorkOrder implements OnInit {
 
-  setDate      = new Date()                ; 
-  year         = this.setDate.getFullYear(); 
-  mode         : string                    = 'New'; 
-  workOrder    : FormGroup                 ; 
-  repairHrs    : number                    ; 
-  profile      : any                       ; 
-  tmpReportData: any                       ; 
-  docID        : string                    ;
+  setDate      : Date     = new Date()                ; 
+  year         : number   = this.setDate.getFullYear(); 
+  mode         : string   = 'New'                     ; 
+  workOrder    : FormGroup; 
+  repairHrs    : number   ; 
+  profile      : any = { }; 
+  tmpReportData: any      ; 
+  docID        : string   ; 
+  idDate       : string   ;
+  idTime       : string   ;
 
   strtHrs   ; 
   strtMin   ; 
@@ -29,12 +32,12 @@ export class WorkOrder implements OnInit {
   endHrs    ; 
   prsHrs    ; 
   prsMin    ; 
-  rprtDate  ; 
-  timeStarts; 
+  rprtDate  : Date     = new Date()                ; 
+  timeStarts: Date     = new Date()                ; 
   timeEnds  ;
   // , private dbSrvcs: DBSrvcs
 
-  constructor(public navCtrl: NavController, public navParams: NavParams ) { }
+  constructor(public navCtrl: NavController, public navParams: NavParams, private dbSrvcs: DBSrvcs, private timeSrvc: TimeSrvc ) { }
 
   ionViewDidLoad() { console.log('ionViewDidLoad WorkOrder'); }
 
@@ -49,21 +52,18 @@ export class WorkOrder implements OnInit {
 
   private initializeForm() {
     this.workOrder = new FormGroup({
-      'timeStarts': new FormControl(null, Validators.required), 
+      'timeStarts': new FormControl(this.timeStarts, Validators.required), 
       'timeEnds'  : new FormControl(null, Validators.required),
       'repairHrs' : new FormControl(null, Validators.required), 
       'uNum'      : new FormControl(null, Validators.required), 
       'wONum'     : new FormControl(null, Validators.required), 
       'notes'     : new FormControl(null, Validators.required), 
-      'rprtDate'  : new FormControl(null, Validators.required)
+      'rprtDate'  : new FormControl(this.rprtDate, Validators.required)
     })
   }
 
   onSubmit() {
-    const workOrderData = this.workOrder.value;
-    this.calcEndTime(workOrderData);
-    console.log(workOrderData);
-
+    this.processWO();
   }
 
 /**
@@ -132,31 +132,65 @@ export class WorkOrder implements OnInit {
     workOrderData.repairHrs = this.hrsHrs + ':' + this.hrsMin;
   }
 
-  // genReportID() {
-  //   let firstInitial = this.profile.firstName.slice(0,1);
-  //   let lastInitial = this.profile.lastName.slice(0,1);
-  //   this.docID = 
-  // }
+  genReportID() {
+    this.timeSrvc.getParsedDate();
+    this.idDate = this.timeSrvc._arrD[1].toString() +
+                  this.timeSrvc._arrD[2].toString() +
+                  this.timeSrvc._arrD[0].toString() +
+                  this.timeSrvc._arrD[3].toString();
+    this.idTime = this.timeSrvc._arrD[4].toString() +
+                  this.timeSrvc._arrD[5].toString() +
+                  this.timeSrvc._arrD[6].toString();
+      console.log( this.idDate );
+    // let firstInitial = this.profile.firstName.slice(0,1);
+    // let lastInitial = this.profile.lastName.slice(0,1);
+    this.docID = this.profile.avatarName + '_' + this.idDate + this.idTime;
+    console.log(this.docID);
+  }
 
-  // processWO() {
-  //   const workOrderData = this.workOrder.value;
-  //   this.calcEndTime(workOrderData);
-  //   console.log(workOrderData);
-  //   this.genReportID();
+  processWO() {
+    const workOrderData = this.workOrder.value;
+    this.calcEndTime(workOrderData);
+    this.genReportID();
+    console.log("processWO() has initial workOrderData:");
+    console.log(workOrderData);
 
-  //   this.dbSrvcs.getDoc( '_local/techProfile')
-  //   .then( res => ( this.profile = res ) );
-  //   if( typeof this.profile.updated == 'undefined' || this.profile.updated === false ) {
-  //     this.tmpReportData = workOrderData;
-  //     this.tmpReportData._id = '_local/tmpReport';
-  //     this.dbSrvcs.addDoc( this.tmpReportData ) 
-  //   } else {
-  //     this.tmpReportData = workOrderData;
-  //     this.tmpReportData.profile = this.profile;
-  //     this.tmpReportData._id = this.docID;
-  //     this.dbSrvcs.addDoc( this.docID );
-  //     console.log( this.tmpReportData );
-  //   }
-  // }
+    this.dbSrvcs.checkLocalDoc( '_local/techProfile')
+    .then( docExists => {
+      if(docExists) {
+        console.log("docExists is true");
+        this.dbSrvcs.getDoc('_local/techProfile').then(res => {
+          this.profile = res;
+          if( typeof this.profile.updated == 'undefined' || this.profile.updated === false ) {
+            /* Update flag not set, force user to visit Settings page at gunpoint */
+            this.tmpReportData = workOrderData;
+            this.tmpReportData._id = '_local/tmpReport';
+            this.tmpReportData.docID = this.docID;
+            // this.tmpReportData._rev = ;
+            console.log("Update flag not set, tmpReportData is:");
+            console.log( this.tmpReportData );
+            this.dbSrvcs.addLocalDoc( this.tmpReportData ) 
+            
+            /* Notify user and go to Settings page */
+            // this.navCtrl.push('Report Settings');
+
+          } else {
+            /* Update flag is true, good to submit work order */
+            console.log("docExists is false");
+            this.tmpReportData = workOrderData;
+            this.tmpReportData.profile = this.profile;
+            this.tmpReportData._id = this.docID;
+            // this.tmpReportData._rev = '0-1';
+            console.log("Update flag set, tmpReportData is:");
+            console.log( this.tmpReportData );
+            
+            this.dbSrvcs.addLocalDoc( this.tmpReportData );
+          }
+        })
+      } else {
+        console.error("Tech profile does not exist. Contact developers.");
+      }
+    });
+  }
 
 }

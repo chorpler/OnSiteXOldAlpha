@@ -45,7 +45,7 @@ export class TimeSrvc {
     let prsTmzonestr =  XTIMEZONE.exec( this.dstr );  this.tmZoneStr = prsTmzonestr[ 0 ];
 
     this._arrD = [ this.month, this.weekDay, this.mDay, this.year, this.hours, this.min, this.sec, this.time, this.gmtOffset, this.tmZoneStr ];
-
+    console.log(this._arrD);
     return this._arrD;
   }
 
