@@ -16,6 +16,10 @@
 <ion-content padding>
   <ion-list>
 
+    <ion-item *ngIf="loginError" color="danger">
+      <span class="center error">Username or password error!</span>
+    </ion-item>
+
     <ion-item>
       <ion-label floating>Username</ion-label>
       <ion-input type="text" value="" [(ngModel)]="username"></ion-input>
@@ -32,3 +36,4 @@
     <button ion-button color="primary" block (click)="loginAttempt()">Sign In</button>
   </div>
 </ion-content>
+

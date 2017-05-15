@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { AuthSrvcs } from '../../providers/auth-srvcs'
+import { PopoverController } from 'ionic-angular';
+// import { LoginErrorPopover } from './login-error-popover';
+import { Settings } from '../settings/settings';
+import { AuthSrvcs } from '../../providers/auth-srvcs';
+
 /**
  * Generated class for the Login page.
  *
@@ -13,10 +17,13 @@ import { AuthSrvcs } from '../../providers/auth-srvcs'
   templateUrl: 'login.html',
 })
 export class Login {
-	public username: string;
-	public password: string;
+	private username: string;
+	private password: string;
+	public loginError: boolean = false;
 
+  // constructor(public navCtrl: NavController, public navParams: NavParams, public popoverCtrl: PopoverController, private auth: AuthSrvcs) {
   constructor(public navCtrl: NavController, public navParams: NavParams, private auth: AuthSrvcs) {
+  // constructor(public navCtrl: NavController, public navParams: NavParams, private settings: Settings, private auth: AuthSrvcs) {
   }
 
   ionViewDidLoad() {
@@ -26,7 +33,21 @@ export class Login {
   loginAttempt() {
   	this.auth.setUser(this.username);
   	this.auth.setPassword(this.password);
-  	this.auth.login();
+  	console.log("About to call auth.login()");
+  	this.auth.login().then((res) => {
+  		console.log("Login succeeded.");
+  		console.log(res);
+  		this.navCtrl.push('Report Settings');
+  	}).catch((err) => {
+  		console.log("Login error.");
+  		console.log(err);
+  		this.loginError = true;
+  	});
   }
+
+  // showPopover() {
+  // 	let popover = this.popoverCtrl.create(LoginErrorPopover);
+  // 	popover.present();
+  // }
 
 }
