@@ -1,7 +1,8 @@
 import { Injectable, NgZone } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
-import * as PouchDB from 'pouchdb';
+import * as PouchDB2 from 'pouchdb';
+import * as PouchDBAuth from 'pouchdb-authentication';
 
 @Injectable()
 
@@ -16,15 +17,23 @@ export class DBSrvcs {
   username: any;
   password: any;
   remote: any;
+  PouchDB: any;
+  remoteDB: any;
 
   constructor(public http: Http, public zone: NgZone) {
+    this.PouchDB = require("pouchdb");
+    this.PouchDB.plugin(require('pouchdb-upsert'));
+    this.PouchDB.plugin(require('pouchdb-authentication'));
 
-    window["PouchDB"] = PouchDB; // Dev: reveals PouchDB to PouchDB Inspector
-    this.db = new PouchDB('reports');
-    this.username = 'sesatech';
-    this.password = 'sesatech';
+    window["PouchDB"] = this.PouchDB; // Dev: reveals PouchDB to PouchDB Inspector
+    this.db = new this.PouchDB('reports');
+    // this.username = 'sesatech';
+    // this.password = 'sesatech';
     // this.remote    = 'http://martiancouch.hplx.net/reports' ;
-    this.remote = 'http://192.168.0.140:5984/reports';
+    // this.remote = 'http://192.168.0.140:5984/reports';
+
+
+    this.remote = 'http://162.243.157.16/reports';
 
     let options = {
       live: true,
@@ -36,7 +45,7 @@ export class DBSrvcs {
       }
     };
 
-    this.db.sync(this.remote, options);
+    // this.db.sync(this.remote, options);
   }
 
   // -------------- DBSrvcs METHODS------------------------

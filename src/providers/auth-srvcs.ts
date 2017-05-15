@@ -21,6 +21,7 @@ export class AuthSrvcs {
   settingsDoc: any;
   couchUser: any;
   userProfile: any = {};
+  remoteDB: any = {};
 
 
 
@@ -33,7 +34,8 @@ export class AuthSrvcs {
     // this.username = 'sesatech';
     // this.password = 'sesatech';
     // this.remote       = 'http://martiancouch.hplx.net/_users' ;
-    this.remote = 'https://192.168.0.140:5984/_users';
+    // this.remote = 'https://192.168.0.140:5984/_users';
+    this.remote = 'http://162.243.157.16/reports/';
     this.profileDoc = '_local/techProfile';
     // this.remote       = 'http://192.168.0.140/notusers' ;
     // this.docId        = 'org.couchdb.user:testUser005'          ;
@@ -42,8 +44,8 @@ export class AuthSrvcs {
     this.options = {
       live: true,
       retry: true,
-      continuous: false,
-      auth: { username: this.username, password: this.password }
+      continuous: false
+      ,auth: { username: this.username, password: this.password }
     };
 
     // this.userDb.sync(this.remote, this.options);
@@ -65,20 +67,23 @@ export class AuthSrvcs {
 
   login() {
     // console.log(this.docId);
+    console.log("AuthSrvcs.login() now starting");
     let pouchOpts = { skipSetup: true };
     let ajaxOpts = { ajax: { headers: { Authorization: 'Basic ' + window.btoa(this.username + ':' + this.password) } } };
-    var db = new this.PouchDB(this.remote, pouchOpts);
-    console.log("Now making login attempt...");
+    this.remoteDB = new this.PouchDB(this.remote, pouchOpts);
+    console.log("Now making login attempt, options:");
+    console.log(ajaxOpts);
     return new Promise((resolve, reject) => {
-      return db.login(this.username, this.password, ajaxOpts).then(() => {
+      return this.remoteDB.login(this.username, this.password, ajaxOpts).then((res) => {
         console.log("Login complete");
-        return db.getSession();
+        console.log(res);
+        return this.remoteDB.getSession();
       }).then((session) => {
         console.log("Got session.");
         console.log(session);
         console.log("Now attempting getUser()...");
         let dbUser = session.userCtx.name;
-        return db.getUser(dbUser);
+        return this.remoteDB.getUser(dbUser);
       }).then((user) => {
         this.couchUser = user;
         this.userProfile.firstName      = this.couchUser.firstName      ;
@@ -97,8 +102,10 @@ export class AuthSrvcs {
         console.log("Got user");
         console.log(user);
         // let tmpProfile = {id: this.userDb, firstName: user.firstName, lastName: user.lastName, client: user.client, location: user.location, locID: user.locID, loc2nd: user.loc2nd, shift: user.shift, shiftLength: user.shiftLength, shiftStartTime: user.shiftStartTime};
-        return this.db.addDoc(this.userProfile);
+        return this.db.addLocalDoc(this.userProfile);
       }).then((res) => {
+        console.log("userProfile added! Finished!");
+
         resolve(res);
         // }).then((docs) => {
         //   console.log(docs);

@@ -24,9 +24,14 @@ export const LOCID          = [
                                 "TOPPER"
                                                 ];
 
+// export const SHIFT          = [
+//                                 "☽ PM"        ,
+//                                 "☼ AM"
+//                                                 ];
+
 export const SHIFT          = [
-                                "☽ PM"        ,
-                                "☼ AM"
+                                "PM"        ,
+                                "AM"
                                                 ];
 
 export const SHIFTLENGTH    = [

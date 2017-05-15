@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { PopoverController } from 'ionic-angular';
 // import { LoginErrorPopover } from './login-error-popover';
-import { Settings } from '../settings/settings';
+// import { Settings } from '../settings/settings';
 import { AuthSrvcs } from '../../providers/auth-srvcs';
 
 /**
@@ -27,10 +27,11 @@ export class Login {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad Login');
+    console.log('Login: ionViewDidLoad fired.');
   }
 
   loginAttempt() {
+  	console.log("Login: Now attempting login:");
   	this.auth.setUser(this.username);
   	this.auth.setPassword(this.password);
   	console.log("About to call auth.login()");
