@@ -38,8 +38,8 @@ export class Settings implements OnInit {
 
   private initializeForm() {
     this.techSettings = new FormGroup({
-      'firstName'     : new FormControl('Joe', Validators.required), 
       'lastName'      : new FormControl('Blow', Validators.required), 
+      'firstName'     : new FormControl('Joe', Validators.required), 
       'client'        : new FormControl("SESA", Validators.required), 
       'location'      : new FormControl('Weslaco', Validators.required), 
       'locID'         : new FormControl('MNSHOP', Validators.required), 
