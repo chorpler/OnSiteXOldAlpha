@@ -171,7 +171,7 @@ export class WorkOrder implements OnInit {
             // this.tmpReportData._rev = ;
             console.log("Update flag not set, tmpReportData is:");
             console.log( this.tmpReportData );
-            this.dbSrvcs.addLocalDoc( this.tmpReportData ) 
+            this.dbSrvcs.addLocalDoc( this.tmpReportData )
             
             /* Notify user and go to Settings page */
             // this.navCtrl.push('Report Settings');

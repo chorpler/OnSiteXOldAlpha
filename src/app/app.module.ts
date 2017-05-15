@@ -10,6 +10,7 @@ import { ProfileSettings                         } from '../providers/profile-se
 import { AuthSrvcs                               } from '../providers/auth-srvcs';
 import { DBSrvcs                                 } from '../providers/db-srvcs';
 import { TimeSrvc                                } from '../providers/time-parse-srvc';
+import { ReportBuildSrvc                         } from '../providers/report-build-srvc';
 
 
 @NgModule({
@@ -32,7 +33,8 @@ import { TimeSrvc                                } from '../providers/time-parse
                       ProfileSettings,
                       AuthSrvcs,
                       DBSrvcs,
-                      TimeSrvc
+                      TimeSrvc,
+                      ReportBuildSrvc
                                                                             ]
 })
 
