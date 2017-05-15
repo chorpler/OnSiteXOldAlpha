@@ -30,10 +30,10 @@ export class AuthSrvcs {
     this.PouchDB.plugin(require('pouchdb-authentication'));
     window["PouchDB"] = this.PouchDB; // Dev setting to reveal PouchDB to PouchDB Inspector
     // this.userDb       = new PouchDB('notusers')                 ;
-    this.username = 'sesatech';
-    this.password = 'sesatech';
+    // this.username = 'sesatech';
+    // this.password = 'sesatech';
     // this.remote       = 'http://martiancouch.hplx.net/_users' ;
-    this.remote = 'http://192.168.0.140:5984/_users';
+    this.remote = 'https://192.168.0.140:5984/_users';
     this.profileDoc = '_local/techProfile';
     // this.remote       = 'http://192.168.0.140/notusers' ;
     // this.docId        = 'org.couchdb.user:testUser005'          ;
