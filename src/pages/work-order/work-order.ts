@@ -13,6 +13,7 @@ import { TimeSrvc                            } from '../../providers/time-parse-
 
 export class WorkOrder implements OnInit {
 
+  title        : string   = 'Work Report'             ;
   setDate      : Date     = new Date()                ; 
   year         : number   = this.setDate.getFullYear(); 
   mode         : string   = 'New'                     ; 
@@ -46,6 +47,7 @@ export class WorkOrder implements OnInit {
     console.log(this.mode);
     console.log(this.setDate);
     console.log(this.year);
+    console.log(this.rprtDate);
     this.initializeForm();
   }
 
