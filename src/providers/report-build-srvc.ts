@@ -19,16 +19,34 @@ export class ReportBuildSrvc {
   }
 
   getLocalDocs() {
-    return this._localSrvcs.getDoc('_local/tmpReport'  ).then( res => { 
-      this.report = res;
-      return this._localSrvcs.getDoc('_local/techProfile');
-  } ).then( res => { 
-      this.profile = res;
-      this.createReport();
-    } );
+    return new Promise((resolve,reject) => {
+      console.log("ReportBuilder: About to get tmpReport...");
+      this._localSrvcs.getDoc('_local/tmpReport').then((res) => { 
+        console.log("ReportBuilder: Got tmpReport:");
+        console.log(res);
+        this.report = res;
+        console.log("ReportBuilder: About to get techProfile");
+        return this._localSrvcs.getDoc('_local/techProfile');
+      }).then((res) => {
+        this.profile = res;
+        console.log("ReportBuilder: got techProfile:");
+        console.log(res);
+        console.log("ReportBuilder: About to createReport()");
+        return this.createReport();
+      }).then((res) => {
+        console.log("Generated report and saved it to be synchronized.");
+        console.log(res);
+        resolve(res);
+      }).catch((err) => {
+        console.log("Error while generating/saving report!");
+        console.error(err);
+        reject(err);
+      });
+    });
   }
 
   createReport() {
+    console.log("ReportBuilder: now in createReport()");
     this.newReport._id            = this.report.docID           ;
     this.newReport.timeStarts     = this.report.timeStarts      ;
     this.newReport.timeEnds       = this.report.timeEnds        ;
@@ -47,11 +65,21 @@ export class ReportBuildSrvc {
     this.newReport.shiftLength    = this.profile.shiftLength    ;
     this.newReport.shiftStartTime = this.profile.shiftStartTime ;
     this.newReport.technician     = this.profile.technician     ;
-    console.log('this.newReport: ' + this.newReport );
-    this.putNewReport();
+    console.log('this.newReport: ');
+    console.log(this.newReport);
+    return this.putNewReport();
   }
 
   putNewReport() {
-    this._localSrvcs.addDoc( this.newReport._id );
+    return new Promise((success, failure) => {
+      this._localSrvcs.addDoc( this.newReport ).then((res) => {
+        console.log("putNewReport(): Success");
+        success(res);
+      }).catch((err) => {
+        console.log("Error with putNewReport()");
+        console.error(err);
+        failure(err);
+      });
+    });
   }
 }

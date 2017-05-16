@@ -2,7 +2,8 @@ import { Injectable, NgZone } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import * as PouchDB2 from 'pouchdb';
-import * as PouchDBAuth from 'pouchdb-authentication';
+import * as pdbAuth from 'pouchdb-authentication';
+import * as pdbUpsert from 'pouchdb-upsert';
 
 @Injectable()
 
@@ -12,13 +13,13 @@ import * as PouchDBAuth from 'pouchdb-authentication';
  */
 export class DBSrvcs {
 
-  data: any;
-  db: any;
-  username: any;
-  password: any;
-  remote: any;
-  PouchDB: any;
-  remoteDB: any;
+  data     : any;
+  db       : any;
+  username : any;
+  password : any;
+  remote   : any;
+  PouchDB  : any;
+  remoteDB : any;
 
   constructor(public http: Http, public zone: NgZone) {
     this.PouchDB = require("pouchdb");
@@ -51,32 +52,37 @@ export class DBSrvcs {
   // -------------- DBSrvcs METHODS------------------------
 
   addDoc(doc) {
-    // return new Promise((resolve,reject) => {
-    console.log("Adding document...");
-    if (typeof doc._id === 'undefined') { doc._id = 'INVALID_DOC' }
-    this.getDoc(doc._id).then((result) => {
-      // console.log("adding document");
-      // this.db.put(doc);
-      console.log(`Cannot add document ${doc._id}, document already exists.`);
-    }).catch((error) => {
-      console.log(`Error getting document ${doc._id}`);
-      if (error.status == '404') {
-        this.db.put(doc)
-      }
-    })
-    // .catch((error) => {
-    //   if (error.status = '409') { console.log("Document already exists."); }
-    // })
-    // })
+    return new Promise((resolve,reject) => {
+      console.log("Adding document...");
+      if (typeof doc._id === 'undefined') { doc._id = 'INVALID_DOC' }
+      this.getDoc(doc._id).then((result) => {
+        // console.log("adding document");
+        // this.db.put(doc);
+        console.log(`Cannot add document ${doc._id}, document already exists.`);
+      }).catch((error) => {
+        console.log(`Error getting document ${doc._id}`);
+        if (error.status == '404') {
+          this.db.put(doc)
+        }
+      })
+      // .catch((error) => {
+      //   if (error.status = '409') { console.log("Document already exists."); }
+      // })
+      // })
+    });
   }
 
-  getDoc(doc) {
+  getDoc(docID) {
     return new Promise((resolve, reject) => {
-      this.db.get(doc).then((result) => {
-        console.log(`Got document ${doc}`);
+      this.db.get(docID).then((result) => {
+        console.log(`Got document ${docID}`);
         resolve(result);
-      }).catch((error) => { reject(error); })
-    })
+      }).catch((error) => {
+        console.log("Error in DBSrvcs.getDoc()!");
+        console.error(error);
+        reject(error);
+      });
+    });
   }
 
   checkLocalDoc(docID) {
@@ -98,42 +104,45 @@ export class DBSrvcs {
     })
   }
 
-  addLocalDoc(doc) {
+  addLocalDoc(newDoc) {
     // return new Promise((resolve,reject) => {
     console.log("Attempting to add local document...");
-    if (typeof doc._id === 'undefined') { doc._id = 'INVALID_DOC'; };
+    // if (typeof doc._id === 'undefined') { doc._id = 'INVALID_DOC'; };
     // if( typeof doc._rev === 'undefined' ) { doc._rev = '0-1' };
     // this.getDoc(doc._id).then((result) => {
     console.log("Local document to add:");
-    console.log(doc);
+    console.log(newDoc);
     return new Promise((resolve, reject) => {
-      this.db.get(doc._id).then((res1) => {
-        console.log(`Now removing existing local document ${doc._id}`);
+      this.db.get(newDoc._id).then((res1) => {
+        console.log(`Now removing existing local document ${newDoc._id}`);
         return new Promise((resolveRemove, rejectRemove) => {
-          this.db.remove(res1).then((res2) => {
-            console.log(`Successfully deleted local doc ${doc._id}, need to add new copy`);
+          let strID  = res1._id;
+          let strRev = res1._rev;
+          this.db.remove(strID, strRev).then((res2) => {
+            console.log(`Successfully deleted local doc ${newDoc._id}, need to add new copy`);
             resolveRemove(res2);
           }).catch((errRemove) => {
-            console.log(`Error while removing local doc ${doc._id}.`);
-            console.log(doc);
+            console.log(`Error while removing local doc ${newDoc._id}.`);
+            console.log(newDoc);
             rejectRemove(errRemove);
           });
         });
       }).then(() => {
-        console.log(`Now adding fresh copy of local document ${doc._id}`);
-        return this.db.put(doc);
+        console.log(`Now adding fresh copy of local document ${newDoc._id}`);
+        return this.db.put(newDoc);
       }).then((success) => {
-        console.log(`Successfully deleted and re-saved local document ${doc._id}`);
+        console.log(`Successfully deleted and re-saved local document ${newDoc._id}`);
         resolve(success);
       }).catch((err) => {
-        console.log(`Local document ${doc._id} does not exist, saving...`);
-        this.db.put(doc).then((final) => {
-          console.log(`Local document ${doc._id} was newly saved successfully`);
+        console.log(`Local document ${newDoc._id} does not exist, saving...`);
+        this.db.put(newDoc).then((final) => {
+          console.log(`Local document ${newDoc._id} was newly saved successfully`);
           resolve(final);
         }).catch((err) => {
-          console.log(`Error while saving new copy of local doc ${doc._id}!`);
-          console.error(err);
-          reject(err);
+          console.log(`Error while saving new copy of local doc ${newDoc._id}!`);
+          console.warn(err);
+          // reject(err);
+          resolve(null);
         })
       })
     })
@@ -168,6 +177,56 @@ deleteLocalDoc(doc) {
     });
   });
 }
+
+saveTechProfile(doc) {
+  console.log("Attempting to save local techProfile...");
+  // let updateFunction = (original) => {}
+  doc._id = '_local/techProfile';
+  return new Promise((resolve,reject) => {
+    this.getTechProfile().then((res) => {
+      console.log("saveTechProfile(): About to process old and new:");
+      console.log(res);
+      console.log(doc);
+      // let oldTechProfile = res;
+      // let profileChanges = doc;
+      var strID  = res['_id'];
+      var strRev = res['_rev'];
+      let newProfileDoc  = {...res, ...doc, "_id": strID, "_rev": strRev };
+      console.log("saveTechProfile(): Merged profile is:");
+      console.log(newProfileDoc);
+      console.log("saveTechProfile(): now attempting save...");
+      return this.addLocalDoc(newProfileDoc);
+    }).then((res) => {
+      console.log("saveTechProfile(): Saved updated techProfile");
+      resolve(res);
+    }).catch((err) => {
+      console.log("saveTechProfile(): Error merging or saving profile!");
+      console.error(err);
+      reject(err);
+    });
+  });
+}
+
+ getTechProfile() {
+   let documentID = "_local/techProfile";
+   return new Promise((resolve, reject) => {
+     return this.checkLocalDoc(documentID).then((res) => {
+       console.log("techProfile exists, reading it in...");
+       return this.getDoc(documentID);
+     }).then((res) => {
+        console.log("techProfile read successfully:");
+        console.log(res);
+        resolve(res);
+        // this.techProfile = res;
+      }).catch((err) => {
+        console.log("techProfile not found, user not logged in.");
+        console.error(err);
+        reject(err);
+      });
+   });
+  }
+
+
 
 purgeLocalTempReport() {
   const tmpID = '_local/tmpReport';

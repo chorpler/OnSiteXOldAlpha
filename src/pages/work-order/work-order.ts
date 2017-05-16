@@ -3,6 +3,8 @@ import { FormGroup, FormControl, Validators  } from "@angular/forms";
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { DBSrvcs                             } from '../../providers/db-srvcs';
 import { TimeSrvc                            } from '../../providers/time-parse-srvc';
+import { ReportBuildSrvc                     } from '../../providers/report-build-srvc';
+
 
 @IonicPage({ name: 'Work Order Form' })
 
@@ -38,7 +40,7 @@ export class WorkOrder implements OnInit {
   timeEnds  ;
   // , private dbSrvcs: DBSrvcs
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private dbSrvcs: DBSrvcs, private timeSrvc: TimeSrvc ) { }
+  constructor(public navCtrl: NavController, public navParams: NavParams, private dbSrvcs: DBSrvcs, private timeSrvc: TimeSrvc, public reportBuilder: ReportBuildSrvc ) { }
 
   ionViewDidLoad() { console.log('ionViewDidLoad WorkOrder'); }
 
@@ -153,7 +155,6 @@ export class WorkOrder implements OnInit {
   processWO() {
     const workOrderData = this.workOrder.value;
     this.calcEndTime(workOrderData);
-    this.genReportID();
     console.log("processWO() has initial workOrderData:");
     console.log(workOrderData);
 
@@ -163,6 +164,12 @@ export class WorkOrder implements OnInit {
         console.log("docExists is true");
         this.dbSrvcs.getDoc('_local/techProfile').then(res => {
           this.profile = res;
+          if(typeof this.profile.avatarName == 'undefined') {
+            this.profile.avatarName = 'PaleRider';
+          }
+          delete this.profile._id;
+          delete this.profile._rev;
+          this.genReportID();
           if( typeof this.profile.updated == 'undefined' || this.profile.updated === false ) {
             /* Update flag not set, force user to visit Settings page at gunpoint */
             this.tmpReportData = workOrderData;
@@ -181,12 +188,18 @@ export class WorkOrder implements OnInit {
             console.log("docExists is false");
             this.tmpReportData = workOrderData;
             this.tmpReportData.profile = this.profile;
-            this.tmpReportData._id = this.docID;
+            this.tmpReportData._id = '_local/tmpReport';
+            this.tmpReportData.docID = this.docID;
             // this.tmpReportData._rev = '0-1';
             console.log("Update flag set, tmpReportData is:");
             console.log( this.tmpReportData );
             
-            this.dbSrvcs.addLocalDoc( this.tmpReportData );
+            this.dbSrvcs.addLocalDoc( this.tmpReportData ).then((res) => {
+              console.log("About to generate work order");
+              return this.reportBuilder.getLocalDocs();
+            }).then((final) => {
+              console.log("Done generating work order.");
+            });
           }
         })
       } else {

@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators } from "@angular/forms";
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { CLIENT, LOCATION, LOCID, SHIFTLENGTH         } from '../../config/config.constants.settings';
-import { SHIFT, SHIFTSTARTTIME, SHIFTROTATION, LOC2ND } from '../../config/config.constants.settings';
-import { REPORTHEADER, REPORTMETA } from '../../config/report.object';
-import { DBSrvcs } from '../../providers/db-srvcs';
+import { Component, OnInit                            } from '@angular/core'                          ;
+import { FormGroup, FormControl, Validators           } from "@angular/forms"                         ;
+import { IonicPage, NavController, NavParams          } from 'ionic-angular'                          ;
+import { CLIENT, LOCATION, LOCID, SHIFTLENGTH         } from '../../config/config.constants.settings' ;
+import { SHIFT, SHIFTSTARTTIME, SHIFTROTATION, LOC2ND } from '../../config/config.constants.settings' ;
+import { REPORTHEADER, REPORTMETA                     } from '../../config/report.object'             ;
+import { DBSrvcs                                      } from '../../providers/db-srvcs'               ;
+import { ReportBuildSrvc                              } from '../../providers/report-build-srvc'      ;
 
 @IonicPage({ name: 'Report Settings' })
 
@@ -38,16 +39,18 @@ export class Settings implements OnInit {
   title             : string    = 'Report Settings' ;
   reportHeader      : REPORTHEADER                  ;
   rprtDate          : Date                          ;
-  userProfileURL    : string = "_local/techProfile" ;
+  techProfileURL    : string = "_local/techProfile" ;
   techSettingsReady : boolean = false               ;
+  reportMeta        : any = {}                      ;
   
-  constructor(public navCtrl: NavController, public navParams: NavParams, public db: DBSrvcs) { }
+  constructor(public navCtrl: NavController, public navParams: NavParams, public db: DBSrvcs, public reportBuilder: ReportBuildSrvc) { }
 
   ngOnInit() {
     this.rprtDate = new Date;
     console.log("Settings: Now trying to get tech profile...");
-    this.getTechProfile().then((res) => {
+    this.db.getTechProfile().then((res) => {
       console.log("Settings: Got tech profile, now initFormData()...");
+      this.techProfile = res;
       return this.initFormData();
     }).then((res2) => {
       console.log("Settings: initFormData() done, now initializeForm()...");
@@ -85,15 +88,15 @@ export class Settings implements OnInit {
   }
 
   initFormData() {
-    this.lastName = this.techProfile.lastName;
-    this.firstName = this.techProfile.firstName;
-    this.client = this.techProfile.client;
-    this.location = this.techProfile.location;
-    this.locID = this.techProfile.locID;
-    this.loc2nd = this.techProfile.loc2nd;
-    this.shift = this.techProfile.shift;
-    this.shiftLength = this.techProfile.shiftLength;
-    this.shiftStartTime = this.techProfile.shiftStartTime;
+    this.lastName       = this.techProfile.lastName       ;
+    this.firstName      = this.techProfile.firstName      ;
+    this.client         = this.techProfile.client         ;
+    this.location       = this.techProfile.location       ;
+    this.locID          = this.techProfile.locID          ;
+    this.loc2nd         = this.techProfile.loc2nd         ;
+    this.shift          = this.techProfile.shift          ;
+    this.shiftLength    = this.techProfile.shiftLength    ;
+    this.shiftStartTime = this.techProfile.shiftStartTime ;
   }
 
   ionViewDidLoad() {
@@ -109,28 +112,37 @@ export class Settings implements OnInit {
     // console.log( this.techSettings )      ; 
   }
 
-  getTechProfile() {
-    return this.db.checkLocalDoc(this.userProfileURL).then((res) => {
-      console.log("techProfile exists, reading it in...");
-      return this.db.getDoc(this.userProfileURL);
-    }).then((res) => {
-      console.log("techProfile read successfully:");
-      console.log(res);
-      this.techProfile = res;
+  // getTechProfile() {
+  //   return this.db.checkLocalDoc(this.userProfileURL).then((res) => {
+  //     console.log("techProfile exists, reading it in...");
+  //     return this.db.getDoc(this.userProfileURL);
+  //   }).then((res) => {
+  //     console.log("techProfile read successfully:");
+  //     console.log(res);
+  //     this.techProfile = res;
+  //   }).catch((err) => {
+  //     console.log("techProfile not found, user not logged in.");
+  //     console.error(err);
+  //   });
+  // }
+
+  onSubmit() { 
+    this.reportMeta = this.techSettings.value;
+    this.reportMeta.technician = this.reportMeta.lastName + ', ' + this.reportMeta.firstName;
+    this.reportMeta.updated = true;
+    console.log("onSubmit(): Now attempting to save tech profile:");
+    console.log(this.reportMeta);
+    this.db.saveTechProfile(this.reportMeta).then((res) => {
+      console.log("onSubmit(): Saved techProfile successfully.");
+      this.addReportMeta(this.reportMeta);
     }).catch((err) => {
-      console.log("techProfile not found, user not logged in.");
+      console.log("onSubmit(): Error saving techProfile!");
       console.error(err);
     });
   }
 
-  onSubmit() { 
-    const reportMeta = this.techSettings.value;
-    reportMeta.technician = reportMeta.lastName + ', ' + reportMeta.firstName;
-    console.log(reportMeta);
-    this.addReportMeta(reportMeta);
-  }
-
   addReportMeta(reportMeta) {
+
   //   this.reportHeader.firstName = reportMeta.firstName;
   //   this.reportHeader.lastName = reportMeta.lastName;
   //   this.reportHeader.client = reportMeta.client;
