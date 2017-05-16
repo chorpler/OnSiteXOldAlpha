@@ -73,6 +73,7 @@ export class AuthSrvcs {
     this.remoteDB = new this.PouchDB(this.remote, pouchOpts);
     console.log("Now making login attempt, options:");
     console.log(ajaxOpts);
+    console.log("Username: " + this.username);
     return new Promise((resolve, reject) => {
       return this.remoteDB.login(this.username, this.password, ajaxOpts).then((res) => {
         console.log("Login complete");
@@ -83,7 +84,7 @@ export class AuthSrvcs {
         console.log(session);
         console.log("Now attempting getUser()...");
         let dbUser = session.userCtx.name;
-        return this.remoteDB.getUser(dbUser);
+        return this.remoteDB.getUser(this.username);
       }).then((user) => {
         this.couchUser = user;
         this.userProfile.firstName      = this.couchUser.firstName      ;
@@ -104,9 +105,11 @@ export class AuthSrvcs {
         // let tmpProfile = {id: this.userDb, firstName: user.firstName, lastName: user.lastName, client: user.client, location: user.location, locID: user.locID, loc2nd: user.loc2nd, shift: user.shift, shiftLength: user.shiftLength, shiftStartTime: user.shiftStartTime};
         return this.db.addLocalDoc(this.userProfile);
       }).then((res) => {
-        console.log("userProfile added! Finished!");
-
-        resolve(res);
+        console.log("userProfile document added successfully.");
+        return this.saveCredentials();
+      }).then((res2) => {
+        console.log("Credentials saved. Finished.");
+        resolve(res2);
         // }).then((docs) => {
         //   console.log(docs);
       }).catch((error) => {
@@ -119,6 +122,7 @@ export class AuthSrvcs {
 
   saveCredentials() {
     console.log("Saving credentials...");
+    window["secureStorage"] = this.secureStorage;
     return new Promise((resolve,reject) => {
       this.secureStorage.create('OnSiteX').then((storage: SecureStorageObject) => {
         let userLogin = {username: this.username, password: this.password};
