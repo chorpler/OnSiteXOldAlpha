@@ -3,7 +3,7 @@
     <name>OnSiteX                                                                               </name>
     <description>SESA OnSite                                                             </description>
     <author email="michael.a.bates@gmail.com" href="https://sesaonsite.com/">Star Mobile Developers</author>
-    <content src="index.html" />
+    <content original-src="index.html" src="http://192.168.0.32:8100" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -88,6 +88,7 @@
     <allow-navigation href="http://192.168.0.32:8100" />
     <icon src="resources\ios\icon\icon-small@3x.png" />
     <engine name="android" spec="^6.2.3" />
+    <engine name="browser" spec="^4.1.0" />
     <engine name="ios" spec="^4.4.0" />
     <engine name="windows" spec="^5.0.0" />
     <plugin name="cordova-plugin-console" spec="^1.0.7" />
