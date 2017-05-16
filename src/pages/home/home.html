@@ -6,9 +6,9 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding *ngIf="showPage">
+<ion-content padding *ngIf="showPage" class="header-exists">
   <button ion-button block color="secondary" *ngIf="!userLoggedIn" (click)="onLogin()"> Login </button>
-  <button ion-button block color="secondary" *ngIf="userLoggedIn" [ngClass]="isFirstItem()" (click)="onSettings()"> Settings </button>
+  <button ion-button block color="secondary" *ngIf="userLoggedIn" (click)="onSettings()"> Settings </button>
   <button ion-button block color="secondary" *ngIf="userLoggedIn" (click)="onNewWorkOrder()"> New WorkOrder </button>
 </ion-content>
 <!--
