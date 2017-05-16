@@ -28,6 +28,7 @@ export class MyApp {
       this.PouchDB = window["PouchDB"].defaults(this.pouchOptions);
       window["PouchDB"] = window["PouchDB"].defaults(this.pouchOptions);
       this.PouchDB.debug.enable('pouchdb:api');
+      this.PouchDB.debug.enable('pouchdb:http');
       // this.PouchDB.debug.disable('pouchdb:api');
       // window["PouchDB"] = this.PouchDB; // Dev: reveals PouchDB to PouchDB Inspector
 
