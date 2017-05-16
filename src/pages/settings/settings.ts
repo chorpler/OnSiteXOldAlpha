@@ -42,6 +42,7 @@ export class Settings implements OnInit {
   techProfileURL    : string = "_local/techProfile" ;
   techSettingsReady : boolean = false               ;
   reportMeta        : any = {}                      ;
+  reportWaiting     : boolean = false               ;
   
   constructor(public navCtrl: NavController, public navParams: NavParams, public db: DBSrvcs, public reportBuilder: ReportBuildSrvc) { }
 
@@ -126,7 +127,7 @@ export class Settings implements OnInit {
   //   });
   // }
 
-  onSubmit() { 
+  onSubmit() {
     this.reportMeta = this.techSettings.value;
     this.reportMeta.technician = this.reportMeta.lastName + ', ' + this.reportMeta.firstName;
     this.reportMeta.updated = true;
@@ -134,7 +135,14 @@ export class Settings implements OnInit {
     console.log(this.reportMeta);
     this.db.saveTechProfile(this.reportMeta).then((res) => {
       console.log("onSubmit(): Saved techProfile successfully.");
-      this.addReportMeta(this.reportMeta);
+      if(this.reportWaiting) {
+        this.addReportMeta(this.reportMeta);
+        this.reportWaiting = false;
+        /* create and submit report here */
+      } else {
+        /* No report to submit. Just go back to home screen. */
+        this.navCtrl.push('OnSiteHome');
+      }
     }).catch((err) => {
       console.log("onSubmit(): Error saving techProfile!");
       console.error(err);

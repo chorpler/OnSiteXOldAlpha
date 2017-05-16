@@ -1,11 +1,11 @@
-import { Injectable, NgZone } from '@angular/core';
-import { Http } from '@angular/http';
-import 'rxjs/add/operator/map';
-import * as PouchDB2 from 'pouchdb';
-import * as PouchDBAuth from 'pouchdb-authentication';
-import { NativeStorage } from 'ionic-native';
-import { SecureStorage, SecureStorageObject } from '@ionic-native/secure-storage';
-import { DBSrvcs } from '../providers/db-srvcs';
+import { Injectable, NgZone                 } from '@angular/core'                ;
+import { Http                               } from '@angular/http'                ;
+import 'rxjs/add/operator/map'                                                    ;
+import * as PouchDB2                          from 'pouchdb'                      ;
+import * as PouchDBAuth                       from 'pouchdb-authentication'       ;
+import { NativeStorage                      } from 'ionic-native'                 ;
+import { SecureStorage, SecureStorageObject } from '@ionic-native/secure-storage' ;
+import { DBSrvcs                            } from '../providers/db-srvcs'        ;
 
 @Injectable()
 export class AuthSrvcs {
@@ -26,7 +26,7 @@ export class AuthSrvcs {
 
 
 
-  constructor(public http: Http, public zone: NgZone, private db: DBSrvcs) {
+  constructor(public http: Http, public zone: NgZone, private db: DBSrvcs, public secureStorage: SecureStorage) {
     this.PouchDB = require("pouchdb");
     this.PouchDB.plugin(require('pouchdb-authentication'));
     window["PouchDB"] = this.PouchDB; // Dev setting to reveal PouchDB to PouchDB Inspector
@@ -115,6 +115,73 @@ export class AuthSrvcs {
         reject(error);
       });
     });
-  };
+  }
+
+  saveCredentials() {
+    console.log("Saving credentials...");
+    return new Promise((resolve,reject) => {
+      this.secureStorage.create('OnSiteX').then((storage: SecureStorageObject) => {
+        let userLogin = {username: this.username, password: this.password};
+        return storage.set('userLogin', JSON.stringify(userLogin));
+      }).then((res) => {
+        console.log("Credentials saved in secure storage!");
+        console.log(res);
+        resolve(res);
+      // }).then(res2) {}
+      }).catch((err) => {
+        console.log("Error saving credentials in secure storage!");
+        console.warn(err);
+        reject(err);
+      });
+    });
+  }
+
+  getCredentials() {
+    console.log("Retrieving credentials...");
+    return new Promise((resolve,reject) => {
+      this.secureStorage.create('OnSiteX').then((storage: SecureStorageObject) => {
+       // let userLogin = {username: this.username, password: this.password};
+       return storage.get('userLogin');
+      }).then((res) => {
+        console.log("Credentials retrieved from secure storage!");
+        console.log(res);
+        let userInfo = JSON.parse(res);
+        this.setUser(userInfo.username);
+        this.setPassword(userInfo.password);
+        resolve(userInfo);
+      // }).then(res2) {}
+      }).catch((err) => {
+        console.log("Error getting credentials from secure storage!");
+        console.warn(err);
+        reject(err);
+      });
+    });
+  }
+
+  isFirstLogin() {
+    console.log("Checking to see if this is first login...");
+    return new Promise((resolve,reject) => {
+      this.db.getTechProfile().then((res) => {
+        console.log("This is not first login, techProfile exists.");
+        resolve(false);
+      }).catch((err) => {
+        /* Error getting tech profile or user is not logged in */
+        console.log("This may be first login, techProfile does not exist.");
+        resolve(true);
+      });
+    });
+  }
+
+  isUserLoggedIn() {
+    console.log("Checking to see if user is logged in...");
+    return new Promise((resolve,reject) => {
+      this.db.getTechProfile().then((res) => {
+        console.log("This is not the first login.");
+      }).catch((err) => {
+        /* Error getting tech profile or user is not logged in */
+
+      });
+    });
+  }
 
 } // Close exported Class: AuthSrvcs

@@ -12,6 +12,7 @@ import * as pdbUpsert from 'pouchdb-upsert'                           ;
 export class MyApp {
   rootPage: any = 'OnSiteHome';
   PouchDB: any;
+  pouchOptions: any = {};
 
   constructor(platform: Platform, navCtrl: NavController, statusBar: StatusBar, splashScreen: SplashScreen) {
     platform.ready().then(() => {
@@ -19,14 +20,15 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
       splashScreen.hide();
+      this.pouchOptions = {adapter: 'websql', auto_compaction: true};
       window["PouchDB"] = require("pouchdb");
       window["PouchDB"].plugin(require('pouchdb-upsert'));
       window["PouchDB"].plugin(require('pouchdb-authentication'));
-      this.PouchDB = require('pouchdb');
-      // this.PouchDB = require("pouchdb");
-      this.PouchDB.plugin(require('pouchdb-upsert'));
-      this.PouchDB.plugin(require('pouchdb-authentication'));
-
+      // this.PouchDB = require('pouchdb');
+      this.PouchDB = window["PouchDB"].defaults(this.pouchOptions);
+      window["PouchDB"] = window["PouchDB"].defaults(this.pouchOptions);
+      this.PouchDB.debug.enable('pouchdb:api');
+      // this.PouchDB.debug.disable('pouchdb:api');
       // window["PouchDB"] = this.PouchDB; // Dev: reveals PouchDB to PouchDB Inspector
 
       console.log("App done starting, now moving to Home...");

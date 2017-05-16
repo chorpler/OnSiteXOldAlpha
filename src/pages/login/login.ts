@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { PopoverController } from 'ionic-angular';
-// import { LoginErrorPopover } from './login-error-popover';
-// import { Settings } from '../settings/settings';
-import { AuthSrvcs } from '../../providers/auth-srvcs';
+import { Component                           } from '@angular/core'              ;
+import { IonicPage, NavController, NavParams } from 'ionic-angular'              ;
+import { PopoverController                   } from 'ionic-angular'              ;
+// import { LoginErrorPopover                } from './login-error-popover'      ;
+// import { Settings                         } from '../settings/settings'       ;
+import { AuthSrvcs                           } from '../../providers/auth-srvcs' ;
 
 /**
  * Generated class for the Login page.

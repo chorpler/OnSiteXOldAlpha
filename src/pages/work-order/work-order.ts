@@ -1,10 +1,11 @@
-import { Component, OnInit                   } from '@angular/core';
-import { FormGroup, FormControl, Validators  } from "@angular/forms";
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { DBSrvcs                             } from '../../providers/db-srvcs';
-import { TimeSrvc                            } from '../../providers/time-parse-srvc';
-import { ReportBuildSrvc                     } from '../../providers/report-build-srvc';
-
+import { Component, OnInit, ViewChild        } from '@angular/core'                     ;
+import { FormGroup, FormControl, Validators  } from "@angular/forms"                    ;
+import { IonicPage, NavController, NavParams } from 'ionic-angular'                     ;
+import { DBSrvcs                             } from '../../providers/db-srvcs'          ;
+import { AuthSrvcs                            } from '../../providers/auth-srvcs'       ;
+import { TimeSrvc                            } from '../../providers/time-parse-srvc'   ;
+import { ReportBuildSrvc                     } from '../../providers/report-build-srvc' ;
+import * as moment                             from 'moment'                            ;
 
 @IonicPage({ name: 'Work Order Form' })
 
@@ -14,6 +15,8 @@ import { ReportBuildSrvc                     } from '../../providers/report-buil
 })
 
 export class WorkOrder implements OnInit {
+  @ViewChild('reportDate') reportDateField;
+  @ViewChild('startTime') startTimeField;
 
   title        : string   = 'Work Report'             ;
   setDate      : Date     = new Date()                ; 
@@ -35,9 +38,11 @@ export class WorkOrder implements OnInit {
   endHrs    ; 
   prsHrs    ; 
   prsMin    ; 
-  rprtDate  : Date     = new Date()                ; 
-  timeStarts: Date     = new Date()                ; 
-  timeEnds  ;
+  rprtDate  : Date     = new Date()   ; 
+  timeStarts: Date     = new Date()   ;
+  reportDate: any      = moment()     ;
+  startTime : any      = moment()     ;
+  timeEnds                            ;
   // , private dbSrvcs: DBSrvcs
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private dbSrvcs: DBSrvcs, private timeSrvc: TimeSrvc, public reportBuilder: ReportBuildSrvc ) { }
@@ -50,20 +55,32 @@ export class WorkOrder implements OnInit {
     console.log(this.setDate);
     console.log(this.year);
     console.log(this.rprtDate);
+
     this.initializeForm();
   }
 
 
   private initializeForm() {
     this.workOrder = new FormGroup({
-      'timeStarts': new FormControl(this.timeStarts, Validators.required), 
+      'timeStarts': new FormControl('', Validators.required), 
       'timeEnds'  : new FormControl(null, Validators.required),
       'repairHrs' : new FormControl(null, Validators.required), 
       'uNum'      : new FormControl(null, Validators.required), 
       'wONum'     : new FormControl(null, Validators.required), 
       'notes'     : new FormControl(null, Validators.required), 
-      'rprtDate'  : new FormControl(this.rprtDate, Validators.required)
-    })
+      'rprtDate'  : new FormControl('', Validators.required)
+      // 'timeStarts': new FormControl(this.timeStarts, Validators.required), 
+      // 'timeEnds'  : new FormControl(null, Validators.required),
+      // 'repairHrs' : new FormControl(null, Validators.required), 
+      // 'uNum'      : new FormControl(null, Validators.required), 
+      // 'wONum'     : new FormControl(null, Validators.required), 
+      // 'notes'     : new FormControl(null, Validators.required), 
+      // 'rprtDate'  : new FormControl(this.rprtDate, Validators.required)
+    });
+    setTimeout(_ => {
+      this.reportDateField.setValue(this.reportDate.format());
+      this.startTimeField.setValue(this.startTime.format());
+    });
   }
 
   onSubmit() {

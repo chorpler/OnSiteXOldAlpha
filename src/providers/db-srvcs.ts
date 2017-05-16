@@ -54,15 +54,30 @@ export class DBSrvcs {
   addDoc(doc) {
     return new Promise((resolve,reject) => {
       console.log("Adding document...");
+      console.log(doc);
       if (typeof doc._id === 'undefined') { doc._id = 'INVALID_DOC' }
       this.getDoc(doc._id).then((result) => {
         // console.log("adding document");
         // this.db.put(doc);
         console.log(`Cannot add document ${doc._id}, document already exists.`);
+        console.log(result);
+        reject('Doc exists');
       }).catch((error) => {
-        console.log(`Error getting document ${doc._id}`);
+        console.log(`addDoc(): Could not get document ${doc._id}, hopefully it does not exist...`);
         if (error.status == '404') {
-          this.db.put(doc)
+          this.db.put(doc).then((res) => {
+            console.log("addDoc(): Successfully added document.");
+            console.log(res);
+            resolve(res);
+          }).catch((err) => {
+            console.log("addDoc(): Failed while trying to add document (after 404 error in get)");
+            console.error(err);
+            reject(err);
+          });
+        } else {
+          console.log("addDoc(): Some other error occurred.");
+          console.error(error);
+          reject(error);
         }
       })
       // .catch((error) => {
@@ -128,6 +143,7 @@ export class DBSrvcs {
           });
         });
       }).then(() => {
+        if(typeof newDoc._rev == 'string') { delete newDoc._rev;}
         console.log(`Now adding fresh copy of local document ${newDoc._id}`);
         return this.db.put(newDoc);
       }).then((success) => {
@@ -135,6 +151,7 @@ export class DBSrvcs {
         resolve(success);
       }).catch((err) => {
         console.log(`Local document ${newDoc._id} does not exist, saving...`);
+        if(typeof newDoc._rev == 'string') { delete newDoc._rev;}
         this.db.put(newDoc).then((final) => {
           console.log(`Local document ${newDoc._id} was newly saved successfully`);
           resolve(final);
