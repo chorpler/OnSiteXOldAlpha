@@ -287,27 +287,31 @@ export class AuthSrvcs {
 
   setLoginFlag() {
     Log.l("setLoginFlag(): Attempting to set login flag to true...");
-    this.storage.set('hasLoggedIn', true).then((res) => {
-      console.log("Set hasLoggedIn to true.");
-      console.log(res);
-      resolve(res);
-    }).catch((err) => {
-      console.log("Error setting hasLoggedIn to true!");
-      console.warn(err);
-      reject(err);
+    return new Promise((resolve,reject) => {
+      this.storage.set('hasLoggedIn', true).then((res) => {
+        console.log("Set hasLoggedIn to true.");
+        console.log(res);
+        resolve(res);
+      }).catch((err) => {
+        console.log("Error setting hasLoggedIn to true!");
+        console.warn(err);
+        reject(err);
+      });
     });
   }
 
   clearLoginFlag() {
     Log.l("clearLoginFlag(): Attempting to clear login flag...");
-    this.storage.remove('hasLoggedIn').then((res) => {
-      console.log("clearLoginFlag(): Successfully cleared hasLoggedIn flag.");
-      console.log(res);
-      resolve(res);
-    }).catch((err) => {
-      console.log("clearLoginFlag(): Error while attempting to clear hasLoggedIn flag.");
-      console.warn(err);
-      reject(err);
+    return new Promise((resolve,reject) => {
+      this.storage.remove('hasLoggedIn').then((res) => {
+        console.log("clearLoginFlag(): Successfully cleared hasLoggedIn flag.");
+        console.log(res);
+        resolve(res);
+      }).catch((err) => {
+        console.log("clearLoginFlag(): Error while attempting to clear hasLoggedIn flag.");
+        console.warn(err);
+        reject(err);
+      });
     });
   }
 
