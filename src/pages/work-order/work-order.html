@@ -14,13 +14,16 @@
 
 
 <ion-content padding>
-  <p class="hdrDate"> Today:  <span class="date">{{ setDate | date:'EEE, MMM dd yyyy'}}</span>,  Time:  <span class="time"> {{setDate| date:'HH:mm'}} </span> </p>
+  <p class="hdrDate"> Today: <span class="date">{{ setDate | date:'EEE, MMM dd yyyy'}}</span>, Time: <span class="time"> {{setDate| date:'HH:mm'}} </span>    </p>
+
   <form [formGroup]="workOrder" (ngSubmit)="onSubmit()">
     <ion-list>
-
+      <ion-item>
+        <ion-input type='text' formControlName="timeStamp"></ion-input>
+      </ion-item>
       <ion-item>
         <ion-label>Start Date</ion-label>
-        <ion-datetime #reportDate displayFormat="DDD, MMM DD YYYY" yearValues="2017" formControlName="rprtDate" ></ion-datetime>
+        <ion-datetime #reportDate displayFormat="DDD, MMM DD YYYY" yearValues="2017" formControlName="rprtDate"></ion-datetime>
       </ion-item>
       <ion-item>
         <ion-label>Start Time</ion-label>
