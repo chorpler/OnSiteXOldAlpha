@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild        } from '@angular/core'                     ;
 import { FormGroup, FormControl, Validators  } from "@angular/forms"                    ;
-import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular'                     ;
+import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular'  ;
 import { DBSrvcs                             } from '../../providers/db-srvcs'          ;
-import { AuthSrvcs                           } from '../../providers/auth-srvcs'       ;
+import { AuthSrvcs                           } from '../../providers/auth-srvcs'        ;
 import { TimeSrvc                            } from '../../providers/time-parse-srvc'   ;
 import { ReportBuildSrvc                     } from '../../providers/report-build-srvc' ;
 import * as moment                             from 'moment'                            ;
@@ -216,6 +216,8 @@ export class WorkOrder implements OnInit {
               return this.reportBuilder.getLocalDocs();
             }).then((final) => {
               console.log("Done generating work order.");
+
+              this.navCtrl.push("OnSiteHome");
             });
           }
         })

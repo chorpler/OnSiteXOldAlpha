@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController} from 'ionic-angular';
-import { Platform } from 'ionic-angular';
-import { AuthSrvcs } from '../../providers/auth-srvcs';
+import { Component                } from '@angular/core'                 ;
+import { IonicPage, NavController } from 'ionic-angular'                 ;
+import { Platform                 } from 'ionic-angular'                 ;
+import { AuthSrvcs                } from '../../providers/auth-srvcs'    ;
+import { Log, CONSOLE             } from '../../config/config.functions' ;
 
 @IonicPage({name: 'OnSiteHome'})
 
@@ -37,6 +38,13 @@ export class HomePage {
     } else {
       return '';
     }
+  }
+  logoutOfApp() {
+    Log.l("User clicked logout button.");
+    this.authServices.logout().then((res) => {
+      Log.l("Done logging out.");
+      this.userLoggedIn = false;
+    });
   }
 }
 // 'Work Order Form'

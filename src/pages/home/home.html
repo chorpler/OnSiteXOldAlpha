@@ -10,6 +10,7 @@
   <button ion-button block color="secondary" *ngIf="!userLoggedIn" (click)="onLogin()"> Login </button>
   <button ion-button block color="secondary" *ngIf="userLoggedIn" (click)="onSettings()"> Settings </button>
   <button ion-button block color="secondary" *ngIf="userLoggedIn" (click)="onNewWorkOrder()"> New WorkOrder </button>
+  <button ion-button block color="secondary" *ngIf="userLoggedIn" (click)="logoutOfApp()"> Logout </button>
 </ion-content>
 <!--
   (click)="onNewWorkOrder()"
