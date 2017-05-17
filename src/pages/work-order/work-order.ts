@@ -1,11 +1,12 @@
-import { Component, OnInit, ViewChild        } from '@angular/core'                     ;
-import { FormGroup, FormControl, Validators  } from "@angular/forms"                    ;
-import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular'  ;
-import { DBSrvcs                             } from '../../providers/db-srvcs'          ;
-import { AuthSrvcs                           } from '../../providers/auth-srvcs'        ;
-import { TimeSrvc                            } from '../../providers/time-parse-srvc'   ;
-import { ReportBuildSrvc                     } from '../../providers/report-build-srvc' ;
-import * as moment                             from 'moment'                            ;
+import { Component, OnInit, ViewChild                           } from '@angular/core'                     ;
+import { FormGroup, FormControl, Validators                     } from "@angular/forms"                    ;
+import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular'                     ;
+import { DBSrvcs                                                } from '../../providers/db-srvcs'          ;
+import { AuthSrvcs                                              } from '../../providers/auth-srvcs'        ;
+import { TimeSrvc                                               } from '../../providers/time-parse-srvc'   ;
+import { ReportBuildSrvc                                        } from '../../providers/report-build-srvc' ;
+import * as moment                                                from 'moment'                            ;
+import { Log, CONSOLE                                           } from '../../config/config.functions'     ;
 
 @IonicPage({ name: 'Work Order Form' })
 
@@ -43,9 +44,13 @@ export class WorkOrder implements OnInit {
   reportDate: any      = moment()     ;
   startTime : any      = moment()     ;
   timeEnds                            ;
+  syncError : boolean  = false        ;
+  db        : any      = {}           ;
   // , private dbSrvcs: DBSrvcs
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private dbSrvcs: DBSrvcs, private timeSrvc: TimeSrvc, public reportBuilder: ReportBuildSrvc, public loadingCtrl: LoadingController) { }
+constructor(public navCtrl: NavController, public navParams: NavParams, private dbSrvcs: DBSrvcs, private timeSrvc: TimeSrvc, public reportBuilder:ReportBuildSrvc, public loadingCtrl: LoadingController) {
+  this.db = this.dbSrvcs;
+}
 
   ionViewDidLoad() { console.log('ionViewDidLoad WorkOrder'); }
 
@@ -62,25 +67,19 @@ export class WorkOrder implements OnInit {
 
   private initializeForm() {
     this.workOrder = new FormGroup({
-      'timeStarts': new FormControl('', Validators.required), 
+      'timeStarts': new FormControl(this.startTime.format(), Validators.required), 
       'timeEnds'  : new FormControl(null, Validators.required),
       'repairHrs' : new FormControl(null, Validators.required), 
       'uNum'      : new FormControl(null, Validators.required), 
       'wONum'     : new FormControl(null, Validators.required), 
       'notes'     : new FormControl(null, Validators.required), 
-      'rprtDate'  : new FormControl('', Validators.required)
-      // 'timeStarts': new FormControl(this.timeStarts, Validators.required), 
-      // 'timeEnds'  : new FormControl(null, Validators.required),
-      // 'repairHrs' : new FormControl(null, Validators.required), 
-      // 'uNum'      : new FormControl(null, Validators.required), 
-      // 'wONum'     : new FormControl(null, Validators.required), 
-      // 'notes'     : new FormControl(null, Validators.required), 
-      // 'rprtDate'  : new FormControl(this.rprtDate, Validators.required)
+      'rprtDate'  : new FormControl(this.reportDate.format(), Validators.required),
+      'timeStamp' : new FormControl({ value: this.reportDate, disabled: true}, Validators.required)
     });
-    setTimeout(_ => {
-      this.reportDateField.setValue(this.reportDate.format());
-      this.startTimeField.setValue(this.startTime.format());
-    });
+    // setTimeout(_ => {
+    //   this.reportDateField.setValue(this.reportDate.format());
+    //   this.startTimeField.setValue(this.startTime.format());
+    // });
   }
 
   onSubmit() {
@@ -175,56 +174,92 @@ export class WorkOrder implements OnInit {
     console.log("processWO() has initial workOrderData:");
     console.log(workOrderData);
 
-    this.dbSrvcs.checkLocalDoc( '_local/techProfile')
-    .then( docExists => {
-      if(docExists) {
-        console.log("docExists is true");
-        this.dbSrvcs.getDoc('_local/techProfile').then(res => {
-          this.profile = res;
-          if(typeof this.profile.avatarName == 'undefined') {
-            this.profile.avatarName = 'PaleRider';
-          }
-          delete this.profile._id;
-          delete this.profile._rev;
-          this.genReportID();
-          if( typeof this.profile.updated == 'undefined' || this.profile.updated === false ) {
-            /* Update flag not set, force user to visit Settings page at gunpoint */
-            this.tmpReportData = workOrderData;
-            this.tmpReportData._id = '_local/tmpReport';
-            this.tmpReportData.docID = this.docID;
-            // this.tmpReportData._rev = ;
-            console.log("Update flag not set, tmpReportData is:");
-            console.log( this.tmpReportData );
-            this.dbSrvcs.addLocalDoc( this.tmpReportData )
-            
-            /* Notify user and go to Settings page */
-            // this.navCtrl.push('Report Settings');
+    return new Promise((resolve,reject) => {
+      this.dbSrvcs.checkLocalDoc( '_local/techProfile')
+      .then((docExists) => {
+        if(docExists) {
+          console.log("processWO(): docExists is true");
+          this.dbSrvcs.getDoc('_local/techProfile').then(res => {
+            this.profile = res;
+            if(typeof this.profile.avatarName == 'undefined') {
+              this.profile.avatarName = 'PaleRider';
+            }
+            delete this.profile._id;
+            delete this.profile._rev;
+            this.genReportID();
+            if( typeof this.profile.updated == 'undefined') {
+              /* This shouldn't happen as long as the user is logged in and the profile was created */
+              Log.l("processWO(): Tech profile does not exist at all. This should not happen.");
+              this.navCtrl.push('Report Settings');
+              resolve(false);
+            } else if(typeof this.profile.updated != 'undefined' && this.profile.updated === false ) {
+              /* Update flag exists but is false, so tech needs to verify settings */
+              Log.l("processWO(): Update flag exists in profile, but is false. Need tech to OK settings changes.");
+              this.tmpReportData = workOrderData;
+              this.tmpReportData._id = '_local/tmpReport';
+              this.tmpReportData.docID = this.docID;
+              // this.tmpReportData._rev = ;
+              Log.l("processWO(): tmpReportData is: ", this.tmpReportData );
+              this.dbSrvcs.addLocalDoc( this.tmpReportData ).then((res) => {
+                Log.l("processWO(): Created temporary work report. Now going to Settings page to OK changes.");
+                Log.l(res);
+                this.navCtrl.push('Report Settings');
+                resolve(res);
+              }).catch((err) => {
+                Log.l("processWO(): Error trying to save temporary work report! Can't take tech to settings page!");
+                Log.w(err);
+                resolve(false);
+              });
+              
+              /* Notify user and go to Settings page */
+              // this.navCtrl.push('Report Settings');
 
-          } else {
-            /* Update flag is true, good to submit work order */
-            console.log("docExists is false");
-            this.tmpReportData = workOrderData;
-            this.tmpReportData.profile = this.profile;
-            this.tmpReportData._id = '_local/tmpReport';
-            this.tmpReportData.docID = this.docID;
-            // this.tmpReportData._rev = '0-1';
-            console.log("Update flag set, tmpReportData is:");
-            console.log( this.tmpReportData );
-            
-            this.dbSrvcs.addLocalDoc( this.tmpReportData ).then((res) => {
-              console.log("About to generate work order");
-              return this.reportBuilder.getLocalDocs();
-            }).then((final) => {
-              console.log("Done generating work order.");
-
-              this.navCtrl.push("OnSiteHome");
-            });
-          }
-        })
-      } else {
-        console.error("Tech profile does not exist. Contact developers.");
-      }
+            } else {
+              /* Update flag is true, good to submit work order */
+              console.log("processWO(): docExists is false");
+              this.tmpReportData = workOrderData;
+              this.tmpReportData.profile = this.profile;
+              this.tmpReportData._id = '_local/tmpReport';
+              this.tmpReportData.docID = this.docID;
+              // this.tmpReportData._rev = '0-1';
+              console.log("processWO(): Update flag set, tmpReportData is:");
+              console.log( this.tmpReportData );
+              
+              this.dbSrvcs.addLocalDoc( this.tmpReportData ).then((res) => {
+                console.log("processWO(): About to generate work order");
+                return this.reportBuilder.getLocalDocs();
+              }).then((final) => {
+                console.log("processWO(): Done generating work order.");
+                return this.db.syncToServer('reports');
+              }).then((final2) => {
+                Log.l("processWO(): Successfully synchronized work order to CouchDB server!");
+                Log.l(final2);
+                // this.navCtrl.push('Report Settings');
+                this.navCtrl.push("OnSiteHome");
+                resolve(final2);
+              }).catch((err) => {
+                Log.l("processWO(): Error while trying to sync work order to CouchDB server!");
+                Log.w(err);
+                this.syncError = true;
+                resolve(false);
+              });
+            }
+          }).catch((anotherError) => {
+            Log.l("processWO(): Could not retrieve _local/techProfile. Please set it up again.");
+            Log.w(anotherError);
+            this.navCtrl.push("Report Settings");
+            resolve(false);
+          })
+        } else {
+          console.error("processWO(): Tech profile does not exist. Contact developers.");
+          resolve(false);
+        }
+      }).catch((outerError) => {
+        Log.l("processWO(): Error checking existence of local document _local/techProfile.");
+        Log.w(outerError);
+        resolve(false);
+      });
     });
-  }
-
+   }
+ }
 }
