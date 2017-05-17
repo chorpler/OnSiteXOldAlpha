@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild        } from '@angular/core'                     ;
 import { FormGroup, FormControl, Validators  } from "@angular/forms"                    ;
+import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular'  ;
 import { DBSrvcs                             } from '../../providers/db-srvcs'          ;
 import { AuthSrvcs                            } from '../../providers/auth-srvcs'       ;
 import { TimeSrvc                            } from '../../providers/time-parse-srvc'   ;
@@ -44,6 +45,7 @@ export class WorkOrder implements OnInit {
   timeEnds                            ;
   // , private dbSrvcs: DBSrvcs
 
+constructor(public navCtrl: NavController, public navParams: NavParams, private dbSrvcs: DBSrvcs, private timeSrvc: TimeSrvc, public reportBuilder: ReportBuildSrvc, public loadingCtrl: LoadingController) { }
 
   ionViewDidLoad() { console.log('ionViewDidLoad WorkOrder'); }
 
@@ -67,6 +69,7 @@ export class WorkOrder implements OnInit {
       'wONum'     : new FormControl(null, Validators.required), 
       'notes'     : new FormControl(null, Validators.required), 
       'rprtDate'  : new FormControl(this.reportDate.format(), Validators.required),
+      'timeStamp' : new FormControl({ value: this.reportDate, disabled: true}, Validators.required)
     });
     // setTimeout(_ => {
     //   this.reportDateField.setValue(this.reportDate.format());
