@@ -14,6 +14,7 @@ import { AuthSrvcs                                               } from '../prov
 import { DBSrvcs                                                 } from '../providers/db-srvcs'            ;
 import { TimeSrvc                                                } from '../providers/time-parse-srvc'     ;
 import { ReportBuildSrvc                                         } from '../providers/report-build-srvc'   ;
+import { UserData                                                } from '../providers/user-data'           ;
 
 
 @NgModule({
@@ -43,7 +44,8 @@ import { ReportBuildSrvc                                         } from '../prov
                       AuthSrvcs,
                       DBSrvcs,
                       TimeSrvc,
-                      ReportBuildSrvc
+                      ReportBuildSrvc,
+                      UserData
                                                                             ]
 })
 
