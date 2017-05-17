@@ -44,7 +44,11 @@ export class Settings implements OnInit {
   reportMeta        : any = {}                      ;
   reportWaiting     : boolean = false               ;
   
-  constructor(public navCtrl: NavController, public navParams: NavParams, public db: DBSrvcs, public reportBuilder: ReportBuildSrvc) { }
+  constructor(public navCtrl: NavController, public navParams: NavParams, public db: DBSrvcs, public reportBuilder: ReportBuildSrvc) {
+    window["onsite"] = window["onsite"] || {};
+    window["onsite"]["settings"] = this;
+    window["onsite"]["settingsClass"] = Settings;
+  }
 
   ngOnInit() {
     this.rprtDate = new Date;

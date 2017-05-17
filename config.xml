@@ -3,7 +3,7 @@
     <name>OnSiteX                                                                               </name>
     <description>SESA OnSite                                                             </description>
     <author email="michael.a.bates@gmail.com" href="https://sesaonsite.com/">Star Mobile Developers</author>
-    <content original-src="index.html" src="http://192.168.0.32:8100" />
+    <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />

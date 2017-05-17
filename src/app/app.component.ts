@@ -32,7 +32,7 @@ export class MyApp {
       window["PouchDB"] = window["PouchDB"].defaults(this.pouchOptions);
       // this.PouchDB.debug.enable('pouchdb:api');
       // this.PouchDB.debug.enable('pouchdb:http');
-      this.PouchDB.debug.enable('*');
+      this.PouchDB.debug.disable('*');
       window['moment'] = moment;
       window['Log'] = Log;
       window['t1'] = CONSOLE.t1;

@@ -175,11 +175,11 @@ export class DBSrvcs {
     }
   }
 
-  static syncToServer(dbname: string) {
+  syncToServer(dbname: string) {
     Log.l(`syncToServer(): About to attempt replication of '${dbname}'->remote`);
     var ev1 = function(a) { Log.l(a.status); Log.l(a);};
-    var db1 = DBSrvcs.getDB(dbname);
-    var db2 = DBSrvcs.getRDB(dbname);
+    var db1 = DBSrvcs.addDB(dbname);
+    var db2 = DBSrvcs.addRDB(dbname);
     // var done = DBSrvcs.StaticPouchDB.replicate(db1, db2, DBSrvcs.repopts);
     var done = db1.replicate.to(db2, DBSrvcs.repopts)
     .on('change'   , info => ev1)
@@ -194,11 +194,11 @@ export class DBSrvcs {
     return done;
   }
 
-  static syncFromServer(dbname: string) {
+  syncFromServer(dbname: string) {
     Log.l(`syncFromServer(): About to attempt replication of remote->'${dbname}'`);
     var ev2 = function(b) { Log.l(b.status); Log.l(b);};
-    var db1 = DBSrvcs.getRDB(dbname);
-    var db2 = DBSrvcs.getDB(dbname);
+    var db1 = DBSrvcs.addRDB(dbname);
+    var db2 = DBSrvcs.addDB(dbname);
     // var done = DBSrvcs.StaticPouchDB.replicate(db1, db2, DBSrvcs.repopts);
     var done = db1.replicate.to(db2, DBSrvcs.repopts)
     .on('change'   , info => ev2)
@@ -213,11 +213,11 @@ export class DBSrvcs {
     return done;
   }
 
-  static syncSquaredToServer(dbname: string) {
+  syncSquaredToServer(dbname: string) {
     Log.l(`syncSquaredToServer(): About to attempt replication of '${dbname}'->remote`);
     var ev2 = function(b) { Log.l(b.status); Log.l(b);};
-    var db1 = DBSrvcs.getDB(dbname);
-    var db2 = DBSrvcs.getRDB(dbname);
+    var db1 = DBSrvcs.addDB(dbname);
+    var db2 = DBSrvcs.addRDB(dbname);
     // var done = DBSrvcs.StaticPouchDB.replicate(db1, db2, DBSrvcs.repopts);
     return new Promise((resolve, reject) => {
       db1.replicate.to(db2, DBSrvcs.repopts).then((res) => {
@@ -232,11 +232,11 @@ export class DBSrvcs {
     });
   }
 
-  static syncSquaredFromServer(dbname: string) {
+  syncSquaredFromServer(dbname: string) {
     Log.l(`syncSquaredFromServer(): About to attempt replication of remote->'${dbname}'`);
     var ev2 = function(b) { Log.l(b.status); Log.l(b);};
-    var db1 = DBSrvcs.getRDB(dbname);
-    var db2 = DBSrvcs.getDB(dbname);
+    var db1 = DBSrvcs.addRDB(dbname);
+    var db2 = DBSrvcs.addDB(dbname);
     // var done = DBSrvcs.StaticPouchDB.replicate(db1, db2, DBSrvcs.repopts);
     return new Promise((resolve, reject) => {
       db2.replicate.to(db1, DBSrvcs.repopts).then((res) => {
