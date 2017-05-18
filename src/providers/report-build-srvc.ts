@@ -21,7 +21,7 @@ export class ReportBuildSrvc {
   getLocalDocs() {
     return new Promise((resolve,reject) => {
       console.log("ReportBuilder: About to get tmpReport...");
-      this._localSrvcs.getDoc('_local/tmpReport').then((res) => { 
+      this._localSrvcs.getDoc('_local/tmpReport').then((res) => {
         console.log("ReportBuilder: Got tmpReport:");
         console.log(res);
         this.report = res;
@@ -65,6 +65,7 @@ export class ReportBuildSrvc {
     this.newReport.shiftLength    = this.profile.shiftLength    ;
     this.newReport.shiftStartTime = this.profile.shiftStartTime ;
     this.newReport.technician     = this.profile.technician     ;
+    this.newReport.timeStamp      = this.report.timeStamp       ;
     console.log('this.newReport: ');
     console.log(this.newReport);
     return this.putNewReport();

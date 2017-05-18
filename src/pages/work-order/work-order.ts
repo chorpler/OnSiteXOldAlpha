@@ -68,14 +68,14 @@ constructor(public navCtrl: NavController, public navParams: NavParams, private 
 
   private initializeForm() {
     this.workOrder = new FormGroup({
-      'timeStarts': new FormControl(this.startTime.format(), Validators.required),
+      'timeStarts': new FormControl(this.startTime.format("HH:mm"), Validators.required),
       'timeEnds'  : new FormControl(null, Validators.required),
       'repairHrs' : new FormControl(null, Validators.required),
       'uNum'      : new FormControl(null, Validators.required),
       'wONum'     : new FormControl(null, Validators.required),
       'notes'     : new FormControl(null, Validators.required),
-      'rprtDate'  : new FormControl(this.reportDate.format(), Validators.required),
-      'timeStamp' : new FormControl({ value: this.reportDate, disabled: true}, Validators.required)
+      'rprtDate'  : new FormControl(this.reportDate.format("YYYY-MM-DD"), Validators.required),
+      'timeStamp' : new FormControl({ value: Date(), disabled: true}, Validators.required)
     });
     // setTimeout(_ => {
     //   this.reportDateField.setValue(this.reportDate.format());
@@ -170,7 +170,8 @@ constructor(public navCtrl: NavController, public navParams: NavParams, private 
   }
 
   processWO() {
-    const workOrderData = this.workOrder.value;
+    const workOrderData = this.workOrder.getRawValue();
+    // workOrderData.timeStamp = Date();
     this.calcEndTime(workOrderData);
     console.log("processWO() has initial workOrderData:");
     console.log(workOrderData);
