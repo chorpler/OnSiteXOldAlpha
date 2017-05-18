@@ -20,26 +20,26 @@ export class WorkOrder implements OnInit {
   @ViewChild('startTime') startTimeField;
 
   title        : string   = 'Work Report'             ;
-  setDate      : Date     = new Date()                ; 
-  year         : number   = this.setDate.getFullYear(); 
-  mode         : string   = 'New'                     ; 
-  workOrder    : FormGroup; 
-  repairHrs    : number   ; 
-  profile      : any = { }; 
-  tmpReportData: any      ; 
-  docID        : string   ; 
+  setDate      : Date     = new Date()                ;
+  year         : number   = this.setDate.getFullYear();
+  mode         : string   = 'New'                     ;
+  workOrder    : FormGroup;
+  repairHrs    : number   ;
+  profile      : any = { };
+  tmpReportData: any      ;
+  docID        : string   ;
   idDate       : string   ;
   idTime       : string   ;
 
-  strtHrs   ; 
-  strtMin   ; 
-  hrsHrs    ; 
-  hrsMin    ; 
-  endMin    ; 
-  endHrs    ; 
-  prsHrs    ; 
-  prsMin    ; 
-  rprtDate  : Date     = new Date()   ; 
+  strtHrs   ;
+  strtMin   ;
+  hrsHrs    ;
+  hrsMin    ;
+  endMin    ;
+  endHrs    ;
+  prsHrs    ;
+  prsMin    ;
+  rprtDate  : Date     = new Date()   ;
   timeStarts: Date     = new Date()   ;
   reportDate: any      = moment()     ;
   startTime : any      = moment()     ;
@@ -50,6 +50,7 @@ export class WorkOrder implements OnInit {
 
 constructor(public navCtrl: NavController, public navParams: NavParams, private dbSrvcs: DBSrvcs, private timeSrvc: TimeSrvc, public reportBuilder:ReportBuildSrvc, public loadingCtrl: LoadingController) {
   this.db = this.dbSrvcs;
+  window["workorder"] = this;
 }
 
   ionViewDidLoad() { console.log('ionViewDidLoad WorkOrder'); }
@@ -67,12 +68,12 @@ constructor(public navCtrl: NavController, public navParams: NavParams, private 
 
   private initializeForm() {
     this.workOrder = new FormGroup({
-      'timeStarts': new FormControl(this.startTime.format(), Validators.required), 
+      'timeStarts': new FormControl(this.startTime.format(), Validators.required),
       'timeEnds'  : new FormControl(null, Validators.required),
-      'repairHrs' : new FormControl(null, Validators.required), 
-      'uNum'      : new FormControl(null, Validators.required), 
-      'wONum'     : new FormControl(null, Validators.required), 
-      'notes'     : new FormControl(null, Validators.required), 
+      'repairHrs' : new FormControl(null, Validators.required),
+      'uNum'      : new FormControl(null, Validators.required),
+      'wONum'     : new FormControl(null, Validators.required),
+      'notes'     : new FormControl(null, Validators.required),
       'rprtDate'  : new FormControl(this.reportDate.format(), Validators.required),
       'timeStamp' : new FormControl({ value: this.reportDate, disabled: true}, Validators.required)
     });
@@ -87,12 +88,12 @@ constructor(public navCtrl: NavController, public navParams: NavParams, private 
   }
 
 /**
- * Calcualtes workOrderData.timeEnds given workOrderData.timeStarts 
+ * Calcualtes workOrderData.timeEnds given workOrderData.timeStarts
  * and workOrderData.repairHrs
- * 
+ *
  * @private
- * @param {any} workOrderData 
- * 
+ * @param {any} workOrderData
+ *
  * @memberOf WorkOrder
  */
   private calcEndTime(workOrderData) {
@@ -102,7 +103,7 @@ constructor(public navCtrl: NavController, public navParams: NavParams, private 
     this.prsHrs = _Xhrs.exec(workOrderData.timeStarts);
     this.strtHrs = parseInt(this.prsHrs[0]).toString();
     this.prsMin = _Xdec.exec(workOrderData.timeStarts);
-    
+
     if (parseInt(this.prsMin[0]) === 0) {
       this.strtMin = '00';
     }
@@ -120,20 +121,20 @@ constructor(public navCtrl: NavController, public navParams: NavParams, private 
 
     this.hrsHrs = Math.floor(workOrderData.repairHrs);
     this.hrsMin = (workOrderData.repairHrs%1)*60;
-    
+
     if (parseInt(this.strtMin) + this.hrsMin > 60) {
 
-      if (parseInt(this.strtHrs) + this.hrsHrs + 1 > 24) 
-            { this.endHrs = parseInt(this.strtHrs) + this.hrsHrs -23; this.endMin = parseInt(this.strtMin) + this.hrsMin - 60; } 
+      if (parseInt(this.strtHrs) + this.hrsHrs + 1 > 24)
+            { this.endHrs = parseInt(this.strtHrs) + this.hrsHrs -23; this.endMin = parseInt(this.strtMin) + this.hrsMin - 60; }
       else  { this.endHrs = parseInt(this.strtHrs) + this.hrsHrs + 1; this.endMin = parseInt(this.strtMin) + this.hrsMin - 60; }
     }
 
-    else { 
-      if (parseInt(this.strtHrs) + this.hrsHrs > 24) 
+    else {
+      if (parseInt(this.strtHrs) + this.hrsHrs > 24)
             { this.endHrs = parseInt(this.strtHrs) + this.hrsHrs -24; this.endMin = parseInt(this.strtMin) + this.hrsMin;      }
       else  { this.endHrs = parseInt(this.strtHrs) + this.hrsHrs;     this.endMin = parseInt(this.strtMin) + this.hrsMin;      }
     }
-    
+
     if( this.endHrs < 10 ) {
       if( this.endHrs === 0 ) { this.endHrs = '00'       }
       else { this.endHrs = '0' + this.endHrs.toString(); }
@@ -210,7 +211,7 @@ constructor(public navCtrl: NavController, public navParams: NavParams, private 
                 Log.w(err);
                 resolve(false);
               });
-              
+
               /* Notify user and go to Settings page */
               // this.navCtrl.push('Report Settings');
 
@@ -224,7 +225,7 @@ constructor(public navCtrl: NavController, public navParams: NavParams, private 
               // this.tmpReportData._rev = '0-1';
               console.log("processWO(): Update flag set, tmpReportData is:");
               console.log( this.tmpReportData );
-              
+
               this.dbSrvcs.addLocalDoc( this.tmpReportData ).then((res) => {
                 console.log("processWO(): About to generate work order");
                 return this.reportBuilder.getLocalDocs();
