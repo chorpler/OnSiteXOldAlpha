@@ -4,6 +4,7 @@ import { StatusBar               } from '@ionic-native/status-bar'    ;
 import { SplashScreen            } from '@ionic-native/splash-screen' ;
 import { Storage                 } from '@ionic/storage'              ;
 import { DBSrvcs                 } from '../providers/db-srvcs'       ;
+import { AuthSrvcs               } from '../providers/auth-srvcs'     ;
 import { UserData                } from '../providers/user-data'      ;
 import { Log, CONSOLE            } from '../config/config.functions'  ;
 import * as PouchDB2               from 'pouchdb'                     ;
@@ -19,7 +20,7 @@ export class MyApp {
   PouchDB: any;
   pouchOptions: any = {};
 
-  constructor(platform: Platform, navCtrl: NavController, statusBar: StatusBar, splashScreen: SplashScreen, storage: Storage, db: DBSrvcs) {
+  constructor(platform: Platform, navCtrl: NavController, statusBar: StatusBar, splashScreen: SplashScreen, storage: Storage, db: DBSrvcs, auth: AuthSrvcs) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.

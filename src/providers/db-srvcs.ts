@@ -1,13 +1,14 @@
 import { Injectable, NgZone } from '@angular/core'              ;
 import { Http               } from '@angular/http'              ;
-import { Log                } from '../config/config.functions' ;
+import { Log, CONSOLE       } from '../config/config.functions' ;
 import { Storage            } from '@ionic/storage'             ;
 import { NativeStorage      } from 'ionic-native'               ;
 import 'rxjs/add/operator/map'                                  ;
 import * as PouchDB2          from 'pouchdb'                    ;
 import * as pdbAuth           from 'pouchdb-authentication'     ;
 import * as pdbUpsert         from 'pouchdb-upsert'             ;
-// import { AuthSrvcs         }  from './auth-srvcs'               ;
+import { AuthSrvcs         }  from './auth-srvcs'               ;
+import { SrvrSrvcs         }  from './srvr-srvcs'               ;
 
 @Injectable()
 
@@ -44,7 +45,7 @@ export class DBSrvcs {
    * @param {NgZone}
    */
   // constructor(public http: Http, public zone: NgZone, private storage: Storage, private auth: AuthSrvcs) {
-  constructor(public http: Http, public zone: NgZone, private storage: Storage) {
+  constructor(public http: Http, public zone: NgZone, private storage: Storage, private auth: AuthSrvcs, private srvr: SrvrSrvcs) {
     this.PouchDB = require("pouchdb");
     this.PouchDB.plugin(require('pouchdb-upsert'));
     this.PouchDB.plugin(require('pouchdb-authentication'));
@@ -57,22 +58,6 @@ export class DBSrvcs {
 
     DBSrvcs.addDB('reports');
 
-    // this.db = new this.PouchDB('reports', this.pdbOpts);
-    // DBSrvcs.pdb = new Map();
-    // DBSrvcs.rdb = new Map();
-    // let db1 = DBSrvcs.pdb;
-    // let db2 = DBSrvcs.rdb;
-    // db1.set('reports', this.PouchDB('reports', this.pdbOpts));
-    // db2.set('reports', this.PouchDB())
-
-    // this.username = 'sesatech';
-    // this.password = 'sesatech';
-    // this.remote = 'https://martiancouch.hplx.net/reports';
-    // this.remote = 'http://192.168.0.140:5984/reports';
-
-
-
-    // this.remote = 'http://162.243.157.16/reports';
 
     let options = {
       live: true,
@@ -109,6 +94,10 @@ export class DBSrvcs {
 
   static getRDBs() {
     return DBSrvcs.rdb;
+  }
+
+  static getServerInfo() {
+    return DBSrvcs.protocol + "://" + DBSrvcs.server;
   }
 
   static addDB(dbname: string) {
@@ -451,18 +440,6 @@ export class DBSrvcs {
     });
   }
 
-  checkServerConnection() {
-    Log.l("checkServerConnection(): Starting check...");
-
-  }
-
-  purgeLocalTempReport() {
-    const tmpID = '_local/tmpReport';
-
-  }
-
-  getUser() {  }
-
   allDoc() {
     return new Promise(resolve => {
 
@@ -473,7 +450,7 @@ export class DBSrvcs {
 
           this.data = [];
           let docs = result.rows.map((row) => {
-            if( row.doc.username === this.getUser() ) { this.data.push(row.doc); }
+            if( row.doc.username === this.auth.getUser() ) { this.data.push(row.doc); }
             resolve(this.data);
           });
 

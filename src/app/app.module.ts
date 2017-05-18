@@ -15,6 +15,7 @@ import { DBSrvcs                                                 } from '../prov
 import { TimeSrvc                                                } from '../providers/time-parse-srvc'     ;
 import { ReportBuildSrvc                                         } from '../providers/report-build-srvc'   ;
 import { UserData                                                } from '../providers/user-data'           ;
+import { SrvrSrvcs                                               } from '../providers/srvr-srvcs'          ;
 
 
 @NgModule({
@@ -45,7 +46,8 @@ import { UserData                                                } from '../prov
                       DBSrvcs,
                       TimeSrvc,
                       ReportBuildSrvc,
-                      UserData
+                      UserData,
+                      SrvrSrvcs
                                                                             ]
 })
 

@@ -68,7 +68,7 @@ constructor(public navCtrl: NavController, public navParams: NavParams, private 
 
   private initializeForm() {
     this.workOrder = new FormGroup({
-      'timeStarts': new FormControl(this.startTime.format("HH:mm"), Validators.required),
+      'timeStarts': new FormControl(this.startTime.format("HH:00"), Validators.required),
       'timeEnds'  : new FormControl(null, Validators.required),
       'repairHrs' : new FormControl(null, Validators.required),
       'uNum'      : new FormControl(null, Validators.required),

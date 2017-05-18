@@ -2,6 +2,7 @@ import { Component                } from '@angular/core'                 ;
 import { IonicPage, NavController } from 'ionic-angular'                 ;
 import { Platform                 } from 'ionic-angular'                 ;
 import { AuthSrvcs                } from '../../providers/auth-srvcs'    ;
+import { SrvrSrvcs                } from '../../providers/srvr-srvcs'    ;
 import { Log, CONSOLE             } from '../../config/config.functions' ;
 
 @IonicPage({name: 'OnSiteHome'})
@@ -13,19 +14,15 @@ import { Log, CONSOLE             } from '../../config/config.functions' ;
 export class HomePage {
   userLoggedIn: boolean = false;
   showPage: boolean = false;
+  static startOfApp: boolean = true;
   // isFirstItem: string = '';
   title ='OnSite Home';
   
-  constructor(public navCtrl: NavController, public plt: Platform, public authServices: AuthSrvcs) { 
+  constructor(public navCtrl: NavController, public plt: Platform, public auth: AuthSrvcs, public srvr: SrvrSrvcs) { 
     console.log(this.plt.platforms());
-    this.authServices.isFirstLogin().then((firstLogin) => {
-      if(firstLogin) {
-        this.userLoggedIn = false;
-      } else {
-        this.userLoggedIn = true;
-      }
-      this.showPage = true;
-    });
+    if(HomePage.startOfApp) {
+      this.setupAppData();
+    }
   }
 
   onNewWorkOrder() {this.navCtrl.push('Work Order Form', {mode: 'New'});}
@@ -39,12 +36,56 @@ export class HomePage {
       return '';
     }
   }
+
+  setupAppData() {
+    this.auth.isFirstLogin().then((firstLogin) => {
+      if(firstLogin) {
+        this.userLoggedIn = false;
+        HomePage.startOfApp = false;
+        this.showPage = true;
+      } else {
+         this.auth.getCredentials().then((credentials) => {
+          if(typeof credentials != "object" || typeof credentials["username"] != "string" || typeof credentials["password"] != "string") {
+            this.userLoggedIn = false;
+          } else {
+            let u = credentials['username'];
+            let p = credentials['password'];
+            this.srvr.querySession(u, p).then((res) => {
+              Log.l("setupAppData(): Stored user credentials are valid.");
+              this.auth.setUser(u);
+              this.auth.setPassword(p);
+              this.userLoggedIn = true;
+              HomePage.startOfApp = false;
+              this.showPage = true;
+            }).catch((err) => {
+              Log.l("setupAppData(): Stored user credentials not valid. User must login again.");
+              this.auth.clearCredentials().then((res) => {
+                this.userLoggedIn = false;
+                HomePage.startOfApp = false;
+                this.showPage = true;
+              }).catch((err) => {
+                this.userLoggedIn = false;
+                HomePage.startOfApp = false;
+                this.showPage = true;
+              });
+            });
+          }
+        }).catch((err) => {
+          Log.l("setupAppData(): Error checking saved credentials.");
+          this.userLoggedIn = false;
+          this.showPage = true;
+        });
+      }
+    });
+  }
+
   logoutOfApp() {
     Log.l("User clicked logout button.");
-    this.authServices.logout().then((res) => {
+    this.auth.logout().then((res) => {
       Log.l("Done logging out.");
       this.userLoggedIn = false;
     });
   }
+
 }
 // 'Work Order Form'
