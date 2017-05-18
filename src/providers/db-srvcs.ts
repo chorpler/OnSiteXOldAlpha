@@ -7,7 +7,7 @@ import 'rxjs/add/operator/map'                                  ;
 import * as PouchDB2          from 'pouchdb'                    ;
 import * as pdbAuth           from 'pouchdb-authentication'     ;
 import * as pdbUpsert         from 'pouchdb-upsert'             ;
-import { AuthSrvcs      }     from './auth-srvcs'               ;
+// import { AuthSrvcs         }  from './auth-srvcs'               ;
 
 @Injectable()
 
@@ -43,7 +43,8 @@ export class DBSrvcs {
    * @param {Http}
    * @param {NgZone}
    */
-  constructor(public http: Http, public zone: NgZone, private storage: Storage, private auth: AuthSrvcs) {
+  // constructor(public http: Http, public zone: NgZone, private storage: Storage, private auth: AuthSrvcs) {
+  constructor(public http: Http, public zone: NgZone, private storage: Storage) {
     this.PouchDB = require("pouchdb");
     this.PouchDB.plugin(require('pouchdb-upsert'));
     this.PouchDB.plugin(require('pouchdb-authentication'));

@@ -6,7 +6,7 @@ import * as PouchDBAuth                       from 'pouchdb-authentication'     
 import { Storage                            } from '@ionic/storage'               ;
 import { NativeStorage                      } from 'ionic-native'                 ;
 import { SecureStorage, SecureStorageObject } from '@ionic-native/secure-storage' ;
-import { DBSrvcs                            } from '../providers/db-srvcs'        ;
+import { DBSrvcs                            } from './db-srvcs'        ;
 import { UserData                           } from '../providers/user-data'       ;
 import { Log, CONSOLE                       } from '../config/config.functions'   ;
 
@@ -64,6 +64,18 @@ export class AuthSrvcs {
 		this.password = pass1;
 		console.log(`setPassword set password to ${this.password}`);
 		this.ajaxOpts = { ajax: { headers: { Authorization: 'Basic ' + window.btoa(this.username + ':' + this.password) } } };
+	}
+
+	getUser() {
+		return this.username;
+	}
+
+	getPass() {
+		return this.password;
+	}
+
+	getLoginInfo() {
+
 	}
 
 	remoteLogin() {
