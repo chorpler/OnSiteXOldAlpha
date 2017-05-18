@@ -26,6 +26,7 @@ export class AuthSrvcs {
 	userProfile : any = {} ;
 	remoteDB    : any = {} ;
 	localDB     : any = {} ;
+	ajaxOpts    : any = {} ;
 
 	constructor(public http: Http, public zone: NgZone, private db: DBSrvcs, private storage: Storage, public secureStorage: SecureStorage, public ud: UserData) {
 		this.remote       = 'https://martiancouch.hplx.net/reports' ;
@@ -33,8 +34,11 @@ export class AuthSrvcs {
 		// this.remote = 'http://162.243.157.16/reports/';
 		this.profileDoc   = '_local/techProfile';
 
+		window['securestorage'] = this.secureStorage;
+		window['storage'] = this.storage;
 		window['lstor'] = this.storage;
 		window["authserv"] = this;
+		this.PouchDB = DBSrvcs.StaticPouchDB;
 
 		// this.options = {
 		//   live: true,
@@ -53,11 +57,34 @@ export class AuthSrvcs {
 	setUser(user1: string) {
 		this.username = user1;
 		console.log(`setUser set user to ${this.username}`);
+		this.ajaxOpts = { ajax: { headers: { Authorization: 'Basic ' + window.btoa(this.username + ':' + this.password) } } };
 	}
 
 	setPassword(pass1: string) {
 		this.password = pass1;
 		console.log(`setPassword set password to ${this.password}`);
+		this.ajaxOpts = { ajax: { headers: { Authorization: 'Basic ' + window.btoa(this.username + ':' + this.password) } } };
+	}
+
+	remoteLogin() {
+
+	}
+
+	checkRemoteLogin() {
+		let couchDB = DBSrvcs.addDB('reports');
+		return new Promise((resolve,reject) => {
+			couchDB.getSession().then((session) => {
+				if(typeof session.info == 'undefined' || typeof session.info.authenticated != 'string') {
+					/* Not actually logged in */
+					resolve(false);
+				} else {
+					/* Already logged in */
+					resolve(true);
+				}
+			}).catch((err) => {
+				resolve(false);
+			})
+		})
 	}
 
 	/**
@@ -102,10 +129,8 @@ export class AuthSrvcs {
 						this.userProfile.shiftStartTime = this.couchUser.shiftStartTime ;
 						this.userProfile.updated        = true                          ;
 						this.userProfile._id            = this.profileDoc               ;
-
 						console.log("Got user");
 						console.log(user);
-						// let tmpProfile = {id: this.userDb, firstName: user.firstName, lastName: user.lastName, client: user.client, location: user.location, locID: user.locID, loc2nd: user.loc2nd, shift: user.shift, shiftLength: user.shiftLength, shiftStartTime: user.shiftStartTime};
 						return this.db.addLocalDoc(this.userProfile);
 					}).then((res) => {
 						console.log("userProfile document added successfully. Now saving credentials...");
@@ -160,6 +185,49 @@ export class AuthSrvcs {
 					}).catch((err) => {
 						console.log("Error saving credentials in local storage!");
 						console.warn(err);
+						reject(err);
+					});
+				}
+			}).catch((outerError) => {
+				Log.l("saveCredentials(): Error while checking for availability of SecureStorage.");
+				Log.e(outerError);
+				reject(outerError);
+			});
+		});
+	}
+
+	areCredentialsSaved() {
+		console.log("Checking status of saved credentials...");
+		return new Promise((resolve,reject) => {
+			this.isSecureStorageAvailable().then((ssAvailable) => {
+				if(ssAvailable) {
+					this.secureStorage.create('OnSiteX').then((sec: SecureStorageObject) => {
+						// let userLogin = {username: this.username, password: this.password};
+						return sec.get('userLogin');
+					}).then((res) => {
+						console.log("getCredentials(): Credentials retrieved from secure storage!");
+						console.log(res);
+						let userInfo = JSON.parse(res);
+						this.setUser(userInfo.username);
+						this.setPassword(userInfo.password);
+						resolve(userInfo);
+					}).catch((err) => {
+						console.log("getCredentials(): Error getting credentials from secure storage!");
+						console.error(err);
+						reject(err);
+					});
+				} else {
+					Log.l("getCredentials(): SecureStorage not available, using Localstorage...");
+					this.storage.get('userInfo').then((res) => {
+						console.log("getCredentials(): Credentials retrieved from local storage!");
+						console.log(res);
+						let userInfo = JSON.parse(res);
+						this.setUser(userInfo.username);
+						this.setPassword(userInfo.password);
+						resolve(userInfo);
+					}).catch((err) => {
+						console.log("getCredentials(): Error retrieving credentials from local storage!");
+						console.error(err);
 						reject(err);
 					});
 				}
@@ -275,7 +343,7 @@ export class AuthSrvcs {
 	}
 
 	passportAuthenticate() {
-
+		
 	}
 
 	isFirstLogin() {

@@ -7,6 +7,7 @@ import 'rxjs/add/operator/map'                                  ;
 import * as PouchDB2          from 'pouchdb'                    ;
 import * as pdbAuth           from 'pouchdb-authentication'     ;
 import * as pdbUpsert         from 'pouchdb-upsert'             ;
+import { AuthSrvcs      }     from './auth-srvcs'               ;
 
 @Injectable()
 
@@ -42,7 +43,7 @@ export class DBSrvcs {
    * @param {Http}
    * @param {NgZone}
    */
-  constructor(public http: Http, public zone: NgZone, private storage: Storage) {
+  constructor(public http: Http, public zone: NgZone, private storage: Storage, private auth: AuthSrvcs) {
     this.PouchDB = require("pouchdb");
     this.PouchDB.plugin(require('pouchdb-upsert'));
     this.PouchDB.plugin(require('pouchdb-authentication'));
@@ -137,12 +138,14 @@ export class DBSrvcs {
     // let dbname = i != -1 ? url.substr(-i) : "";
 
     // return new Promise((res,err) => {
+      Log.l(`addDB(): Now fetching remote DB ${dbname} at ${url} ...`);
       if(db1.has(dbname)) {
         Log.l(`addDB(): Not adding remote database ${url} because it already exists.`);
         // resolve(false);
         return db1.get(dbname);
       } else {
-        db1.set(dbname, DBSrvcs.StaticPouchDB(url, DBSrvcs.ropts));
+        let rdb1 = DBSrvcs.StaticPouchDB(url, DBSrvcs.ropts);
+        // db1.login()
         Log.l(`addDB(): Added remote database ${url} to the list as ${dbname}.`);
         // resolve(db1.get(dbname))
         return db1.get(dbname);
