@@ -145,6 +145,7 @@ export class DBSrvcs {
         return db1.get(dbname);
       } else {
         let rdb1 = DBSrvcs.StaticPouchDB(url, DBSrvcs.ropts);
+        db1.set(dbname, rdb1);
         // db1.login()
         Log.l(`addDB(): Added remote database ${url} to the list as ${dbname}.`);
         // resolve(db1.get(dbname))
