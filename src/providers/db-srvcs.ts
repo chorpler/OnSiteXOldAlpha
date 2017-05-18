@@ -456,6 +456,8 @@ export class DBSrvcs {
 
   }
 
+  getUser() {  }
+
   allDoc() {
     return new Promise(resolve => {
 
@@ -466,7 +468,7 @@ export class DBSrvcs {
 
           this.data = [];
           let docs = result.rows.map((row) => {
-            this.data.push(row.doc);
+            if( row.doc.username === this.getUser() ) { this.data.push(row.doc); }
             resolve(this.data);
           });
 
