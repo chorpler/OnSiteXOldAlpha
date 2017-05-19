@@ -1,12 +1,12 @@
-import { Component                           } from '@angular/core'                 ;
-import { IonicPage, NavController, NavParams } from 'ionic-angular'                 ;
-import { PopoverController                   } from 'ionic-angular'                 ;
-// import { LoginErrorPopover                } from './login-error-popover'         ;
-// import { Settings                         } from '../settings/settings'          ;
-import { AuthSrvcs                           } from '../../providers/auth-srvcs'    ;
-import { SrvrSrvcs                           } from '../../providers/srvr-srvcs'    ;
-import { DBSrvcs                             } from '../../providers/db-srvcs'      ;
-import { Log, CONSOLE                        } from '../../config/config.functions' ;
+import { Component                                                               } from '@angular/core'                 ;
+import { IonicPage, NavController, NavParams, LoadingController, AlertController } from 'ionic-angular'                 ;
+import { PopoverController                                                       } from 'ionic-angular'                 ;
+// import { LoginErrorPopover                                                    } from './login-error-popover'         ;
+// import { Settings                                                             } from '../settings/settings'          ;
+import { AuthSrvcs                                                               } from '../../providers/auth-srvcs'    ;
+import { SrvrSrvcs                                                               } from '../../providers/srvr-srvcs'    ;
+import { DBSrvcs                                                                 } from '../../providers/db-srvcs'      ;
+import { Log, CONSOLE                                                            } from '../../config/config.functions' ;
 
 /**
  * Generated class for the Login page.
@@ -20,13 +20,14 @@ import { Log, CONSOLE                        } from '../../config/config.functio
   templateUrl: 'login.html',
 })
 export class Login {
-	private username: string;
-	private password: string;
-	public loginError: boolean = false;
-  public localURL: string = "_local/techProfile";
+  private username  : string                         ;
+  private password  : string                         ;
+  public loginError : boolean = false                ;
+  public localURL   : string  = "_local/techProfile" ;
+  public loading    : any     = {}                   ;
 
   // constructor(public navCtrl: NavController, public navParams: NavParams, public popoverCtrl: PopoverController, private auth: AuthSrvcs) {
-  constructor(public navCtrl: NavController, public navParams: NavParams, private auth: AuthSrvcs, private srvr: SrvrSrvcs, private db: DBSrvcs) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private auth: AuthSrvcs, private srvr: SrvrSrvcs, private db: DBSrvcs, private loadingCtrl: LoadingController) {
   // constructor(public navCtrl: NavController, public navParams: NavParams, private settings: Settings, private auth: AuthSrvcs) {
   }
 
@@ -34,7 +35,26 @@ export class Login {
     Log.l('Login: ionViewDidLoad fired.');
   }
 
-  loginClicked() {
+  showSpinner(text: string) {
+    this.loading = this.loadingCtrl.create({
+      content: text,
+      showBackdrop: false,
+    });
+
+    this.loading.present().catch(() => {});
+  }
+
+  hideSpinner() {
+    setTimeout(() => {
+      this.loading.dismiss().catch((reason: any) => {
+        Log.l('EditReport: loading.dismiss() error:\n', reason);
+        this.loading.dismissAll();
+      });
+    });
+  }
+
+loginClicked() {
+    this.showSpinner('Logging in...');
   	Log.l("Login: Now attempting login:");
   	this.auth.setUser(this.username);
   	this.auth.setPassword(this.password);
@@ -49,11 +69,13 @@ export class Login {
       return this.db.addLocalDoc(udoc);
     }).then((res) => {
       Log.l("loginAttempt(): Finished validating and saving user info.")
-  		this.navCtrl.push('Report Settings');
+      this.hideSpinner();
+  		setTimeout(() => {this.navCtrl.push('Report Settings');});
   	}).catch((err) => {
   		Log.l("loginAttempt(): Error validating and saving user info.");
   		Log.l(err);
   		this.loginError = true;
+      this.hideSpinner();
   	});
   }
 

@@ -10,17 +10,8 @@
   <button ion-button block color="secondary" *ngIf="!userLoggedIn" (click)="onLogin()"> Login </button>
   <button ion-button block color="secondary" *ngIf="userLoggedIn" (click)="onSettings()"> Settings </button>
   <button ion-button block color="secondary" *ngIf="userLoggedIn" (click)="onNewWorkOrder()"> New WorkOrder </button>
-  <button ion-button block color="secondary" *ngIf="userLoggedIn" (click)="logoutOfApp()"> Logout </button>
   <button ion-button block color="secondary" *ngIf="userLoggedIn" (click)="getReportHistory()"> Report History </button>
-  <button ion-button block color="secondary" *ngIf="userLoggedIn" (click)="importBulkReports()"> Import Bulk Reports </button>
+  <!-- <button ion-button block color="secondary" *ngIf="userLoggedIn" (click)="importBulkReports()"> Import Bulk Reports </button> -->
+  <button ion-button block color="secondary" class="logout-button" *ngIf="userLoggedIn" (click)="logoutOfApp()"> Logout </button>
 
 </ion-content>
-<!--
-  (click)="onNewWorkOrder()"
-  (click)="navigateTo('WorkOrder')"
-    onNewWorkOrder() {this.navCtrl.push('Work Order Form', {mode: 'New'});}
-  onLogin() {this.navCtrl.push('Login');}
-  onNewJobForm() {this.navCtrl.push('Work Order', {mode: 'New'});}
-  onSettings() {this.navCtrl.push('Report Settings');}
-  <button ion-button block color="secondary" (click)="onNewJobForm()"> New WorkOrder Long </button>
--->

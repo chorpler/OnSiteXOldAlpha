@@ -32,6 +32,7 @@ export class DBSrvcs {
   public static ldbs          : any                                                ;
   public static rdbs          : any                                                ;
   public static server        : string = "martiancouch.hplx.net"                   ;
+  // public static server        : string = "162.243.157.16"                          ;
   public static protocol      : string = "https"                                   ;
   // public static server        : string = "192.168.0.140:5984"                      ;
   // public static protocol      : string = "http"                                    ;
@@ -58,7 +59,6 @@ export class DBSrvcs {
     this.pdbOpts = {adapter: 'websql', auto_compaction: true};
 
     DBSrvcs.addDB('reports');
-
 
     let options = {
       live: true,
@@ -129,16 +129,16 @@ export class DBSrvcs {
     // let dbname = i != -1 ? url.substr(-i) : "";
 
     // return new Promise((res,err) => {
-      Log.l(`addDB(): Now fetching remote DB ${dbname} at ${url} ...`);
+      Log.l(`addRDB(): Now fetching remote DB ${dbname} at ${url} ...`);
       if(db1.has(dbname)) {
-        Log.l(`addDB(): Not adding remote database ${url} because it already exists.`);
+        // Log.l(`addRDB(): Not adding remote database ${url} because it already exists.`);
         // resolve(false);
         return db1.get(dbname);
       } else {
         let rdb1 = DBSrvcs.StaticPouchDB(url, DBSrvcs.ropts);
         db1.set(dbname, rdb1);
         // db1.login()
-        Log.l(`addDB(): Added remote database ${url} to the list as ${dbname}.`);
+        Log.l(`addRDB(): Added remote database ${url} to the list as ${dbname}.`);
         // resolve(db1.get(dbname))
         return db1.get(dbname);
       }

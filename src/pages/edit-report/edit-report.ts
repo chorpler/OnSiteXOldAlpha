@@ -21,13 +21,23 @@ export class EditReportPage implements OnInit {
   loading       : any         = {}                     ;
 
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private dbSrvcs: DBSrvcs, private timeSrvc: TimeSrvc, public reportBuilder:ReportBuildSrvc, public loadingCtrl: LoadingController, private alertCtrl: AlertController) {
-  	window['editreport'] = this;
-  }
+  constructor(public navCtrl          : NavController,
+						  public navParams        : NavParams,
+						  private dbSrvcs         : DBSrvcs,
+						  private timeSrvc        : TimeSrvc,
+						  public reportBuilder    : ReportBuildSrvc,
+						  public loadingCtrl      : LoadingController,
+						  private alertCtrl       : AlertController)  { window['editreport'] = this; }
 
   ngOnInit() {
     if (this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
     this.workOrder = this.navParams.get('item');
+    let h = this.workOrder.repairHrs;
+    let hr = parseInt(h) + (parseInt(h.split(":")[1]) / 60);
+    this.workOrder.repairHrs = hr;
+    let ts = this.workOrder.timeStarts;
+    let t = ts.split(":")[0];
+    if(t.length < 2) { this.workOrder.timeStarts = "0" + ts;}
     this.initializeForm();
   }
 
@@ -35,7 +45,7 @@ export class EditReportPage implements OnInit {
 
   initializeForm() {
     this.workOrderForm = new FormGroup({
-      'timeStarts': new FormControl(this.workOrder.startTime, Validators.required),
+      'timeStarts': new FormControl(this.workOrder.timeStarts, Validators.required),
       'timeEnds'  : new FormControl(this.workOrder.timeEnds, Validators.required),
       'repairHrs' : new FormControl(this.workOrder.repairHrs, Validators.required),
       'uNum'      : new FormControl(this.workOrder.uNum, Validators.required),
@@ -89,6 +99,9 @@ export class EditReportPage implements OnInit {
   	this.workOrder.notes      = WO.notes      ;
   	this.workOrder.rprtDate   = WO.rprtDate   ;
   	this.workOrder.timeStamp  = WO.timeStamp  ;
+  	Log.l("updateWorkOrder(): About to call calcEndTime()");
+
+  	this.timeSrvc.calcEndTime(this.workOrder);
   	Log.l("updateWorkOrder(): Updated Work Order is:\n", this.workOrder);
   }
 

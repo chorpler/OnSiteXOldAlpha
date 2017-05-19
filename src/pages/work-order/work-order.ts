@@ -126,7 +126,8 @@ export class WorkOrder implements OnInit {
  *
  * @memberOf WorkOrder
  */
-  private calcEndTime(workOrderData) {
+  public calcEndTime(workOrderData) {
+    Log.l("Calculating end time for:\n", workOrderData);
     const _Xdec = /(00|15|30|45)(?!\:\d{2})/;
     const _Xhrs = /([0-9]{2})(?=:\d{2})/;
 

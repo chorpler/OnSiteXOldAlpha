@@ -49,7 +49,7 @@ import { DbBulkuploadSrvc                                        } from '../prov
                       ReportBuildSrvc,
                       UserData,
                       SrvrSrvcs,
-                      DbBulkuploadSrvc
+                      DbBulkuploadSrvc,
                                                                             ]
 })
 

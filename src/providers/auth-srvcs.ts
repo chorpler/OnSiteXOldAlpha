@@ -33,6 +33,7 @@ export class AuthSrvcs {
 	// constructor(public http: Http, public zone: NgZone, private db: DBSrvcs, private storage: Storage, public secureStorage: SecureStorage, public ud: UserData) {
 	constructor(public http: Http, public zone: NgZone, private storage: Storage, public srvr: SrvrSrvcs, public secureStorage: SecureStorage, public ud: UserData) {
 		this.remote       = 'https://martiancouch.hplx.net/reports' ;
+		// this.remote       = 'https://162.243.157.16/reports' ;
 		// this.remote = 'https://192.168.0.140:5984/_users';
 		// this.remote = 'http://162.243.157.16/reports/';
 		// this.profileDoc   = '_local/techProfile';
