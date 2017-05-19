@@ -1,8 +1,9 @@
-import { Injectable, NgZone } from '@angular/core';
-import { Http               } from '@angular/http';
-import 'rxjs/add/operator/map'    ;
-import * as PouchDB from 'pouchdb';
-import { DBSrvcs            } from './db-srvcs';
+import { Injectable, NgZone } from '@angular/core' ;
+import { Http               } from '@angular/http' ;
+import 'rxjs/add/operator/map'                     ;
+import * as PouchDB from 'pouchdb'                 ;
+import { DBSrvcs            } from './db-srvcs'    ;
+import { AuthSrvcs          } from './auth-srvcs'  ;
 
 
 
@@ -14,7 +15,7 @@ export class ReportBuildSrvc {
   report   : any;
   profile  : any;
 
-  constructor(public http: Http, public zone: NgZone, private _localSrvcs: DBSrvcs) {
+  constructor(public http: Http, public zone: NgZone, private _localSrvcs: DBSrvcs, ) {
     console.log('Hello ReportBuildSrvc Provider');
   }
 
@@ -66,6 +67,7 @@ export class ReportBuildSrvc {
     this.newReport.shiftStartTime = this.profile.shiftStartTime ;
     this.newReport.technician     = this.profile.technician     ;
     this.newReport.timeStamp      = this.report.timeStamp       ;
+    this.newReport.username       = this.profile.avatarName     ;
     console.log('this.newReport: ');
     console.log(this.newReport);
     return this.putNewReport();

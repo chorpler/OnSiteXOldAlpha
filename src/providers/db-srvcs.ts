@@ -441,6 +441,23 @@ export class DBSrvcs {
     });
   }
 
+  allDocsOf(dbname: string) {
+    return new Promise((resolve,reject) => {
+      let db1 = DBSrvcs.addDB(dbname);
+      db1.allDocs({include_docs: true}).then((result) => {
+        this.data = [];
+        let docs = result.rows.map((row) => {
+          if( row.doc.username === this.auth.getUser() ) { this.data.push(row.doc); }
+          resolve(this.data);
+        });
+      }).catch((err) => {
+        Log.l(`allDocsOf(): Error retrieving all documents from '${dbname}'`);
+        Log.e(err);
+        reject(err);
+      })
+    });
+  }
+
   allDoc() {
     return new Promise(resolve => {
 

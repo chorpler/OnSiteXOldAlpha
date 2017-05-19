@@ -27,9 +27,11 @@ export class SrvrSrvcs {
   	Log.l("querySession(): About to try logging in to server.");
   	return new Promise((resolve,reject) => {
 			let url = this.protocol + ':/' + '/' + this.server + "/_session";
-  		this.RemoteDB = this.PouchDB(url, {adapter: this.protocol, skipSetup: true});
-			let ajaxOpts = { ajax: { headers: { Authorization: 'Basic ' + window.btoa(user + ':' + pass) } } };
-  		this.RemoteDB.login(user, pass).then((res) => {
+			let authToken = 'Basic ' + window.btoa(user + ':' + pass);
+			let ajaxOpts = { headers: { Authorization: authToken } };
+			let opts = {ajax: {withCredentials: true, headers: {Authorization: authToken}, auth: {username: user, password: pass}}};
+  		this.RemoteDB = this.PouchDB(url, {adapter: this.protocol, skipSetup: true, ajax: ajaxOpts});
+  		this.RemoteDB.login(user, pass, {ajax: ajaxOpts}).then((res) => {
   			return this.RemoteDB.getSession();
   		}).then((session) => {
 				if(typeof session.info == 'undefined' || typeof session.info.authenticated != 'string') {
