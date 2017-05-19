@@ -36,3 +36,5 @@ UserInterfaceState.xcuserstate
 android-release-unsigned.apk
 *.keystore
 OnSiteX.apk
+*.ipa
+OnSiteX_Debug.apk

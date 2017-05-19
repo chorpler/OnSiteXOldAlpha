@@ -20,6 +20,7 @@ export class DBSrvcs {
 
   data                        : any                                                ;
   public static db            : any                                                ;
+  public static serverdb      : any                                                ;
   username                    : any                                                ;
   password                    : any                                                ;
   remote                      : any                                                ;
@@ -122,13 +123,6 @@ export class DBSrvcs {
   static addRDB(dbname: string) {
     let db1 = DBSrvcs.rdb;
     let url = DBSrvcs.rdbServer.protocol + "://" + DBSrvcs.rdbServer.server + "/" + dbname;
-    // if(url.slice(-1) == '/') {
-      // url = url.slice(0,-1);
-    // }
-    // let i = url.lastIndexOf('/');
-    // let dbname = i != -1 ? url.substr(-i) : "";
-
-    // return new Promise((res,err) => {
       Log.l(`addRDB(): Now fetching remote DB ${dbname} at ${url} ...`);
       if(db1.has(dbname)) {
         // Log.l(`addRDB(): Not adding remote database ${url} because it already exists.`);
@@ -481,7 +475,9 @@ export class DBSrvcs {
     return new Promise(resolve => {
 
       // this.db.allDocs({ include_docs: true })
-      DBSrvcs.db.allDocs({ include_docs: true })
+
+      
+      DBSrvcs.rdb.allDocs({ include_docs: true })
 
         .then((result) => {
 

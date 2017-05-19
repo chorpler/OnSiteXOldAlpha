@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild                                           
 import { FormGroup, FormControl, Validators                                      } from "@angular/forms"                    ;
 import { IonicPage, NavController, NavParams, LoadingController, AlertController } from 'ionic-angular'                     ;
 import { DBSrvcs                                                                 } from '../../providers/db-srvcs'          ;
+import { SrvrSrvcs                                                               } from '../../providers/srvr-srvcs'        ;
 import { AuthSrvcs                                                               } from '../../providers/auth-srvcs'        ;
 import { TimeSrvc                                                                } from '../../providers/time-parse-srvc'   ;
 import { ReportBuildSrvc                                                         } from '../../providers/report-build-srvc' ;
@@ -24,6 +25,7 @@ export class EditReportPage implements OnInit {
   constructor(public navCtrl          : NavController,
 						  public navParams        : NavParams,
 						  private dbSrvcs         : DBSrvcs,
+						  private srvr            : SrvrSrvcs,
 						  private timeSrvc        : TimeSrvc,
 						  public reportBuilder    : ReportBuildSrvc,
 						  public loadingCtrl      : LoadingController,
@@ -111,7 +113,7 @@ export class EditReportPage implements OnInit {
   		Log.l("deleteWorkOrder(): Success:\n", res);
   		if(res) {
   			Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
-		  	this.dbSrvcs.deleteDoc(this.workOrder).then((res) => {
+		  	this.srvr.deleteDoc(this.workOrder).then((res) => {
 		  		Log.l("deleteWorkOrder(): Success:\n", res);
 		  		setTimeout(() => {this.navCtrl.setRoot('OnSiteHome')});
 		  	}).catch((err) => {

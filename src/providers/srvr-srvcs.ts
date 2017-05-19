@@ -18,11 +18,13 @@ export class SrvrSrvcs {
 	public RemoteDB   : any    = {}                      ;
 	// public protocol   : string = "https"                 ;
 	// public server     : string = "martiancouch.hplx.net" ;
+	public static staticRDB : any = {};
 	public static rdb : any    = new Map()               ;
 	public static StaticPouchDB : any = PouchDB2         ;
   public static server        : string = "martiancouch.hplx.net"                   ;
   // public static server        : string = "162.243.157.16"                          ;
   public static protocol      : string = "https"                                   ;
+  public static userInfo      : any = {u: '', p: ''}                                 ;
   // public static server        : string = "192.168.0.140:5984"                      ;
   // public static protocol      : string = "http"                                    ;
   // public static opts          : any = {adapter: 'websql', auto_compaction: true}   ;
@@ -30,6 +32,8 @@ export class SrvrSrvcs {
   public static cropts        : any = {adapter: SrvrSrvcs.protocol}                  ;
   public static rdbServer     : any = {protocol: SrvrSrvcs.protocol, server: SrvrSrvcs.server, opts: {adapter: SrvrSrvcs.protocol, skipSetup: true}};
   public static repopts       : any = {live: false, retry: false}                  ;
+  public static ajaxOpts      : any = {headers: { Authorization: ''}};
+  public static remoteDBInfo  : any = {}                                           ;
 
 	// public server  : string = "162.243.157.16";
 
@@ -50,63 +54,170 @@ export class SrvrSrvcs {
   		}).then((session) => {
 				if(typeof session.info == 'undefined' || typeof session.info.authenticated != 'string') {
 					Log.l("querySession(): Authentication failed");
+					SrvrSrvcs.userInfo = {u: '', p: ''};
 					resolve(false);
 				} else {
 					Log.l("querySession(): Authentication successful.");
+					SrvrSrvcs.userInfo = {u: user, p: pass};
 					resolve(session);
 				}
   		}).catch((err) => {
   			Log.l("querySession(): Error during validation of login credentials.");
   			/* User-Friendly Dialog goes here */
   			Log.e(err);
+				SrvrSrvcs.userInfo = {u: '', p: ''};
   			resolve(false);
   		});
   	});
   }
 
+  loginToServer(user:string, pass:string, dbname?:string) {
+  	return new Promise((resolve,reject) => {
+  		let dbURL = '_session';
+  		if(dbname) {
+  			dbURL = dbname;
+  		}
+			let url = SrvrSrvcs.protocol + ':/' + '/' + SrvrSrvcs.server + '/' + dbURL;
+			let authToken = 'Basic ' + window.btoa(user + ':' + pass);
+			let ajaxOpts = { headers: { Authorization: authToken } };
+			let opts = {adapter: SrvrSrvcs.protocol, skipSetup: true, ajax: {withCredentials: true, ajaxOpts, auth: {username: user, password: pass}}};
+			if(dbname) {
+				if(SrvrSrvcs.rdb.has(dbname)) {
+					SrvrSrvcs.staticRDB = SrvrSrvcs.rdb.get(dbname);
+				} else {
+					SrvrSrvcs.staticRDB = SrvrSrvcs.StaticPouchDB(url, opts);
+					SrvrSrvcs.rdb.set(dbname, SrvrSrvcs.staticRDB);
+				}
+			} else {
+				SrvrSrvcs.staticRDB = SrvrSrvcs.StaticPouchDB(url, opts);
+			}
+			this.RemoteDB = SrvrSrvcs.staticRDB;
+			this.RemoteDB.login(user, pass, {ajax: ajaxOpts}).then((res) => {
+  			return this.RemoteDB.getSession();
+  		}).then((session) => {
+				if(typeof session.info == 'undefined' || typeof session.info.authenticated != 'string') {
+					Log.l("loginToServer(): Authentication failed");
+					SrvrSrvcs.userInfo = {u: '', p: ''};
+					resolve(false);
+				} else {
+					Log.l("loginToServer(): Authentication successful.");
+					SrvrSrvcs.userInfo = {u: user, p: pass};
+					resolve(session);
+				}
+			}).catch((err) => {
+				Log.l("loginToServer(): Authentication successful.");
+  			Log.e(err);
+				SrvrSrvcs.userInfo = {u: '', p: ''};
+  			resolve(false);
+			})
+		});
+  }
+
   getUserData(user) {
 		return this.RemoteDB.getUser(user);
-		// .then((userdata) => {
-		// 	let udata = {};
-		// 	udata.firstName      = userdata.firstName      ;
-		// 	udata.lastName       = userdata.lastName       ;
-		// 	udata.avatarName     = userdata.avatarName     ;
-		// 	udata.client         = userdata.client         ;
-		// 	udata.location       = userdata.location       ;
-		// 	udata.locID          = userdata.locID          ;
-		// 	udata.loc2nd         = userdata.loc2nd         ;
-		// 	udata.shift          = userdata.shift          ;
-		// 	udata.shiftLength    = userdata.shiftLength    ;
-		// 	udata.shiftStartTime = userdata.shiftStartTime ;
-		// 	udata.updated        = true                          ;
-		// 	udata._id            = this.profileDoc               ;
   }
 
   static addRDB(dbname: string) {
     let db1 = SrvrSrvcs.rdb;
     let url = SrvrSrvcs.rdbServer.protocol + "://" + SrvrSrvcs.rdbServer.server + "/" + dbname;
-    // if(url.slice(-1) == '/') {
-      // url = url.slice(0,-1);
-    // }
-    // let i = url.lastIndexOf('/');
-    // let dbname = i != -1 ? url.substr(-i) : "";
-
-    // return new Promise((res,err) => {
       Log.l(`addRDB(): Now fetching remote DB ${dbname} at ${url} ...`);
       if(db1.has(dbname)) {
-        // Log.l(`addRDB(): Not adding remote database ${url} because it already exists.`);
-        // resolve(false);
         return db1.get(dbname);
       } else {
         let rdb1 = SrvrSrvcs.StaticPouchDB(url, SrvrSrvcs.ropts);
         db1.set(dbname, rdb1);
-        // db1.login()
-        Log.l(`addRDB(): Added remote database ${url} to the list as ${dbname}.`);
+        let u = SrvrSrvcs.userInfo;
+				let authToken = 'Basic ' + window.btoa(u.u + ':' + u.p);
+				SrvrSrvcs.ajaxOpts.headers.Authorization = authToken;
+        // Log.l(`addRDB(): Added remote database ${url} to the list as ${dbname}.`);
         // resolve(db1.get(dbname))
-        return db1.get(dbname);
+        // return db1.get(dbname);
       }
     // });
   }
+
+  getReports(user: string) {
+    return new Promise((resolve,reject) => {
+    	let u = SrvrSrvcs.userInfo;
+      this.loginToServer(u.u, u.p, 'reports').then((res) => {
+      	if(res) {
+      		let rpdb = SrvrSrvcs.rdb.get('reports');
+      		rpdb.allDocs({ include_docs: true }).then((result) => {
+		        let data = [];
+						let docs = result.rows.map((row) => {
+							if( row.doc.username === user ) { data.push(row.doc); }
+							resolve(data);
+						});
+					}).catch((error) => {
+		      	Log.l("getReports(): Error getting reports for user.");
+		      	Log.e(error);
+		      	resolve([]);
+		      });
+      	} else {
+      		resolve([]);
+      	}
+      }).catch((err) => {
+				Log.l("getReports(): Error logging in to server.")
+				Log.e(err);
+				resolve([]);
+			});
+		});
+  }
+
+  updateDoc(doc) {
+    return SrvrSrvcs.staticRDB.put(doc);
+  }
+
+  deleteDoc(doc) {
+    Log.l(`deleteDoc(): Attempting to delete doc ${doc._id}...`);
+    return SrvrSrvcs.staticRDB.remove(doc._id, doc._rev).then((res) => {
+      Log.l("deleteDoc(): Success:\n", res);
+    }).catch((err) => {
+      Log.l("deleteDoc(): Error!");
+      Log.e(err);
+    });
+  }
+
+
+  syncToServer(dbname: string, pdb: any) {
+    Log.l(`syncSquaredToServer(): About to attempt replication of '${dbname}'->remote`);
+    var ev2 = function(b) { Log.l(b.status); Log.l(b);};
+    var db1 = pdb;
+    var db2 = SrvrSrvcs.rdb.get(dbname);
+    // var done = DBSrvcs.StaticPouchDB.replicate(db1, db2, DBSrvcs.repopts);
+    return new Promise((resolve, reject) => {
+      db1.replicate.to(db2, SrvrSrvcs.repopts).then((res) => {
+        Log.l(`syncSquaredToServer(): Successfully replicated '${dbname}'->remote!`);
+        Log.l(res);
+        resolve(res);
+      }).catch((err) => {
+        Log.l(`syncSquaredToServer(): Failure replicating '${dbname}'->remote!`);
+        Log.l(err);
+        reject(err);
+      });
+    });
+  }
+
+  syncFromServer(dbname: string, pdb: any) {
+    Log.l(`syncSquaredFromServer(): About to attempt replication of remote->'${dbname}'`);
+    var ev2 = function(b) { Log.l(b.status); Log.l(b);};
+    var db1 = SrvrSrvcs.rdb.get(dbname);
+    var db2 = pdb;
+    // var done = DBSrvcs.StaticPouchDB.replicate(db1, db2, DBSrvcs.repopts);
+    return new Promise((resolve, reject) => {
+      db2.replicate.to(db1, SrvrSrvcs.repopts).then((res) => {
+        Log.l(`syncSquaredFromServer(): Successfully replicated remote->'${dbname}'`);
+        Log.l(res);
+        resolve(res);
+      }).catch((err) => {
+        Log.l(`syncSquaredFromServer(): Failure replicating remote->'${dbname}'`);
+        Log.l(err);
+        reject(err);
+      });
+    });
+  }
+
+
 
 
 
