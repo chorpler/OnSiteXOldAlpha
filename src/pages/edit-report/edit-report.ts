@@ -45,6 +45,13 @@ export class EditReportPage implements OnInit {
 
   ionViewDidLoad() { console.log('ionViewDidLoad EditReportPage'); }
 
+  goBack() {
+  	Log.l("Back button tapped.");
+  	if(this.navCtrl.canGoBack()) {
+  		this.navCtrl.pop();
+  	}
+  }
+
   initializeForm() {
     this.workOrderForm = new FormGroup({
       'timeStarts': new FormControl(this.workOrder.timeStarts, Validators.required),

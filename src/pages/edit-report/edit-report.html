@@ -1,11 +1,18 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{title}}</ion-title>
-    <ion-buttons end>
-      <button ion-button icon-only (click)="deleteWorkOrder(workOrder)">
-        <ion-icon name="ios-trash-outline"></ion-icon>
-      </button>
-    </ion-buttons>
+    <ion-navbar>
+	    <ion-buttons start>
+	      <button ion-button icon-only (click)="goBack()">
+	        <ion-icon name="ion-android-arrow-back"></ion-icon>
+	      </button>
+	    </ion-buttons>
+    	<ion-title>{{title}}</ion-title>
+	    <ion-buttons end>
+	      <button ion-button icon-only (click)="deleteWorkOrder(workOrder)">
+	        <ion-icon name="ios-trash-outline"></ion-icon>
+	      </button>
+	    </ion-buttons>
+	  </ion-navbar>
   </ion-toolbar>
 </ion-header>
 

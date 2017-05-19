@@ -1,5 +1,5 @@
 import { Component               } from '@angular/core'               ;
-import { Platform, NavController } from 'ionic-angular'               ;
+import { Platform, NavController, ToastController } from 'ionic-angular'               ;
 import { StatusBar               } from '@ionic-native/status-bar'    ;
 import { SplashScreen            } from '@ionic-native/splash-screen' ;
 import { Storage                 } from '@ionic/storage'              ;
@@ -20,12 +20,37 @@ export class MyApp {
   PouchDB: any;
   pouchOptions: any = {};
 
-  constructor(platform: Platform, navCtrl: NavController, statusBar: StatusBar, splashScreen: SplashScreen, storage: Storage, db: DBSrvcs, auth: AuthSrvcs) {
+  constructor(platform: Platform, navCtrl: NavController, toast: ToastController, statusBar: StatusBar, splashScreen: SplashScreen, storage: Storage, db: DBSrvcs, auth: AuthSrvcs) {
+    window['appcomponents'] = this;
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
       splashScreen.hide();
+      platform.registerBackButtonAction(() => {
+        Log.l("Back button pressed (defined in app.components.ts).");
+        // if()
+        //   this.platform.exitApp();
+        // } else if (this.nav.canGoBack()) {
+        //   this.nav.pop({});
+        // } else {
+        //   this.showToast();
+        //   this.backButtonPressedOnceToExit = true;
+        //   setTimeout(() => {
+
+        //     this.backButtonPressedOnceToExit = false;
+        //   },2000)
+        // }
+        if(typeof this['navCtrl'] != 'undefined') {
+          let nav = this['navCtrl'];
+          if(nav.canGoBack()) {
+            nav.pop();
+          } else {
+            /* Future functions */
+          }
+        }
+      });
+
       this.pouchOptions = {adapter: 'websql', auto_compaction: true};
       window["PouchDB"] = DBSrvcs.StaticPouchDB;
       window["Platform"] = platform;
