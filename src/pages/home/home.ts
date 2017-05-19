@@ -1,4 +1,4 @@
-import { Component                } from '@angular/core'                 ;
+import { Component, OnInit        } from '@angular/core'                 ;
 import { IonicPage, NavController } from 'ionic-angular'                 ;
 import { Platform                 } from 'ionic-angular'                 ;
 import { AuthSrvcs                } from '../../providers/auth-srvcs'    ;
@@ -11,7 +11,7 @@ import { Log, CONSOLE             } from '../../config/config.functions' ;
   selector: 'page-home',
   templateUrl: 'home.html'
 })
-export class HomePage {
+export class HomePage implements OnInit {
   userLoggedIn: boolean = false;
   showPage: boolean = false;
   static startOfApp: boolean = true;
@@ -20,13 +20,15 @@ export class HomePage {
   
   constructor(public navCtrl: NavController, public plt: Platform, public auth: AuthSrvcs, public srvr: SrvrSrvcs) { 
     // console.log(this.plt.platforms());
+  }
+
+  ngOnInit() {
     if(HomePage.startOfApp) {
       this.setupAppData();
     } else {
       this.userLoggedIn = false;
       HomePage.startOfApp = false;
       this.showPage = true;
-
     }
   }
 
