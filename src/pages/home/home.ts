@@ -46,5 +46,6 @@ export class HomePage {
       this.userLoggedIn = false;
     });
   }
+  getReportHistory() { this.navCtrl.push('Reports')}
 }
 // 'Work Order Form'
