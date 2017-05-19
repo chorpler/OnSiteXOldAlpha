@@ -322,6 +322,16 @@ export class DBSrvcs {
     return DBSrvcs.db.put(doc);
   }
 
+  deleteDoc(doc) {
+    Log.l(`deleteDoc(): Attempting to delete doc ${doc._id}...`);
+    return DBSrvcs.db.remove(doc._id, doc._rev).then((res) => {
+      Log.l("deleteDoc(): Success:\n", res);
+    }).catch((err) => {
+      Log.l("deleteDoc(): Error!");
+      Log.e(err);
+    });
+  }
+
   checkLocalDoc(docID) {
     return new Promise((resolve, reject) => {
       // this.db.get(docID).then((result) => {
@@ -331,13 +341,6 @@ export class DBSrvcs {
       }).catch((error) => {
         console.log(`Local doc ${docID} does not exist`);
         resolve(false);
-        // if (error.status = '404') { 
-        //   let doc = { _id: docID };
-        //   this.addDoc(doc);
-
-        // }
-        // else { console.log(error); }
-        // reject(error);
       })
     })
   }

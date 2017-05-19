@@ -1,16 +1,15 @@
-import { Component, OnInit, ViewChild                           } from '@angular/core'                     ;
-import { FormGroup, FormControl, Validators                     } from "@angular/forms"                    ;
-import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular'                     ;
-import { DBSrvcs                                                } from '../../providers/db-srvcs'          ;
-import { AuthSrvcs                                              } from '../../providers/auth-srvcs'        ;
-import { TimeSrvc                                               } from '../../providers/time-parse-srvc'   ;
-import { ReportBuildSrvc                                        } from '../../providers/report-build-srvc' ;
-import * as moment                                                from 'moment'                            ;
-import { Log, CONSOLE                                           } from '../../config/config.functions'     ;
+import { Component, OnInit, ViewChild                                            } from '@angular/core'                     ;
+import { FormGroup, FormControl, Validators                                      } from "@angular/forms"                    ;
+import { IonicPage, NavController, NavParams, LoadingController, AlertController } from 'ionic-angular'                     ;
+import { DBSrvcs                                                                 } from '../../providers/db-srvcs'          ;
+import { AuthSrvcs                                                               } from '../../providers/auth-srvcs'        ;
+import { TimeSrvc                                                                } from '../../providers/time-parse-srvc'   ;
+import { ReportBuildSrvc                                                         } from '../../providers/report-build-srvc' ;
+import * as moment                                                                 from 'moment'                            ;
+import { Log, CONSOLE                                                            } from '../../config/config.functions'     ;
 
 @IonicPage({ name    : 'Report Edit'                                       })
 @Component({ selector: 'page-edit-report', templateUrl: 'edit-report.html' })
-
 
 export class EditReportPage implements OnInit {
   title         : string      = 'Report Edit'          ;
@@ -22,7 +21,7 @@ export class EditReportPage implements OnInit {
   loading       : any         = {}                     ;
 
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private dbSrvcs: DBSrvcs, private timeSrvc: TimeSrvc, public reportBuilder:ReportBuildSrvc, public loadingCtrl: LoadingController) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private dbSrvcs: DBSrvcs, private timeSrvc: TimeSrvc, public reportBuilder:ReportBuildSrvc, public loadingCtrl: LoadingController, private alertCtrl: AlertController) {
   	window['editreport'] = this;
   }
 
@@ -65,13 +64,23 @@ export class EditReportPage implements OnInit {
     });
   }
 
-
-  deleteWorkOrder(workOrder: any) {
-  	Log.l("deleteWorkOrder() clicked ...");
+  showConfirm(title: string, text: string) {
+  	return new Promise((resolve,reject) => {
+  		let alert = this.alertCtrl.create({
+	  		title: title,
+	  		message: text,
+	  		buttons: [
+	  			{text: 'Cancel', handler: () => {Log.l("Cancel clicked."); resolve(false);}},
+	  			{text: 'OK', handler: () => {Log.l("OK clicked."); resolve(true);}}
+	  		]
+	  	});
+	  	alert.present();
+	  });
   }
 
-  onSubmit() {
+  updateWorkOrder() {
   	const WO = this.workOrderForm.getRawValue();
+  	Log.l("updateWorkOrder(): Form is:\n",WO);
   	this.workOrder.timeStarts = WO.timeStarts ;
   	this.workOrder.timeEnds   = WO.timeEnds   ;
   	this.workOrder.repairHrs  = WO.repairHrs  ;
@@ -80,7 +89,33 @@ export class EditReportPage implements OnInit {
   	this.workOrder.notes      = WO.notes      ;
   	this.workOrder.rprtDate   = WO.rprtDate   ;
   	this.workOrder.timeStamp  = WO.timeStamp  ;
-  	Log.l("Edited Report form:\n",WO);
+  	Log.l("updateWorkOrder(): Updated Work Order is:\n", this.workOrder);
+  }
+
+  deleteWorkOrder() {
+  	Log.l("deleteWorkOrder() clicked ...");
+  	this.showConfirm('CONFIRM', 'Delete this work order?').then((res) => {
+  		Log.l("deleteWorkOrder(): Success:\n", res);
+  		if(res) {
+  			Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
+		  	this.dbSrvcs.deleteDoc(this.workOrder).then((res) => {
+		  		Log.l("deleteWorkOrder(): Success:\n", res);
+		  		setTimeout(() => {this.navCtrl.setRoot('OnSiteHome')});
+		  	}).catch((err) => {
+		  		Log.l("deleteWorkOrder(): Error!");
+		  		Log.e(err);
+		  	});
+  		} else {
+  			Log.l("User canceled deletion.");
+  		}
+  	}).catch((err) => {
+  		Log.l("deleteWorkOrder(): Error!");
+  		Log.e(err);
+  	});
+  }
+
+  onSubmit() {
+  	this.updateWorkOrder();
   	Log.l("Edited Report submitting...\n", this.workOrder);
   	this.showSpinner("Saving...");
   	this.dbSrvcs.updateReport(this.workOrder).then((res) => {
