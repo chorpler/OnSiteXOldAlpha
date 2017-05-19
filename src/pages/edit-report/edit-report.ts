@@ -19,6 +19,7 @@ export class EditReportPage implements OnInit {
   workOrder     : any         = {}                     ;
   mode          : string      = 'Edit'                 ;
   setDate       : Date        = new Date()             ;
+  loading       : any         = {}                     ;
 
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private dbSrvcs: DBSrvcs, private timeSrvc: TimeSrvc, public reportBuilder:ReportBuildSrvc, public loadingCtrl: LoadingController) {
@@ -46,8 +47,52 @@ export class EditReportPage implements OnInit {
     });
   }
 
+  showSpinner(text: string) {
+    this.loading = this.loadingCtrl.create({
+      content: text,
+      showBackdrop: false,
+    });
+
+    this.loading.present().catch(() => {});
+  }
+
+  hideSpinner() {
+    setTimeout(() => {
+      this.loading.dismiss().catch((reason: any) => {
+        Log.l('EditReport: loading.dismiss() error:\n', reason);
+        this.loading.dismissAll();
+      });
+    });
+  }
+
+
+  deleteWorkOrder(workOrder: any) {
+  	Log.l("deleteWorkOrder() clicked ...");
+  }
+
   onSubmit() {
-  	Log.l("Nah, it's coo', it's coo'.");
+  	const WO = this.workOrderForm.getRawValue();
+  	this.workOrder.timeStarts = WO.timeStarts ;
+  	this.workOrder.timeEnds   = WO.timeEnds   ;
+  	this.workOrder.repairHrs  = WO.repairHrs  ;
+  	this.workOrder.uNum       = WO.uNum       ;
+  	this.workOrder.wONum      = WO.wONum      ;
+  	this.workOrder.notes      = WO.notes      ;
+  	this.workOrder.rprtDate   = WO.rprtDate   ;
+  	this.workOrder.timeStamp  = WO.timeStamp  ;
+  	Log.l("Edited Report form:\n",WO);
+  	Log.l("Edited Report submitting...\n", this.workOrder);
+  	this.showSpinner("Saving...");
+  	this.dbSrvcs.updateReport(this.workOrder).then((res) => {
+  		Log.l("Successfully submitted updated report.");
+  		this.hideSpinner();
+  		setTimeout(() => {this.navCtrl.setRoot('OnSiteHome');});
+  	}).catch((err) => {
+  		Log.l("Error saving updated report.");
+  		this.hideSpinner();
+  		/* Display error */
+  		Log.e(err);
+  	});
   }
 
 }

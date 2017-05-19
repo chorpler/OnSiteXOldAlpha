@@ -292,6 +292,18 @@ export class DBSrvcs {
     });
   }
 
+  updateReport(doc) {
+    Log.l(`updateReport(): About to put doc ${doc._id}`);
+    return DBSrvcs.db.put(doc).then((res) => {
+      console.log("updateReport(): Successfully added document.");
+      console.log(res);
+    }).catch((err) => {
+      console.log("updateReport(): Failed while trying to add document (after 404 error in get)");
+      console.error(err);
+    });
+  }
+
+
   getDoc(docID) {
     return new Promise((resolve, reject) => {
       // this.db.get(docID).then((result) => {
