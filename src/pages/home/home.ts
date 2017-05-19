@@ -19,16 +19,28 @@ export class HomePage {
   title ='OnSite Home';
   
   constructor(public navCtrl: NavController, public plt: Platform, public auth: AuthSrvcs, public srvr: SrvrSrvcs) { 
-    console.log(this.plt.platforms());
+    // console.log(this.plt.platforms());
     if(HomePage.startOfApp) {
       this.setupAppData();
+    } else {
+      this.userLoggedIn = false;
+      HomePage.startOfApp = false;
+      this.showPage = true;
+
     }
   }
 
+  ionViewDidLoad() {
+    Log.l("Home view loaded.");
+  }
+
   onNewWorkOrder() {this.navCtrl.push('Work Order Form', {mode: 'New'});}
+  
   onLogin() {this.navCtrl.push('Login');}
   // onNewJobForm() {this.navCtrl.push('Work Order', {mode: 'New'});}
+  
   onSettings() {this.navCtrl.push('Report Settings');}
+  
   isFirstItem() {
     if(this.userLoggedIn) {
       return 'logged-in';
