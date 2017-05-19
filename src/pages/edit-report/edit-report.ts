@@ -9,7 +9,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 export class EditReportPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {  }
+  constructor(public navCtrl: NavController, public navParams: NavParams) { window['editreport'] = this; }
 
   ionViewDidLoad() { console.log('ionViewDidLoad EditReportPage'); }
 

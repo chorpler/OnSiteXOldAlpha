@@ -24,7 +24,8 @@ export class ReportHistoryPage implements OnInit {
     this.dbSrvcs.allDoc().then(res => {
       this.data = res;
       this.items = [];
-      for(let i = this.data.length - 1; i >= 0; i--) { this.items[i] = { title: this.data[i].rprtDate, note: this.data[i].uNum }; }
+      // for(let i = this.data.length - 1; i >= 0; i--) { this.items[i] = { title: this.data[i].rprtDate, note: this.data[i].uNum }; }
+      for(let i = this.data.length - 1; i >= 0; i--) { this.items.push(this.data[i]); }
       // If we navigated to this page, we will have an item available as a nav param
       this.selectedItem = this.navParams.get('item');
     });

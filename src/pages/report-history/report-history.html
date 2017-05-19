@@ -11,9 +11,9 @@
   <ion-list>
     <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)">
       <ion-icon [name]="item.icon" item-left></ion-icon>
-      {{item.title}}
+      {{item.rprtDate}}
       <div class="item-note" item-right>
-        {{item.note}}
+        {{item.uNum}}
       </div>
     </button>
   </ion-list>
