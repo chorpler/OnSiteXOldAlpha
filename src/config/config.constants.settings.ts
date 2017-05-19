@@ -1,7 +1,8 @@
 export const CLIENT         = [
                                 "HALLIBURTON" ,
                                 "KEANE"       ,
-                                "SESA"
+                                "SESA"        ,
+                                "BASIC ENERGY"
                                                 ];
 
 export const LOCATION       = [
@@ -11,9 +12,11 @@ export const LOCATION       = [
                                 "DUNCAN"      ,
                                 "SHAWNEE"     ,
                                 "SPRINGTOWN"  ,
-                                "WESLACO"     ,
                                 "ARTESIA"     ,
                                 "MATHIS"      ,
+                                "MILL HALL"   ,
+                                "MIDLAND"     ,
+                                "WESLACO"     ,
                                 "LAS CUATAS"
                                                 ];
 
@@ -74,4 +77,3 @@ export const LOC2ND         = [
                                 "South"       ,
                                 "NA"
                                                 ];
-                                                

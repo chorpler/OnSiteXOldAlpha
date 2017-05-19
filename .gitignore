@@ -33,8 +33,12 @@ $RECYCLE.BIN/
 Thumbs.db
 UserInterfaceState.xcuserstate
 *.xlsx
-android-release-unsigned.apk
+*.apk
 *.keystore
+<<<<<<< HEAD
 OnSiteX.apk
 *.ipa
 OnSiteX_Debug.apk
+=======
+*.ipa
+>>>>>>> a1a03afca7857b8476eb7b0d14eb3942c0b0b56a
