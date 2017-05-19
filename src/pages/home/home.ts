@@ -25,8 +25,7 @@ export class HomePage implements OnInit {
     if(HomePage.startOfApp) {
       this.setupAppData();
     } else {
-      this.userLoggedIn = false;
-      HomePage.startOfApp = false;
+      this.userLoggedIn = true;
       this.showPage = true;
     }
   }
