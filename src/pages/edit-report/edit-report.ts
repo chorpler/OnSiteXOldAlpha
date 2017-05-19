@@ -133,7 +133,11 @@ export class EditReportPage implements OnInit {
   	this.updateWorkOrder();
   	Log.l("Edited Report submitting...\n", this.workOrder);
   	this.showSpinner("Saving...");
-  	this.dbSrvcs.updateReport(this.workOrder).then((res) => {
+  	this.srvr.updateDoc(this.workOrder).then((res) => {
+			// this.srvr.
+		// }).then((res) => {
+		// }).then((res) => {
+		// }).then((res) => {
   		Log.l("Successfully submitted updated report.");
   		this.hideSpinner();
   		setTimeout(() => {this.navCtrl.setRoot('OnSiteHome');});
