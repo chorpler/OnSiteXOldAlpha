@@ -12,29 +12,29 @@ import { MONTH, OSXD           } from '../config/config.date.object.onsite' ;
 
 export class TimeSrvc {
 
-  date        : any       ;
-  _arrD       : any[]= [] ;
-  dstr        : string    ;
-  month       : any       ;
-  weekDay     : any       ;
-  mDay        : any       ;
-  year        : any       ;
-  hours       : any       ;
-  min         : any       ;
-  sec         : any       ;
-  time        : any       ;
-  gmtOffset   : any       ;
-  tmZoneStr   : any       ;
-  onSiteXDate : OSXD      ;
-  prsHrs;
-  strtHrs;
-  prsMin;
-  strtMin;
-  hrsHrs;
-  hrsMin;
-  endHrs;
-  timeEnds;
-  endMin;
+  date       : any   ; 
+  _arrD      : any[  ] = []; 
+  dstr       : string; 
+  month      : any   ; 
+  weekDay    : any   ; 
+  mDay       : any   ; 
+  year       : any   ; 
+  hours      : any   ; 
+  min        : any   ; 
+  sec        : any   ; 
+  time       : any   ; 
+  gmtOffset  : any   ; 
+  tmZoneStr  : any   ; 
+  onSiteXDate: OSXD  ; 
+  prsHrs     : any   ; 
+  strtHrs    : any   ; 
+  prsMin     : any   ; 
+  strtMin    : any   ; 
+  hrsHrs     : any   ; 
+  hrsMin     : any   ; 
+  endHrs     : any   ; 
+  timeEnds   : any   ; 
+  endMin     : any   ; 
   
 
   constructor( ) { console.log('Hello TimeSrvc Provider'); }
