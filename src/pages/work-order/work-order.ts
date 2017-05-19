@@ -46,12 +46,13 @@ export class WorkOrder implements OnInit {
   timeEnds                            ;
   syncError : boolean  = false        ;
   db        : any      = {}           ;
+  loading   : any = {}                ;
   // , private dbSrvcs: DBSrvcs
 
-constructor(public navCtrl: NavController, public navParams: NavParams, private dbSrvcs: DBSrvcs, private timeSrvc: TimeSrvc, public reportBuilder:ReportBuildSrvc, public loadingCtrl: LoadingController) {
-  this.db = this.dbSrvcs;
-  window["workorder"] = this;
-}
+  constructor(public navCtrl: NavController, public navParams: NavParams, private dbSrvcs: DBSrvcs, private timeSrvc: TimeSrvc, public reportBuilder:ReportBuildSrvc, public loadingCtrl: LoadingController) {
+    this.db = this.dbSrvcs;
+    window["workorder"] = this;
+  }
 
   ionViewDidLoad() { console.log('ionViewDidLoad WorkOrder'); }
 
@@ -64,6 +65,29 @@ constructor(public navCtrl: NavController, public navParams: NavParams, private 
 
     this.initializeForm();
   }
+
+  showSpinner(text: string) {
+    this.loading = this.loadingCtrl.create({
+      content: text,
+      showBackdrop: false
+    });
+
+    this.loading.onDidDismiss(() => {
+      Log.l("Spinner dismissed.");
+    })
+
+    this.loading.present();
+  }
+
+  hideSpinner() {
+    this.loading.dismiss();
+  }
+
+  //   setTimeout(() => {
+  //     loading.dismiss();
+  //   }, 5000);
+  // }
+
 
 
   private initializeForm() {
@@ -176,6 +200,8 @@ constructor(public navCtrl: NavController, public navParams: NavParams, private 
     console.log("processWO() has initial workOrderData:");
     console.log(workOrderData);
 
+    this.showSpinner("Saving...");
+
     return new Promise((resolve,reject) => {
       this.dbSrvcs.checkLocalDoc( '_local/techProfile')
       .then((docExists) => {
@@ -214,7 +240,8 @@ constructor(public navCtrl: NavController, public navParams: NavParams, private 
               });
 
               /* Notify user and go to Settings page */
-              // this.navCtrl.push('Report Settings');
+              this.hideSpinner();
+              this.navCtrl.push('Report Settings');
 
             } else {
               /* Update flag is true, good to submit work order */
@@ -261,6 +288,9 @@ constructor(public navCtrl: NavController, public navParams: NavParams, private 
         Log.w(outerError);
         resolve(false);
       });
+    }).then(() => {
+      Log.l("processWO(): Dismissing spinner just in case");
+      this.hideSpinner();
     });
    }
  }
