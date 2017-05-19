@@ -4,17 +4,27 @@
   See http://ionicframework.com/docs/components/#navigation for more info on
   Ionic pages and navigation.
 -->
-<ion-header>
+<!--<ion-header>
 
   <ion-navbar>
-    <ion-title>Edit Report</ion-title>
+    <ion-title>Edit</ion-title>
     <ion-buttons end>
-    	<button ion-button icon-only (click)="deleteWorkOrder(workOrder)">
-    		<ion-icon name="ion-trash-a"></ion-icon>
-    	</button>
+      <button ion-button icon-only (click)="deleteWorkOrder(workOrder)">
+        <ion-icon name="ion-trash-a"></ion-icon>
+      </button>
     </ion-buttons>
   </ion-navbar>
+</ion-header>-->
 
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{title}}</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="deleteWorkOrder(workOrder)">
+        <ion-icon name="ios-trash-outline"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content padding>
@@ -53,6 +63,6 @@
         <div>Error submitting work order. Please try again.</div>
       </ion-item>
     </ion-list>
-    <button type="submit" ion-button block>Submit {{title}} </button>
+    <button type="submit" ion-button block>Submit {{title}} </ion-icon></button>
   </form>
 </ion-content>
