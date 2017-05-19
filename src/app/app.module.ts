@@ -16,6 +16,7 @@ import { TimeSrvc                                                } from '../prov
 import { ReportBuildSrvc                                         } from '../providers/report-build-srvc'   ;
 import { UserData                                                } from '../providers/user-data'           ;
 import { SrvrSrvcs                                               } from '../providers/srvr-srvcs'          ;
+import { DbBulkuploadSrvc                                        } from '../providers/db-bulkupload-srvc'  ;
 
 
 @NgModule({
@@ -31,7 +32,7 @@ import { SrvrSrvcs                                               } from '../prov
                       IonicStorageModule.forRoot({
                         name: '__onsitestorage',
                         driverOrder: ['localstorage']
-    }),
+                      }),
                       IonicModule.forRoot(MyApp)
                                                                             ],
 
@@ -47,7 +48,8 @@ import { SrvrSrvcs                                               } from '../prov
                       TimeSrvc,
                       ReportBuildSrvc,
                       UserData,
-                      SrvrSrvcs
+                      SrvrSrvcs,
+                      DbBulkuploadSrvc
                                                                             ]
 })
 

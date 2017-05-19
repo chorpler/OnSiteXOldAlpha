@@ -70,18 +70,23 @@ export class WorkOrder implements OnInit {
     this.loading = this.loadingCtrl.create({
       content: text,
       showBackdrop: false,
-      dismissOnPageChange: true
+      // dismissOnPageChange: true
     });
 
-    this.loading.onDidDismiss(() => {
-      Log.l("Spinner dismissed.");
-    })
+    // this.loading.onDidDismiss(() => {
+    //   Log.l("Spinner dismissed.");
+    // })
 
-    this.loading.present();
+    this.loading.present().catch(() => {});
   }
 
   hideSpinner() {
-    this.loading.dismiss();
+    setTimeout(() => {
+      this.loading.dismiss().catch((reason: any) => {
+        Log.l('WorkOrder: loading.dismiss() error:\n', reason);
+        this.loading.dismissAll();
+      });
+    });
   }
 
   //   setTimeout(() => {
@@ -204,8 +209,7 @@ export class WorkOrder implements OnInit {
     this.showSpinner("Saving...");
 
     return new Promise((resolve,reject) => {
-      this.dbSrvcs.checkLocalDoc( '_local/techProfile')
-      .then((docExists) => {
+      this.dbSrvcs.checkLocalDoc( '_local/techProfile').then((docExists) => {
         if(docExists) {
           console.log("processWO(): docExists is true");
           this.dbSrvcs.getDoc('_local/techProfile').then(res => {
@@ -219,8 +223,9 @@ export class WorkOrder implements OnInit {
             if( typeof this.profile.updated == 'undefined') {
               /* This shouldn't happen as long as the user is logged in and the profile was created */
               Log.l("processWO(): Tech profile does not exist at all. This should not happen.");
-              this.navCtrl.push('Report Settings');
-              resolve(false);
+              setTimeout(() => {this.navCtrl.push('Report Settings');});
+              // resolve(false);
+              resolve(-1);
             } else if(typeof this.profile.updated != 'undefined' && this.profile.updated === false ) {
               /* Update flag exists but is false, so tech needs to verify settings */
               Log.l("processWO(): Update flag exists in profile, but is false. Need tech to OK settings changes.");
@@ -232,18 +237,20 @@ export class WorkOrder implements OnInit {
               this.dbSrvcs.addLocalDoc( this.tmpReportData ).then((res) => {
                 Log.l("processWO(): Created temporary work report. Now going to Settings page to OK changes.");
                 Log.l(res);
-                this.navCtrl.push('Report Settings');
-                resolve(res);
+                setTimeout(() => {this.navCtrl.push('Report Settings');});
+                // resolve(res);
+                resolve(-2);
               }).catch((err) => {
                 Log.l("processWO(): Error trying to save temporary work report! Can't take tech to settings page!");
                 Log.w(err);
-                resolve(false);
+                // resolve(false);
+                resolve(-3);
               });
 
               /* Notify user and go to Settings page */
               this.hideSpinner();
-              this.navCtrl.push('Report Settings');
-
+              setTimeout(() => {this.navCtrl.push('Report Settings');});
+              resolve(-4);
             } else {
               /* Update flag is true, good to submit work order */
               console.log("processWO(): docExists is false");
@@ -260,34 +267,42 @@ export class WorkOrder implements OnInit {
                 return this.reportBuilder.getLocalDocs();
               }).then((final) => {
                 console.log("processWO(): Done generating work order.");
-                return this.db.syncToServer('reports');
+                return this.db.syncSquaredToServer('reports');
               }).then((final2) => {
                 Log.l("processWO(): Successfully synchronized work order to CouchDB server!");
                 Log.l(final2);
                 // this.navCtrl.push('Report Settings');
-                this.navCtrl.push("OnSiteHome");
-                resolve(final2);
+                // this.navCtrl.push("OnSiteHome");
+                this.hideSpinner();
+                setTimeout(() => {this.navCtrl.setRoot('OnSiteHome');});
+                // resolve(final2);
+                resolve(-5);
               }).catch((err) => {
                 Log.l("processWO(): Error while trying to sync work order to CouchDB server!");
                 Log.w(err);
                 this.syncError = true;
-                resolve(false);
+                // resolve(false);
+                resolve(-6);
               });
             }
           }).catch((anotherError) => {
             Log.l("processWO(): Could not retrieve _local/techProfile. Please set it up again.");
             Log.w(anotherError);
-            this.navCtrl.push("Report Settings");
-            resolve(false);
+            this.hideSpinner();
+            // resolve(false);
+            setTimeout(() => {this.navCtrl.push("Report Settings");});
+            resolve(-7);
           })
         } else {
           console.error("processWO(): Tech profile does not exist. Contact developers.");
-          resolve(false);
+          // resolve(false);
+          resolve(-8);
         }
       }).catch((outerError) => {
         Log.l("processWO(): Error checking existence of local document _local/techProfile.");
         Log.w(outerError);
-        resolve(false);
+        // resolve(false);
+        resolve(-9);
       });
     });
    }

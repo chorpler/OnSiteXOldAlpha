@@ -41,7 +41,8 @@ export class MyApp {
       window['c1'] = CONSOLE.c1;
 
       console.log("App done starting, now moving to Home...");
-      navCtrl.push('OnSiteHome');
+      // navCtrl.push('OnSiteHome');
+      navCtrl.setRoot("OnSiteHome");
     });
   }
 }

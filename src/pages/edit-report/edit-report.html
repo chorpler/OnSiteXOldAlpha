@@ -7,12 +7,47 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>EditReport</ion-title>
+    <ion-title>Edit Report</ion-title>
   </ion-navbar>
 
 </ion-header>
 
-
 <ion-content padding>
+  <p class="hdrDate"> Today: <span class="date">{{ setDate | date:'EEE, MMM dd yyyy'}}</span>, Time: <span class="time"> {{setDate| date:'HH:mm'}} </span>    </p>
 
+  <form [formGroup]="workOrderForm" (ngSubmit)="onSubmit()">
+    <ion-list>
+      <ion-item>
+        <ion-input type='text' formControlName="timeStamp"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Start Date</ion-label>
+        <ion-datetime #reportDate displayFormat="DDD, MMM DD YYYY" pickerFormat="MMM DD YYYY" yearValues="2017" formControlName="rprtDate"></ion-datetime>
+      </ion-item>
+      <ion-item>
+        <ion-label>Start Time</ion-label>
+        <ion-datetime #startTime displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="00,15,30,45" formControlName="timeStarts"></ion-datetime>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>JOB HRS: (Decimal Hours) </ion-label>
+        <ion-input type='number' formControlName='repairHrs'></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>UNIT No.</ion-label>
+        <ion-input type='text' formControlName='uNum'></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>WORK ORDER No.</ion-label>
+        <ion-input type='text' formControlName='wONum'></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>JOB NOTES:</ion-label>
+        <ion-textarea formControlName='notes'></ion-textarea>
+      </ion-item>
+      <ion-item *ngIf="syncError" class="alert danger">
+        <div>Error submitting work order. Please try again.</div>
+      </ion-item>
+    </ion-list>
+    <button type="submit" ion-button block>Submit {{title}} </button>
+  </form>
 </ion-content>

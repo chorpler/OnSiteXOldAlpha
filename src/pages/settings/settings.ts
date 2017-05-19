@@ -145,7 +145,8 @@ export class Settings implements OnInit {
         /* create and submit report here */
       } else {
         /* No report to submit. Just go back to home screen. */
-        this.navCtrl.push('OnSiteHome');
+        // this.navCtrl.push('OnSiteHome');
+        this.navCtrl.setRoot('OnSiteHome');
       }
     }).catch((err) => {
       console.log("onSubmit(): Error saving techProfile!");

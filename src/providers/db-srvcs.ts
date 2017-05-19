@@ -306,6 +306,10 @@ export class DBSrvcs {
     });
   }
 
+  updateDoc(doc) {
+    return DBSrvcs.db.put(doc);
+  }
+
   checkLocalDoc(docID) {
     return new Promise((resolve, reject) => {
       // this.db.get(docID).then((result) => {

@@ -19,10 +19,10 @@ export class DbBulkuploadSrvc {
 
   constructor(public http: Http, public zone: NgZone) {
 
-    this.db = new PouchDB('testreports');
-    this.username = 'mike';
-    this.password = 'Dorothyinkansas4life';
-    this.remote = 'http://martiancouch.hplx.net/testreports';
+    this.db = new PouchDB('reports');
+    // this.username = 'mike';
+    // this.password = 'Dorothyinkansas4life';
+    // this.remote = 'http://martiancouch.hplx.net/testreports';
 
     // this.db = new PouchDB('testreports');
     // this.username = 'onsitesrvradmin';
@@ -36,11 +36,11 @@ export class DbBulkuploadSrvc {
       auth: { username: this.username, password: this.password }
     };
 
-    this.db.sync(this.remote, this.options);
+    // this.db.sync(this.remote, this.options);
   }
 
   postDbDocs(docs) { 
     this._docs = docs;
-    this.db.bulkDocs(this._docs) }
+    return this.db.bulkDocs(this._docs) }
 
 }

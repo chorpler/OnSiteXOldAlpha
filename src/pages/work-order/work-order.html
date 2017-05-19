@@ -7,14 +7,11 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>WorkOrder</ion-title>
+    <ion-title>Work Order</ion-title>
   </ion-navbar>
 
 </ion-header>
 
-<div *ngIf="showSpinner">
-  <ion-spinner></ion-spinner>
-</div>
 <ion-content padding>
   <p class="hdrDate"> Today: <span class="date">{{ setDate | date:'EEE, MMM dd yyyy'}}</span>, Time: <span class="time"> {{setDate| date:'HH:mm'}} </span>    </p>
 

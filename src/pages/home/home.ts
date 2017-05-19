@@ -1,9 +1,12 @@
-import { Component, OnInit        } from '@angular/core'                 ;
-import { IonicPage, NavController } from 'ionic-angular'                 ;
-import { Platform                 } from 'ionic-angular'                 ;
-import { AuthSrvcs                } from '../../providers/auth-srvcs'    ;
-import { SrvrSrvcs                } from '../../providers/srvr-srvcs'    ;
-import { Log, CONSOLE             } from '../../config/config.functions' ;
+import { Component, OnInit        } from '@angular/core'                      ;
+import { IonicPage, NavController } from 'ionic-angular'                      ;
+import { Platform                 } from 'ionic-angular'                      ;
+import { AuthSrvcs                } from '../../providers/auth-srvcs'         ;
+import { SrvrSrvcs                } from '../../providers/srvr-srvcs'         ;
+import { DbBulkuploadSrvc         } from '../../providers/db-bulkupload-srvc' ;
+import   * as PouchDB               from 'pouchdb'                            ; 
+import { Log, CONSOLE             } from '../../config/config.functions'      ;
+import { reportDocs               } from '../../test/test.reports'            ;
 
 @IonicPage({name: 'OnSiteHome'})
 
@@ -16,8 +19,10 @@ export class HomePage implements OnInit {
   showPage: boolean = false;
   static startOfApp: boolean = true;
   title ='OnSite Home';
+  PDB: any = PouchDB;
   
-  constructor(public navCtrl: NavController, public plt: Platform, public auth: AuthSrvcs, public srvr: SrvrSrvcs) { 
+  constructor(public navCtrl: NavController, public plt: Platform, public auth: AuthSrvcs, public srvr: SrvrSrvcs, public dbBulk: DbBulkuploadSrvc) {
+    window['onsitehome'] = this;
   }
 
   ngOnInit() {
@@ -101,5 +106,11 @@ export class HomePage implements OnInit {
   }
   
   getReportHistory() { this.navCtrl.push('Reports')}
+
+  importBulkReports() {
+    Log.l("Beginning import...");
+    this.dbBulk.postDbDocs(reportDocs).then((res) => {
+      Log.l("Done.");
+    })
+  }
 }
-// 'Work Order Form'
