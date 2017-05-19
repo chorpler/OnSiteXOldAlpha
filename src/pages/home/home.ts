@@ -22,14 +22,13 @@ export class HomePage implements OnInit {
 
   ngOnInit() {
     // console.log(this.plt.platforms());
-    this.auth.isFirstLogin().then((firstLogin) => {
-      if(firstLogin) {
-        this.userLoggedIn = false;
-      } else {
-        this.userLoggedIn = true;
-      }
+    if(HomePage.startOfApp) {
+      this.setupAppData();
+    } else {
+      this.userLoggedIn = false;
+      HomePage.startOfApp = false;
       this.showPage = true;
-    });
+    }
   }
 
   ionViewDidLoad() {
