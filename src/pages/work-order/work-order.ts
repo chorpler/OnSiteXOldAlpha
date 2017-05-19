@@ -69,7 +69,8 @@ export class WorkOrder implements OnInit {
   showSpinner(text: string) {
     this.loading = this.loadingCtrl.create({
       content: text,
-      showBackdrop: false
+      showBackdrop: false,
+      dismissOnPageChange: true
     });
 
     this.loading.onDidDismiss(() => {
@@ -288,9 +289,6 @@ export class WorkOrder implements OnInit {
         Log.w(outerError);
         resolve(false);
       });
-    }).then(() => {
-      Log.l("processWO(): Dismissing spinner just in case");
-      this.hideSpinner();
     });
    }
  }
