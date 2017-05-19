@@ -13,10 +13,7 @@ updateReport(){
       console.error(err);
       reject(err);
     });
-    } else {
-    console.log("addDoc(): Some other error occurred.");
-    console.error(error);
-    reject(error);
-  }
 }
+
+
 ```
