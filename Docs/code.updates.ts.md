@@ -3,7 +3,7 @@
 
 ```js
 
-updateReport(){
+updateReport(doc){
     DBSrvcs.db.put(doc).then((res) => {
       console.log("addDoc(): Successfully added document.");
       console.log(res);
@@ -14,6 +14,9 @@ updateReport(){
       reject(err);
     });
 }
-
-
+  onSubmit() {
+  this.report = this.workOrderForm.value;
+  this.dbSrvcs.updateReport(this.report);
+  this.navCtrl.push('OnSiteHome');
+}
 ```
