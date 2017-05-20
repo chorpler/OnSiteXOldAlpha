@@ -29,6 +29,7 @@ export class Login {
   // constructor(public navCtrl: NavController, public navParams: NavParams, public popoverCtrl: PopoverController, private auth: AuthSrvcs) {
   constructor(public navCtrl: NavController, public navParams: NavParams, private auth: AuthSrvcs, private srvr: SrvrSrvcs, private db: DBSrvcs, private loadingCtrl: LoadingController) {
   // constructor(public navCtrl: NavController, public navParams: NavParams, private settings: Settings, private auth: AuthSrvcs) {
+    window['loginscreen'] = this;
   }
 
   ionViewDidLoad() {

@@ -151,7 +151,46 @@ function (doc) {
 }
 }
 
+"function(newDoc, oldDoc, userCtx, secObj) { var now = new Date(); if(oldDoc._SERVER_TIMESTAMPS) {  newDoc._SERVER_TIMESTAMPS = oldDoc._SERVER_TIMESTAMPS; } else {  newDoc._SERVER_TIMESTAMPS = []; } var usr = userCtx.name; var access = now.toJSON(); var obj = {'user': usr, 'time': access} newDoc._SERVER_TIMESTAMPS.push(obj);}"
 
 {
   "validate_doc_update": "function(newDoc, oldDoc, userCtx, secObj) {\n  var now = new Date();\n  if(oldDoc._SERVER_TIMESTAMPS) {\n    newDoc._SERVER_TIMESTAMPS = oldDoc._SERVER_TIMESTAMPS;\n  } else {\n    newDoc._SERVER_TIMESTAMPS = [];\n  }\n  var usr = userCtx.name;\n  var access = now.toJSON();\n  var obj = {'user': usr, 'time': access}\n  newDoc._SERVER_TIMESTAMPS.push(obj);\n}"
 }
+
+"function(newDoc, oldDoc, userCtx, secObj) {\n  var moment = require('views/lib/moment');\n  var now = moment();\n  if(oldDoc._id.indexOf('_local/') !== -1 || oldDoc._id.indexOf('_design/') !== -1) {\n\n  } else {\n    if(oldDoc._server_) {\n      newDoc._server_ = oldDoc._server_;\n    } else {\n      newDoc._server_ = [];\n    }\n    var usr = userCtx.avatarName;\n    var access = now.toJSON();\n    var obj = {'user': usr, 'time': access}\n    newDoc._server_.push(obj);\n  }\n}"
+
+
+"function(newDoc, oldDoc, userCtx, secObj) { var now = new Date(); if(oldDoc._SERVER_TIMESTAMPS) {  newDoc._SERVER_TIMESTAMPS = oldDoc._SERVER_TIMESTAMPS; } else {  newDoc._SERVER_TIMESTAMPS = []; } var usr = userCtx.name; var access = now.toJSON(); var obj = {'user': usr, 'time': access} newDoc._SERVER_TIMESTAMPS.push(obj);}"
+
+
+function(doc) {
+  var moment = require('views/lib/moment');
+  var now = moment(), reportAt = '';
+  if(doc.rprtDate) {
+    reportAt = moment(doc.rprtDate, "YYYY-MM-DD");
+  }
+}
+
+
+
+MANGO query examples:
+
+{
+  "selector": {
+    "$and": [
+      {
+        "$gte": {
+          "_id": "Hachero_000000000000000000"
+        }
+      },
+      {
+        "$lte": {
+          "_id": "Hachero_ZZZZZZZZZZZZZZZZZZ"
+        }
+      }
+    ]
+  }
+}
+
+{"selector": {"_id": {"$regex": "Chorpler.Thu18May2017224513" } } }
+

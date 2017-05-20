@@ -50,8 +50,10 @@ export class DBSrvcs {
   constructor(public http: Http, public zone: NgZone, private storage: Storage, private auth: AuthSrvcs, private srvr: SrvrSrvcs) {
     // this.PouchDB = require("pouchdb");
     this.PouchDB = PouchDB2;
-    this.PouchDB.plugin(require('pouchdb-upsert'));
-    this.PouchDB.plugin(require('pouchdb-authentication'));
+    this.PouchDB.plugin(pdbAuth);
+    this.PouchDB.plugin(pdbUpsert);
+    // this.PouchDB.plugin(require('pouchdb-upsert'));
+    // this.PouchDB.plugin(require('pouchdb-authentication'));
 
     window["dbserv"] = this;
     window["sdb"] = DBSrvcs;

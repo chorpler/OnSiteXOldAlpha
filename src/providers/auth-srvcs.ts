@@ -1,5 +1,6 @@
 import { Injectable, NgZone                 } from '@angular/core'                ;
 import { Http                               } from '@angular/http'                ;
+import { AlertController                    } from 'ionic-angular'                ;
 import 'rxjs/add/operator/map'                                                    ;
 import * as PouchDB2                          from 'pouchdb'                      ;
 import * as PouchDBAuth                       from 'pouchdb-authentication'       ;
@@ -31,12 +32,8 @@ export class AuthSrvcs {
 	ajaxOpts    : any = {} ;
 
 	// constructor(public http: Http, public zone: NgZone, private db: DBSrvcs, private storage: Storage, public secureStorage: SecureStorage, public ud: UserData) {
-	constructor(public http: Http, public zone: NgZone, private storage: Storage, public srvr: SrvrSrvcs, public secureStorage: SecureStorage, public ud: UserData) {
+	constructor(public http: Http, public zone: NgZone, private storage: Storage, public srvr: SrvrSrvcs, public secureStorage: SecureStorage, public ud: UserData, public alrt: AlertController) {
 		this.remote       = 'https://martiancouch.hplx.net/reports' ;
-		// this.remote       = 'https://162.243.157.16/reports' ;
-		// this.remote = 'https://192.168.0.140:5984/_users';
-		// this.remote = 'http://162.243.157.16/reports/';
-		// this.profileDoc   = '_local/techProfile';
 
 		window['securestorage'] = this.secureStorage;
 		window['storage'] = this.storage;
@@ -57,6 +54,28 @@ export class AuthSrvcs {
 	// -------------- AuthSrvcs METHODS------------------------
 
 	ionViewDidLoad() { }
+
+	showConfirm(title: string, text: string) {
+		return new Promise((resolve,reject) => {
+			let confirm = this.alrt.create({
+				title: title,
+				message: text,
+				buttons: [{text: 'Cancel', role: 'cancel', handler: () => {resolve(false);}},
+									{text: 'OK', handler: () => {resolve(true);}}
+								 ]
+			});
+			confirm.present();
+		});
+	}
+
+	showAlert(title: string, subtitle?:string) {
+		let alert = this.alrt.create({
+			title: title,
+			subTitle: subtitle || '',
+			buttons: ['OK']
+		});
+		alert.present();
+	}
 
 	setUser(user1: string) {
 		this.username = user1;
@@ -213,6 +232,7 @@ export class AuthSrvcs {
 		console.log("Retrieving credentials...");
 		return new Promise((resolve,reject) => {
 			this.isSecureStorageAvailable().then((ssAvailable) => {
+				Log.l("SecureStorageAvailable returned: ", ssAvailable);
 				if(ssAvailable) {
 					Log.l("getCredentials(): Using SecureStorage...");
 					this.secureStorage.create('OnSiteX').then((sec: SecureStorageObject) => {
@@ -353,10 +373,76 @@ export class AuthSrvcs {
 				});
 			} else if(this.ud.getPlatform() == 'android') {
 				/* Message / Localstorage */
-				Log.l("SecureStorage is probably not available (Android)");
+				let ss = {};
+				Log.l("SecureStorage is probably not available (Android) but we will check");
+				var _init = (param) => {
+					return new Promise((iresolve,ireject) => {
+						// return new Promise((jresolve,jreject) => {
+							window['ss'] = new window['cordova']['plugins']['SecureStorage'](
+								() => { iresolve(true);},
+								() => {
+									if(param==0) {
+										this.showConfirm('NOT SECURE', 'Your device must be locked to save your user data. Go to security settings?').then((res) => {
+											Log.l("ShowConfirm gave:\n",res);
+											if(res) {
+												window['ss'].secureDevice(() => {iresolve(true)}, () => {Log.l("secureDevice called fail callback and is triggering init again."); iresolve(_init(1));});
+											} else {
+												this.showConfirm('ARE YOU SURE?', 'You will have to log in every time. Go to security settings?').then((res) => {
+													if(res) {
+														window['ss'].secureDevice(() => {iresolve(true)}, () => {iresolve(false)});
+													} else {
+														iresolve(false);
+													}
+												}).catch((err) => {
+													iresolve(false);
+												});
+											}
+										});
+									} else {
+										this.showConfirm('ARE YOU SURE?', 'You will have to log in every time. Go to security settings?').then((res) => {
+											if(res) {
+												window['ss'].secureDevice(() => {iresolve(true)}, () => {iresolve(false)});
+											} else {
+												iresolve(false);
+											}
+										}).catch((err) => {
+											iresolve(false);
+										});
+									}
+								}, 'OnSiteX');
+					})
+				};
+				Log.l("About to check SecureStorage!");
+				_init(0).then((res) => {
+					Log.l("isSecureStorageAvailable(): \n", res);
+					Log.l("SecureStorage is in window.ss. See what it is!");
+					resolve(res);
+				}).catch((err) => {
+					Log.l("isSecureStorageAvailable(): Error!");
+					Log.e(err);
+					resolve(false);
+				});
+				// var _init = () => {
+				// 	var t1 = (res) => { Log.l("Success:\n", res); window['res1'] = res;};
+				// 	var c1 = (err) => { Log.l("Failure:"); Log.e(err); window['err1'] = err;};
+				// 	var s1 = () => {
+				// 		return showConfirm('NOT SECURE', 'Your device must be locked to save your user data. Go to lock screen?');
+				// 	}; 
+				// 	return new Promise(resolve,reject) {
+				// 		ss = new cordova.plugins['SecureStorage'](
+				// 			(res) => { Log.l("Success:\n", res); window['res1'] = res; resolve(true);},
+				// 			() => { return showConfirm('NOT SECURE', 'Your device must be locked to save your user data. Go to lock screen?').then((res) => {resolve(false)}); }
+				// 			'OnSiteX');
+				// 	}
+				// };
+
 				// this.secureStorage.create('OnSiteX').then((res) => {
-				Log.l("SecureStorage not available");
-				resolve(false);
+				// 	Log.l("SecureStorage ... IS available? Huh.");
+				// 	resolve(true);
+				// }).catch((err) => {
+				// 		Log.l("SecureStorage not available");
+				// 		resolve(false);					
+				// });
 			} else {
 				/* Cordova is likely undefined */
 				Log.l("SecureStorage is not available (not cordova)");

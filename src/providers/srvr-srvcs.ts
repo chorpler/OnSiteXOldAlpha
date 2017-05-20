@@ -1,9 +1,10 @@
-import { Injectable   } from '@angular/core'              ;
-import { Http         } from '@angular/http'              ;
-import 'rxjs/add/operator/map'                            ;
-import * as PouchDB2     from 'pouchdb'                   ;
-import * as PouchDBAuth from 'pouchdb-authentication'     ;
-import { Log, CONSOLE } from '../config/config.functions' ;
+import { Injectable   }     from '@angular/core'              ;
+import { Http         }     from '@angular/http'              ;
+import 'rxjs/add/operator/map'                                ;
+import * as PouchDB         from 'pouchdb'                    ;
+import * as PouchDBAuth     from 'pouchdb-authentication'     ;
+import * as pdbSeamlessAuth from 'pouchdb-seammless-auth'     ;
+import { Log, CONSOLE }     from '../config/config.functions' ;
 
 /*
   Generated class for the SrvrSrvcs provider.
@@ -14,31 +15,28 @@ import { Log, CONSOLE } from '../config/config.functions' ;
 @Injectable()
 export class SrvrSrvcs {
 
-	public PouchDB    : any    = {}                      ;
-	public RemoteDB   : any    = {}                      ;
-	// public protocol   : string = "https"                 ;
-	// public server     : string = "martiancouch.hplx.net" ;
-	public static staticRDB : any = {};
-	public static rdb : any    = new Map()               ;
-	public static StaticPouchDB : any = PouchDB2         ;
-  public static server        : string = "martiancouch.hplx.net"                   ;
-  // public static server        : string = "162.243.157.16"                          ;
-  public static protocol      : string = "https"                                   ;
-  public static userInfo      : any = {u: '', p: ''}                                 ;
-  // public static server        : string = "192.168.0.140:5984"                      ;
-  // public static protocol      : string = "http"                                    ;
-  // public static opts          : any = {adapter: 'websql', auto_compaction: true}   ;
-  public static ropts         : any = {adapter: SrvrSrvcs.protocol, skipSetup: true} ;
-  public static cropts        : any = {adapter: SrvrSrvcs.protocol}                  ;
-  public static rdbServer     : any = {protocol: SrvrSrvcs.protocol, server: SrvrSrvcs.server, opts: {adapter: SrvrSrvcs.protocol, skipSetup: true}};
-  public static repopts       : any = {live: false, retry: false}                  ;
-  public static ajaxOpts      : any = {headers: { Authorization: ''}};
-  public static remoteDBInfo  : any = {}                                           ;
-
-	// public server  : string = "162.243.157.16";
+	public PouchDB              : any    = {                                                }     ;
+	public RemoteDB             : any    = {                                                }     ;
+	public static staticRDB     : any    = {                                                }     ;
+	public static rdb           : any    = new Map()                                              ;
+	public static StaticPouchDB : any    = PouchDB                                                ;
+	public static server        : string = "martiancouch.hplx.net"                                ;
+	// public static server     : string = "162.243.157.16"                                       ;
+	public static protocol      : string = "https"                                                ;
+	public static userInfo      : any    = {u       : '', p                         : ''    }     ;
+	public static ropts         : any    = {adapter : SrvrSrvcs.protocol, skipSetup : true  }     ;
+	public static cropts        : any    = {adapter : SrvrSrvcs.protocol                    }     ;
+	public static repopts       : any    = {live    : false, retry : false                  }     ;
+	public static ajaxOpts      : any    = {headers : { Authorization               : ''    }   } ;
+	public static remoteDBInfo  : any    = {                                                }     ;
+	public static rdbServer     : any    = {protocol: SrvrSrvcs.protocol,
+		server: SrvrSrvcs.server,
+		opts: {
+			adapter: SrvrSrvcs.protocol,
+			skipSetup : true}
+		};
 
   constructor(public http: Http) {
-  	this.PouchDB = PouchDB2;
   }
 
   querySession(user, pass) {

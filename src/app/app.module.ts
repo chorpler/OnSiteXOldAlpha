@@ -7,7 +7,7 @@ import { StatusBar                                               } from '@ionic-
 import { IonicStorageModule                                      } from '@ionic/storage'                   ;
 import { SecureStorage, SecureStorageObject                      } from '@ionic-native/secure-storage'     ;
 
-import { MyApp                                                   } from './app.component.ts'               ;
+import { OnSiteApp                                               } from './app.component.ts'               ;
 import { ProfileSettings                                         } from '../providers/profile-settings.ts' ;
 import * as PouchDB                                                from 'pouchdb'                          ;
 import { AuthSrvcs                                               } from '../providers/auth-srvcs'          ;
@@ -20,9 +20,9 @@ import { DbBulkuploadSrvc                                        } from '../prov
 
 
 @NgModule({
-  declarations   : [ MyApp                                                  ], 
+  declarations   : [ OnSiteApp                                              ], 
 
-  entryComponents: [ MyApp                                                  ], 
+  entryComponents: [ OnSiteApp                                              ], 
 
   bootstrap      : [ IonicApp                                               ], 
   
@@ -33,7 +33,7 @@ import { DbBulkuploadSrvc                                        } from '../prov
                         name: '__onsitestorage',
                         driverOrder: ['localstorage']
                       }),
-                      IonicModule.forRoot(MyApp)
+                      IonicModule.forRoot(OnSiteApp)
                                                                             ],
 
   providers      : [

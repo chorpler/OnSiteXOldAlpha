@@ -46,8 +46,9 @@ export class ReportHistoryPage implements OnInit {
 
   showSpinner(text: string) {
     this.loading = this.loadingCtrl.create({
-      content: text,
+      content: `<ion-spinner name="bubbles">${text}</ion-spinner>`,
       showBackdrop: false,
+      spinner: 'bubbles'
       // dismissOnPageChange: true
     });
 
