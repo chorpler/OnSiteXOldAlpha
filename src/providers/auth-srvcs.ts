@@ -119,7 +119,7 @@ export class AuthSrvcs {
 		// console.log(ajaxOpts);
 		console.log("Username: " + this.username);
 		return new Promise((resolve, reject) => {
-			this.srvr.querySession(this.username, this.password).then((session) => {
+			this.srvr.loginToServer(this.username, this.password).then((session) => {
 				if(session != false) {
 					/* Login good */
 					Log.l("login(): Got valid session:", session);
