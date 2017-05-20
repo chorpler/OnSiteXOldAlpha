@@ -1,3 +1,5 @@
+import 'intl';
+import 'intl/locale-data/jsonp/en';
 import { BrowserModule                                           } from '@angular/platform-browser'        ;
 import { HttpModule                                              } from '@angular/http'                    ;
 import { ErrorHandler , NgModule                                 } from '@angular/core'                    ;
