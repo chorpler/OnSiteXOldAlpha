@@ -24,16 +24,19 @@ export class HomePage implements OnInit {
   constructor(public platform: Platform, public navCtrl: NavController, public toastCtrl: ToastController, public plt: Platform, public auth: AuthSrvcs, public srvr: SrvrSrvcs, public dbBulk: DbBulkuploadSrvc) {
     window['onsitehome'] = this;
     platform.registerBackButtonAction(() => {
-      Log.l("Back button pressed (defined in app.components.ts).");
+      Log.l("Back button pressed (defined in home.ts).");
       let nav = {};
       if(typeof this['navCtrl'] != 'undefined') {
         nav = this.navCtrl;
         window['nav1'] = nav;
-        if(this['navCtrl'].canGoBack()) {
+        if (this.backButtonPressedOnceToExit) {
+          Log.l("Leaving app.");
+          this.platform.exitApp();
+        } else if(this['navCtrl'].canGoBack()) {
           Log.l("Now going back via hardware button.");
           this.navCtrl.pop();
         } else {
-          this.showToast();
+          this.showToast("Press back again to exit");
           this.backButtonPressedOnceToExit = true;
           setTimeout(() => {
             this.backButtonPressedOnceToExit = false;
@@ -44,7 +47,6 @@ export class HomePage implements OnInit {
   }
 
   ngOnInit() {
-    // console.log(this.plt.platforms());
     if(HomePage.startOfApp) {
       this.setupAppData();
     } else {
@@ -57,9 +59,9 @@ export class HomePage implements OnInit {
     Log.l("Home view loaded.");
   }
 
-  showToast() {
+  showToast(text: string) {
     let toast = this.toastCtrl.create({
-      message: "Press again to confirm exit",
+      message: text,
       duration: 3000
     });
     toast.present();

@@ -13,8 +13,9 @@ import { Log, CONSOLE                        } from '../../config/config.functio
 export class ReportHistoryPage implements OnInit {
   public title: string = 'Reports';
 
+  public pageReady    : boolean = false;
   public selectedItem : any                                  ;
-  public items        : Array<{title: string, note: string}> ;
+  public items        : Array<{title: string, note: string}> = new Array<{title:string, note:string}>();
   public data         : any = []                             ;
   public loading      : any                                  ;
 
@@ -24,23 +25,22 @@ export class ReportHistoryPage implements OnInit {
 
   ngOnInit() {
     let u = this.auth.getUser();
-    // let p = this.auth.getPass();
     Log.l("ReportHistory: pulling reports...");
     this.showSpinner('Retrieving reports...');
     this.srvr.getReports(u).then(res => {
       Log.l("ReportHistory: Got report list:\n",res);
       this.data = res;
       this.items = [];
-      // for(let i = this.data.length - 1; i >= 0; i--) { this.items[i] = { title: this.data[i].rprtDate, note: this.data[i].uNum }; }
       for(let i = this.data.length - 1; i >= 0; i--) { this.items.push(this.data[i]); }
-      // If we navigated to this page, we will have an item available as a nav param
       this.selectedItem = this.navParams.get('item');
       Log.l("ReportHistory: pulled data:\n", this.items);
       this.hideSpinner();
+      this.pageReady = true;
     }).catch((err) => {
       Log.l("Error while getting reports from server.");
       Log.l(err);
       this.hideSpinner();
+      this.pageReady = true;
     });
   }_
 
@@ -49,12 +49,7 @@ export class ReportHistoryPage implements OnInit {
       content: `<ion-spinner name="bubbles">${text}</ion-spinner>`,
       showBackdrop: false,
       spinner: 'bubbles'
-      // dismissOnPageChange: true
     });
-
-    // this.loading.onDidDismiss(() => {
-    //   Log.l("Spinner dismissed.");
-    // })
 
     this.loading.present().catch(() => {});
   }

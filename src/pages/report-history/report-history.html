@@ -8,8 +8,8 @@
 
 
 <ion-content padding>
-  <ion-list>
-    <!-- <ion-item block *ngIf="!items.length">No Work Orders</ion-item> -->
+  <ion-list *ngIf="pageReady">
+    <ion-item block *ngIf="items && !items.length">No Work Orders Found</ion-item>
     <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)">
       <ion-icon [name]="item.icon" item-left></ion-icon>
       {{item.rprtDate}}

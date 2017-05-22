@@ -1,8 +1,6 @@
 import { Component                                                               } from '@angular/core'                 ;
 import { IonicPage, NavController, NavParams, LoadingController, AlertController } from 'ionic-angular'                 ;
 import { PopoverController                                                       } from 'ionic-angular'                 ;
-// import { LoginErrorPopover                                                    } from './login-error-popover'         ;
-// import { Settings                                                             } from '../settings/settings'          ;
 import { AuthSrvcs                                                               } from '../../providers/auth-srvcs'    ;
 import { SrvrSrvcs                                                               } from '../../providers/srvr-srvcs'    ;
 import { DBSrvcs                                                                 } from '../../providers/db-srvcs'      ;
@@ -20,15 +18,14 @@ import { Log, CONSOLE                                                           
   templateUrl: 'login.html',
 })
 export class Login {
+  public title      : string  = "OnSite Login"       ;
   private username  : string                         ;
   private password  : string                         ;
   public loginError : boolean = false                ;
   public localURL   : string  = "_local/techProfile" ;
   public loading    : any     = {}                   ;
 
-  // constructor(public navCtrl: NavController, public navParams: NavParams, public popoverCtrl: PopoverController, private auth: AuthSrvcs) {
   constructor(public navCtrl: NavController, public navParams: NavParams, private auth: AuthSrvcs, private srvr: SrvrSrvcs, private db: DBSrvcs, private loadingCtrl: LoadingController) {
-  // constructor(public navCtrl: NavController, public navParams: NavParams, private settings: Settings, private auth: AuthSrvcs) {
     window['loginscreen'] = this;
   }
 

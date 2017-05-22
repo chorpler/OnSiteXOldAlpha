@@ -109,15 +109,7 @@ export class AuthSrvcs {
 	 * 
 	 */
 	login() {
-		// console.log(this.docId);
 		console.log("AuthSrvcs.login() now starting");
-		// let pouchOpts = { skipSetup: true };
-		// let ajaxOpts = { ajax: { headers: { Authorization: 'Basic ' + window.btoa(this.username + ':' + this.password) } } };
-		// this.remoteDB = this.PouchDB(this.remote, pouchOpts);
-		// this.remoteDB = DBSrvcs.addRDB('reports');
-		console.log("Now making login attempt, options:");
-		// console.log(ajaxOpts);
-		console.log("Username: " + this.username);
 		return new Promise((resolve, reject) => {
 			this.srvr.loginToServer(this.username, this.password).then((session) => {
 				if(session != false) {
@@ -145,47 +137,6 @@ export class AuthSrvcs {
 				reject(err);
 			});
 		});
-					// console.log("Now attempting getUser()...");
-					// let dbUser = session.userCtx.name;
-					// this.remoteDB.getUser(this.username).then((user) => {
-					// 	this.couchUser = user;
-					// 	this.userProfile.firstName      = this.couchUser.firstName      ;
-					// 	this.userProfile.lastName       = this.couchUser.lastName       ;
-					// 	this.userProfile.avatarName     = this.couchUser.avatarName     ;
-					// 	this.userProfile.client         = this.couchUser.client         ;
-					// 	this.userProfile.location       = this.couchUser.location       ;
-					// 	this.userProfile.locID          = this.couchUser.locID          ;
-					// 	this.userProfile.loc2nd         = this.couchUser.loc2nd         ;
-					// 	this.userProfile.shift          = this.couchUser.shift          ;
-					// 	this.userProfile.shiftLength    = this.couchUser.shiftLength    ;
-					// 	this.userProfile.shiftStartTime = this.couchUser.shiftStartTime ;
-					// 	this.userProfile.updated        = true                          ;
-					// 	this.userProfile._id            = this.profileDoc               ;
-					// 	console.log("Got user");
-					// 	console.log(user);
-					// 	return this.db.addLocalDoc(this.userProfile);
-					// }).then((res) => {
-		// 				console.log("userProfile document added successfully. Now saving credentials...");
-		// 				return this.saveCredentials();
-		// 			}).then((res2) => {
-		// 				console.log("Credentials saved. Finished.");
-		// 				return this.setLoginFlag();
-		// 			}).then((res3) => {
-		// 				resolve(res3);
-		// 				// }).then((docs) => {
-		// 				//   console.log(docs);
-		// 			}).catch((error) => {
-		// 				console.log("Error during PouchDB login/getUser");
-		// 				console.error(error);
-		// 				reject(error);
-		// 			});
-		// 		}
-		// 	}).catch((err) => {
-		// 		Log.l("login(): Error trying to get user session. Probably user could not log in.");
-		// 		Log.w(err);
-		// 		reject(err);
-		// 	});
-		// });
 	}
 
 	saveCredentials() {
