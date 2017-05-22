@@ -12,3 +12,6 @@ npm install --save @ionic-native/geofence
 
 ionic cordova plugin add cordova-plugin-mauron85-background-geolocation --save
 npm install --save @ionic-native/background-geolocation
+
+
+npm install intl --save
