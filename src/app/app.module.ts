@@ -18,6 +18,7 @@ import { ReportBuildSrvc                                         } from '../prov
 import { UserData                                                } from '../providers/user-data'               ;
 import { SrvrSrvcs                                               } from '../providers/srvr-srvcs'              ;
 import { DbBulkuploadSrvc                                        } from '../providers/db-bulkupload-srvc'      ;
+import { NetworkStatus                                           } from '../providers/network-status'          ;
 import { Geofence                                                } from '@ionic-native/geofence'               ;
 import { BackgroundGeolocation, BackgroundGeolocationConfig      } from '@ionic-native/background-geolocation' ;
 import { BackgroundGeolocationResponse                           } from '@ionic-native/background-geolocation' ;
@@ -47,7 +48,7 @@ import { LocalNotifications                                      } from '@ionic-
                       SplashScreen,
                       SecureStorage,
                       NavController,
-                      {provide: ErrorHandler, useClass: IonicErrorHandler},
+                      {provide: ErrorHandler, useClass: IonicErrorHandler}   ,
                       ProfileSettings,
                       AuthSrvcs,
                       DBSrvcs,
@@ -56,6 +57,7 @@ import { LocalNotifications                                      } from '@ionic-
                       UserData,
                       SrvrSrvcs,
                       DbBulkuploadSrvc,
+                      NetworkStatus,
                       Geofence,
                       BackgroundGeolocation,
                       Network,
