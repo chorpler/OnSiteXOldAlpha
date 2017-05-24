@@ -12,7 +12,7 @@ import { GeolocService                                      } from '../providers
 import { Log, CONSOLE                                       } from '../config/config.functions'                 ;
 import { DOMTimeStamp, Coordinates, Position                } from '../config/geoloc'                           ;
 import { LocalNotifications                                 } from '@ionic-native/local-notifications'          ;
-import { HomePage                                           } from '../pages/home/home'                         ;
+// import { HomePage                                           } from '../pages/home/home'                         ;
 import * as PouchDB                                           from 'pouchdb'                                    ;
 import * as pdbAuth                                           from 'pouchdb-authentication'                     ;
 import * as pdbUpsert                                         from 'pouchdb-upsert'                             ;
@@ -28,7 +28,7 @@ export class OnSiteApp {
   @ViewChild(Nav) nav: Nav;
 
   homePage         : string = 'OnSiteHome';
-  rootPage         : any    = HomePage    ;
+  rootPage         : any    = 'OnSiteHome';
   pouchOptions     : any = {}             ;
   private network  : any                  ;
 
@@ -93,6 +93,7 @@ export class OnSiteApp {
 
   private setRoot(newRootPage: any){
     this.rootPage = newRootPage;
+    this.nav.setRoot(newRootPage);
     // this.navCtrl.push(newRootPage).catch((err) => {
     //   Log.l("Error setting root page to '" + newRootPage + "'.");
     //   Log.e(err);

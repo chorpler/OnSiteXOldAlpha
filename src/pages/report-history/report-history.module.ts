@@ -1,16 +1,16 @@
 import { NgModule         } from '@angular/core'; 
 import { IonicPageModule  } from 'ionic-angular'; 
-import { ReportHistoryPage} from './report-history';
+import { ReportHistory    } from './report-history';
 
 @NgModule({
   declarations: [
-    ReportHistoryPage,
+    ReportHistory,
   ],
   imports: [
-    IonicPageModule.forChild(ReportHistoryPage),
+    IonicPageModule.forChild(ReportHistory),
   ],
   exports: [
-    ReportHistoryPage
+    ReportHistory
   ]
 })
-export class ReportHistoryPageModule {}
+export class ReportHistoryModule {}

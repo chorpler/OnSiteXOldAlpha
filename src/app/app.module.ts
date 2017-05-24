@@ -4,6 +4,7 @@ import { BrowserModule                                           } from '@angula
 import { HttpModule                                              } from '@angular/http'                        ;
 import { ErrorHandler , NgModule                                 } from '@angular/core'                        ;
 import { IonicApp, IonicErrorHandler, IonicModule, NavController } from 'ionic-angular'                        ;
+import { IonicPageModule                                         } from 'ionic-angular'                        ;
 import { LoadingController, AlertController                      } from 'ionic-angular'                        ;
 import { SplashScreen                                            } from '@ionic-native/splash-screen'          ;
 import { StatusBar                                               } from '@ionic-native/status-bar'             ;
@@ -30,18 +31,26 @@ import { LocalNotifications                                      } from '@ionic-
 import { Log, CONSOLE                                            } from '../config/config.functions'           ;
 import { AlertsProvider                                          } from '../providers/alerts'                  ;
 import { GeolocService                                           } from '../providers/geoloc-service'          ;
-import { HomePage                                                } from '../pages/home/home'                   ;
+// import { HomePage      } from '../pages/home/home'                     ;
+// import { Login         } from '../pages/login/login'                   ;
+// import { Settings      } from '../pages/settings/settings'             ;
+// import { WorkOrder     } from '../pages/work-order/work-order'         ;
+// import { ReportHistory } from '../pages/report-history/report-history' ;
+// import { EditReport    } from '../pages/edit-report/edit-report'       ;
+// import { DeveloperPage } from '../pages/developer/developer'           ;
+// import { HomePage      } from '../pages/home/home'                     ;
 
 @NgModule({
-  declarations   : [ OnSiteApp, HomePage                                    ], 
+  declarations   : [ OnSiteApp  ], 
 
-  entryComponents: [ OnSiteApp, HomePage                                    ], 
+  entryComponents: [ OnSiteApp], 
 
-  bootstrap      : [ IonicApp                                               ], 
+  bootstrap      : [ IonicApp                                    ], 
   
   imports        : [
                       BrowserModule,
                       HttpModule,
+                      // IonicPageModule.forChild(HomePage),
                       IonicStorageModule.forRoot({
                         name: '__onsitestorage',
                         driverOrder: ['localstorage']

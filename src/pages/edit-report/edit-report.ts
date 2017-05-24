@@ -12,7 +12,7 @@ import { Log, CONSOLE                                                           
 @IonicPage({ name    : 'Report Edit'                                       })
 @Component({ selector: 'page-edit-report', templateUrl: 'edit-report.html' })
 
-export class EditReportPage implements OnInit {
+export class EditReport implements OnInit {
   title         : string      = 'Report Edit'          ;
   syncError     : boolean     = false                  ;
   workOrderForm : FormGroup                            ;

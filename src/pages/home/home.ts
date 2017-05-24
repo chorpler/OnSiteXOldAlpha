@@ -7,6 +7,11 @@ import { GeolocService                                       } from '../../provi
 import   * as PouchDB                                          from 'pouchdb'                            ;
 import { Log, CONSOLE                                        } from '../../config/config.functions'      ;
 import { reportDocs                                          } from '../../test/test.reports'            ;
+import { Login                                               } from '../login/login'                     ;
+import { Settings                                            } from '../settings/settings'               ;
+import { WorkOrder                                           } from '../work-order/work-order'           ;
+import { ReportHistory                                       } from '../report-history/report-history'   ;
+import { DeveloperPage                                       } from '../developer/developer'             ;
 
 @IonicPage({name: 'OnSiteHome'})
 
@@ -19,7 +24,7 @@ export class HomePage implements OnInit {
   userIsDeveloper             : boolean = false         ;
   showPage                    : boolean = false         ;
   static startOfApp           : boolean = true          ;
-  title                       : string  = 'OnSite Home' ;
+  title                       : string  = 'OnSiteHome' ;
   PDB                         : any     = PouchDB       ;
   backButtonPressedOnceToExit : boolean = false         ;
   
@@ -56,6 +61,7 @@ export class HomePage implements OnInit {
       if(HomePage.startOfApp) {
         this.setupAppData();
       } else {
+        this.isDeveloper();
         this.userLoggedIn = true;
         this.showPage = true;
       }
@@ -169,8 +175,10 @@ export class HomePage implements OnInit {
 
   isDeveloper() {
     if(this.userLoggedIn && (this.auth.getUser() == 'Chorpler' || this.auth.getUser() == 'Hachero')) {
+      this.userIsDeveloper = true;
       return true;
     } else {
+      this.userIsDeveloper = false;
       return false;
     }
   }

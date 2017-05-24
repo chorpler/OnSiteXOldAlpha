@@ -6,11 +6,11 @@ import { SrvrSrvcs                           } from '../../providers/srvr-srvcs'
 import { Log, CONSOLE                        } from '../../config/config.functions' ;
 
 
-@IonicPage({ name    : 'Reports'                                                 })
+@IonicPage({ name    : 'Report History'                                               })
 @Component({ selector: 'page-report-history', templateUrl: 'report-history.html' })
 
 
-export class ReportHistoryPage implements OnInit {
+export class ReportHistory implements OnInit {
   public title: string = 'Reports';
 
   public pageReady    : boolean = false;
