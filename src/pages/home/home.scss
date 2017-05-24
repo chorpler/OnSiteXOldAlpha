@@ -8,4 +8,33 @@ page-home {
 	.logout-button {
 		// margin-top: 100px;
 	}
+
+	ion-title {
+		color: red !important;
+	}
+
+	.startButtons {
+		color: red;
+		display: none !important;
+	}
+	.startSingleButton {
+		color: red;
+	}
+	.startSingleIcon {
+		color: red;
+	}
+	.endButtons {
+		color: red;
+	}
+	.endSingleButton {
+		color: red;
+	}
+	.endSingleIcon {
+		color: red;
+	}
+
+	.bar-button-md ion-icon {
+		color: white !important;
+		background: transparent !important;
+	}
 }

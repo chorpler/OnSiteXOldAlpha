@@ -5,6 +5,7 @@ import { Storage            } from '@ionic/storage'             ;
 import { NativeStorage      } from 'ionic-native'               ;
 import 'rxjs/add/operator/map'                                  ;
 import { Network            } from '@ionic-native/network'      ;
+import { AlertsProvider     } from './alerts'                   ;
 
 @Injectable()
 /**
@@ -15,25 +16,41 @@ export class NetworkStatus {
 
   public static isOnline: boolean = true;
   public static isWiFi  : boolean = true;
+  public static network : any;
 
-  constructor(private network: Network) {
+  constructor(public net: Network) {
     window['netSrvc'] = this;
+    NetworkStatus.network = net;
   }
 
-  watchForDisconnect() {
-    let disconnect = this.network.onDisconnect().subscribe(() => {
+  public static watchForDisconnect() {
+    let disconnect = NetworkStatus.network.onDisconnect().subscribe(() => {
       Log.l('Network disconnected');
       NetworkStatus.isOnline = false;
       NetworkStatus.isWiFi = false;
+      setTimeout(() => {
+        disconnect.unsubscribe();
+        NetworkStatus.watchForConnection();
+      }, 2000);
     });
   }
 
-  isConnected() {
-    if(this.network.type == 'wifi') {
+  public static getNetworkType() {
+    return NetworkStatus.network.type;    
+  }
+
+  public static isConnected() {
+    if(NetworkStatus.network.type == 'wifi') {
       NetworkStatus.isOnline = true;
       NetworkStatus.isWiFi = true;
       return true;
+    } else if(this.network.type != 'none') {
+      NetworkStatus.isOnline = true;
+      NetworkStatus.isWiFi = false;
+      return true;
     } else {
+      NetworkStatus.isOnline = false;
+      NetworkStatus.isWiFi = false;
       return false;
     }
   }
@@ -43,23 +60,24 @@ export class NetworkStatus {
 
   // stop disconnect watch
 
-  watchForConnection() {
+  public static watchForConnection() {
     // watch network for a connection
-    let connectSubscription = this.network.onConnect().subscribe(() => {
-      console.log('network connected!'); 
+    let connectSubscription = NetworkStatus.network.onConnect().subscribe(() => {
+      Log.l('network connected!');
       // We just got a connection but we need to wait briefly
        // before we determine the connection type.  Might need to wait 
       // prior to doing any api requests as well.
       setTimeout(() => {
-        if (this.network.type === 'wifi') {
+        NetworkStatus.isOnline = true;
+        if (NetworkStatus.network.type === 'wifi') {
+          NetworkStatus.isWiFi = true;
           console.log('we got a wifi connection, woohoo!');
           // // stop connect watch
-          // connectSubscription.unsubscribe();
+          connectSubscription.unsubscribe();
+          NetworkStatus.watchForDisconnect();
         }
       }, 3000);
-    });
-   
+    }); 
   }
-
 
 }

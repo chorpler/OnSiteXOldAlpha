@@ -4,6 +4,7 @@ import { BrowserModule                                           } from '@angula
 import { HttpModule                                              } from '@angular/http'                        ;
 import { ErrorHandler , NgModule                                 } from '@angular/core'                        ;
 import { IonicApp, IonicErrorHandler, IonicModule, NavController } from 'ionic-angular'                        ;
+import { LoadingController, AlertController                      } from 'ionic-angular'                        ;
 import { SplashScreen                                            } from '@ionic-native/splash-screen'          ;
 import { StatusBar                                               } from '@ionic-native/status-bar'             ;
 import { IonicStorageModule                                      } from '@ionic/storage'                       ;
@@ -11,6 +12,7 @@ import { SecureStorage, SecureStorageObject                      } from '@ionic-
 import { OnSiteApp                                               } from './app.component.ts'                   ;
 import { ProfileSettings                                         } from '../providers/profile-settings.ts'     ;
 import * as PouchDB                                                from 'pouchdb'                              ;
+import * as moment                                                 from 'moment'                               ;
 import { AuthSrvcs                                               } from '../providers/auth-srvcs'              ;
 import { DBSrvcs                                                 } from '../providers/db-srvcs'                ;
 import { TimeSrvc                                                } from '../providers/time-parse-srvc'         ;
@@ -25,11 +27,15 @@ import { BackgroundGeolocationResponse                           } from '@ionic-
 import { Network                                                 } from '@ionic-native/network'                ;
 import { Push, PushObject, PushOptions                           } from '@ionic-native/push'                   ;
 import { LocalNotifications                                      } from '@ionic-native/local-notifications'    ;
+import { Log, CONSOLE                                            } from '../config/config.functions'           ;
+import { AlertsProvider                                          } from '../providers/alerts'                  ;
+import { GeolocService                                           } from '../providers/geoloc-service'          ;
+import { HomePage                                                } from '../pages/home/home'                   ;
 
 @NgModule({
-  declarations   : [ OnSiteApp                                              ], 
+  declarations   : [ OnSiteApp, HomePage                                    ], 
 
-  entryComponents: [ OnSiteApp                                              ], 
+  entryComponents: [ OnSiteApp, HomePage                                    ], 
 
   bootstrap      : [ IonicApp                                               ], 
   
@@ -48,6 +54,9 @@ import { LocalNotifications                                      } from '@ionic-
                       SplashScreen,
                       SecureStorage,
                       NavController,
+                      LoadingController,
+                      AlertController,
+                      AlertsProvider,
                       {provide: ErrorHandler, useClass: IonicErrorHandler}   ,
                       ProfileSettings,
                       AuthSrvcs,
@@ -62,7 +71,8 @@ import { LocalNotifications                                      } from '@ionic-
                       BackgroundGeolocation,
                       Network,
                       Push,
-                      LocalNotifications
+                      LocalNotifications,
+                      GeolocService           
                                                                             ]
 })
 

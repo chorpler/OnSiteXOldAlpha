@@ -1,8 +1,16 @@
 <ion-header>
-  <ion-navbar>
+  <ion-navbar hideBackButton="true">
+    <button class="startSingleButton" ion-button icon-only menuToggle>
+      <ion-icon class="startSingleIcon" name="ion-home"></ion-icon>
+    </button>
     <ion-title>
       {{title}}
     </ion-title>
+    <ion-buttons class="endButtons" end *ngIf="userLoggedIn && userIsDeveloper">
+      <button class="endSingleButton" ion-button icon-only (click)="openDevSettings()">
+        <ion-icon name="options"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
@@ -13,5 +21,4 @@
   <button ion-button block color="secondary" *ngIf="userLoggedIn" (click)="getReportHistory()"> Report History </button>
   <!-- <button ion-button block color="secondary" *ngIf="userLoggedIn" (click)="importBulkReports()"> Import Bulk Reports </button> -->
   <button ion-button block color="secondary" class="logout-button" *ngIf="userLoggedIn" (click)="logoutOfApp()"> Logout </button>
-
 </ion-content>
