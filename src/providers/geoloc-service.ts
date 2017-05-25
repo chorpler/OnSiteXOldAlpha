@@ -7,6 +7,8 @@ import { BackgroundGeolocation, BackgroundGeolocationConfig } from '@ionic-nativ
 import { BackgroundGeolocationResponse                      } from '@ionic-native/background-geolocation'       ;
 import { DOMTimeStamp, Coordinates, Position                } from '../config/geoloc'                           ;
 import { Log, CONSOLE                                       } from '../config/config.functions'                 ;
+import { SrvrSrvcs                                          } from '../providers/srvr-srvcs'                    ;
+import { AuthSrvcs                                          } from '../providers/auth-srvcs'                    ;
 
 /*
 	Generated class for the GeolocServiceProvider provider.
@@ -21,6 +23,11 @@ export class GeolocService {
 						desiredAccuracy     : 0     ,
 						stationaryRadius    : 0     ,
 						distanceFilter      : 0     ,
+						syncUrl             : ''    ,
+						url                 : ''    ,
+						httpHeaders         : ''    ,
+						maxLocations        : 5000  ,
+						syncThreshold       : 1     ,
 						stopOnStillActivity : false ,
 						debug               : false  , // enable this hear sounds for background-geolocation life-cycle.
 						stopOnTerminate     : true , // enable this to clear background location settings when the app terminates
@@ -28,13 +35,25 @@ export class GeolocService {
 
 	public bgGeoStatus : boolean = false;
 
-	constructor(public http: Http, public bgGeo: BackgroundGeolocation) {
+	constructor(public http: Http, public bgGeo: BackgroundGeolocation, private auth: AuthSrvcs, private srvr: SrvrSrvcs) {
 		console.log('Hello GeolocServiceProvider Provider');
 	}
 
+	public getAuthData() {
+		let user = this.auth.getUser();
+		let pass = this.auth.getPass();
+		let URL = SrvrSrvcs.getGeolocationURL(user, pass);
+		// let hdr = SrvrSrvcs.getGeolocationHeaders(user, pass);
+		let hdr = {"Content-Type": "application/json"};
+		this.config['url'] = URL;
+		this.config['syncUrl'] = URL;
+		this.config['httpHeaders'] = hdr;
+	}
+
 	startBackgroundGeolocation() {
-		Log.l("Starting BackgroundGeolocation ...");
+		Log.l("Starting BackgroundGeolocation with config:\n", this.config);
 		return new Promise((resolve,reject) => {
+			this.getAuthData();
 			this.bgGeo.configure(this.config).subscribe((location: BackgroundGeolocationResponse) => {
 				Log.l("\n\n\nbgGeo: Got a hit:\n",location);
 

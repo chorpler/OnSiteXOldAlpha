@@ -123,6 +123,13 @@ export class HomePage implements OnInit {
                 this.userIsDeveloper = false;
               }
               this.showPage = true;
+              Log.l("After starting up, the app is going to try turning on Background Geolocation...");
+              this.tryStartingBackgroundGeolocation().then((res) => {
+                Log.l("Successfully started background geolocation.");
+              }).catch((err) => {
+                Log.l("Error trying to start background geolocation:");
+                Log.e(err);
+              });
             }).catch((err) => {
               Log.l("setupAppData(): Stored user credentials not valid. User must login again.");
               this.auth.clearCredentials().then((res) => {
@@ -145,14 +152,6 @@ export class HomePage implements OnInit {
           this.showPage = true;
         });
       }
-    }).then((res) => {
-      Log.l("After starting up, the app is going to try turning on Background Geolocation...");
-      this.tryStartingBackgroundGeolocation().then((res) => {
-        Log.l("Successfully started background geolocation.");
-      }).catch((err) => {
-        Log.l("Error trying to start background geolocation:");
-        Log.e(err);
-      })
     });
   }
 
@@ -164,7 +163,7 @@ export class HomePage implements OnInit {
     });
   }
   
-  getReportHistory() { this.navCtrl.push('Reports')}
+  getReportHistory() { this.navCtrl.push('Report History')}
 
   importBulkReports() {
     Log.l("Beginning import...");

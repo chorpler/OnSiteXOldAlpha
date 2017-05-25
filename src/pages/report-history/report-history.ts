@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-an
 import { DBSrvcs } from '../../providers/db-srvcs';
 import { AuthSrvcs                           } from '../../providers/auth-srvcs'    ;
 import { SrvrSrvcs                           } from '../../providers/srvr-srvcs'    ;
+import { AlertsProvider                      } from '../../providers/alerts'        ;
 import { Log, CONSOLE                        } from '../../config/config.functions' ;
 
 
@@ -19,7 +20,7 @@ export class ReportHistory implements OnInit {
   public data         : any = []                             ;
   public loading      : any                                  ;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public dbSrvcs: DBSrvcs, public srvr: SrvrSrvcs, private auth: AuthSrvcs, public loadingCtrl: LoadingController) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public dbSrvcs: DBSrvcs, public srvr: SrvrSrvcs, private auth: AuthSrvcs, public loadingCtrl: LoadingController, public alert: AlertsProvider) {
     window["reporthistory"] = this;
   }
 
@@ -64,5 +65,28 @@ export class ReportHistory implements OnInit {
   }
 
   itemTapped(event, item) { this.navCtrl.push('Report Edit', {  item: item }); }
+
+  deleteWorkOrder(event, item) {
+    Log.l("deleteWorkOrder() clicked ...");
+    this.alert.showConfirm('CONFIRM', 'Delete this work order?').then((res) => {
+      if(res) {
+        Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
+        let i = this.items.indexOf(item);
+        this.srvr.deleteDoc(item).then((res) => {
+          Log.l("deleteWorkOrder(): Success:\n", res);
+          this.items.splice(i, 1);
+          // setTimeout(() => {this.navCtrl.setRoot('OnSiteHome')});
+        }).catch((err) => {
+          Log.l("deleteWorkOrder(): Error!");
+          Log.e(err);
+        });
+      } else {
+        Log.l("User canceled deletion.");
+      }
+    }).catch((err) => {
+      Log.l("deleteWorkOrder(): Error!");
+      Log.e(err);
+    });
+  }
 
 }

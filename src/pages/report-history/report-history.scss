@@ -1,3 +1,34 @@
 page-report-history {
+	.frozenToolbar {
 
+	}
+
+	.reportHeaderList {
+
+	}
+
+	.scrollList {
+		height: 80vh;
+	}
+	.center {
+		text-align: center;
+	}
+	[item-start] {
+		padding-left: 8%;
+	}
+	.reportListTitle {
+		text-align: center;
+		font-weight: bold;
+		font-size: 1.5em;
+		color: white;
+	}
+	.reportListHeader {
+		font-weight: bold;
+	}
+	.invisibleIcon {
+		visibility: hidden;
+	}
+	.reportList {
+
+	}
 }

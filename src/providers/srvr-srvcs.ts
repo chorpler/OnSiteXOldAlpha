@@ -20,7 +20,8 @@ export class SrvrSrvcs {
 	public static staticRDB     : any    = {                                                }     ;
 	public static rdb           : any    = new Map()                                              ;
 	public static StaticPouchDB : any    = PouchDB                                                ;
-	public static server        : string = "martiancouch.hplx.net"                                ;
+  public static server        : string = "martiancouch.hplx.net"                                ;
+	public static port          : string = ''                                                     ;
 	// public static server     : string = "162.243.157.16"                                       ;
 	public static protocol      : string = "https"                                                ;
 	public static userInfo      : any    = {u       : '', p                         : ''    }     ;
@@ -37,6 +38,44 @@ export class SrvrSrvcs {
 		};
 
   constructor(public http: Http) {
+  }
+
+  static getBaseURL() {
+    if(SrvrSrvcs.port != '') {
+      return `${SrvrSrvcs.protocol}://${SrvrSrvcs.server}:${SrvrSrvcs.port}`; 
+    } else {
+      return `${SrvrSrvcs.protocol}://${SrvrSrvcs.server}`; 
+    }
+  }
+
+  static getInsecureLoginBaseURL(user:string, pass:string) {
+    if(SrvrSrvcs.port != '') {
+      return `${SrvrSrvcs.protocol}://${user}:${pass}@${SrvrSrvcs.server}:${SrvrSrvcs.port}`; 
+    } else {
+      return `${SrvrSrvcs.protocol}://${user}:${pass}@${SrvrSrvcs.server}`; 
+    }
+  }
+
+  static getAuthHeaders(user:string, pass:string) {
+    let authToken = 'Basic ' + window.btoa(user + ':' + pass);
+    let ajaxOpts = { headers: { Authorization: authToken } };
+    return ajaxOpts;
+  }
+
+  static getGeolocationHeaders(user:string, pass:string) {
+    let ajaxOpts = SrvrSrvcs.getAuthHeaders(user, pass);
+    ajaxOpts['headers']['Content-Type'] = "application/json";
+    ajaxOpts['headers']['Accept'] = "application/json";
+    return ajaxOpts['headers'];
+  }
+
+  static getGeolocationURL(user:string, pass:string) {
+    // let ajaxOpts = SrvrSrvcs.getAuthHeaders(user, pass);
+    // ajaxOpts['headers']['Content-Type'] = "application/json";
+    // ajaxOpts['headers']['Accept'] = "application/json";
+    // let URL = `${SrvrSrvcs.getBaseURL()}/sesa_geolocation`;
+    let URL = `${SrvrSrvcs.getInsecureLoginBaseURL(user, pass)}/sesa_geolocation`;
+    return URL;
   }
 
   querySession(user, pass) {

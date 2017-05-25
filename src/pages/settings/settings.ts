@@ -6,6 +6,7 @@ import { SHIFT, SHIFTSTARTTIME, SHIFTROTATION, LOC2ND } from '../../config/confi
 import { REPORTHEADER, REPORTMETA                     } from '../../config/report.object'             ;
 import { DBSrvcs                                      } from '../../providers/db-srvcs'               ;
 import { ReportBuildSrvc                              } from '../../providers/report-build-srvc'      ;
+import { Login                                        } from '../login/login'                         ;
 
 @IonicPage({ name: 'Report Settings' })
 
