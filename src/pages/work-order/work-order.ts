@@ -5,8 +5,9 @@ import { DBSrvcs                                                } from '../../pr
 import { AuthSrvcs                                              } from '../../providers/auth-srvcs'        ;
 import { TimeSrvc                                               } from '../../providers/time-parse-srvc'   ;
 import { ReportBuildSrvc                                        } from '../../providers/report-build-srvc' ;
+import { Log                                                    } from '../../config/config.functions'     ;
 import * as moment                                                from 'moment'                            ;
-import { Log, CONSOLE                                           } from '../../config/config.functions'     ;
+import 'rxjs/add/operator/debounceTime';
 
 @IonicPage({ name: 'Work Order Form' })
 
@@ -16,37 +17,45 @@ import { Log, CONSOLE                                           } from '../../co
 })
 
 export class WorkOrder implements OnInit {
-  @ViewChild('reportDate') reportDateField;
-  @ViewChild('startTime') startTimeField;
+  // @ViewChild('reportDate') reportDateField;
+  // @ViewChild('startTime') startTimeField;
 
   title        : string   = 'Work Report'             ;
   setDate      : Date     = new Date()                ;
   year         : number   = this.setDate.getFullYear();
   mode         : string   = 'New'                     ;
-  workOrder    : FormGroup;
-  repairHrs    : number   ;
+  workOrderForm: FormGroup;
+  workOrder    : any      ;
+  repairHrs    : any      ;
   profile      : any = { };
   tmpReportData: any      ;
   docID        : string   ;
   idDate       : string   ;
   idTime       : string   ;
 
-  strtHrs   ;
-  strtMin   ;
-  hrsHrs    ;
-  hrsMin    ;
-  endMin    ;
-  endHrs    ;
-  prsHrs    ;
-  prsMin    ;
-  rprtDate  : Date     = new Date()   ;
-  timeStarts: Date     = new Date()   ;
-  reportDate: any      = moment()     ;
-  startTime : any      = moment()     ;
-  timeEnds                            ;
-  syncError : boolean  = false        ;
-  db        : any      = {}           ;
-  loading   : any = {}                ;
+  // strtHrs   ;
+  // strtMin   ;
+  // hrsHrs    ;
+  // hrsMin    ;
+  // endMin    ;
+  // endHrs    ;
+  // prsHrs    ;
+  // prsMin    ;
+  // rprtDate  : Date     = new Date()   ;
+  // timeStarts: Date     = new Date()   ;
+  // timeEnds                            ;
+  rprtDate    : any      = moment()     ;
+  timeStarts  : any      = moment()     ;
+  reportDate  : any      = moment()     ;
+  startTime   : any      = moment()     ;
+  timeEnds    : any;
+  syncError   : boolean  = false        ;
+  db          : any      = {}           ;
+  loading     : any      = {}           ;
+  _startDate  : any;
+  _startTime  : any;
+  _endTime    : any;
+  _repairHours: any;
   // , private dbSrvcs: DBSrvcs
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private dbSrvcs: DBSrvcs, private timeSrvc: TimeSrvc, public reportBuilder:ReportBuildSrvc, public loadingCtrl: LoadingController) {
@@ -64,6 +73,20 @@ export class WorkOrder implements OnInit {
     console.log(this.rprtDate);
 
     this.initializeForm();
+    this._startDate   = this.workOrderForm.controls.rprtDate;
+    this._startTime   = this.workOrderForm.controls.timeStarts;
+    this._endTime     = this.workOrderForm.controls.endTime;
+    this._repairHours = this.workOrderForm.controls.repairHours;
+    // this._startDate = this.workOrder.controls['rprtDate'];
+    this.workOrderForm.valueChanges.debounceTime(500).subscribe((value:any) => {
+      Log.l("workOrderForm: valueChanges fired for:\n", value);
+    });
+
+
+    // this._startDate.valueChanges.subscribe((value: any) => {
+    //   Log.l("valueChanged for _locID:\n", value);
+    //   this.locIDChanged(this._locID.value);
+    // });
   }
 
   showSpinner(text: string) {
@@ -89,15 +112,8 @@ export class WorkOrder implements OnInit {
     });
   }
 
-  //   setTimeout(() => {
-  //     loading.dismiss();
-  //   }, 5000);
-  // }
-
-
-
   private initializeForm() {
-    this.workOrder = new FormGroup({
+    this.workOrderForm = new FormGroup({
       'timeStarts': new FormControl(this.startTime.format("HH:00"), Validators.required),
       'timeEnds'  : new FormControl(null, Validators.required),
       'repairHrs' : new FormControl(null, Validators.required),
@@ -107,10 +123,6 @@ export class WorkOrder implements OnInit {
       'rprtDate'  : new FormControl(this.reportDate.format("YYYY-MM-DD"), Validators.required),
       'timeStamp' : new FormControl({ value: Date(), disabled: true}, Validators.required)
     });
-    // setTimeout(_ => {
-    //   this.reportDateField.setValue(this.reportDate.format());
-    //   this.startTimeField.setValue(this.startTime.format());
-    // });
   }
 
   onSubmit() {
@@ -128,72 +140,72 @@ export class WorkOrder implements OnInit {
  */
   public calcEndTime(workOrderData) {
     Log.l("Calculating end time for:\n", workOrderData);
-    const _Xdec = /(00|15|30|45)(?!\:\d{2})/;
-    const _Xhrs = /([0-9]{2})(?=:\d{2})/;
+    // const _Xdec = /(00|15|30|45)(?!\:\d{2})/;
+    // const _Xhrs = /([0-9]{2})(?=:\d{2})/;
 
-    this.prsHrs = _Xhrs.exec(workOrderData.timeStarts);
-    this.strtHrs = parseInt(this.prsHrs[0]).toString();
-    this.prsMin = _Xdec.exec(workOrderData.timeStarts);
+    // this.prsHrs = _Xhrs.exec(workOrderData.timeStarts);
+    // this.strtHrs = parseInt(this.prsHrs[0]).toString();
+    // this.prsMin = _Xdec.exec(workOrderData.timeStarts);
 
-    if (parseInt(this.prsMin[0]) === 0) {
-      this.strtMin = '00';
-    }
-    else if (parseInt(this.prsMin[0]) === 15) {
-      this.strtMin = '15';
-    }
-    else if (parseInt(this.prsMin[0]) === 30) {
-      this.strtMin = '30';
-    }
-    else {
-      this.strtMin = '45';
-    }
+    // if (parseInt(this.prsMin[0]) === 0) {
+    //   this.strtMin = '00';
+    // }
+    // else if (parseInt(this.prsMin[0]) === 15) {
+    //   this.strtMin = '15';
+    // }
+    // else if (parseInt(this.prsMin[0]) === 30) {
+    //   this.strtMin = '30';
+    // }
+    // else {
+    //   this.strtMin = '45';
+    // }
 
-    workOrderData.timeStarts = this.strtHrs + ':' + this.strtMin;
+    // workOrderData.timeStarts = this.strtHrs + ':' + this.strtMin;
 
-    this.hrsHrs = Math.floor(workOrderData.repairHrs);
-    this.hrsMin = (workOrderData.repairHrs%1)*60;
+    // this.hrsHrs = Math.floor(workOrderData.repairHrs);
+    // this.hrsMin = (workOrderData.repairHrs%1)*60;
 
-    if (parseInt(this.strtMin) + this.hrsMin > 60) {
+    // if (parseInt(this.strtMin) + this.hrsMin > 60) {
 
-      if (parseInt(this.strtHrs) + this.hrsHrs + 1 > 24)
-            { this.endHrs = parseInt(this.strtHrs) + this.hrsHrs -23; this.endMin = parseInt(this.strtMin) + this.hrsMin - 60; }
-      else  { this.endHrs = parseInt(this.strtHrs) + this.hrsHrs + 1; this.endMin = parseInt(this.strtMin) + this.hrsMin - 60; }
-    }
+    //   if (parseInt(this.strtHrs) + this.hrsHrs + 1 > 24)
+    //         { this.endHrs = parseInt(this.strtHrs) + this.hrsHrs -23; this.endMin = parseInt(this.strtMin) + this.hrsMin - 60; }
+    //   else  { this.endHrs = parseInt(this.strtHrs) + this.hrsHrs + 1; this.endMin = parseInt(this.strtMin) + this.hrsMin - 60; }
+    // }
 
-    else {
-      if (parseInt(this.strtHrs) + this.hrsHrs > 24)
-            { this.endHrs = parseInt(this.strtHrs) + this.hrsHrs -24; this.endMin = parseInt(this.strtMin) + this.hrsMin;      }
-      else  { this.endHrs = parseInt(this.strtHrs) + this.hrsHrs;     this.endMin = parseInt(this.strtMin) + this.hrsMin;      }
-    }
+    // else {
+    //   if (parseInt(this.strtHrs) + this.hrsHrs > 24)
+    //         { this.endHrs = parseInt(this.strtHrs) + this.hrsHrs -24; this.endMin = parseInt(this.strtMin) + this.hrsMin;      }
+    //   else  { this.endHrs = parseInt(this.strtHrs) + this.hrsHrs;     this.endMin = parseInt(this.strtMin) + this.hrsMin;      }
+    // }
 
-    if( this.endHrs < 10 ) {
-      if( this.endHrs === 0 ) { this.endHrs = '00'       }
-      else { this.endHrs = '0' + this.endHrs.toString(); }
-    } else { this.endHrs = this.endHrs.toString();       }
+    // if( this.endHrs < 10 ) {
+    //   if( this.endHrs === 0 ) { this.endHrs = '00'       }
+    //   else { this.endHrs = '0' + this.endHrs.toString(); }
+    // } else { this.endHrs = this.endHrs.toString();       }
 
-    if( this.endMin === 0 ) { this.endMin = '00';        }
-    if( this.hrsMin === 0 ) { this.hrsMin = '00';        }
+    // if( this.endMin === 0 ) { this.endMin = '00';        }
+    // if( this.hrsMin === 0 ) { this.hrsMin = '00';        }
 
-    this.timeEnds           = this.endHrs + ':' + this.endMin;
-    workOrderData.timeEnds  = this.endHrs + ':' + this.endMin;
-    workOrderData.repairHrs = this.hrsHrs + ':' + this.hrsMin;
+    // this.timeEnds           = this.endHrs + ':' + this.endMin;
+    // workOrderData.timeEnds  = this.endHrs + ':' + this.endMin;
+    // workOrderData.repairHrs = this.hrsHrs + ':' + this.hrsMin;
 
-    console.log(this.strtHrs);
-    console.log(this.endHrs);
+    // console.log(this.strtHrs);
+    // console.log(this.endHrs);
 
-    workOrderData.repairHrs = this.hrsHrs + ':' + this.hrsMin;
+    // workOrderData.repairHrs = this.hrsHrs + ':' + this.hrsMin;
   }
 
   genReportID() {
-    this.timeSrvc.getParsedDate();
-    this.idDate = this.timeSrvc._arrD[1].toString() +
-                  this.timeSrvc._arrD[2].toString() +
-                  this.timeSrvc._arrD[0].toString() +
-                  this.timeSrvc._arrD[3].toString();
-    this.idTime = this.timeSrvc._arrD[4].toString() +
-                  this.timeSrvc._arrD[5].toString() +
-                  this.timeSrvc._arrD[6].toString();
-      console.log( this.idDate );
+    // this.timeSrvc.getParsedDate();
+    // this.idDate = this.timeSrvc._arrD[1].toString() +
+    //               this.timeSrvc._arrD[2].toString() +
+    //               this.timeSrvc._arrD[0].toString() +
+    //               this.timeSrvc._arrD[3].toString();
+    // this.idTime = this.timeSrvc._arrD[4].toString() +
+    //               this.timeSrvc._arrD[5].toString() +
+    //               this.timeSrvc._arrD[6].toString();
+    //   console.log( this.idDate );
     // let firstInitial = this.profile.firstName.slice(0,1);
     // let lastInitial = this.profile.lastName.slice(0,1);
     this.docID = this.profile.avatarName + '_' + this.idDate + this.idTime;

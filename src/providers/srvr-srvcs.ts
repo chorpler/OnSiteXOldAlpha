@@ -20,9 +20,13 @@ export class SrvrSrvcs {
 	public static staticRDB     : any    = {                                                }     ;
 	public static rdb           : any    = new Map()                                              ;
 	public static StaticPouchDB : any    = PouchDB                                                ;
-  public static server        : string = "martiancouch.hplx.net"                                ;
-	public static port          : string = ''                                                     ;
+  // public static server        : string = "nano.hplx.net"                                ;
+  // public static server        : string = "martiancouch.hplx.net"                                ;
+  public static server        : string = "securedb.sesaonsite.com"                                ;
+  public static port          : string = '443'                                                     ;
+	// public static port          : string = '5984'                                                     ;
 	// public static server     : string = "162.243.157.16"                                       ;
+  // public static protocol      : string = "https"                                                ;
 	public static protocol      : string = "https"                                                ;
 	public static userInfo      : any    = {u       : '', p                         : ''    }     ;
 	public static ropts         : any    = {adapter : SrvrSrvcs.protocol, skipSetup : true  }     ;
@@ -114,7 +118,8 @@ export class SrvrSrvcs {
   		if(dbname) {
   			dbURL = dbname;
   		}
-			let url = SrvrSrvcs.protocol + ':/' + '/' + SrvrSrvcs.server + '/' + dbURL;
+			// let url = SrvrSrvcs.protocol + ':/' + '/' + SrvrSrvcs.server + '/' + dbURL;
+      let url = SrvrSrvcs.getBaseURL() + '/' + dbURL;
 			let authToken = 'Basic ' + window.btoa(user + ':' + pass);
 			let ajaxOpts = { headers: { Authorization: authToken } };
 			let opts = {adapter: SrvrSrvcs.protocol, skipSetup: true, ajax: {withCredentials: true, ajaxOpts, auth: {username: user, password: pass}}};

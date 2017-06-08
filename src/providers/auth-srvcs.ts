@@ -33,7 +33,8 @@ export class AuthSrvcs {
 
 	// constructor(public http: Http, public zone: NgZone, private db: DBSrvcs, private storage: Storage, public secureStorage: SecureStorage, public ud: UserData) {
 	constructor(public http: Http, public zone: NgZone, private storage: Storage, public srvr: SrvrSrvcs, public secureStorage: SecureStorage, public ud: UserData, public alrt: AlertController) {
-		this.remote       = 'https://martiancouch.hplx.net/reports' ;
+		// this.remote       = 'https://martiancouch.hplx.net/reports' ;
+		this.remote       = 'https://securedb.sesaonsite.com/reports' ;
 
 		window['securestorage'] = this.secureStorage;
 		window['storage'] = this.storage;
@@ -52,8 +53,6 @@ export class AuthSrvcs {
 	}
 
 	// -------------- AuthSrvcs METHODS------------------------
-
-	ionViewDidLoad() { }
 
 	showConfirm(title: string, text: string) {
 		return new Promise((resolve,reject) => {

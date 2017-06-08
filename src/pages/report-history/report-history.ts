@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular'                     ;
-import { DBSrvcs } from '../../providers/db-srvcs';
-import { AuthSrvcs                           } from '../../providers/auth-srvcs'    ;
-import { SrvrSrvcs                           } from '../../providers/srvr-srvcs'    ;
-import { AlertsProvider                      } from '../../providers/alerts'        ;
-import { Log, CONSOLE                        } from '../../config/config.functions' ;
+import { Component, OnInit                                      } from '@angular/core'                 ;
+import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular'                 ;
+import { DBSrvcs                                                } from '../../providers/db-srvcs'      ;
+import { AuthSrvcs                                              } from '../../providers/auth-srvcs'    ;
+import { SrvrSrvcs                                              } from '../../providers/srvr-srvcs'    ;
+import { AlertsProvider                                         } from '../../providers/alerts'        ;
+import { Log, CONSOLE                                           } from '../../config/config.functions' ;
 
 
 @IonicPage({ name    : 'Report History'                                               })
@@ -43,7 +43,7 @@ export class ReportHistory implements OnInit {
       this.hideSpinner();
       this.pageReady = true;
     });
-  }_
+  }
 
   showSpinner(text: string) {
     this.loading = this.loadingCtrl.create({

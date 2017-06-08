@@ -28,9 +28,12 @@ import { BackgroundGeolocationResponse                           } from '@ionic-
 import { Network                                                 } from '@ionic-native/network'                ;
 import { Push, PushObject, PushOptions                           } from '@ionic-native/push'                   ;
 import { LocalNotifications                                      } from '@ionic-native/local-notifications'    ;
+import { UniqueDeviceID                                          } from '@ionic-native/unique-device-id'       ;
 import { Log, CONSOLE                                            } from '../config/config.functions'           ;
 import { AlertsProvider                                          } from '../providers/alerts'                  ;
 import { GeolocService                                           } from '../providers/geoloc-service'          ;
+import { NumericModule                                           } from 'ionic2-numericpicker'                 ;
+
 // import { HomePage      } from '../pages/home/home'                     ;
 // import { Login         } from '../pages/login/login'                   ;
 // import { Settings      } from '../pages/settings/settings'             ;
@@ -55,7 +58,8 @@ import { GeolocService                                           } from '../prov
                         name: '__onsitestorage',
                         driverOrder: ['localstorage']
                       }),
-                      IonicModule.forRoot(OnSiteApp)
+                      IonicModule.forRoot(OnSiteApp),
+                      NumericModule
                                                                             ],
 
   providers      : [

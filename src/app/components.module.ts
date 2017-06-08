@@ -1,4 +1,4 @@
-import { ErrorHandler , NgModule                                 } from '@angular/core'                        ;
+import { ErrorHandler , NgModule } from '@angular/core'                             ;
 import { HomePageModule      } from '../pages/home/home.module'                     ;
 import { LoginModule         } from '../pages/login/login.module'                   ;
 import { SettingsModule      } from '../pages/settings/settings.module'             ;

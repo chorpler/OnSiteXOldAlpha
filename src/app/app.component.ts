@@ -1,23 +1,23 @@
-import { Component, ViewChild                               } from '@angular/core';
-import { Platform, Nav, ToastController                     } from 'ionic-angular'                              ;
-import { StatusBar                                          } from '@ionic-native/status-bar'                   ;
-import { SplashScreen                                       } from '@ionic-native/splash-screen'                ;
-import { Storage                                            } from '@ionic/storage'                             ;
-import { Push, PushObject, PushOptions                      } from '@ionic-native/push'                         ;
-import { DBSrvcs                                            } from '../providers/db-srvcs'                      ;
-import { AuthSrvcs                                          } from '../providers/auth-srvcs'                    ;
-import { UserData                                           } from '../providers/user-data'                     ;
-import { NetworkStatus                                      } from '../providers/network-status'                ;
-import { GeolocService                                      } from '../providers/geoloc-service'                ;
-import { Log, CONSOLE                                       } from '../config/config.functions'                 ;
-import { DOMTimeStamp, Coordinates, Position                } from '../config/geoloc'                           ;
-import { LocalNotifications                                 } from '@ionic-native/local-notifications'          ;
-// import { HomePage                                           } from '../pages/home/home'                         ;
-import * as PouchDB                                           from 'pouchdb'                                    ;
-import * as pdbAuth                                           from 'pouchdb-authentication'                     ;
-import * as pdbUpsert                                         from 'pouchdb-upsert'                             ;
-import * as pdbSeamlessAuth                                   from 'pouchdb-seamless-auth'                      ;
-import * as moment                                            from 'moment'                                     ;
+import { Component, ViewChild                }                    from '@angular/core'                     ;
+import { Platform, Nav, ToastController      }                    from 'ionic-angular'                     ;
+import { StatusBar                           }                    from '@ionic-native/status-bar'          ;
+import { SplashScreen                        }                    from '@ionic-native/splash-screen'       ;
+import { Storage                             }                    from '@ionic/storage'                    ;
+import { Push, PushObject, PushOptions       }                    from '@ionic-native/push'                ;
+import { DBSrvcs                             }                    from '../providers/db-srvcs'             ;
+import { AuthSrvcs                           }                    from '../providers/auth-srvcs'           ;
+import { UserData                            }                    from '../providers/user-data'            ;
+import { NetworkStatus                       }                    from '../providers/network-status'       ;
+import { GeolocService                       }                    from '../providers/geoloc-service'       ;
+import { Log, CONSOLE                        }                    from '../config/config.functions'        ;
+import { DOMTimeStamp, Coordinates, Position }                    from '../config/geoloc'                  ;
+import { LocalNotifications                  }                    from '@ionic-native/local-notifications' ;
+// import { HomePage                         }                    from '../pages/home/home'                ;
+import                                       * as PouchDB         from 'pouchdb'                           ;
+import                                       * as pdbAuth         from 'pouchdb-authentication'            ;
+import                                       * as pdbUpsert       from 'pouchdb-upsert'                    ;
+import                                       * as pdbSeamlessAuth from 'pouchdb-seamless-auth'             ;
+import                                       * as moment          from 'moment'                            ;
 
 
 @Component({
