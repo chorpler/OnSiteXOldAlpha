@@ -5,7 +5,7 @@ import { FormGroup, FormControl, Validators                                     
 import { AuthSrvcs                                                               } from '../../providers/auth-srvcs'     ;
 import { SrvrSrvcs                                                               } from '../../providers/srvr-srvcs'     ;
 import { DBSrvcs                                                                 } from '../../providers/db-srvcs'       ;
-import { AlertsProvider                                                          } from '../../providers/alerts'         ;
+import { AlertService                                                          } from '../../providers/alerts'         ;
 import { NetworkStatus                                                           } from '../../providers/network-status' ;
 import { Log, CONSOLE                                                            } from '../../config/config.functions'  ;
 
@@ -40,7 +40,7 @@ export class Login implements OnInit {
 		private db: DBSrvcs,
 		private loadingCtrl: LoadingController, 
 		private network: NetworkStatus, 
-		private alerter: AlertsProvider
+		private alerter: AlertService
 	) {
 		window['loginscreen'] = this;
 	}

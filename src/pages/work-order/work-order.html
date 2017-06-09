@@ -25,6 +25,10 @@
         <ion-datetime #reportDate displayFormat="DDD, MMM DD YYYY" pickerFormat="MMM DD YYYY" yearValues="2017" formControlName="rprtDate"></ion-datetime>
       </ion-item>
       <ion-item>
+        <ion-label>Repair Time</ion-label>
+        <ion-numeric item-content displayFormat="xx" formControlName="repair_time"></ion-numeric>
+      </ion-item>
+      <ion-item>
         <ion-label>Start Time</ion-label>
         <ion-datetime #startTime displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="00,15,30,45" formControlName="timeStarts"></ion-datetime>
       </ion-item>

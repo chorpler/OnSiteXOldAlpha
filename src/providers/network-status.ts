@@ -5,7 +5,7 @@ import { Storage            } from '@ionic/storage'             ;
 import { NativeStorage      } from 'ionic-native'               ;
 import 'rxjs/add/operator/map'                                  ;
 import { Network            } from '@ionic-native/network'      ;
-import { AlertsProvider     } from './alerts'                   ;
+import { AlertService     } from './alerts'                   ;
 
 @Injectable()
 /**

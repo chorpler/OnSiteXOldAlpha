@@ -5,19 +5,19 @@ import { Log, CONSOLE                                            } from '../conf
 import 'rxjs/add/operator/map';
 
 /*
-	Generated class for the AlertsProvider provider.
+	Generated class for the AlertService provider.
 
 	See https://angular.io/docs/ts/latest/guide/dependency-injection.html
 	for more info on providers and Angular 2 DI.
 */
 @Injectable()
-export class AlertsProvider {
+export class AlertService {
 
 	public loading :any;
 	public alert   :any;
 
 	constructor(public http: Http, public loadingCtrl: LoadingController, public alertCtrl:AlertController) {
-		Log.l('Hello AlertsProvider Provider');
+		Log.l('Hello AlertService Provider');
 	}
 
 	showSpinner(text: string) {
@@ -32,7 +32,7 @@ export class AlertsProvider {
 	hideSpinner() {
 		setTimeout(() => {
 			this.loading.dismiss().catch((reason: any) => {
-				Log.l('AlertsProvider: loading.dismiss() error:\n', reason);
+				Log.l('AlertService: loading.dismiss() error:\n', reason);
 				this.loading.dismissAll();
 			});
 		});

@@ -66,7 +66,7 @@ export class Settings implements OnInit {
     }).catch((err) => {
       console.log("Error while initializing Settings screen!");
       console.error(err);
-    })
+    });
   }
 
   private initializeForm() {

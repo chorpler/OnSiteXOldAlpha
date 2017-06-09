@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild                           } from '@angular/core'                     ;
 import { FormGroup, FormControl, Validators                     } from "@angular/forms"                    ;
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular'                     ;
+import { NumbericModule                                         } from 'ionic2-numberpicker'               ;
 import * as moment                                                from 'moment'                            ;
 import 'rxjs/add/operator/debounceTime';
 import { DBSrvcs                                                } from '../../providers/db-srvcs'          ;

@@ -12,6 +12,7 @@ import { Settings                                            } from '../settings
 import { WorkOrder                                           } from '../work-order/work-order'           ;
 import { ReportHistory                                       } from '../report-history/report-history'   ;
 import { DeveloperPage                                       } from '../developer/developer'             ;
+import { AlertService                                        } from '../developer/developer'             ;
 
 @IonicPage({name: 'OnSiteHome'})
 
@@ -28,7 +29,7 @@ export class HomePage implements OnInit {
   PDB                         : any     = PouchDB       ;
   backButtonPressedOnceToExit : boolean = false         ;
   
-  constructor(public platform: Platform, public navCtrl: NavController, public toastCtrl: ToastController, public plt: Platform, public auth: AuthSrvcs, public srvr: SrvrSrvcs, public dbBulk: DbBulkuploadSrvc, public geoloc: GeolocService, public zone: NgZone) {
+  constructor(public platform: Platform, public navCtrl: NavController, public toastCtrl: ToastController, public plt: Platform, public auth: AuthSrvcs, public srvr: SrvrSrvcs, public dbBulk: DbBulkuploadSrvc, public geoloc: GeolocService, public zone: NgZone, public alert:AlertService) {
     window['onsitehome'] = this;
   }
 
@@ -180,6 +181,11 @@ export class HomePage implements OnInit {
       this.userIsDeveloper = false;
       return false;
     }
+  }
+
+  terminateApp() {
+    
+    this.platform.exitApp();
   }
 
   tryStartingBackgroundGeolocation() {

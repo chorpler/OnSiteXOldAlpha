@@ -30,7 +30,7 @@ import { Push, PushObject, PushOptions                           } from '@ionic-
 import { LocalNotifications                                      } from '@ionic-native/local-notifications'    ;
 import { UniqueDeviceID                                          } from '@ionic-native/unique-device-id'       ;
 import { Log, CONSOLE                                            } from '../config/config.functions'           ;
-import { AlertsProvider                                          } from '../providers/alerts'                  ;
+import { AlertService                                          } from '../providers/alerts'                  ;
 import { GeolocService                                           } from '../providers/geoloc-service'          ;
 import { NumericModule                                           } from 'ionic2-numericpicker'                 ;
 // import { DomainModule                                            } from '../domain/domain.module'              ;
@@ -61,7 +61,7 @@ import { NumericModule                                           } from 'ionic2-
                       NavController,
                       LoadingController,
                       AlertController,
-                      AlertsProvider,
+                      AlertService,
                       {provide: ErrorHandler, useClass: IonicErrorHandler}   ,
                       ProfileSettings,
                       AuthSrvcs,

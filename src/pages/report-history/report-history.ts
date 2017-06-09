@@ -3,7 +3,7 @@ import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-an
 import { DBSrvcs                                                } from '../../providers/db-srvcs'      ;
 import { AuthSrvcs                                              } from '../../providers/auth-srvcs'    ;
 import { SrvrSrvcs                                              } from '../../providers/srvr-srvcs'    ;
-import { AlertsProvider                                         } from '../../providers/alerts'        ;
+import { AlertService                                         } from '../../providers/alerts'        ;
 import { Log, CONSOLE                                           } from '../../config/config.functions' ;
 
 
@@ -20,7 +20,7 @@ export class ReportHistory implements OnInit {
   public data         : any = []                             ;
   public loading      : any                                  ;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public dbSrvcs: DBSrvcs, public srvr: SrvrSrvcs, private auth: AuthSrvcs, public loadingCtrl: LoadingController, public alert: AlertsProvider) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public dbSrvcs: DBSrvcs, public srvr: SrvrSrvcs, private auth: AuthSrvcs, public loadingCtrl: LoadingController, public alert: AlertService) {
     window["reporthistory"] = this;
   }
 
