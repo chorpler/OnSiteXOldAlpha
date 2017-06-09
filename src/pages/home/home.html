@@ -6,9 +6,9 @@
     <ion-title>
       {{title}}
     </ion-title>
-    <ion-buttons class="endButtons" end *ngIf="userLoggedIn && userIsDeveloper">
-      <button class="endSingleButton" ion-button icon-only (click)="openDevSettings()">
-        <ion-icon name="options"></ion-icon>
+    <ion-buttons end>
+      <button ion-button icon-only color="dark">
+        <ion-icon name="close"></ion-icon>
       </button>
     </ion-buttons>
   </ion-navbar>
@@ -19,6 +19,16 @@
   <button ion-button block color="secondary" *ngIf="userLoggedIn" (click)="onSettings()"> Settings </button>
   <button ion-button block color="secondary" *ngIf="userLoggedIn" (click)="onNewWorkOrder()"> New WorkOrder </button>
   <button ion-button block color="secondary" *ngIf="userLoggedIn" (click)="getReportHistory()"> Report History </button>
-  <!-- <button ion-button block color="secondary" *ngIf="userLoggedIn" (click)="importBulkReports()"> Import Bulk Reports </button> -->
+   <button ion-button block color="secondary" > Close OnSiteX App </button> 
   <button ion-button block color="secondary" class="logout-button" *ngIf="userLoggedIn" (click)="logoutOfApp()"> Logout </button>
 </ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons class="endButtons" end *ngIf="userLoggedIn && userIsDeveloper">
+      <button class="endSingleButton" ion-button icon-only (click)="openDevSettings()">
+        <ion-icon name="options"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>
