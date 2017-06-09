@@ -83,6 +83,7 @@
     "intl": "^1.2.5",
     "ionic-angular": "3.3.0",
     "ionic-plugin-keyboard": "^2.2.1",
+    "ionic2-datepicker": "^0.1.0",
     "ionic2-numericpicker": "^1.2.0",
     "ionicons": "3.0.0",
     "moment": "^2.18.1",
