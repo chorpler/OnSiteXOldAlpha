@@ -1,13 +1,14 @@
 import { Component, OnInit, ViewChild                           } from '@angular/core'                     ;
 import { FormGroup, FormControl, Validators                     } from "@angular/forms"                    ;
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular'                     ;
-import { NumbericModule                                         } from 'ionic2-numberpicker'               ;
+import { NumericModule                                          } from 'ionic2-numberpicker'               ;
 import * as moment                                                from 'moment'                            ;
 import 'rxjs/add/operator/debounceTime';
 import { DBSrvcs                                                } from '../../providers/db-srvcs'          ;
 import { AuthSrvcs                                              } from '../../providers/auth-srvcs'        ;
 import { TimeSrvc                                               } from '../../providers/time-parse-srvc'   ;
 import { ReportBuildSrvc                                        } from '../../providers/report-build-srvc' ;
+import { AlertService                                           } from '../../providers/alerts'            ;
 import { Log                                                    } from '../../config/config.functions'     ;
 import { Shift                                                  } from '../../domain/shift'                ;
 
@@ -33,18 +34,11 @@ export class WorkOrder implements OnInit {
   docID        : string   ;
   idDate       : string   ;
   idTime       : string   ;
+  shifts       : Array<Shift>;
+  selectedShift: Shift;
+  currentDay   : any;
+  shiftsStart  : any;
 
-  // strtHrs   ;
-  // strtMin   ;
-  // hrsHrs    ;
-  // hrsMin    ;
-  // endMin    ;
-  // endHrs    ;
-  // prsHrs    ;
-  // prsMin    ;
-  // rprtDate  : Date     = new Date()   ;
-  // timeStarts: Date     = new Date()   ;
-  // timeEnds                            ;
   rprtDate    : any      = moment()     ;
   timeStarts  : any      = moment()     ;
   reportDate  : any      = moment()     ;
@@ -59,7 +53,7 @@ export class WorkOrder implements OnInit {
   _repairHours: any;
   // , private dbSrvcs: DBSrvcs
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private dbSrvcs: DBSrvcs, private timeSrvc: TimeSrvc, public reportBuilder:ReportBuildSrvc, public loadingCtrl: LoadingController) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private dbSrvcs: DBSrvcs, private timeSrvc: TimeSrvc, public reportBuilder:ReportBuildSrvc, public loadingCtrl: LoadingController, public alert: AlertService) {
     this.db = this.dbSrvcs;
     window["workorder"] = this;
   }
@@ -90,27 +84,30 @@ export class WorkOrder implements OnInit {
     // });
   }
 
-  showSpinner(text: string) {
-    this.loading = this.loadingCtrl.create({
-      content: text,
-      showBackdrop: false,
-      // dismissOnPageChange: true
-    });
+  /**
+   * Sets up shifts for the past week.
+   *                                   now.add(x, 'days')
+   * today | Shift | Day num | Wed | Thu | Fri | Sat | Sun | Mon | Tue |
+   * ====================================================================
+   * Wed   |  1    |  3      |  0  | -6  | -5  | -4  | -3  | -2  | -1  |
+   * Thu   |  2    |  4      | -1  |  0  | -6  | -5  | -4  | -3  | -2  |
+   * Fri   |  3    |  5      | -2  | -1  |  0  | -6  | -5  | -4  | -3  |
+   * Sat   |  4    |  6      | -3  | -2  | -1  |  0  | -6  | -5  | -4  |
+   * Sun   |  5    |  7      | -4  | -3  | -2  | -1  |  0  | -6  | -5  |
+   * Mon   |  6    |  1      | -5  | -4  | -3  | -2  | -1  |  0  | -6  |
+   * Tue   |  7    |  2      | -6  | -5  | -4  | -3  | -2  | -1  |  0  |
+   * Conclusion: get current day number. Subtract 3. Unshift to array.
+   * Loop 7 times, subtracting one additional day per time.
+   * @method setupShifts
+   */
+  setupShifts() {
+    let endDay = 2;
+    let now = moment();
+    for(let i = 0; i < 7; i++) {
+      let shiftStartDay = moment(now).subtract(i, 'days');
+      let thisShift = new Shift()
+    }
 
-    // this.loading.onDidDismiss(() => {
-    //   Log.l("Spinner dismissed.");
-    // })
-
-    this.loading.present().catch(() => {});
-  }
-
-  hideSpinner() {
-    setTimeout(() => {
-      this.loading.dismiss().catch((reason: any) => {
-        Log.l('WorkOrder: loading.dismiss() error:\n', reason);
-        this.loading.dismissAll();
-      });
-    });
   }
 
   private initializeForm() {
@@ -125,6 +122,8 @@ export class WorkOrder implements OnInit {
       'timeStamp' : new FormControl({ value: Date(), disabled: true}, Validators.required)
     });
   }
+
+
 
   onSubmit() {
     this.processWO();
@@ -220,7 +219,7 @@ export class WorkOrder implements OnInit {
     console.log("processWO() has initial workOrderData:");
     console.log(workOrderData);
 
-    this.showSpinner("Saving...");
+    this.alert.showSpinner("Saving...");
 
     return new Promise((resolve,reject) => {
       this.dbSrvcs.checkLocalDoc( '_local/techProfile').then((docExists) => {
@@ -237,7 +236,7 @@ export class WorkOrder implements OnInit {
             if( typeof this.profile.updated == 'undefined') {
               /* This shouldn't happen as long as the user is logged in and the profile was created */
               Log.l("processWO(): Tech profile does not exist at all. This should not happen.");
-              setTimeout(() => {this.navCtrl.push('Report Settings');});
+              setTimeout(() => { this.navCtrl.setRoot('Report Settings');});
               // resolve(false);
               resolve(-1);
             } else if(typeof this.profile.updated != 'undefined' && this.profile.updated === false ) {
@@ -251,7 +250,8 @@ export class WorkOrder implements OnInit {
               this.dbSrvcs.addLocalDoc( this.tmpReportData ).then((res) => {
                 Log.l("processWO(): Created temporary work report. Now going to Settings page to OK changes.");
                 Log.l(res);
-                setTimeout(() => {this.navCtrl.push('Report Settings');});
+                this.alert.hideSpinner();
+                setTimeout(() => { this.navCtrl.setRoot('Report Settings');});
                 // resolve(res);
                 resolve(-2);
               }).catch((err) => {
@@ -262,8 +262,8 @@ export class WorkOrder implements OnInit {
               });
 
               /* Notify user and go to Settings page */
-              this.hideSpinner();
-              setTimeout(() => {this.navCtrl.push('Report Settings');});
+              this.alert.hideSpinner();
+              setTimeout(() => { this.navCtrl.setRoot('Report Settings');});
               resolve(-4);
             } else {
               /* Update flag is true, good to submit work order */
@@ -285,9 +285,7 @@ export class WorkOrder implements OnInit {
               }).then((final2) => {
                 Log.l("processWO(): Successfully synchronized work order to CouchDB server!");
                 Log.l(final2);
-                // this.navCtrl.push('Report Settings');
-                // this.navCtrl.push("OnSiteHome");
-                this.hideSpinner();
+                this.alert.hideSpinner();
                 setTimeout(() => {this.navCtrl.setRoot('OnSiteHome');});
                 // resolve(final2);
                 resolve(-5);
@@ -302,9 +300,9 @@ export class WorkOrder implements OnInit {
           }).catch((anotherError) => {
             Log.l("processWO(): Could not retrieve _local/techProfile. Please set it up again.");
             Log.w(anotherError);
-            this.hideSpinner();
+            this.alert.hideSpinner();
             // resolve(false);
-            setTimeout(() => {this.navCtrl.push("Report Settings");});
+            setTimeout(() => { this.navCtrl.setRoot("Report Settings");});
             resolve(-7);
           })
         } else {

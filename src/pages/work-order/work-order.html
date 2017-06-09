@@ -5,11 +5,9 @@
   Ionic pages and navigation.
 -->
 <ion-header>
-
   <ion-navbar>
     <ion-title>{{title}}</ion-title>
   </ion-navbar>
-
 </ion-header>
 
 <ion-content padding>
@@ -21,8 +19,11 @@
         <ion-input type='text' formControlName="timeStamp"></ion-input>
       </ion-item>
       <ion-item>
-        <ion-label>Start Date</ion-label>
-        <ion-datetime #reportDate displayFormat="DDD, MMM DD YYYY" pickerFormat="MMM DD YYYY" yearValues="2017" formControlName="rprtDate"></ion-datetime>
+        <ion-label>Shift Date</ion-label>
+        <ion-select #shiftDate formControlName="rprtDate">
+          <ion-option class="shift-select" *ngFor="let shift of shifts" formControlName="selected_shift" [value]="selectedShift">{{shift.getShiftDescription()}}</ion-option>
+        </ion-select>
+      </ion-item>
       </ion-item>
       <ion-item>
         <ion-label>Repair Time</ion-label>

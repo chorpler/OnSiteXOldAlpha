@@ -64,7 +64,7 @@ export class ReportHistory implements OnInit {
     });
   }
 
-  itemTapped(event, item) { this.navCtrl.push('Report Edit', {  item: item }); }
+  itemTapped(event, item) { this.navCtrl.setRoot('Report Edit', {  item: item }); }
 
   deleteWorkOrder(event, item) {
     Log.l("deleteWorkOrder() clicked ...");

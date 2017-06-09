@@ -109,7 +109,7 @@ export class Login implements OnInit {
 			}).then((res) => {
 				Log.l("loginAttempt(): Finished validating and saving user info.")
 				this.hideSpinner();
-				setTimeout(() => {this.navCtrl.push('Report Settings');});
+        setTimeout(() => { this.navCtrl.setRoot('Report Settings');});
 			}).catch((err) => {
 				Log.l("loginAttempt(): Error validating and saving user info.");
 				Log.l(err);

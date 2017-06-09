@@ -94,10 +94,6 @@ export class OnSiteApp {
   private setRoot(newRootPage: any){
     this.rootPage = newRootPage;
     this.nav.setRoot(newRootPage);
-    // this.navCtrl.push(newRootPage).catch((err) => {
-    //   Log.l("Error setting root page to '" + newRootPage + "'.");
-    //   Log.e(err);
-    // })
   }
 }
 
