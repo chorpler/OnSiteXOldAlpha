@@ -25,10 +25,10 @@ export class HomePage implements OnInit {
   userIsDeveloper             : boolean = false         ;
   showPage                    : boolean = false         ;
   static startOfApp           : boolean = true          ;
-  title                       : string  = 'OnSiteHome' ;
+  title                       : string  = 'OnSiteHome'  ;
   PDB                         : any     = PouchDB       ;
   backButtonPressedOnceToExit : boolean = false         ;
-  
+
   constructor(public platform: Platform, public navCtrl: NavController, public toastCtrl: ToastController, public plt: Platform, public auth: AuthSrvcs, public srvr: SrvrSrvcs, public dbBulk: DbBulkuploadSrvc, public geoloc: GeolocService, public zone: NgZone, public alert:AlertService) {
     window['onsitehome'] = this;
   }
@@ -84,8 +84,6 @@ export class HomePage implements OnInit {
   onNewWorkOrder() {this.navCtrl.push('Work Order Form', {mode: 'New'});}
 
   onLogin() {this.navCtrl.push('Login');}
-
-  // onNewJobForm() {this.navCtrl.push('Work Order', {mode: 'New'});}
 
   onSettings() {this.navCtrl.push('Report Settings');}
 
@@ -163,7 +161,7 @@ export class HomePage implements OnInit {
       this.userLoggedIn = false;
     });
   }
-  
+
   getReportHistory() { this.navCtrl.push('Report History')}
 
   importBulkReports() {
