@@ -5,6 +5,7 @@ import { Storage                                            } from '@ionic/stora
 import { Geofence                                           } from '@ionic-native/geofence'                     ;
 import { BackgroundGeolocation, BackgroundGeolocationConfig } from '@ionic-native/background-geolocation'       ;
 import { BackgroundGeolocationResponse                      } from '@ionic-native/background-geolocation'       ;
+import { Geolocation                                        } from '../domain/geolocation'                      ;
 import { DOMTimeStamp, Coordinates, Position                } from '../config/geoloc'                           ;
 import { Log, CONSOLE                                       } from '../config/config.functions'                 ;
 import { SrvrSrvcs                                          } from '../providers/srvr-srvcs'                    ;

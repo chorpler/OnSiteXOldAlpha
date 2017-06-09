@@ -33,34 +33,26 @@ import { Log, CONSOLE                                            } from '../conf
 import { AlertsProvider                                          } from '../providers/alerts'                  ;
 import { GeolocService                                           } from '../providers/geoloc-service'          ;
 import { NumericModule                                           } from 'ionic2-numericpicker'                 ;
-
-// import { HomePage      } from '../pages/home/home'                     ;
-// import { Login         } from '../pages/login/login'                   ;
-// import { Settings      } from '../pages/settings/settings'             ;
-// import { WorkOrder     } from '../pages/work-order/work-order'         ;
-// import { ReportHistory } from '../pages/report-history/report-history' ;
-// import { EditReport    } from '../pages/edit-report/edit-report'       ;
-// import { DeveloperPage } from '../pages/developer/developer'           ;
-// import { HomePage      } from '../pages/home/home'                     ;
+// import { DomainModule                                            } from '../domain/domain.module'              ;
 
 @NgModule({
   declarations   : [ OnSiteApp  ], 
 
-  entryComponents: [ OnSiteApp], 
+  entryComponents: [ OnSiteApp ], 
 
-  bootstrap      : [ IonicApp                                    ], 
+  bootstrap      : [ IonicApp ], 
   
   imports        : [
                       BrowserModule,
                       HttpModule,
-                      // IonicPageModule.forChild(HomePage),
                       IonicStorageModule.forRoot({
                         name: '__onsitestorage',
                         driverOrder: ['localstorage']
                       }),
                       IonicModule.forRoot(OnSiteApp),
+                      // DomainModule.forRoot(OnSiteApp),
                       NumericModule
-                                                                            ],
+                   ],
 
   providers      : [
                       StatusBar,
@@ -86,7 +78,7 @@ import { NumericModule                                           } from 'ionic2-
                       Push,
                       LocalNotifications,
                       GeolocService           
-                                                                            ]
+                   ]
 })
 
 export class AppModule {}

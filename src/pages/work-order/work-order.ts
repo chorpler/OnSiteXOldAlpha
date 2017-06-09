@@ -1,19 +1,19 @@
 import { Component, OnInit, ViewChild                           } from '@angular/core'                     ;
 import { FormGroup, FormControl, Validators                     } from "@angular/forms"                    ;
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular'                     ;
+import * as moment                                                from 'moment'                            ;
+import 'rxjs/add/operator/debounceTime';
 import { DBSrvcs                                                } from '../../providers/db-srvcs'          ;
 import { AuthSrvcs                                              } from '../../providers/auth-srvcs'        ;
 import { TimeSrvc                                               } from '../../providers/time-parse-srvc'   ;
 import { ReportBuildSrvc                                        } from '../../providers/report-build-srvc' ;
 import { Log                                                    } from '../../config/config.functions'     ;
-import * as moment                                                from 'moment'                            ;
-import 'rxjs/add/operator/debounceTime';
+import { Shift                                                  } from '../../domain/shift'                ;
 
 @IonicPage({ name: 'Work Order Form' })
-
 @Component({
   selector: 'page-work-order',
-  templateUrl: 'work-order.html',
+  templateUrl: 'work-order.html'
 })
 
 export class WorkOrder implements OnInit {
