@@ -57,6 +57,9 @@ export class WorkOrder implements OnInit {
   _startTime: any;
   _endTime: any;
   _repairHours: any;
+  _shift: any;
+
+  controlValueAccessor: any;
   public dataReady: boolean = false;
   // , private dbSrvcs: DBSrvcs
 
@@ -76,16 +79,18 @@ export class WorkOrder implements OnInit {
     console.log(this.rprtDate);
 
     this.shifts = [];
-    this.db.get
+    // this.controlValueAccessor = {}
     this.setupShifts();
     this.initializeForm();
     this._startDate = this.workOrderForm.controls.rprtDate;
     this._startTime = this.workOrderForm.controls.timeStarts;
     this._endTime = this.workOrderForm.controls.endTime;
     this._repairHours = this.workOrderForm.controls.repairHours;
+    this._shift = this.workOrderForm.controls.selected_shift;
     // this._startDate = this.workOrder.controls['rprtDate'];
     this.workOrderForm.valueChanges.debounceTime(500).subscribe((value: any) => {
       Log.l("workOrderForm: valueChanges fired for:\n", value);
+      
     });
 
     this.dataReady = true;
@@ -137,7 +142,7 @@ export class WorkOrder implements OnInit {
     this.workOrderForm = new FormGroup({
       // 'timeStarts': new FormControl(this.startTime.format("HH:00"), Validators.required),
       'selected_shift': new FormControl('', Validators.required),
-      'timeEnds': new FormControl(null, Validators.required),
+      // 'timeEnds': new FormControl(null, Validators.required),
       'repair_time': new FormControl(null, Validators.required),
       'uNum': new FormControl(null, Validators.required),
       'wONum': new FormControl(null, Validators.required),

@@ -5,6 +5,7 @@ import { Geolocation } from './geolocation';
 import { Jobsite } from './jobsite';
 import { Street } from './street';
 import { Shift } from './shift';
+import { WorkOrder } from './workorder';
 
 
 @NgModule({
@@ -14,7 +15,8 @@ import { Shift } from './shift';
     Geolocation,
     Jobsite,
     Street,
-    Shift
+    Shift,
+    WorkOrder
   ],
   imports: [
 
@@ -25,7 +27,8 @@ import { Shift } from './shift';
     Geolocation,
     Jobsite,
     Street,
-    Shift
+    Shift,
+    WorkOrder
   ]
 })
 export class DomainModule {}

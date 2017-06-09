@@ -20,8 +20,8 @@
       </ion-item>-->
       <ion-item>
         <ion-label>Shift Date</ion-label>
-        <ion-select #shiftDate formControlName="rprtDate">
-          <ion-option class="shift-select" *ngFor="let shift of shifts" [value]="selectedShift">{{shift.getShiftDescription()}}</ion-option>
+        <ion-select #shiftDate formControlName="selected_shift">
+          <ion-option class="shift-select" *ngFor="let shift of shifts" [value]="shift">{{shift.getShiftDescription()}}</ion-option>
         </ion-select>
       </ion-item>
       <ion-item>
@@ -39,10 +39,10 @@
         <ion-label>Job Hours</ion-label>
         <ion-datetime #repairHrs displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="00,15,30,45" formControlName="repairHrs"></ion-datetime>
       </ion-item>-->
-      <ion-item>
+      <!--<ion-item>
         <ion-label>End Time</ion-label>
         <ion-datetime #endTime displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="00,15,30,45" formControlName="timeEnds"></ion-datetime>
-      </ion-item>
+      </ion-item>-->
       <ion-item>
         <ion-label floating>UNIT No.</ion-label>
         <ion-input type='text' formControlName='uNum'></ion-input>
@@ -60,6 +60,7 @@
       </ion-item>
     </ion-list>
     <button type="submit" ion-button block color="favorite">Submit {{title}} </button>
+    <button type="button" ion-button block color="light">Cancel</button>
   </form>
 </ion-content>
 
