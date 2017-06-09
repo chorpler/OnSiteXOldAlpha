@@ -81,13 +81,13 @@ export class HomePage implements OnInit {
     toast.present();
   }
 
-  onNewWorkOrder() {this.navCtrl.push('Work Order Form', {mode: 'New'});}
+  onNewWorkOrder() {this.navCtrl.setRoot('Work Order Form', {mode: 'New'});}
 
-  onLogin() {this.navCtrl.push('Login');}
+  onLogin() {this.navCtrl.setRoot('Login');}
 
-  onSettings() {this.navCtrl.push('Report Settings');}
+  onSettings() {this.navCtrl.setRoot('Report Settings');}
 
-  openDevSettings() {this.navCtrl.push('Developer Page');}
+  openDevSettings() {this.navCtrl.setRoot('Developer Page');}
 
   isFirstItem() {
     if(this.userLoggedIn) {
@@ -162,7 +162,7 @@ export class HomePage implements OnInit {
     });
   }
 
-  getReportHistory() { this.navCtrl.push('Report History')}
+  getReportHistory() { this.navCtrl.setRoot('Report History')}
 
   importBulkReports() {
     Log.l("Beginning import...");
