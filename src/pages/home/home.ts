@@ -1,5 +1,6 @@
 import { Component, OnInit, NgZone                           } from '@angular/core'                      ;
-import { Platform, IonicPage, NavController, ToastController } from 'ionic-angular'                      ;
+import { Platform, IonicPage, NavParams                      } from 'ionic-angular'                      ;
+import { NavController, ToastController                      } from 'ionic-angular'                      ;
 import { AuthSrvcs                                           } from '../../providers/auth-srvcs'         ;
 import { SrvrSrvcs                                           } from '../../providers/srvr-srvcs'         ;
 import { DbBulkuploadSrvc                                    } from '../../providers/db-bulkupload-srvc' ;
@@ -21,7 +22,7 @@ import { DeveloperPage                                       } from '../develope
   templateUrl: 'home.html'
 })
 export class HomePage implements OnInit {
-  userLoggedIn                : boolean = false         ;
+  userLoggedIn                : boolean                 ;
   userIsDeveloper             : boolean = false         ;
   showPage                    : boolean = false         ;
   static startOfApp           : boolean = true          ;
@@ -29,8 +30,17 @@ export class HomePage implements OnInit {
   PDB                         : any     = PouchDB       ;
   backButtonPressedOnceToExit : boolean = false         ;
 
-  constructor(public platform: Platform, public navCtrl: NavController, public toastCtrl: ToastController, public plt: Platform, public auth: AuthSrvcs, public srvr: SrvrSrvcs, public dbBulk: DbBulkuploadSrvc, public geoloc: GeolocService, public zone: NgZone, public alert:AlertService) {
+  constructor(public platform: Platform,         public navCtrl: NavController,
+              public toastCtrl: ToastController, public auth: AuthSrvcs,
+              public srvr     : SrvrSrvcs,       public dbBulk: DbBulkuploadSrvc,
+              public geoloc   : GeolocService,   public zone: NgZone,
+              public alert    :AlertService,     public navParams: NavParams) {
     window['onsitehome'] = this;
+  }
+
+  ionViewDidEnter() {
+      if (this.navParams.get('userLoggedIn') !== undefined) { this.userLoggedIn = this.navParams.get('userLoggedIn'); }
+      Log.l("User Logged In Status: " + this.userLoggedIn);
   }
 
   ngOnInit() {
@@ -85,7 +95,7 @@ export class HomePage implements OnInit {
 
   onLogin() {this.navCtrl.setRoot('Login');}
 
-  onSettings() {this.navCtrl.setRoot('Report Settings');}
+  onSettings() {this.navCtrl.setRoot('Tech Settings');}
 
   openDevSettings() {this.navCtrl.setRoot('Developer Page');}
 
@@ -179,6 +189,10 @@ export class HomePage implements OnInit {
       this.userIsDeveloper = false;
       return false;
     }
+  }
+
+  navToSettings() {
+    this.navCtrl.setRoot("Settings");
   }
 
   terminateApp() {

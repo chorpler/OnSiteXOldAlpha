@@ -1,13 +1,19 @@
-
 <ion-header>
-
   <ion-navbar>
+    <ion-buttons start>
+      <button ion-button color="light" icon-only (click)="navBacktoHome()">
+        <ion-icon name="home"></ion-icon>
+      </button>
+    </ion-buttons>
     <ion-title> {{title}} </ion-title>
+    <ion-buttons end>
+      <button ion-button color="light" icon-only (click)="terminateApp()">
+        <ion-icon name="close" ></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
-
 </ion-header>
 
-
-<ion-content padding >
-  <button ion-button block color="secondary" class="logout-button" *ngIf="userLoggedIn" (click)="logoutOfApp()"> Logout </button>
+<ion-content padding>
+  <button ion-button color="secondary" class="logout-button"  (click)="logoutOfApp()"> Logout </button>
 </ion-content>
