@@ -15,28 +15,30 @@
 
   <form [formGroup]="workOrderForm" (ngSubmit)="onSubmit()" *ngIf="dataReady">
     <ion-list>
-      <ion-item>
+      <!--<ion-item>
         <ion-input type='text' formControlName="timeStamp"></ion-input>
-      </ion-item>
+      </ion-item>-->
       <ion-item>
         <ion-label>Shift Date</ion-label>
         <ion-select #shiftDate formControlName="rprtDate">
           <ion-option class="shift-select" *ngFor="let shift of shifts" [value]="selectedShift">{{shift.getShiftDescription()}}</ion-option>
         </ion-select>
       </ion-item>
-      <!--<ion-item>
+      <ion-item>
         <ion-label>Repair Time</ion-label>
-        <ion-numeric item-content displayFormat="xx" formControlName="repair_time"></ion-numeric>
-      </ion-item>-->
-      <ion-item>
-        <ion-label>Start Time</ion-label>
-        <!--<ion-datetime #startTime displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="00,15,30,45" formControlName="timeStarts"></ion-datetime>-->
-        <ion-datetime #startTime displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="00,15,30,45"></ion-datetime>
+        <ion-datetime #repairTimer displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="00,30" formControlName="repair_time"></ion-datetime>
+        <!--<ion-numeric item-content displayFormat="xx:xx" pickerFormat="xx:xx">{{workOrderForm.value.repairTime}}</ion-numeric>-->
+        <!--<input ion-numeric item-content displayFormat="xx:xx" pickerFormat="xx:xx" formControlName="repair_time" />-->
       </ion-item>
-      <ion-item>
+      <!--<ion-item>
+        <ion-label>Start Time</ion-label>
+        <ion-datetime #startTime displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="00,15,30,45" formControlName="timeStarts"></ion-datetime>
+        <ion-datetime #startTime displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="00,15,30,45"></ion-datetime>
+      </ion-item>-->
+      <!--<ion-item>
         <ion-label>Job Hours</ion-label>
         <ion-datetime #repairHrs displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="00,15,30,45" formControlName="repairHrs"></ion-datetime>
-      </ion-item>
+      </ion-item>-->
       <ion-item>
         <ion-label>End Time</ion-label>
         <ion-datetime #endTime displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="00,15,30,45" formControlName="timeEnds"></ion-datetime>

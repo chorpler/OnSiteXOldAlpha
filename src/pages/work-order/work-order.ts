@@ -43,6 +43,7 @@ export class WorkOrder implements OnInit {
   currentDay: any;
   shiftsStart: any;
   shifter: any;
+  repairTime: any;
 
   rprtDate: any = moment();
   timeStarts: any = moment();
@@ -75,6 +76,7 @@ export class WorkOrder implements OnInit {
     console.log(this.rprtDate);
 
     this.shifts = [];
+    this.db.get
     this.setupShifts();
     this.initializeForm();
     this._startDate = this.workOrderForm.controls.rprtDate;
@@ -125,7 +127,7 @@ export class WorkOrder implements OnInit {
       // let shiftStartDay = moment(now).subtract(i, 'days');
       let thisShift = new Shift('SITENAME', null, 'AM', shift_day, 8);
       thisShift.getScheduleStartDate();
-      this.shifts.unshift(thisShift);
+      this.shifts.push(thisShift);
       Log.l(`Now adding day ${i}: ${moment(shift_day).format()}`);
     }
 
@@ -136,7 +138,7 @@ export class WorkOrder implements OnInit {
       // 'timeStarts': new FormControl(this.startTime.format("HH:00"), Validators.required),
       'selected_shift': new FormControl('', Validators.required),
       'timeEnds': new FormControl(null, Validators.required),
-      'repairHrs': new FormControl(null, Validators.required),
+      'repair_time': new FormControl(null, Validators.required),
       'uNum': new FormControl(null, Validators.required),
       'wONum': new FormControl(null, Validators.required),
       'notes': new FormControl(null, Validators.required),

@@ -36,7 +36,6 @@ import { Status                                                  } from '../prov
 import { NumericModule                                           } from 'ionic2-numericpicker'                 ;
 import { DatePickerModule                                        } from 'datepicker-ionic2'                    ;
 import { StatusProvider                                          } from '../providers/status/status'           ;
-// import { DomainModule                                            } from '../domain/domain.module'              ;
 
 @NgModule({
   declarations   : [ OnSiteApp  ], 

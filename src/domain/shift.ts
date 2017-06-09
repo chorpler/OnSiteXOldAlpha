@@ -50,4 +50,8 @@ export class Shift {
 
     return `${dayStr} (Shift ${shiftNum} in ${shiftWeek}-${endWeek})`;
   }
+
+  public getShift() {
+    
+  }
 }
