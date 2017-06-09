@@ -191,14 +191,11 @@ export class HomePage implements OnInit {
     }
   }
 
-  navToSettings() {
-    this.navCtrl.setRoot("Settings");
-  }
+  navToSettings() { this.navCtrl.setRoot("Settings"); }
 
-  terminateApp() {
-    // alert.
-    this.platform.exitApp();
-  }
+  terminateApp() { this.platform.exitApp(); }
+
+  navToSummary() { this.navCtrl.setRoot('Summary'); }
 
   tryStartingBackgroundGeolocation() {
     return new Promise((resolve,reject) => {

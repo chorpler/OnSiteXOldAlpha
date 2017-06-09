@@ -23,13 +23,13 @@ export class EditReport implements OnInit {
 
 
   constructor(public navCtrl          : NavController,
-						  public navParams        : NavParams,
-						  private dbSrvcs         : DBSrvcs,
-						  private srvr            : SrvrSrvcs,
-						  private timeSrvc        : TimeSrvc,
-						  public reportBuilder    : ReportBuildSrvc,
-						  public loadingCtrl      : LoadingController,
-						  private alertCtrl       : AlertController)  { window['editreport'] = this; }
+              public navParams        : NavParams,
+              private dbSrvcs         : DBSrvcs,
+              private srvr            : SrvrSrvcs,
+              private timeSrvc        : TimeSrvc,
+              public reportBuilder    : ReportBuildSrvc,
+              public loadingCtrl      : LoadingController,
+              private alertCtrl       : AlertController)  { window['editreport'] = this; }
 
   ngOnInit() {
     if (this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
@@ -46,7 +46,7 @@ export class EditReport implements OnInit {
   ionViewDidLoad() { console.log('ionViewDidLoad EditReportPage'); }
 
   goBack() {
-  	Log.l("Home button tapped.");
+    Log.l("Home button tapped.");
     this.navCtrl.setRoot('OnSiteHome');
   }
 
@@ -82,76 +82,72 @@ export class EditReport implements OnInit {
   }
 
   showConfirm(title: string, text: string) {
-  	return new Promise((resolve,reject) => {
-  		let alert = this.alertCtrl.create({
-	  		title: title,
-	  		message: text,
-	  		buttons: [
-	  			{text: 'Cancel', handler: () => {Log.l("Cancel clicked."); resolve(false);}},
-	  			{text: 'OK', handler: () => {Log.l("OK clicked."); resolve(true);}}
-	  		]
-	  	});
-	  	alert.present();
-	  });
+    return new Promise((resolve,reject) => {
+      let alert = this.alertCtrl.create({
+        title: title,
+        message: text,
+        buttons: [
+          {text: 'Cancel', handler: () => {Log.l("Cancel clicked."); resolve(false);}},
+          {text: 'OK'    , handler: () => {Log.l("OK clicked."    ); resolve(true );}}
+        ]
+      });
+      alert.present();
+    });
   }
 
   updateWorkOrder() {
-  	const WO = this.workOrderForm.getRawValue();
-  	Log.l("updateWorkOrder(): Form is:\n",WO);
-  	this.workOrder.timeStarts = WO.timeStarts ;
-  	this.workOrder.timeEnds   = WO.timeEnds   ;
-  	this.workOrder.repairHrs  = WO.repairHrs  ;
-  	this.workOrder.uNum       = WO.uNum       ;
-  	this.workOrder.wONum      = WO.wONum      ;
-  	this.workOrder.notes      = WO.notes      ;
-  	this.workOrder.rprtDate   = WO.rprtDate   ;
-  	this.workOrder.timeStamp  = WO.timeStamp  ;
-  	Log.l("updateWorkOrder(): About to call calcEndTime()");
+    const WO = this.workOrderForm.getRawValue();
+    Log.l("updateWorkOrder(): Form is:\n",WO);
+    this.workOrder.timeStarts = WO.timeStarts ;
+    this.workOrder.timeEnds   = WO.timeEnds   ;
+    this.workOrder.repairHrs  = WO.repairHrs  ;
+    this.workOrder.uNum       = WO.uNum       ;
+    this.workOrder.wONum      = WO.wONum      ;
+    this.workOrder.notes      = WO.notes      ;
+    this.workOrder.rprtDate   = WO.rprtDate   ;
+    this.workOrder.timeStamp  = WO.timeStamp  ;
+    Log.l("updateWorkOrder(): About to call calcEndTime()");
 
-  	this.timeSrvc.calcEndTime(this.workOrder);
-  	Log.l("updateWorkOrder(): Updated Work Order is:\n", this.workOrder);
+    this.timeSrvc.calcEndTime(this.workOrder);
+    Log.l("updateWorkOrder(): Updated Work Order is:\n", this.workOrder);
   }
 
   deleteWorkOrder() {
-  	Log.l("deleteWorkOrder() clicked ...");
-  	this.showConfirm('CONFIRM', 'Delete this work order?').then((res) => {
-  		Log.l("deleteWorkOrder(): Success:\n", res);
-  		if(res) {
-  			Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
-		  	this.srvr.deleteDoc(this.workOrder).then((res) => {
-		  		Log.l("deleteWorkOrder(): Success:\n", res);
-		  		setTimeout(() => {this.navCtrl.setRoot('OnSiteHome')});
-		  	}).catch((err) => {
-		  		Log.l("deleteWorkOrder(): Error!");
-		  		Log.e(err);
-		  	});
-  		} else {
-  			Log.l("User canceled deletion.");
-  		}
-  	}).catch((err) => {
-  		Log.l("deleteWorkOrder(): Error!");
-  		Log.e(err);
-  	});
+    Log.l("deleteWorkOrder() clicked ...");
+    this.showConfirm('CONFIRM', 'Delete this work order?').then((res) => {
+      Log.l("deleteWorkOrder(): Success:\n", res);
+      if(res) {
+        Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
+        this.srvr.deleteDoc(this.workOrder).then((res) => {
+          Log.l("deleteWorkOrder(): Success:\n", res);
+          setTimeout(() => {this.navCtrl.setRoot('OnSiteHome')});
+        }).catch((err) => {
+          Log.l("deleteWorkOrder(): Error!");
+          Log.e(err);
+        });
+      } else {
+        Log.l("User canceled deletion.");
+      }
+    }).catch((err) => {
+      Log.l("deleteWorkOrder(): Error!");
+      Log.e(err);
+    });
   }
 
   onSubmit() {
-  	this.updateWorkOrder();
-  	Log.l("Edited Report submitting...\n", this.workOrder);
-  	this.showSpinner("Saving...");
-  	this.srvr.updateDoc(this.workOrder).then((res) => {
-			// this.srvr.
-		// }).then((res) => {
-		// }).then((res) => {
-		// }).then((res) => {
-  		Log.l("Successfully submitted updated report.");
-  		this.hideSpinner();
-  		setTimeout(() => {this.navCtrl.setRoot('OnSiteHome');});
-  	}).catch((err) => {
-  		Log.l("Error saving updated report.");
-  		this.hideSpinner();
-  		/* Display error */
-  		Log.e(err);
-  	});
+    this.updateWorkOrder();
+    Log.l("Edited Report submitting...\n", this.workOrder);
+    this.showSpinner("Saving...");
+    this.srvr.updateDoc(this.workOrder).then((res) => {
+      Log.l("Successfully submitted updated report.");
+      this.hideSpinner();
+      setTimeout(() => {this.navCtrl.setRoot('OnSiteHome');});
+    }).catch((err) => {
+      Log.l("Error saving updated report.");
+      this.hideSpinner();
+      /* Display error */
+      Log.e(err);
+    });
   }
 
 }

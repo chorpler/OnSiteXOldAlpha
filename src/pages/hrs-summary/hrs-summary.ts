@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { Component                } from '@angular/core';
+import { IonicPage, NavController } from 'ionic-angular';
+import { NavParams, Platform      } from 'ionic-angular';
 
 
 @IonicPage({name: 'Summary'})
@@ -10,10 +11,12 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 export class HrsSummaryPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) { }
+  constructor(public navCtrl: NavController, public navParams: NavParams, public platform: Platform) { }
 
   ionViewDidLoad() { console.log('ionViewDidLoad HrsSummaryPage'); }
 
-  goHome() {this.navCtrl.setRoot('OnSiteHome')}
+  goHome() {this.navCtrl.setRoot('OnSiteHome');}
+
+  terminateApp() { this.platform.exitApp(); }
 
 }

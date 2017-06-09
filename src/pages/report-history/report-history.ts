@@ -3,24 +3,27 @@ import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-an
 import { DBSrvcs                                                } from '../../providers/db-srvcs'      ;
 import { AuthSrvcs                                              } from '../../providers/auth-srvcs'    ;
 import { SrvrSrvcs                                              } from '../../providers/srvr-srvcs'    ;
-import { AlertService                                         } from '../../providers/alerts'        ;
+import { AlertService                                           } from '../../providers/alerts'        ;
 import { Log, CONSOLE                                           } from '../../config/config.functions' ;
 
 
-@IonicPage({ name    : 'Report History'                                               })
+@IonicPage({ name    : 'Report History'                                          })
 @Component({ selector: 'page-report-history', templateUrl: 'report-history.html' })
 
 
 export class ReportHistory implements OnInit {
   public title: string = 'Reports';
 
-  public pageReady    : boolean = false;
-  public selectedItem : any                                  ;
-  public items        : Array<{title: string, note: string}> = new Array<{title:string, note:string}>();
-  public data         : any = []                             ;
-  public loading      : any                                  ;
+  public pageReady    : boolean                              = false                                    ;
+  public selectedItem : any                                                                             ;
+  public items        : Array<{title: string, note: string}> = new Array<{title:string, note:string}>() ;
+  public data         : any                                  = []                                       ;
+  public loading      : any                                                                             ;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public dbSrvcs: DBSrvcs, public srvr: SrvrSrvcs, private auth: AuthSrvcs, public loadingCtrl: LoadingController, public alert: AlertService) {
+  constructor( public navCtrl : NavController , public navParams  : NavParams         ,
+               public dbSrvcs : DBSrvcs       , public alert      : AlertService      ,
+               private auth   : AuthSrvcs     , public loadingCtrl: LoadingController ,
+               public srvr    : SrvrSrvcs ) {
     window["reporthistory"] = this;
   }
 
@@ -80,7 +83,6 @@ export class ReportHistory implements OnInit {
         this.srvr.deleteDoc(item).then((res) => {
           Log.l("deleteWorkOrder(): Success:\n", res);
           this.items.splice(i, 1);
-          // setTimeout(() => {this.navCtrl.setRoot('OnSiteHome')});
         }).catch((err) => {
           Log.l("deleteWorkOrder(): Error!");
           Log.e(err);
