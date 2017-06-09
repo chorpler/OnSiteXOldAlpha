@@ -37,7 +37,7 @@ export class TechSettingsPage implements OnInit {
   shift             : string                        ;
   shiftLength       : string                        ;
   shiftStartTime    : string                        ;
-  title             : string    = 'Report Settings' ;
+  title             : string    = 'Tech Settings' ;
   reportHeader      : REPORTHEADER                  ;
   rprtDate          : Date                          ;
   techProfileURL    : string = "_local/techProfile" ;

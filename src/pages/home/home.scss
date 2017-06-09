@@ -1,40 +1,40 @@
 page-home {
-	.logged-in {
-		margin-top: 50px;
-	}
-	.header-exists {
-		margin-top: 50px;
-	}
-	.logout-button {
-		// margin-top: 100px;
-	}
+  .logged-in {
+    margin-top: 50px;
+  }
+  .header-exists {
+    margin-top: 50px;
+  }
+  .logout-button {
+    // margin-top: 100px;
+  }
 
-	ion-title {
-		color: red !important;
-	}
+  ion-title {
+    color: red !important;
+  }
 
-	.startButtons {
-		color: red;
-		display: none !important;
-	}
-	.startSingleButton {
-		color: red;
-	}
-	.startSingleIcon {
-		color: red;
-	}
-	.endButtons {
-		color: red;
-	}
-	.endSingleButton {
-		color: red;
-	}
-	.endSingleIcon {
-		color: red;
-	}
+  .startButtons {
+    color: red;
+    display: none !important;
+  }
+  .startSingleButton {
+    color: red;
+  }
+  .startSingleIcon {
+    color: red;
+  }
+  .endButtons {
+    color: red;
+  }
+  .endSingleButton {
+    color: red;
+  }
+  .endSingleIcon {
+    color: red;
+  }
 
-	.bar-button-md ion-icon {
-		color: white !important;
-		background: transparent !important;
-	}
+  .bar-button-md ion-icon {
+    color: white !important;
+    background: transparent !important;
+  }
 }
