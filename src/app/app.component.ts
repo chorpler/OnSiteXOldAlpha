@@ -45,6 +45,7 @@ export class OnSiteApp {
     public auth             : AuthSrvcs            )
   {
     window['appcomp'] = this;
+    window['moment'] = moment;
 
     this.initializeApp();
     // this.nav          = navCtrl;

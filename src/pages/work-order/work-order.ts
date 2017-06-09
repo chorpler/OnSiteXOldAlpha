@@ -1,16 +1,19 @@
-import { Component, OnInit, ViewChild                           } from '@angular/core'                     ;
-import { FormGroup, FormControl, Validators                     } from "@angular/forms"                    ;
-import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular'                     ;
-import { NumericModule                                          } from 'ionic2-numberpicker'               ;
-import * as moment                                                from 'moment'                            ;
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormGroup, FormControl, Validators } from "@angular/forms";
+import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
+import { NumericModule } from 'ionic2-numberpicker';
+import * as moment from 'moment';
 import 'rxjs/add/operator/debounceTime';
-import { DBSrvcs                                                } from '../../providers/db-srvcs'          ;
-import { AuthSrvcs                                              } from '../../providers/auth-srvcs'        ;
-import { TimeSrvc                                               } from '../../providers/time-parse-srvc'   ;
-import { ReportBuildSrvc                                        } from '../../providers/report-build-srvc' ;
-import { AlertService                                           } from '../../providers/alerts'            ;
-import { Log                                                    } from '../../config/config.functions'     ;
-import { Shift                                                  } from '../../domain/shift'                ;
+import { DBSrvcs } from '../../providers/db-srvcs';
+import { AuthSrvcs } from '../../providers/auth-srvcs';
+import { TimeSrvc } from '../../providers/time-parse-srvc';
+import { ReportBuildSrvc } from '../../providers/report-build-srvc';
+import { AlertService } from '../../providers/alerts';
+import { Log } from '../../config/config.functions';
+import { Shift } from '../../domain/shift';
+import { Status } from '../../providers/status';
+import { DatePickerDirective } from 'datepicker-ionic2';
+
 
 @IonicPage({ name: 'Work Order Form' })
 @Component({
@@ -21,40 +24,44 @@ import { Shift                                                  } from '../../do
 export class WorkOrder implements OnInit {
   // @ViewChild('reportDate') reportDateField;
   // @ViewChild('startTime') startTimeField;
+  @ViewChild(DatePickerDirective) private datepickerDirective: DatePickerDirective;
 
-  title        : string   = 'Work Report'             ;
-  setDate      : Date     = new Date()                ;
-  year         : number   = this.setDate.getFullYear();
-  mode         : string   = 'New'                     ;
+  title: string = 'Work Report';
+  setDate: Date = new Date();
+  year: number = this.setDate.getFullYear();
+  mode: string = 'New';
   workOrderForm: FormGroup;
-  workOrder    : any      ;
-  repairHrs    : any      ;
-  profile      : any = { };
-  tmpReportData: any      ;
-  docID        : string   ;
-  idDate       : string   ;
-  idTime       : string   ;
-  shifts       : Array<Shift>;
+  workOrder: any;
+  repairHrs: any;
+  profile: any = {};
+  tmpReportData: any;
+  docID: string;
+  idDate: string;
+  idTime: string;
+  shifts: Array<Shift>;
   selectedShift: Shift;
-  currentDay   : any;
-  shiftsStart  : any;
+  currentDay: any;
+  shiftsStart: any;
+  shifter: any;
 
-  rprtDate    : any      = moment()     ;
-  timeStarts  : any      = moment()     ;
-  reportDate  : any      = moment()     ;
-  startTime   : any      = moment()     ;
-  timeEnds    : any;
-  syncError   : boolean  = false        ;
-  db          : any      = {}           ;
-  loading     : any      = {}           ;
-  _startDate  : any;
-  _startTime  : any;
-  _endTime    : any;
+  rprtDate: any = moment();
+  timeStarts: any = moment();
+  reportDate: any = moment();
+  startTime: any = moment();
+  timeEnds: any;
+  syncError: boolean = false;
+  db: any = {};
+  loading: any = {};
+  _startDate: any;
+  _startTime: any;
+  _endTime: any;
   _repairHours: any;
+  public dataReady: boolean = false;
   // , private dbSrvcs: DBSrvcs
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private dbSrvcs: DBSrvcs, private timeSrvc: TimeSrvc, public reportBuilder:ReportBuildSrvc, public loadingCtrl: LoadingController, public alert: AlertService) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private dbSrvcs: DBSrvcs, private timeSrvc: TimeSrvc, public reportBuilder: ReportBuildSrvc, public loadingCtrl: LoadingController, public alert: AlertService) {
     this.db = this.dbSrvcs;
+    this.shifter = Shift;
     window["workorder"] = this;
   }
 
@@ -67,15 +74,19 @@ export class WorkOrder implements OnInit {
     console.log(this.year);
     console.log(this.rprtDate);
 
+    this.shifts = [];
+    this.setupShifts();
     this.initializeForm();
-    this._startDate   = this.workOrderForm.controls.rprtDate;
-    this._startTime   = this.workOrderForm.controls.timeStarts;
-    this._endTime     = this.workOrderForm.controls.endTime;
+    this._startDate = this.workOrderForm.controls.rprtDate;
+    this._startTime = this.workOrderForm.controls.timeStarts;
+    this._endTime = this.workOrderForm.controls.endTime;
     this._repairHours = this.workOrderForm.controls.repairHours;
     // this._startDate = this.workOrder.controls['rprtDate'];
-    this.workOrderForm.valueChanges.debounceTime(500).subscribe((value:any) => {
+    this.workOrderForm.valueChanges.debounceTime(500).subscribe((value: any) => {
       Log.l("workOrderForm: valueChanges fired for:\n", value);
     });
+
+    this.dataReady = true;
 
 
     // this._startDate.valueChanges.subscribe((value: any) => {
@@ -103,23 +114,34 @@ export class WorkOrder implements OnInit {
   setupShifts() {
     let endDay = 2;
     let now = moment();
-    for(let i = 0; i < 7; i++) {
-      let shiftStartDay = moment(now).subtract(i, 'days');
-      let thisShift = new Shift()
+    for (let i = 0; i < 7; i++) {
+      // if(moment(now).day() == 3) {
+      //   /* Today is Wednesday, so the shift start day will be today */
+
+      // } else {
+
+      // }
+      let shift_day = moment(now).subtract(i, 'days');
+      // let shiftStartDay = moment(now).subtract(i, 'days');
+      let thisShift = new Shift('SITENAME', null, 'AM', shift_day, 8);
+      thisShift.getScheduleStartDate();
+      this.shifts.unshift(thisShift);
+      Log.l(`Now adding day ${i}: ${moment(shift_day).format()}`);
     }
 
   }
 
   private initializeForm() {
     this.workOrderForm = new FormGroup({
-      'timeStarts': new FormControl(this.startTime.format("HH:00"), Validators.required),
-      'timeEnds'  : new FormControl(null, Validators.required),
-      'repairHrs' : new FormControl(null, Validators.required),
-      'uNum'      : new FormControl(null, Validators.required),
-      'wONum'     : new FormControl(null, Validators.required),
-      'notes'     : new FormControl(null, Validators.required),
-      'rprtDate'  : new FormControl(this.reportDate.format("YYYY-MM-DD"), Validators.required),
-      'timeStamp' : new FormControl({ value: Date(), disabled: true}, Validators.required)
+      // 'timeStarts': new FormControl(this.startTime.format("HH:00"), Validators.required),
+      'selected_shift': new FormControl('', Validators.required),
+      'timeEnds': new FormControl(null, Validators.required),
+      'repairHrs': new FormControl(null, Validators.required),
+      'uNum': new FormControl(null, Validators.required),
+      'wONum': new FormControl(null, Validators.required),
+      'notes': new FormControl(null, Validators.required),
+      'rprtDate': new FormControl(this.reportDate.format("YYYY-MM-DD"), Validators.required),
+      'timeStamp': new FormControl({ value: Date(), disabled: true }, Validators.required)
     });
   }
 
@@ -129,15 +151,15 @@ export class WorkOrder implements OnInit {
     this.processWO();
   }
 
-/**
- * Calcualtes workOrderData.timeEnds given workOrderData.timeStarts
- * and workOrderData.repairHrs
- *
- * @private
- * @param {any} workOrderData
- *
- * @memberOf WorkOrder
- */
+  /**
+   * Calcualtes workOrderData.timeEnds given workOrderData.timeStarts
+   * and workOrderData.repairHrs
+   *
+   * @private
+   * @param {any} workOrderData
+   *
+   * @memberOf WorkOrder
+   */
   public calcEndTime(workOrderData) {
     Log.l("Calculating end time for:\n", workOrderData);
     // const _Xdec = /(00|15|30|45)(?!\:\d{2})/;
@@ -221,37 +243,37 @@ export class WorkOrder implements OnInit {
 
     this.alert.showSpinner("Saving...");
 
-    return new Promise((resolve,reject) => {
-      this.dbSrvcs.checkLocalDoc( '_local/techProfile').then((docExists) => {
-        if(docExists) {
+    return new Promise((resolve, reject) => {
+      this.dbSrvcs.checkLocalDoc('_local/techProfile').then((docExists) => {
+        if (docExists) {
           console.log("processWO(): docExists is true");
           this.dbSrvcs.getDoc('_local/techProfile').then(res => {
             this.profile = res;
-            if(typeof this.profile.avatarName == 'undefined') {
+            if (typeof this.profile.avatarName == 'undefined') {
               this.profile.avatarName = 'PaleRider';
             }
             delete this.profile._id;
             delete this.profile._rev;
             this.genReportID();
-            if( typeof this.profile.updated == 'undefined') {
+            if (typeof this.profile.updated == 'undefined') {
               /* This shouldn't happen as long as the user is logged in and the profile was created */
               Log.l("processWO(): Tech profile does not exist at all. This should not happen.");
-              setTimeout(() => { this.navCtrl.setRoot('Report Settings');});
+              setTimeout(() => { this.navCtrl.setRoot('Tech Settings'); });
               // resolve(false);
               resolve(-1);
-            } else if(typeof this.profile.updated != 'undefined' && this.profile.updated === false ) {
+            } else if (typeof this.profile.updated != 'undefined' && this.profile.updated === false) {
               /* Update flag exists but is false, so tech needs to verify settings */
               Log.l("processWO(): Update flag exists in profile, but is false. Need tech to OK settings changes.");
               this.tmpReportData = workOrderData;
               this.tmpReportData._id = '_local/tmpReport';
               this.tmpReportData.docID = this.docID;
               // this.tmpReportData._rev = ;
-              Log.l("processWO(): tmpReportData is: ", this.tmpReportData );
-              this.dbSrvcs.addLocalDoc( this.tmpReportData ).then((res) => {
+              Log.l("processWO(): tmpReportData is: ", this.tmpReportData);
+              this.dbSrvcs.addLocalDoc(this.tmpReportData).then((res) => {
                 Log.l("processWO(): Created temporary work report. Now going to Settings page to OK changes.");
                 Log.l(res);
                 this.alert.hideSpinner();
-                setTimeout(() => { this.navCtrl.setRoot('Report Settings');});
+                setTimeout(() => { this.navCtrl.setRoot('Tech Settings'); });
                 // resolve(res);
                 resolve(-2);
               }).catch((err) => {
@@ -263,7 +285,7 @@ export class WorkOrder implements OnInit {
 
               /* Notify user and go to Settings page */
               this.alert.hideSpinner();
-              setTimeout(() => { this.navCtrl.setRoot('Report Settings');});
+              setTimeout(() => { this.navCtrl.setRoot('Tech Settings'); });
               resolve(-4);
             } else {
               /* Update flag is true, good to submit work order */
@@ -274,9 +296,9 @@ export class WorkOrder implements OnInit {
               this.tmpReportData.docID = this.docID;
               // this.tmpReportData._rev = '0-1';
               console.log("processWO(): Update flag set, tmpReportData is:");
-              console.log( this.tmpReportData );
+              console.log(this.tmpReportData);
 
-              this.dbSrvcs.addLocalDoc( this.tmpReportData ).then((res) => {
+              this.dbSrvcs.addLocalDoc(this.tmpReportData).then((res) => {
                 console.log("processWO(): About to generate work order");
                 return this.reportBuilder.getLocalDocs();
               }).then((final) => {
@@ -286,7 +308,7 @@ export class WorkOrder implements OnInit {
                 Log.l("processWO(): Successfully synchronized work order to CouchDB server!");
                 Log.l(final2);
                 this.alert.hideSpinner();
-                setTimeout(() => {this.navCtrl.setRoot('OnSiteHome');});
+                setTimeout(() => { this.navCtrl.setRoot('OnSiteHome'); });
                 // resolve(final2);
                 resolve(-5);
               }).catch((err) => {
@@ -302,7 +324,7 @@ export class WorkOrder implements OnInit {
             Log.w(anotherError);
             this.alert.hideSpinner();
             // resolve(false);
-            setTimeout(() => { this.navCtrl.setRoot("Report Settings");});
+            setTimeout(() => { this.navCtrl.setRoot('Tech Settings'); });
             resolve(-7);
           })
         } else {
@@ -317,5 +339,5 @@ export class WorkOrder implements OnInit {
         resolve(-9);
       });
     });
-   }
- }
+  }
+}

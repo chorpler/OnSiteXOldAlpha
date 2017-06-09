@@ -9,6 +9,7 @@ import { WorkOrder } from './work-order';
   ],
   imports: [
     IonicPageModule.forChild(WorkOrder),
+    // NumericModule
   ],
   exports: [
     WorkOrder

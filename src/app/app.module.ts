@@ -29,10 +29,13 @@ import { Network                                                 } from '@ionic-
 import { Push, PushObject, PushOptions                           } from '@ionic-native/push'                   ;
 import { LocalNotifications                                      } from '@ionic-native/local-notifications'    ;
 import { UniqueDeviceID                                          } from '@ionic-native/unique-device-id'       ;
-import { Log, CONSOLE                                            } from '../config/config.functions'           ;
-import { AlertService                                          } from '../providers/alerts'                  ;
+import { Log                                                     } from '../config/config.functions'           ;
+import { AlertService                                            } from '../providers/alerts'                  ;
 import { GeolocService                                           } from '../providers/geoloc-service'          ;
+import { Status                                                  } from '../providers/status'                  ;
 import { NumericModule                                           } from 'ionic2-numericpicker'                 ;
+import { DatePickerModule                                        } from 'datepicker-ionic2'                    ;
+import { StatusProvider                                          } from '../providers/status/status'           ;
 // import { DomainModule                                            } from '../domain/domain.module'              ;
 
 @NgModule({
@@ -51,7 +54,8 @@ import { NumericModule                                           } from 'ionic2-
                       }),
                       IonicModule.forRoot(OnSiteApp),
                       // DomainModule.forRoot(OnSiteApp),
-                      NumericModule
+                      NumericModule,
+                      DatePickerModule
                    ],
 
   providers      : [
@@ -77,7 +81,8 @@ import { NumericModule                                           } from 'ionic2-
                       Network,
                       Push,
                       LocalNotifications,
-                      GeolocService           
+                      GeolocService,
+                      Status
                    ]
 })
 
