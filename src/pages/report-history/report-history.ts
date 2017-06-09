@@ -45,6 +45,11 @@ export class ReportHistory implements OnInit {
     });
   }
 
+    goBack() {
+    Log.l("Home button tapped.");
+    this.navCtrl.setRoot('OnSiteHome');
+  }
+
   showSpinner(text: string) {
     this.loading = this.loadingCtrl.create({
       content: `<ion-spinner name="bubbles">${text}</ion-spinner>`,

@@ -6,9 +6,9 @@
     <ion-title>
       {{title}}
     </ion-title>
-    <ion-buttons end>
-      <button ion-button icon-only color="dark">
-        <ion-icon name="close" (click)="terminateApp()"></ion-icon>
+    <ion-buttons right>
+      <button ion-button color="light" icon-only (click)="terminateApp()">
+        <ion-icon name="close" ></ion-icon>
       </button>
     </ion-buttons>
   </ion-navbar>
@@ -19,7 +19,7 @@
   <button ion-button block color="secondary" *ngIf="userLoggedIn" (click)="onSettings()"> Tech Report Settings </button>
   <button ion-button block color="secondary" *ngIf="userLoggedIn" (click)="onNewWorkOrder()"> New WorkOrder </button>
   <button ion-button block color="secondary" *ngIf="userLoggedIn" (click)="getReportHistory()"> Report History </button>
-  <button ion-button block color="secondary" class="logout-button" *ngIf="userLoggedIn" (click)="logoutOfApp()"> Logout </button>
+  <button ion-button block color="secondary" class="logout-button"> Weekly Hours Summary </button>
 </ion-content>
 
 <ion-footer>
@@ -29,10 +29,10 @@
         <ion-icon name="settings"></ion-icon>
       </button>
     </ion-buttons>
-      <ion-buttons class="endButtons" end *ngIf="userLoggedIn && userIsDeveloper">
-        <button class="endSingleButton" ion-button icon-only (click)="openDevSettings()">
+    <ion-buttons class="endButtons" end *ngIf="userLoggedIn && userIsDeveloper">
+      <button class="endSingleButton" ion-button icon-only (click)="openDevSettings()">
         <ion-icon name="options"></ion-icon>
       </button>
-      </ion-buttons>
+    </ion-buttons>
   </ion-toolbar>
 </ion-footer>

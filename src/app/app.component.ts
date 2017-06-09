@@ -20,9 +20,7 @@ import                                       * as pdbSeamlessAuth from 'pouchdb-
 import                                       * as moment          from 'moment'                            ;
 
 
-@Component({
-  templateUrl: 'app.html'
-})
+@Component({ templateUrl: 'app.html' })
 
 export class OnSiteApp {
   @ViewChild(Nav) nav: Nav;
@@ -90,6 +88,11 @@ export class OnSiteApp {
         // });
       });
     });
+  }
+
+    terminateApp() {
+    // alert.
+    this.platform.exitApp();
   }
 
   private setRoot(newRootPage: any){

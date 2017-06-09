@@ -46,10 +46,8 @@ export class EditReport implements OnInit {
   ionViewDidLoad() { console.log('ionViewDidLoad EditReportPage'); }
 
   goBack() {
-  	Log.l("Back button tapped.");
-  	if(this.navCtrl.canGoBack()) {
-  		this.navCtrl.pop();
-  	}
+  	Log.l("Home button tapped.");
+    this.navCtrl.setRoot('OnSiteHome');
   }
 
   initializeForm() {

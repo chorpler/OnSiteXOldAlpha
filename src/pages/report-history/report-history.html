@@ -1,38 +1,40 @@
 <ion-header>
 
   <ion-navbar>
+    <ion-buttons start>
+      <button ion-button icon-only (click)="goBack()">
+          <ion-icon name="home"></ion-icon>
+        </button>
+    </ion-buttons>
     <ion-title> {{title}} </ion-title>
   </ion-navbar>
-<!--   <ion-toolbar class="frozenToolbar">
-    <div class="reportListTitle">{{items.length}} reports</div>
-  </ion-toolbar> -->
 </ion-header>
 
 
 
 <ion-content padding>
   <!-- <ion-scroll class="scrollList" scrollY="true"> -->
-    <ion-list>
-      <ion-item>
-        <div item-start>Date</div>
-        <div class="center">{{items.length}} reports</div>
-        <div item-end>Unit #</div>
-      </ion-item>
-    </ion-list>
-    <ion-list class="reportList" *ngIf="pageReady">
+  <ion-list>
+    <ion-item>
+      <div item-start>Date</div>
+      <div class="center">{{items.length}} reports</div>
+      <div item-end>Unit #</div>
+    </ion-item>
+  </ion-list>
+  <ion-list class="reportList" *ngIf="pageReady">
     <!-- <ion-item block *ngIf="items && !items.length">No Work Orders Found</ion-item> -->
-      <ion-item-sliding *ngFor="let item of items">
-        <ion-item  (click)="itemTapped($event, item)">
-          <ion-icon name="create" item-left></ion-icon>{{item.rprtDate}}
-          <div class="item-note" item-right>{{item.uNum}}</div>
-        </ion-item>
-        <ion-item-options side="right">
-          <button ion-button color="danger" (click)="deleteWorkOrder($event, item)">
+    <ion-item-sliding *ngFor="let item of items">
+      <ion-item (click)="itemTapped($event, item)">
+        <ion-icon name="create" item-left></ion-icon>{{item.rprtDate}}
+        <div class="item-note" item-right>{{item.uNum}}</div>
+      </ion-item>
+      <ion-item-options side="right">
+        <button ion-button color="danger" (click)="deleteWorkOrder($event, item)">
             <ion-icon name="trash"></ion-icon>
             Delete
           </button>
-        </ion-item-options>
-      </ion-item-sliding>
-    </ion-list>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
   <!-- </ion-scroll> -->
 </ion-content>
