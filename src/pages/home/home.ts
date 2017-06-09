@@ -4,6 +4,7 @@ import { AuthSrvcs                                           } from '../../provi
 import { SrvrSrvcs                                           } from '../../providers/srvr-srvcs'         ;
 import { DbBulkuploadSrvc                                    } from '../../providers/db-bulkupload-srvc' ;
 import { GeolocService                                       } from '../../providers/geoloc-service'     ;
+import { AlertService                                        } from '../../providers/alerts'             ;
 import   * as PouchDB                                          from 'pouchdb'                            ;
 import { Log, CONSOLE                                        } from '../../config/config.functions'      ;
 import { reportDocs                                          } from '../../test/test.reports'            ;
@@ -12,7 +13,6 @@ import { Settings                                            } from '../settings
 import { WorkOrder                                           } from '../work-order/work-order'           ;
 import { ReportHistory                                       } from '../report-history/report-history'   ;
 import { DeveloperPage                                       } from '../developer/developer'             ;
-import { AlertService                                        } from '../developer/developer'             ;
 
 @IonicPage({name: 'OnSiteHome'})
 
@@ -184,7 +184,7 @@ export class HomePage implements OnInit {
   }
 
   terminateApp() {
-    
+    // alert.
     this.platform.exitApp();
   }
 
