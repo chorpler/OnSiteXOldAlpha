@@ -11,7 +11,7 @@ import { Log, CONSOLE                                        } from '../../confi
 import { reportDocs                                          } from '../../test/test.reports'            ;
 import { Login                                               } from '../login/login'                     ;
 import { Settings                                            } from '../settings/settings'               ;
-import { WorkOrder                                           } from '../work-order/work-order'           ;
+import { WorkOrderPage                                       } from '../work-order/work-order'           ;
 import { ReportHistory                                       } from '../report-history/report-history'   ;
 import { DeveloperPage                                       } from '../developer/developer'             ;
 
