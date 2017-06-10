@@ -29,7 +29,7 @@ export class TechSettingsPage implements OnInit {
   techSettings      : FormGroup                     ;
   firstName         : string                        ;
   lastName          : string                        ;
-  technician        : string    = 'Doe, John'       ;
+  technician        : string                        ;
   client            : string                        ;
   location          : string                        ;
   locID             : string                        ;
@@ -100,16 +100,15 @@ export class TechSettingsPage implements OnInit {
     this.reportMeta = this.techSettings.value;
     this.reportMeta.technician = this.reportMeta.lastName + ', ' + this.reportMeta.firstName;
     this.reportMeta.updated = true;
+
     console.log("onSubmit(): Now attempting to save tech profile:");
-    console.log(this.reportMeta);
+
     this.db.saveTechProfile(this.reportMeta).then((res) => {
+
       console.log("onSubmit(): Saved techProfile successfully.");
-      if(this.reportWaiting) {
-        this.reportWaiting = false;
-        /* create and submit report here */
-      } else {
-        this.navCtrl.setRoot('OnSiteHome');
-      }
+
+      this.navCtrl.setRoot('TabsPage');
+
     }).catch((err) => {
       console.log("onSubmit(): Error saving techProfile!");
       console.error(err);

@@ -70,7 +70,7 @@ export class OnSiteApp {
         window[ 't1'     ] = CONSOLE.t1;
         window[ 'c1'     ] = CONSOLE.c1;
 
-        this.nav.setRoot('TabsPage');
+        this.nav.setRoot('Tech Settings');
 
       });
   }
