@@ -48,6 +48,7 @@ export class Shift {
     // let thisDay = this.start_time.day();
     // let thisDay = moment(this.start_time).day() - shiftWeekDay;
 
+    // return `${dayStr} (Shift ${shiftNum} in ${shiftWeek}-${endWeek})`;
     return `${dayStr} (Shift ${shiftNum} in ${shiftWeek}-${endWeek})`;
   }
 

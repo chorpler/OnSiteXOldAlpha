@@ -26,27 +26,8 @@
       </ion-item>
       <ion-item>
         <ion-label>Repair Time</ion-label>
-        <time-duration-picker [inputDisabled]=false returnedValueUnit="second" (onChange)="onNumberChanged($event)" class="row" formControlName="repair_time">
-          <time-duration-picker-unit class="col-md-12" [name]="'second'"></time-duration-picker-unit>
-        </time-duration-picker>
-        <!--<ion-datetime #repairTimer displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="00,30" formControlName="repair_time"></ion-datetime>-->
-        <!--<ion-multi-picker item-content [multiPickerColumns]="chooseHours"></ion-multi-picker>-->
-        <!--<ion-numeric item-content displayFormat="xx:xx" pickerFormat="xx:xx">{{workOrderForm.value.repairTime}}</ion-numeric>-->
-        <!--<input ion-numeric item-content displayFormat="xx:xx" pickerFormat="xx:xx" formControlName="repair_time" />-->
+        <ion-multi-picker item-content [multiPickerColumns]="chooseHours"></ion-multi-picker>
       </ion-item>
-      <!--<ion-item>
-        <ion-label>Start Time</ion-label>
-        <ion-datetime #startTime displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="00,15,30,45" formControlName="timeStarts"></ion-datetime>
-        <ion-datetime #startTime displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="00,15,30,45"></ion-datetime>
-      </ion-item>-->
-      <!--<ion-item>
-        <ion-label>Job Hours</ion-label>
-        <ion-datetime #repairHrs displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="00,15,30,45" formControlName="repairHrs"></ion-datetime>
-      </ion-item>-->
-      <!--<ion-item>
-        <ion-label>End Time</ion-label>
-        <ion-datetime #endTime displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="00,15,30,45" formControlName="timeEnds"></ion-datetime>
-      </ion-item>-->
       <ion-item>
         <ion-label floating>UNIT No.</ion-label>
         <ion-input type='text' formControlName='uNum'></ion-input>
@@ -68,8 +49,3 @@
   </form>
 </ion-content>
 
-
-<!--
-   placeholder="{{ setDate | date:'EEE, MMM dd yyyy'}}"
-   placeholder="{{setDate| date:'HH:mm'}}"
--->
