@@ -33,9 +33,8 @@ import { Log                                                     } from '../conf
 import { AlertService                                            } from '../providers/alerts'                  ;
 import { GeolocService                                           } from '../providers/geoloc-service'          ;
 import { Status                                                  } from '../providers/status'                  ;
-import { NumericModule                                           } from 'ionic2-numericpicker'                 ;
-import { DatePickerModule                                        } from 'datepicker-ionic2'                    ;
 import { StatusProvider                                          } from '../providers/status/status'           ;
+import { MultiPickerModule                                       } from 'ion-multi-picker'                     ;
 
 @NgModule({
   declarations   : [
@@ -53,8 +52,9 @@ import { StatusProvider                                          } from '../prov
                         driverOrder: ['localstorage'  ]
                       }),
                       IonicModule.forRoot(OnSiteApp),
-                      NumericModule,
-                      DatePickerModule
+                      MultiPickerModule
+                      // NumericModule,
+                      // DatePickerModule
                                                        ],
 
   providers      : [
