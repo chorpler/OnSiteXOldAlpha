@@ -30,34 +30,23 @@ export class HomePage implements OnInit {
   PDB                         : any     = PouchDB       ;
   backButtonPressedOnceToExit : boolean = false         ;
 
-  constructor(public platform: Platform,         public navCtrl: NavController,
-              public toastCtrl: ToastController, public auth: AuthSrvcs,
-              public srvr     : SrvrSrvcs,       public dbBulk: DbBulkuploadSrvc,
-              public geoloc   : GeolocService,   public zone: NgZone,
-              public alert    :AlertService,     public navParams: NavParams) {
+
+  constructor(public platform: Platform,         public navCtrl  : NavController,
+              public toastCtrl: ToastController, public auth     : AuthSrvcs,
+              public srvr     : SrvrSrvcs,       public dbBulk   : DbBulkuploadSrvc,
+              public geoloc   : GeolocService,   public zone     : NgZone,
+              public alert    : AlertService,    public navParams: NavParams) {
     window['onsitehome'] = this;
   }
 
-  ionViewDidEnter() {
-      if (this.navParams.get('userLoggedIn') !== undefined) { this.userLoggedIn = this.navParams.get('userLoggedIn'); }
-      Log.l("User Logged In Status: " + this.userLoggedIn);
-  }
-
   ngOnInit() {
-    this.platform.ready().then(() => {
-      Log.l("HomePage.ngOnInit(): Platform.ready() fired.");
       this.platform.registerBackButtonAction(() => {
         Log.l("Back button pressed (defined in home.ts).");
-        let nav = {};
         if(typeof this['navCtrl'] != 'undefined') {
-          nav = this.navCtrl;
-          window['nav1'] = nav;
+          window['nav1'] = this.navCtrl;
           if (this.backButtonPressedOnceToExit) {
             Log.l("Leaving app.");
             this.platform.exitApp();
-          } else if(this['navCtrl'].canGoBack()) {
-            Log.l("Now going back via hardware button.");
-            this.navCtrl.pop();
           } else {
             this.showToast("Press back again to exit");
             this.backButtonPressedOnceToExit = true;
@@ -74,15 +63,8 @@ export class HomePage implements OnInit {
       } else {
         this.isDeveloper();
         this.userLoggedIn = true;
-        this.showPage = true;
       }
-    });
   }
-
-  ionViewDidLoad() {
-    Log.l("Home view loaded.");
-  }
-
   showToast(text: string) {
     let toast = this.toastCtrl.create({
       message: text,
@@ -90,14 +72,6 @@ export class HomePage implements OnInit {
     });
     toast.present();
   }
-
-  onNewWorkOrder() {this.navCtrl.setRoot('Work Order Form', {mode: 'New'});}
-
-  onLogin() {this.navCtrl.setRoot('Login');}
-
-  onSettings() {this.navCtrl.setRoot('Tech Settings');}
-
-  openDevSettings() {this.navCtrl.setRoot('Developer Page');}
 
   isFirstItem() {
     if(this.userLoggedIn) {
@@ -145,11 +119,13 @@ export class HomePage implements OnInit {
                 this.userLoggedIn = false;
                 this.userIsDeveloper = false;
                 HomePage.startOfApp = false;
+                this.navCtrl.setRoot('TabsPage');
                 this.showPage = true;
               }).catch((err) => {
                 this.userLoggedIn = false;
                 this.userIsDeveloper = false;
                 HomePage.startOfApp = false;
+                this.navCtrl.setRoot('TabsPage');
                 this.showPage = true;
               });
             });
@@ -158,6 +134,7 @@ export class HomePage implements OnInit {
           Log.l("setupAppData(): Error checking saved credentials.");
           this.userLoggedIn = false;
           this.userIsDeveloper = false;
+          this.navCtrl.setRoot('TabsPage');
           this.showPage = true;
         });
       }
@@ -171,8 +148,6 @@ export class HomePage implements OnInit {
       this.userLoggedIn = false;
     });
   }
-
-  getReportHistory() { this.navCtrl.setRoot('Report History')}
 
   importBulkReports() {
     Log.l("Beginning import...");
@@ -191,12 +166,6 @@ export class HomePage implements OnInit {
     }
   }
 
-  navToSettings() { this.navCtrl.setRoot("Settings"); }
-
-  terminateApp() { this.platform.exitApp(); }
-
-  navToSummary() { this.navCtrl.setRoot('Summary'); }
-
   tryStartingBackgroundGeolocation() {
     return new Promise((resolve,reject) => {
       this.geoloc.startBackgroundGeolocation().then((res) => {
@@ -207,6 +176,7 @@ export class HomePage implements OnInit {
         Log.e(err);
         reject(err);
       });
+      resolve(true);
     });
   }
 }

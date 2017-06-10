@@ -15,24 +15,5 @@
 </ion-header>
 
 <ion-content padding *ngIf="showPage" class="header-exists">
-  <button ion-button block color="secondary" *ngIf="!userLoggedIn" (click)="onLogin()" >         Login                </button>
-  <button ion-button block color="secondary" *ngIf="userLoggedIn"  (click)="onSettings()" >      Tech Report Settings </button>
-  <button ion-button block color="secondary" *ngIf="userLoggedIn"  (click)="onNewWorkOrder()" >  New WorkOrder        </button>
-  <button ion-button block color="secondary" *ngIf="userLoggedIn"  (click)="getReportHistory()"> Report History       </button>
-  <button ion-button block color="secondary" *ngIf="userLoggedIn"  (click)="navToSummary()" >    Weekly Hours Summary </button>
+  <button ion-button block color="secondary" *ngIf="!userLoggedIn" (click)="onLogin()" > Login </button>
 </ion-content>
-
-<ion-footer>
-  <ion-toolbar>
-    <ion-buttons start>
-      <button ion-button icon-only color="dark" (click)="navToSettings()">
-        <ion-icon name="settings"></ion-icon>
-      </button>
-    </ion-buttons>
-    <ion-buttons class="endButtons" end *ngIf="userLoggedIn && userIsDeveloper">
-      <button class="endSingleButton" ion-button icon-only (click)="openDevSettings()">
-        <ion-icon name="options"></ion-icon>
-      </button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-footer>

@@ -38,24 +38,24 @@ import { DatePickerModule                                        } from 'datepic
 import { StatusProvider                                          } from '../providers/status/status'           ;
 
 @NgModule({
-  declarations   : [ OnSiteApp  ], 
+  declarations   : [
+                      OnSiteApp,                     ],
 
-  entryComponents: [ OnSiteApp ], 
+  entryComponents: [  OnSiteApp                      ],
 
-  bootstrap      : [ IonicApp ], 
-  
+  bootstrap      : [  IonicApp                       ],
+
   imports        : [
                       BrowserModule,
                       HttpModule,
                       IonicStorageModule.forRoot({
                         name: '__onsitestorage',
-                        driverOrder: ['localstorage']
+                        driverOrder: ['localstorage'  ]
                       }),
                       IonicModule.forRoot(OnSiteApp),
-                      // DomainModule.forRoot(OnSiteApp),
                       NumericModule,
                       DatePickerModule
-                   ],
+                                                       ],
 
   providers      : [
                       StatusBar,
@@ -65,7 +65,10 @@ import { StatusProvider                                          } from '../prov
                       LoadingController,
                       AlertController,
                       AlertService,
-                      {provide: ErrorHandler, useClass: IonicErrorHandler}   ,
+                      {
+                        provide: ErrorHandler,
+                        useClass: IonicErrorHandler
+                      },
                       ProfileSettings,
                       AuthSrvcs,
                       DBSrvcs,
@@ -82,7 +85,7 @@ import { StatusProvider                                          } from '../prov
                       LocalNotifications,
                       GeolocService,
                       Status
-                   ]
+                                                      ]
 })
 
 export class AppModule {}
