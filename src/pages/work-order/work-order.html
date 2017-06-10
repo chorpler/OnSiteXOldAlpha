@@ -26,7 +26,11 @@
       </ion-item>
       <ion-item>
         <ion-label>Repair Time</ion-label>
-        <ion-datetime #repairTimer displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="00,30" formControlName="repair_time"></ion-datetime>
+        <time-duration-picker [inputDisabled]=false returnedValueUnit="second" (onChange)="onNumberChanged($event)" class="row" formControlName="repair_time">
+          <time-duration-picker-unit class="col-md-12" [name]="'second'"></time-duration-picker-unit>
+        </time-duration-picker>
+        <!--<ion-datetime #repairTimer displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="00,30" formControlName="repair_time"></ion-datetime>-->
+        <!--<ion-multi-picker item-content [multiPickerColumns]="chooseHours"></ion-multi-picker>-->
         <!--<ion-numeric item-content displayFormat="xx:xx" pickerFormat="xx:xx">{{workOrderForm.value.repairTime}}</ion-numeric>-->
         <!--<input ion-numeric item-content displayFormat="xx:xx" pickerFormat="xx:xx" formControlName="repair_time" />-->
       </ion-item>

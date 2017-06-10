@@ -1,6 +1,6 @@
 {
-  "name": "OnSiteXI",
-  "app_id": "com.sesaonsite.onsitex1005",
+  "name": "OnSiteX",
+  "app_id": "com.sesaonsite.onsitex",
   "gulpStartupTasks": [
     "sass",
     "watch"

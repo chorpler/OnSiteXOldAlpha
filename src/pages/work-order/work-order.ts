@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormGroup, FormControl, Validators } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { NumericModule } from 'ionic2-numberpicker';
 import * as moment from 'moment';
@@ -11,9 +12,13 @@ import { ReportBuildSrvc } from '../../providers/report-build-srvc';
 import { AlertService } from '../../providers/alerts';
 import { Log } from '../../config/config.functions';
 import { Shift } from '../../domain/shift';
+import { WorkOrder } from '../../domain/workorder';
 import { Status } from '../../providers/status';
-import { DatePickerDirective } from 'datepicker-ionic2';
-
+// import { DatePickerDirective } from 'datepicker-ionic2';
+// import { MultiPickerModule } from 'ion-multiz`-picker';
+import { TimeDurationPickerModule } from 'angular2-time-duration-picker';
+import { DatePickerModule } from 'ng2-datepicker';
+import {sprintf} from 'sprintf-js';
 
 @IonicPage({ name: 'Work Order Form' })
 @Component({
@@ -21,10 +26,10 @@ import { DatePickerDirective } from 'datepicker-ionic2';
   templateUrl: 'work-order.html'
 })
 
-export class WorkOrder implements OnInit {
+export class WorkOrderPage implements OnInit {
   // @ViewChild('reportDate') reportDateField;
   // @ViewChild('startTime') startTimeField;
-  @ViewChild(DatePickerDirective) private datepickerDirective: DatePickerDirective;
+  // @ViewChild(DatePickerDirective) private datepickerDirective: DatePickerDirective;
 
   title: string = 'Work Report';
   setDate: Date = new Date();
@@ -35,6 +40,7 @@ export class WorkOrder implements OnInit {
   repairHrs: any;
   profile: any = {};
   tmpReportData: any;
+  techProfile:any;
   docID: string;
   idDate: string;
   idTime: string;
@@ -51,6 +57,8 @@ export class WorkOrder implements OnInit {
   startTime: any = moment();
   timeEnds: any;
   syncError: boolean = false;
+  chooseHours: any;
+  chooseMins : any;
   db: any = {};
   loading: any = {};
   _startDate: any;
@@ -78,22 +86,46 @@ export class WorkOrder implements OnInit {
     console.log(this.year);
     console.log(this.rprtDate);
 
-    this.shifts = [];
-    // this.controlValueAccessor = {}
-    this.setupShifts();
-    this.initializeForm();
-    this._startDate = this.workOrderForm.controls.rprtDate;
-    this._startTime = this.workOrderForm.controls.timeStarts;
-    this._endTime = this.workOrderForm.controls.endTime;
-    this._repairHours = this.workOrderForm.controls.repairHours;
-    this._shift = this.workOrderForm.controls.selected_shift;
-    // this._startDate = this.workOrder.controls['rprtDate'];
-    this.workOrderForm.valueChanges.debounceTime(500).subscribe((value: any) => {
-      Log.l("workOrderForm: valueChanges fired for:\n", value);
-      
-    });
+    this.chooseHours = [
+      {"name": "Hours", "options": [] },
+      {"name": "Minutes", "options": [] }
+    ]
 
-    this.dataReady = true;
+    for(let i = 0; i < 100; i++) {
+      let j = sprintf("%02d", i);
+      let o1 = {'text': j, 'value': j};
+      this.chooseHours[0].options.push(o1);
+    }
+    let o1 = {'text': '00', 'value': '00'};
+    this.chooseHours[1].options.push({'text': '00', 'value': '00'});
+    this.chooseHours[1].options.push({'text': '30', 'value': '30'});
+
+    this.shifts = [];
+    this.db.getTechProfile().then((res) => {
+      Log.l(`WorkOrder: Success getting tech profile! Result:\n`, res);
+      // this.controlValueAccessor = {}
+      this.techProfile = res;
+      this.setupShifts();
+      this.initializeForm();
+      this._startDate = this.workOrderForm.controls.rprtDate;
+      this._startTime = this.workOrderForm.controls.timeStarts;
+      this._endTime = this.workOrderForm.controls.endTime;
+      this._repairHours = this.workOrderForm.controls.repairHours;
+      this._shift = this.workOrderForm.controls.selected_shift;
+      // this._startDate = this.workOrder.controls['rprtDate'];
+      this.workOrderForm.valueChanges.debounceTime(500).subscribe((value: any) => {
+        Log.l("workOrderForm: valueChanges fired for:\n", value);
+        if (value.selected_shift != null) {
+          let shiftHours = this.techProfile.shiftLength;
+          let shiftStartsAt = this.techProfile.shiftStartTime;
+          // let shiftStartDay = 
+        }
+      });
+      this.dataReady = true;
+    }).catch((err) => {
+      Log.l(`WorkOrder: Error getting tech profile!`);
+      Log.e(err);
+    });
 
 
     // this._startDate.valueChanges.subscribe((value: any) => {
@@ -348,3 +380,4 @@ export class WorkOrder implements OnInit {
     });
   }
 }
+
