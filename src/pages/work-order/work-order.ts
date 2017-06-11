@@ -18,7 +18,7 @@ import { sprintf } from 'sprintf-js';
 import { FancySelectComponent } from '../../components/fancy-select/fancy-select';
 import { SafePipe } from '../../pipes/safe';
 
-@IonicPage({ name: 'Work Order Form' })
+@IonicPage({ name: 'WorkOrder' })
 @Component({
   selector: 'page-work-order',
   templateUrl: 'work-order.html'
@@ -137,7 +137,7 @@ export class WorkOrderPage implements OnInit {
         if (value.selected_shift != null) {
           let shiftHours = this.techProfile.shiftLength;
           let shiftStartsAt = this.techProfile.shiftStartTime;
-          // let shiftStartDay = 
+          // let shiftStartDay =
         }
       });
       this.dataReady = true;
@@ -360,7 +360,7 @@ export class WorkOrderPage implements OnInit {
             if (typeof this.profile.updated == 'undefined') {
               /* This shouldn't happen as long as the user is logged in and the profile was created */
               Log.l("processWO(): Tech profile does not exist at all. This should not happen.");
-              setTimeout(() => { this.navCtrl.setRoot('Tech Settings'); });
+              setTimeout(() => { this.navCtrl.setRoot( 'User'); });
               // resolve(false);
               resolve(-1);
             } else if (typeof this.profile.updated != 'undefined' && this.profile.updated === false) {
@@ -375,7 +375,7 @@ export class WorkOrderPage implements OnInit {
                 Log.l("processWO(): Created temporary work report. Now going to Settings page to OK changes.");
                 Log.l(res);
                 this.alert.hideSpinner();
-                setTimeout(() => { this.navCtrl.setRoot('Tech Settings'); });
+                setTimeout(() => { this.navCtrl.setRoot( 'User'); });
                 // resolve(res);
                 resolve(-2);
               }).catch((err) => {
@@ -387,7 +387,7 @@ export class WorkOrderPage implements OnInit {
 
               /* Notify user and go to Settings page */
               this.alert.hideSpinner();
-              setTimeout(() => { this.navCtrl.setRoot('Tech Settings'); });
+              setTimeout(() => { this.navCtrl.setRoot( 'User'); });
               resolve(-4);
             } else {
               /* Update flag is true, good to submit work order */
@@ -426,7 +426,7 @@ export class WorkOrderPage implements OnInit {
             Log.w(anotherError);
             this.alert.hideSpinner();
             // resolve(false);
-            setTimeout(() => { this.navCtrl.setRoot('Tech Settings'); });
+            setTimeout(() => { this.navCtrl.setRoot( 'User'); });
             resolve(-7);
           })
         } else {
