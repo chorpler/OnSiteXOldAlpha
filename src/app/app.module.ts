@@ -35,10 +35,12 @@ import { GeolocService                                           } from '../prov
 import { Status                                                  } from '../providers/status'                  ;
 import { StatusProvider                                          } from '../providers/status/status'           ;
 import { MultiPickerModule                                       } from 'ion-multi-picker'                     ;
+import { Ion3TimeDurationPickerComponent } from '../components/ion3-time-duration-picker/ion3-time-duration-picker';
 
 @NgModule({
   declarations   : [
-                      OnSiteApp,                     ],
+                      OnSiteApp,
+    Ion3TimeDurationPickerComponent,                     ],
 
   entryComponents: [  OnSiteApp                      ],
 

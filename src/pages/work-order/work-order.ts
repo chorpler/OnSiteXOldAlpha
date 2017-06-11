@@ -163,7 +163,7 @@ export class WorkOrderPage implements OnInit {
       let shift_day = moment(now).subtract(i, 'days');
       // let shiftStartDay = moment(now).subtract(i, 'days');
       let thisShift = new Shift('SITENAME', null, 'AM', shift_day, 8);
-      thisShift.getScheduleStartDate();
+      thisShift.updateShiftWeek();
       this.shifts.push(thisShift);
       Log.l(`Now adding day ${i}: ${moment(shift_day).format()}`);
     }

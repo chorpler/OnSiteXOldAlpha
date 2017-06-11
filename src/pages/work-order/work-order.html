@@ -11,8 +11,10 @@
 </ion-header>
 
 <ion-content padding>
-  <p class="hdrDate"> Today: <span class="date">{{ setDate | date:'EEE, MMM dd yyyy'}}</span>, Time: <span class="time"> {{setDate| date:'HH:mm'}} </span></p>
-
+  <!--<p class="hdrDate"> Today: <span class="date">{{ setDate | date:'EEE, MMM dd yyyy'}}</span>, Time: <span class="time"> {{setDate| date:'HH:mm'}} </span></p>-->
+  <p class="hdrDate">
+    <span class="shift-label">Shift <span class="shift-number">{{workOrderForm.value.selected_shift.updateShiftNumber()}}</span> hours</span>: <span class="shift-hours">{{getTotalHoursForShift()}}</span>
+  </p>
   <form [formGroup]="workOrderForm" (ngSubmit)="onSubmit()" *ngIf="dataReady">
     <ion-list>
       <!--<ion-item>
@@ -26,7 +28,8 @@
       </ion-item>
       <ion-item>
         <ion-label>Repair Time</ion-label>
-        <ion-multi-picker item-content [multiPickerColumns]="chooseHours"></ion-multi-picker>
+        <ion-input type='text' formControlName='repair_time'></ion-input>
+        <!--<ion-multi-picker item-content [multiPickerColumns]="chooseHours"></ion-multi-picker>-->
       </ion-item>
       <ion-item>
         <ion-label floating>UNIT No.</ion-label>

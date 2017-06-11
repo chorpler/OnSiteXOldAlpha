@@ -21,7 +21,7 @@ export class WorkOrder {
   public shift_start_time : any; 
   public technician       : any; 
   public timestamp        : any; 
-  public username: any;
+  public username         : any;
   
   constructor(start?: any, end?: any, hours?: any, unit?: any, wo?: any, nts?: any, date?: any, last?: any, first?: any, shift?: any, client?: any, loc?: any, locid?: any, loc2?: any, shiftTime?: any, shiftLength?: any, shiftStartTime?: any, tech?: any, timestamp?: any, user?: any) {
     this.time_start = start || null;
