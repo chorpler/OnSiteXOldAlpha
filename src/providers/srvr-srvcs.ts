@@ -6,6 +6,9 @@ import * as PouchDBAuth     from 'pouchdb-authentication'     ;
 import * as pdbSeamlessAuth from 'pouchdb-seammless-auth'     ;
 import { Log, CONSOLE }     from '../config/config.functions' ;
 
+export const noDD     = "_\uffff";
+export const noDesign = {include_docs: true, startkey: noDD };
+
 /*
   Generated class for the SrvrSrvcs provider.
 
@@ -118,7 +121,6 @@ export class SrvrSrvcs {
   		if(dbname) {
   			dbURL = dbname;
   		}
-			// let url = SrvrSrvcs.protocol + ':/' + '/' + SrvrSrvcs.server + '/' + dbURL;
       let url = SrvrSrvcs.getBaseURL() + '/' + dbURL;
 			let authToken = 'Basic ' + window.btoa(user + ':' + pass);
 			let ajaxOpts = { headers: { Authorization: authToken } };
@@ -171,11 +173,34 @@ export class SrvrSrvcs {
         let u = SrvrSrvcs.userInfo;
 				let authToken = 'Basic ' + window.btoa(u.u + ':' + u.p);
 				SrvrSrvcs.ajaxOpts.headers.Authorization = authToken;
-        // Log.l(`addRDB(): Added remote database ${url} to the list as ${dbname}.`);
-        // resolve(db1.get(dbname))
-        // return db1.get(dbname);
       }
-    // });
+  }
+
+  getReportsForTech(tech:any) {
+    return new Promise((resolve, reject) => {
+      let u = SrvrSrvcs.userInfo;
+      this.loginToServer(u.u, u.p, 'reports').then((res) => {
+        if (res) {
+          let rpdb = SrvrSrvcs.rdb.get('reports');
+          rpdb.allDocs({include_docs:true}).then((result) => {
+            let data = [];
+            let docs = result.rows.map((row) => {
+              resolve(data);
+            });
+          }).catch((error) => {
+            Log.l("getReports(): Error getting reports for user.");
+            Log.e(error);
+            resolve([]);
+          });
+        } else {
+          resolve([]);
+        }
+      }).catch((err) => {
+        Log.l("getReports(): Error logging in to server.")
+        Log.e(err);
+        resolve([]);
+      });
+    });
   }
 
   getReports(user: string) {
@@ -184,7 +209,7 @@ export class SrvrSrvcs {
       this.loginToServer(u.u, u.p, 'reports').then((res) => {
       	if(res) {
       		let rpdb = SrvrSrvcs.rdb.get('reports');
-      		rpdb.allDocs({ include_docs: true }).then((result) => {
+      		rpdb.allDocs(noDesign).then((result) => {
 		        let data = [];
 						let docs = result.rows.map((row) => {
 							if( row.doc.username === user ) { data.push(row.doc); }

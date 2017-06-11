@@ -34,7 +34,7 @@ export class WorkOrderPage implements OnInit {
   year: number = this.setDate.getFullYear();
   mode: string = 'New';
   workOrderForm: FormGroup;
-  WorkOrderPage: any;
+  workOrder: any;
   repairHrs: any;
   profile: any = {};
   tmpReportData: any;
@@ -48,6 +48,8 @@ export class WorkOrderPage implements OnInit {
   shiftsStart: any;
   shifter: any;
   repairTime: any;
+  public shiftTotalHours:any = 0;
+  public payrollPeriodHours:any = 0;
 
   rprtDate: any = moment();
   timeStarts: any = moment();
@@ -140,6 +142,10 @@ export class WorkOrderPage implements OnInit {
           let shiftStartsAt = this.techProfile.shiftStartTime;
           // let shiftStartDay =
         }
+        if(value.repair_time != null) {
+          this.workOrder.repair_hours = value.repair_time;
+
+        }
       });
       this.dataReady = true;
     }).catch((err) => {
@@ -210,7 +216,7 @@ export class WorkOrderPage implements OnInit {
     }
     selectData.options = options;
     Log.l("showFancySelect(): About to create modal, selectData is:\n", selectData);
-    let fancySelectModal = this.modal.create('Fancy Select', { selectData: selectData}, { cssClass: 'fancy-select-modal'});
+    let fancySelectModal = this.modal.create('Fancy Select', { title: "Select Shift", selectData: selectData}, { cssClass: 'fancy-select-modal'});
     fancySelectModal.onDidDismiss(data => {
       Log.l("WorkOrderPage: Returned from fancy select, got back:\n", data);
       if(data != null) {
@@ -237,8 +243,15 @@ export class WorkOrderPage implements OnInit {
   }
 
   getTotalHoursForShift() {
+    if(this.selectedShift !== undefined && this.selectedShift !== null ) {
+      
+    }
     let shift = this.selectedShift;
 
+    let shiftID = shift.getShiftSerial();
+    this.workOrder.shift_serial = shiftID;
+    Log.l("getTotalHoursForShift(): set work order shift_serial to:\n", shiftID);
+    
   }
 
   getNumberClass(i) {

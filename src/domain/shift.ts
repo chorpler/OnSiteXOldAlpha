@@ -16,6 +16,7 @@ export class Shift {
   public current_payroll_week:any;
   public colors:any = {};
   public XL:any;
+  public shift_serial:any;
   
   constructor(site_name?, shift_week?, shift_time?, start_time?, shift_length?) {
     if(arguments.length == 1 && typeof arguments[0] == 'object') {
@@ -29,6 +30,7 @@ export class Shift {
       this.shift_id = -1;
       this.shift_week_id = -1;
       this.payroll_period = null;
+      this.shift_serial = null;
       this.updateShiftNumber();
       this.colors = {'red': false, 'green': false, 'blue': false};
       this.XL = { 'shift_time': null, 'shift_week': null, 'current_payroll_week': null};
@@ -121,6 +123,19 @@ export class Shift {
     } else {
       return false;
     }
+  }
+
+  getShiftSerial() {
+    this.getExcelDates();
+    let weekXL = this.shift_week_id;
+    let payrollPeriodID = weekXL;
+    let shiftXL = this.XL.shift_time;
+    let shiftNum = shiftXL - weekXL + 1;
+    let strWeekID = `${weekXL}`;
+    let strShiftNum = sprintf("%02d", shiftNum);
+    let strShiftID = `${strWeekID}_${strShiftNum}`;
+    this.shift_serial = strShiftID;
+    return strShiftID;
   }
 
   getExcelDates() {

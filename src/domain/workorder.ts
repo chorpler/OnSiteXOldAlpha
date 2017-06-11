@@ -22,6 +22,7 @@ export class WorkOrder {
   public technician       : any; 
   public timestamp        : any; 
   public username         : any;
+  public shift_serial     : any;
   
   constructor(start?: any, end?: any, hours?: any, unit?: any, wo?: any, nts?: any, date?: any, last?: any, first?: any, shift?: any, client?: any, loc?: any, locid?: any, loc2?: any, shiftTime?: any, shiftLength?: any, shiftStartTime?: any, tech?: any, timestamp?: any, user?: any) {
     this.time_start = start || null;
@@ -44,6 +45,7 @@ export class WorkOrder {
     this.technician = tech || null;
     this.timestamp = timestamp || null;
     this.username = user || null;
+    this.shift_serial = null;
   }
 
   readFromDoc(doc:any) {
@@ -51,5 +53,7 @@ export class WorkOrder {
       this[prop] = doc[prop];
     }
   }
+
+  
 
 }
