@@ -1,0 +1,59 @@
+.fancy-select-modal .modal-wrapper {
+  height: 60vh;
+  min-height: 500px;
+  display: flex;
+}
+
+$red: red;
+$green: limegreen;
+// $blue: #c79500;
+$blue: blue;
+.red {
+  color: $red;
+}
+
+.green {
+  color: $green;
+}
+
+.blue {
+  color: $blue;
+}
+
+.one-ion-option {
+  font-size: 3.0vw;
+  svg {
+    fill: currentColor;
+  }
+  text-align: center;
+  // font-size: 60px;
+  // font-size: 60px;
+}
+
+.shift-svg-number {
+  // width: 15px;
+  // height: 15px;
+  // font-size: 58px;
+  display: inline-block;
+}
+
+.shift-text {
+  display: inline-block;
+  font-weight: bold;
+  // font-size: 3.5vw;
+}
+
+page-fancy-select {
+  .login-modal-content {
+    padding: 5%;
+    background: rgba(50, 50, 50, 0.25);
+    // height: 50%;
+    .scroll-content {
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: unset;
+    }
+  }
+  ion-title {
+    text-align: center;
+  }
+}

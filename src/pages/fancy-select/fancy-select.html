@@ -1,0 +1,33 @@
+<!--
+  Generated template for the FancySelectPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar>
+    <ion-title>{{title}}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list class="fancy-select">
+    <button ion-item class="fancy-select-item" (click)="selectOption(i)" *ngFor="let option of options; let i=index">
+      <div class="one-ion-option" [ngClass]="option.shift.getShiftColor()">
+        <!--<div class="shift-svg-number" [class.red]="option.shift.isRed()" [class.green]="option.shift.isGreen()" [class.blue]="option.shift.isBlue()" [innerHTML]="svgNumbers[i]"></div>:-->
+        <div class="shift-svg-number">{{circChars[i]}}</div>
+        <!--<div class="shift-text">{{option.shift.getShiftDescription()}}</div>-->
+        <div class="shift-text">{{option.shift.start_time.format("MMM DD")}} (Payroll week {{option.shift.shift_week.format("MMM DD")}})</div>
+      </div>
+    </button>
+  </ion-list>
+
+  <button ion-button block color="light" (click)="cancel()">Cancel</button>
+
+  <!--<ion-list class="fancy-select">-->
+  <!--<ion-item class="fancy-select-option" *ngFor="let option of options; let i=index">
+      {{option.template}}
+    </ion-item>-->
+  <!--{{selectData.template}}-->
+  <!--</ion-list>-->
+</ion-content>

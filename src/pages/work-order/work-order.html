@@ -19,19 +19,13 @@
     </p>
     <form [formGroup]="workOrderForm" (ngSubmit)="onSubmit()" *ngIf="dataReady">
       <ion-list>
-        <!--<ion-item>
-          <ion-input type='text' formControlName="timeStamp"></ion-input>
-        </ion-item>-->
-        <ion-item>
+        <ion-item (click)="showFancySelect()">
           <ion-label>Shift Date</ion-label>
-          <ion-select #shiftDate formControlName="selected_shift">
-            <ion-option class="shift-select" *ngFor="let shift of shifts" [value]="shift">{{shift.getShiftDescription()}}</ion-option>
-          </ion-select>
+          <ion-input #shiftDateResults [disabled]="shiftDateInputDisabled" class="shift-date-select-results" [value]="selectedShiftText"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label>Repair Time</ion-label>
           <ion-input type='text' formControlName='repair_time'></ion-input>
-          <!--<ion-multi-picker item-content [multiPickerColumns]="chooseHours"></ion-multi-picker>-->
         </ion-item>
         <ion-item>
           <ion-label floating>UNIT No.</ion-label>

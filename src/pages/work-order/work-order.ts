@@ -1,9 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, NgZone } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
-import { NumericModule } from 'ionic2-numberpicker';
-import * as moment from 'moment';
+import { IonicPage, NavController, NavParams, LoadingController, PopoverController, ModalController } from 'ionic-angular';
 import 'rxjs/add/operator/debounceTime';
 import { DBSrvcs } from '../../providers/db-srvcs';
 import { AuthSrvcs } from '../../providers/auth-srvcs';
@@ -14,11 +12,11 @@ import { Log } from '../../config/config.functions';
 import { Shift } from '../../domain/shift';
 import { WorkOrder } from '../../domain/workorder';
 import { Status } from '../../providers/status';
-// import { DatePickerDirective } from 'datepicker-ionic2';
-// import { MultiPickerModule } from 'ion-multiz`-picker';
-import { TimeDurationPickerModule } from 'angular2-time-duration-picker';
-import { DatePickerModule } from 'ng2-datepicker';
-import {sprintf} from 'sprintf-js';
+import { UserData } from '../../providers/user-data';
+import moment from 'moment';
+import { sprintf } from 'sprintf-js';
+import { FancySelectComponent } from '../../components/fancy-select/fancy-select';
+import { SafePipe } from '../../pipes/safe';
 
 @IonicPage({ name: 'Work Order Form' })
 @Component({
@@ -36,7 +34,7 @@ export class WorkOrderPage implements OnInit {
   year: number = this.setDate.getFullYear();
   mode: string = 'New';
   workOrderForm: FormGroup;
-  workOrder: any;
+  WorkOrderPage: any;
   repairHrs: any;
   profile: any = {};
   tmpReportData: any;
@@ -66,14 +64,33 @@ export class WorkOrderPage implements OnInit {
   _endTime: any;
   _repairHours: any;
   _shift: any;
+  _selected_shift: any;
+
+  public userdata:any;
+  public shiftDateOptions:any;
 
   controlValueAccessor: any;
   public dataReady: boolean = false;
+
+  public shiftDateInputDisabled:boolean = true;
+  public shiftDateInput2Disabled:boolean = false;
+  public selectedShiftText:string = "None a'tall";
   // , private dbSrvcs: DBSrvcs
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private dbSrvcs: DBSrvcs, private timeSrvc: TimeSrvc, public reportBuilder: ReportBuildSrvc, public loadingCtrl: LoadingController, public alert: AlertService) {
+  constructor(
+    public navCtrl: NavController,
+    public navParams: NavParams,
+    private dbSrvcs: DBSrvcs,
+    private timeSrvc: TimeSrvc,
+    public reportBuilder: ReportBuildSrvc,
+    public loadingCtrl: LoadingController,
+    public alert: AlertService,
+    public modal: ModalController,
+    public zone:NgZone)
+  {
     this.db = this.dbSrvcs;
     this.shifter = Shift;
+    this.userdata = UserData;
     window["workorder"] = this;
   }
 
@@ -85,6 +102,8 @@ export class WorkOrderPage implements OnInit {
     console.log(this.setDate);
     console.log(this.year);
     console.log(this.rprtDate);
+
+    this.shiftDateOptions = {"interface": "popover"};
 
     this.chooseHours = [
       {"name": "Hours", "options": [] },
@@ -102,7 +121,7 @@ export class WorkOrderPage implements OnInit {
 
     this.shifts = [];
     this.db.getTechProfile().then((res) => {
-      Log.l(`WorkOrder: Success getting tech profile! Result:\n`, res);
+      Log.l(`WorkOrderPage: Success getting tech profile! Result:\n`, res);
       // this.controlValueAccessor = {}
       this.techProfile = res;
       this.setupShifts();
@@ -123,7 +142,7 @@ export class WorkOrderPage implements OnInit {
       });
       this.dataReady = true;
     }).catch((err) => {
-      Log.l(`WorkOrder: Error getting tech profile!`);
+      Log.l(`WorkOrderPage: Error getting tech profile!`);
       Log.e(err);
     });
 
@@ -170,10 +189,41 @@ export class WorkOrderPage implements OnInit {
 
   }
 
+  public showFancySelect() {
+    Log.l("showFancySelect(): Called!");
+    let template = `
+    <ion-list class="fancy-select">
+      <button ion-item (click)="selectOption(i)" *ngFor="let option of options; let i=index">
+        <span class="one-ion-option">
+          <span [class]="option.shift.getShiftColor()">{{selectData.numbers[i]}}: </span>
+          <span class="shift-text">{{option.shift.getShiftDescription()}}</span>
+        </span>
+      </button>
+    </ion-list>
+`;
+    let options = [];
+    let selectData = {numbers: UserData.circled_numbers, options: options};
+    for(let shift of this.shifts) {
+      let option = {shift: shift};
+      options.push(option);
+    }
+    selectData.options = options;
+    Log.l("showFancySelect(): About to create modal, selectData is:\n", selectData);
+    let fancySelectModal = this.modal.create('Fancy Select', { selectData: selectData}, { cssClass: 'fancy-select-modal'});
+    fancySelectModal.onDidDismiss(data => {
+      Log.l("WorkOrderPage: Returned from fancy select, got back:\n", data);
+      if(data != null) {
+        this.selectedShift = data;
+        this.selectedShiftText = this.selectedShift.toString();
+      }
+    });
+    fancySelectModal.present();
+  }
+
   private initializeForm() {
     this.workOrderForm = new FormGroup({
       // 'timeStarts': new FormControl(this.startTime.format("HH:00"), Validators.required),
-      'selected_shift': new FormControl('', Validators.required),
+      'selected_shift': new FormControl(this.shifts[0], Validators.required),
       // 'timeEnds': new FormControl(null, Validators.required),
       'repair_time': new FormControl(null, Validators.required),
       'uNum': new FormControl(null, Validators.required),
@@ -186,7 +236,17 @@ export class WorkOrderPage implements OnInit {
 
   getTotalHoursForShift() {
     let shift = this.selectedShift;
-    
+
+  }
+
+  getNumberClass(i) {
+    let shift = this.shifts[i];
+    // let shift_num = shift.updateShiftNumber();
+    // let shift_week = moment(shift.getShiftWeek());
+    // let shift_day  = moment(shift.shift_time);
+    let shiftColor = shift.getShiftColor();
+    Log.l(`getNumberClass(): Shift color is: '${shiftColor}'`);
+    return shift.getShiftColor();
   }
 
   onSubmit() {
@@ -277,7 +337,7 @@ export class WorkOrderPage implements OnInit {
   }
 
   processWO() {
-    const workOrderData = this.workOrder.getRawValue();
+    const workOrderData = this.workOrderForm.getRawValue();
     // workOrderData.timeStamp = Date();
     this.calcEndTime(workOrderData);
     console.log("processWO() has initial workOrderData:");

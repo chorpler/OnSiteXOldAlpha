@@ -35,7 +35,8 @@ import { GeolocService                                           } from '../prov
 import { Status                                                  } from '../providers/status'                  ;
 import { StatusProvider                                          } from '../providers/status/status'           ;
 import { MultiPickerModule                                       } from 'ion-multi-picker'                     ;
-import { Ion3TimeDurationPicker                                  } from '../components/ion3-time-duration-picker/ion3-time-duration-picker';
+import { Ion3TimeDurationPickerModule  } from '../components/ion3-time-duration-picker/ion3-time-duration-picker.module';
+import { PipesModule } from '../pipes/pipes.module';
 
 @NgModule({
   declarations   : [
@@ -53,7 +54,8 @@ import { Ion3TimeDurationPicker                                  } from '../comp
                         driverOrder: ['localstorage'  ]
                       }),
                       IonicModule.forRoot(OnSiteApp),
-                      MultiPickerModule
+                      MultiPickerModule,
+                      Ion3TimeDurationPickerModule,
                       // NumericModule,
                       // DatePickerModule
                                                        ],
@@ -62,7 +64,6 @@ import { Ion3TimeDurationPicker                                  } from '../comp
                       StatusBar,
                       SplashScreen,
                       SecureStorage,
-                      NavController,
                       LoadingController,
                       AlertController,
                       AlertService,
