@@ -37,10 +37,12 @@ import { StatusProvider                                          } from '../prov
 import { MultiPickerModule                                       } from 'ion-multi-picker'                     ;
 import { Ion3TimeDurationPickerModule  } from '../components/ion3-time-duration-picker/ion3-time-duration-picker.module';
 import { PipesModule } from '../pipes/pipes.module';
+import { TabsComponent } from '../components/tabs/tabs';
 
 @NgModule({
   declarations   : [
                       OnSiteApp,
+                      TabsComponent
                    ],
   entryComponents: [  OnSiteApp                      ],
 
@@ -86,7 +88,8 @@ import { PipesModule } from '../pipes/pipes.module';
                       Push,
                       LocalNotifications,
                       GeolocService,
-                      Status
+                      Status,
+                      TabsComponent
                                                       ]
 })
 

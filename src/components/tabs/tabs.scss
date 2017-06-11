@@ -1,0 +1,23 @@
+onsite-tabs {
+  #onsite-nav {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    align-items: center;
+    button {
+      flex: 0 0 auto;
+      background-color: transparent;
+      color: rgba(100,100,100,1);
+      :active {
+        color: #488aff;
+      }
+    }
+  }
+  .hlght {
+    color: #488aff;
+  }
+  .non-Hlght {
+    color:black;
+  }
+}

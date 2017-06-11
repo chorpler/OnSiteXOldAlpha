@@ -7,7 +7,7 @@ import { AlertService                                           } from '../../pr
 import { Log, CONSOLE                                           } from '../../config/config.functions' ;
 
 
-@IonicPage({ name    : 'Report History'                                          })
+@IonicPage({ name    : 'ReportHistory'                                          })
 @Component({ selector: 'page-report-history', templateUrl: 'report-history.html' })
 
 

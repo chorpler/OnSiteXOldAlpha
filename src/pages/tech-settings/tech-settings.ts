@@ -1,15 +1,17 @@
 import { Component, OnInit                            } from '@angular/core'                          ;
 import { FormGroup, FormControl, Validators           } from "@angular/forms"                         ;
 import { IonicPage, NavController, NavParams          } from 'ionic-angular'                          ;
+import { ViewController                               } from 'ionic-angular'                          ;
 import { CLIENT, LOCATION, LOCID, SHIFTLENGTH         } from '../../config/config.constants.settings' ;
 import { SHIFT, SHIFTSTARTTIME, SHIFTROTATION, LOC2ND } from '../../config/config.constants.settings' ;
 import { REPORTHEADER, REPORTMETA                     } from '../../config/report.object'             ;
 import { DBSrvcs                                      } from '../../providers/db-srvcs'               ;
 import { ReportBuildSrvc                              } from '../../providers/report-build-srvc'      ;
 import { Login                                        } from '../login/login'                         ;
+import { TabsComponent                                } from '../../components/tabs/tabs'             ;
 
 
-@IonicPage({ name: "Tech Settings"})
+@IonicPage({ name: 'User'})
 @Component({
   selector: 'page-tech-settings',
   templateUrl: 'tech-settings.html',
@@ -37,21 +39,29 @@ export class TechSettingsPage implements OnInit {
   shift             : string                        ;
   shiftLength       : string                        ;
   shiftStartTime    : string                        ;
-  title             : string    = 'Tech Settings' ;
+  title             : string    =  'User'           ;
   reportHeader      : REPORTHEADER                  ;
   rprtDate          : Date                          ;
   techProfileURL    : string = "_local/techProfile" ;
   techSettingsReady : boolean = false               ;
   reportMeta        : any = {}                      ;
   reportWaiting     : boolean = false               ;
+  navParamModal     : boolean                       ;
+  mode              : string                        ;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public db: DBSrvcs, public reportBuilder: ReportBuildSrvc) {
+  constructor( public navCtrl: NavController, public navParams    : NavParams,
+               public db     : DBSrvcs,       public reportBuilder: ReportBuildSrvc,
+               public tabs   : TabsComponent, public viewCtrl     : ViewController   ) {
+
     window["onsite"] = window["onsite"] || {};
     window["onsite"]["settings"] = this;
     window["onsite"]["settingsClass"] = TechSettingsPage;
   }
 
   ngOnInit() {
+    if ( this.navParams.get('mode') !== undefined ) {
+     this.mode = this.navParams.get('mode');
+    } else { this.mode = 'page'; }
     this.rprtDate = new Date;
     console.log("Settings: Now trying to get tech profile...");
     this.db.getTechProfile().then((res) => {
@@ -107,7 +117,14 @@ export class TechSettingsPage implements OnInit {
 
       console.log("onSubmit(): Saved techProfile successfully.");
 
-      this.navCtrl.setRoot('TabsPage');
+      if ( this.mode === 'modal' ) {
+        console.log('Mode = ' + this.mode );
+        this.viewCtrl.dismiss();
+      }
+      else {
+        console.log('Mode = ' + this.mode );
+        this.tabs.goHome();
+      }
 
     }).catch((err) => {
       console.log("onSubmit(): Error saving techProfile!");

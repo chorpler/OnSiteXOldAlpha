@@ -14,24 +14,28 @@
 // To declare rules for a specific mode, create a child rule
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
+ion-content div.scroll-content{
+  margin-bottom: 50px;
+}
+
 .loading-md .loading-wrapper {
-	border-radius:64px !important;
+  border-radius:64px !important;
 }
 
 .loading-wrapper {
-	background: rgba(250, 250, 250, 0.25) !important;
-	box-shadow: rgba(50, 50, 50, 0.25) !important;
-	flex-direction: column !important;
-	zoom: 1.5;
+  background: rgba(250, 250, 250, 0.25) !important;
+  box-shadow: rgba(50, 50, 50, 0.25) !important;
+  flex-direction: column !important;
+  zoom: 1.5;
 }
 
 .loading-spinner {
-	zoom: 2;
+  zoom: 2;
 }
 
 .loading-content {
-	color: black;
-	font-size: 5vw !important;
+  color: black;
+  font-size: 5vw !important;
   font-weight: bold;
   text-align: center;
 }
@@ -47,24 +51,22 @@
 }
 
 .spinner-bubbles {
-	circle {
-			transition: fill 10s ease;
-			animation-name: colorStroke !important;
-			animation-duration: 10s !important;
-			animation-iteration-count: infinite;
-			// fill: blue;
-		}
-	}
+  circle {
+      transition: fill 10s ease;
+      animation-name: colorStroke !important;
+      animation-duration: 10s !important;
+      animation-iteration-count: infinite;
+    }
+  }
 
 .bar-button-md ion-icon {
-	color: white !important;
-	background: transparent !important;
-	font-size: 3.0em;
+  color: white !important;
+  background: transparent !important;
+  font-size: 3.0em;
 }
 
 .bar-button-md[icon-only] ion-icon {
-		color: white !important;
-		background: transparent !important;
-		font-size: 3.0em;
-	}
-
+    color: white !important;
+    background: transparent !important;
+    font-size: 3.0em;
+  }

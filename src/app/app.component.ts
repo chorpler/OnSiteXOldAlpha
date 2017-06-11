@@ -17,6 +17,7 @@ import * as pdbAuth                            from 'pouchdb-authentication'    
 import * as pdbUpsert                          from 'pouchdb-upsert'                    ;
 import * as pdbSeamlessAuth                    from 'pouchdb-seamless-auth'             ;
 import * as moment                             from 'moment'                            ;
+import { TabsComponent                        } from '../components/tabs/tabs'          ;
 
 
 @Component({ templateUrl: 'app.html' })
@@ -71,7 +72,7 @@ export class OnSiteApp {
         window[ 't1'     ] = CONSOLE.t1;
         window[ 'c1'     ] = CONSOLE.c1;
 
-        this.nav.setRoot('Tech Settings');
+        this.nav.setRoot( 'User');
 
       });
 
