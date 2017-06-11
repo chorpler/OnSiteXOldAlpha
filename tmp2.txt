@@ -1,0 +1,26 @@
+<!--{{selectedShift.start_time.format("MMM DD")}} (Payroll week #{{selectedShift.getShiftWeekID()}})-->
+           <!--</div>-->
+          <!--<button class="fancy-select-caller-button" ion-button block color="primary"></button>-->
+
+
+
+
+                  <ion-item (click)="showFancySelect()">
+          <ion-label>Shift Date</ion-label>
+          <ion-input #shiftDateResults [disabled]="shiftDateInputDisabled" class="shift-date-select-results" *ngIf="selectedShift && selectedShift.start_time && isMoment(selectedShift.shift_week)" [value]="selectedShiftText"></ion-input>
+        </ion-item>
+        <button type="button" ion-item (click)="showFancySelect()">
+           <ion-label>Shift Date 2</ion-label>
+           <ion-input #shiftDateResults2 [disabled]="shiftDateInput2Disabled" class="shift-date-select-results" *ngIf="selectedShift && selectedShift.start_time && isMoment(selectedShift.shift_week)" [value]="selectedShift"></ion-input>
+        </button>
+
+
+
+
+        <ion-item>
+          <ion-label>Repair Time</ion-label>
+          <ion-input type='text' formControlName='repair_time'></ion-input>
+          <!--<ion-multi-picker item-content [multiPickerColumns]="chooseHours"></ion-multi-picker>-->
+        </ion-item>
+
+
