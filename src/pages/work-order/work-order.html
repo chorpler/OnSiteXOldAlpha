@@ -12,43 +12,45 @@
 
 <ion-content padding>
   <!--<p class="hdrDate"> Today: <span class="date">{{ setDate | date:'EEE, MMM dd yyyy'}}</span>, Time: <span class="time"> {{setDate| date:'HH:mm'}} </span></p>-->
-  <p class="hdrDate">
-    <span class="shift-label">Shift <span class="shift-number">{{workOrderForm.value.selected_shift.updateShiftNumber()}}</span> hours</span>: <span class="shift-hours">{{getTotalHoursForShift()}}</span>
-  </p>
-  <form [formGroup]="workOrderForm" (ngSubmit)="onSubmit()" *ngIf="dataReady">
-    <ion-list>
-      <!--<ion-item>
-        <ion-input type='text' formControlName="timeStamp"></ion-input>
-      </ion-item>-->
-      <ion-item>
-        <ion-label>Shift Date</ion-label>
-        <ion-select #shiftDate formControlName="selected_shift">
-          <ion-option class="shift-select" *ngFor="let shift of shifts" [value]="shift">{{shift.getShiftDescription()}}</ion-option>
-        </ion-select>
-      </ion-item>
-      <ion-item>
-        <ion-label>Repair Time</ion-label>
-        <ion-input type='text' formControlName='repair_time'></ion-input>
-        <!--<ion-multi-picker item-content [multiPickerColumns]="chooseHours"></ion-multi-picker>-->
-      </ion-item>
-      <ion-item>
-        <ion-label floating>UNIT No.</ion-label>
-        <ion-input type='text' formControlName='uNum'></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label floating>WORK ORDER No.</ion-label>
-        <ion-input type='text' formControlName='wONum'></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label floating>JOB NOTES:</ion-label>
-        <ion-textarea formControlName='notes'></ion-textarea>
-      </ion-item>
-      <ion-item *ngIf="syncError" class="alert danger">
-        <div>Error submitting work order. Please try again.</div>
-      </ion-item>
-    </ion-list>
-    <button type="submit" ion-button block color="favorite">Submit {{title}} </button>
-    <button type="button" ion-button block color="light">Cancel</button>
-  </form>
+  <div class="data-elements" *ngIf="dataReady">
+    <p class="hdrDate">
+      <span class="shift_hours_header" *ngIf="workOrderForm && workOrderForm.value && workOrderForm.value.selected_shift"><span class="shift-label">Shift <span class="shift-number">{{workOrderForm.value.selected_shift.updateShiftNumber()}}</span> hours</span>:
+      <span class="shift-hours">{{getTotalHoursForShift()}}</span></span>
+    </p>
+    <form [formGroup]="workOrderForm" (ngSubmit)="onSubmit()" *ngIf="dataReady">
+      <ion-list>
+        <!--<ion-item>
+          <ion-input type='text' formControlName="timeStamp"></ion-input>
+        </ion-item>-->
+        <ion-item>
+          <ion-label>Shift Date</ion-label>
+          <ion-select #shiftDate formControlName="selected_shift">
+            <ion-option class="shift-select" *ngFor="let shift of shifts" [value]="shift">{{shift.getShiftDescription()}}</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label>Repair Time</ion-label>
+          <ion-input type='text' formControlName='repair_time'></ion-input>
+          <!--<ion-multi-picker item-content [multiPickerColumns]="chooseHours"></ion-multi-picker>-->
+        </ion-item>
+        <ion-item>
+          <ion-label floating>UNIT No.</ion-label>
+          <ion-input type='text' formControlName='uNum'></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label floating>WORK ORDER No.</ion-label>
+          <ion-input type='text' formControlName='wONum'></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label floating>JOB NOTES:</ion-label>
+          <ion-textarea formControlName='notes'></ion-textarea>
+        </ion-item>
+        <ion-item *ngIf="syncError" class="alert danger">
+          <div>Error submitting work order. Please try again.</div>
+        </ion-item>
+      </ion-list>
+      <button type="submit" ion-button block color="favorite">Submit {{title}} </button>
+      <button type="button" ion-button block color="light">Cancel</button>
+    </form>
+  </div>
 </ion-content>
-

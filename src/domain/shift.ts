@@ -44,8 +44,6 @@ export class Shift {
     return this.getShiftWeek();
   }
 
-  public getPayroll
-
   public updateShiftNumber() {
     let start = this.start_time;
     let week = this.shift_week;

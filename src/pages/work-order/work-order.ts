@@ -184,7 +184,10 @@ export class WorkOrderPage implements OnInit {
     });
   }
 
-
+  getTotalHoursForShift() {
+    let shift = this.selectedShift;
+    
+  }
 
   onSubmit() {
     this.processWO();
