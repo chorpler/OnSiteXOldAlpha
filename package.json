@@ -1,7 +1,7 @@
 {
     "name": "onsitex",
     "author": "Michael Bates",
-    "description": "OnSiteX: PouchDB Angular2 NodeJS Ionic CouchDB; a 'PANIC' Stack App",
+    "description": "OnSiteX: PouchDB Angular4 NodeJS Ionic3 CouchDB; a 'PANIC' Stack App",
     "config": {
         "ionic_source_map": "source-map",
         "ionic_bundler": "webpack",

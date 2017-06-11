@@ -37,4 +37,17 @@ page-home {
     color: white !important;
     background: transparent !important;
   }
+  p{
+    font-size: 14px;
+    .hrsCompleted {
+      color: green;
+    }
+    span.shft-num-icon {
+      font-size: 30px;
+    }
+    span.chk-box-icon {
+      columns: darkred;
+      font-size: 20px;
+    }
+  }
 }

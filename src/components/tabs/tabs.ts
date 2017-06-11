@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { App, Platform     } from 'ionic-angular';
+import { AuthSrvcs         } from '../../providers/auth-srvcs';
+import { NgZone            } from '@angular/core';
 
 @Component({
   selector: 'onsite-tabs',
@@ -8,12 +10,17 @@ import { App, Platform     } from 'ionic-angular';
 export class TabsComponent implements OnInit {
 
   nav:any;
-  tabClass: Array<boolean> = [ false, false, false, false, false, ]
+  tabClass: Array<boolean> = [ false, false, false, false, false, false]
   tabDisabled: boolean = false;
   onSitePage: any;
+  userLoggedIn: boolean;
+  userIsDeveloper:boolean;
 
-  constructor( public app:App, public platform: Platform ) {
+
+  constructor( public app:App, public platform: Platform,
+               public auth: AuthSrvcs, public zone: NgZone ) {
     this.nav = this.app.getActiveNav();
+    window['onSiteTabs'] = this;
   }
 
   goHome() {
@@ -41,10 +48,25 @@ export class TabsComponent implements OnInit {
     this.highlightTab(4); this.nav.setRoot('Settings'     );
   }
 
+  goDev() {
+    console.log('entering page: DevPage' );
+    this.highlightTab(5); this.nav.setRoot('DevPage'      );
+  }
+
   highlightTab(tabIndx: number) {
     for( let i = 0; i < this.tabClass.length; i++ ) {
       if( i === tabIndx ) { this.tabClass[i] = true; }
       else { this.tabClass[i] = false; }
+    }
+  }
+
+  isDeveloper() {
+    if( this.auth.getUser() === 'Chorpler' || this.auth.getUser() === 'Hachero' || this.auth.getUser() === 'mike' ) {
+      this.userIsDeveloper = true;
+      return true;
+    } else {
+      this.userIsDeveloper = false;
+      return false;
     }
   }
 

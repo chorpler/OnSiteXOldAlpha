@@ -15,8 +15,43 @@
 </ion-header>
 
 <ion-content padding>
-  Fucking believe it.
-  <p>
-    If you get lost, the <a href="http://ionicframework.com/docs/v2">docs</a> will be your guide.
-  </p>
+  <h5> Hours Submitted for Payroll </h5>
+    <p>
+      <span class="shft-num-icon" >{{ shftOne}}   </span> {{ hrsLogged}}Hrs of {{ shftHrs}}Hrs submitted for this shift
+       <span class="chk-box-icon" [class.hrsCompleted]="chkBxBool">{{chkBx}}</span>
+    </p>
+    <p>
+      <span class="shft-num-icon" >{{ shftTwo}}   </span> {{ hrsLogged}}Hrs of {{ shftHrs}}Hrs submitted for this shift
+       <span class="chk-box-icon" [class.hrsCompleted]="chkBxBool">{{chkBx}}</span>
+    </p>
+    <p>
+      <span class="shft-num-icon" >{{ shftThree}} </span> {{ hrsLogged}}Hrs of {{ shftHrs}}Hrs submitted for this shift
+       <span class="chk-box-icon" [class.hrsCompleted]="chkBxBool">{{chkBx}}</span>
+    </p>
+    <p>
+      <span class="shft-num-icon" >{{ shftFour}}  </span> {{ hrsLogged}}Hrs of {{ shftHrs}}Hrs submitted for this shift
+       <span class="chk-box-icon" [class.hrsCompleted]="chkBxBool">{{chkBx}}</span>
+    </p>
+    <p>
+      <span class="shft-num-icon" >{{ shftFive}}  </span> {{ hrsLogged}}Hrs of {{ shftHrs}}Hrs submitted for this shift
+       <span class="chk-box-icon" [class.hrsCompleted]="chkBxBool">{{chkBx}}</span>
+    </p>
+    <p>
+      <span class="shft-num-icon" >{{ shftSix}}   </span> {{ hrsLogged}}Hrs of {{ shftHrs}}Hrs submitted for this shift
+       <span class="chk-box-icon" [class.hrsCompleted]="chkBxBool">{{chkBx}}</span>
+    </p>
+    <p>
+      <span class="shft-num-icon" >{{ shftSeven}} </span> {{ hrsLogged}}Hrs of {{ shftHrs}}Hrs submitted for this shift
+       <span class="chk-box-icon" [class.hrsCompleted]="chkBxBool">{{ chkBx }}</span>
+    </p>
+    <h6> Hrs submitted for this payroll period: {{ totHrs }} </h6>
+    <p>
+      Shifts are numbered 1 through 7: Wednesday = Shift 1, Tuesday = Shift 2 etc. Every payroll period has 7 shifts.
+      If you do not work a shift, that shift still exists and you will have "0" hours for that shift.
+      A green checkbox will be displayed at the end of the shifts above when the hours in the work orders you have submitted
+      for that shift are equal to the number of hours you should have worked for that shift.  <br/>
+      If submitted hours are not equal to shift hours, that is not necessarily bad.  The most important number(s) are the number
+      of hours you worked and your total number of hours for the pay period (Wednesday through Tuesday of shifts 1 through 7).
+      The number of hours submitted is the total of all shift hour submitted and this is what will be used to calculate the hours in your paycheck.
+    </p>
 </ion-content>

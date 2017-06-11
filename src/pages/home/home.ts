@@ -13,31 +13,53 @@ import { AuthSrvcs } from '../../providers/auth-srvcs' ;
 })
 export class HomePage {
 
-  loginData: any;
-  username: string = "unknown";
-  server: any;
-  userLoggedIn:boolean;
-  title: string = 'OnSite Home';
+  loginData    : any                                                               ;
+  username     : string        = "unknown"                                         ;
+  server       : any                                                               ;
+  userLoggedIn : boolean                                                           ;
+  title        : string        = 'OnSite Home'                                     ;
+  numChars     : Array<string> = ["⓵", "⓶", "⓷", "⓸", "⓹", "⓺", "⓻", "⓼", "⓽"] ;
+  shftOne      : string                                                            ;
+  shftTwo      : string                                                            ;
+  shftThree    : string                                                            ;
+  shftFour     : string                                                            ;
+  shftFive     : string                                                            ;
+  shftSix      : string                                                            ;
+  shftSeven    : string                                                            ;
+  chkBxBool    : boolean                                                           ;
+  chkBx        : string                                                            ;
+  shftHrs: number;
+  hrsSubmitted: number;
 
   constructor( public navCtrl: NavController, public modalCtrl: ModalController,
-               public authService: AuthSrvcs, public navParams: NavParams        ) { }
+               public authService: AuthSrvcs, public navParams: NavParams ) {
+
+                this.shftOne   = this.numChars[0];
+                this.shftTwo   = this.numChars[1];
+                this.shftThree = this.numChars[2];
+                this.shftFour  = this.numChars[3];
+                this.shftFive  = this.numChars[4];
+                this.shftSix   = this.numChars[5];
+                this.shftSeven = this.numChars[6];
+                }
 
   presentLoginModal() {
     let loginPage = this.modalCtrl.create('Login', {user: '', pass: ''}, { cssClass: 'login-modal'});
     loginPage.onDidDismiss(data => {
       Log.l("Got back:\n", data);
       this.loginData = data;
-      if(this.loginData !== undefined && this.loginData !== null && this.loginData.user && this.loginData.pass) {
+      if( this.loginData !== undefined && this.loginData !== null && this.loginData.user && this.loginData.pass ) {
         console.log("Login Modal succeeded, now opening user modal.");
         this.userLoggedIn = true;
-        this.presentUserModal();
-      } else {
-        console.log("Login Modal did not succeed.");
-
-      }
-      // this.onSubmit();
+        this.presentUserModal(); }
+      else { console.log("Login Modal did not succeed."); }
     })
     loginPage.present();
+  }
+
+  chkHrs() {
+    if(this.shftHrs === this.hrsSubmitted ) { this.chkBx = '☑'; this.chkBxBool = true; }
+    else { this.chkBx = '☒'; this.chkBxBool = false; }
   }
 
   presentUserModal() {
@@ -50,6 +72,7 @@ export class HomePage {
      this.userLoggedIn = this.navParams.get('userLoggedIn');
     }
     if (this.userLoggedIn === false ) { this.presentLoginModal(); }
+    this.chkHrs();
   }
 
 }
