@@ -1,14 +1,14 @@
-import { Component, OnInit, NgZone                           } from '@angular/core'                      ;
-import { Platform, IonicPage, NavParams                      } from 'ionic-angular'                      ;
-import { NavController, ToastController                      } from 'ionic-angular'                      ;
-import { AuthSrvcs                                           } from '../../providers/auth-srvcs'         ;
-import { SrvrSrvcs                                           } from '../../providers/srvr-srvcs'         ;
-import { DbBulkuploadSrvc                                    } from '../../providers/db-bulkupload-srvc' ;
-import { GeolocService                                       } from '../../providers/geoloc-service'     ;
-import { AlertService                                        } from '../../providers/alerts'             ;
-import   * as PouchDB                                          from 'pouchdb'                            ;
-import { Log, CONSOLE                                        } from '../../config/config.functions'      ;
-import { reportDocs                                          } from '../../test/test.reports'            ;
+import { Component, OnInit, NgZone              } from '@angular/core'                      ;
+import { Platform, IonicPage, NavParams         } from 'ionic-angular'                      ;
+import { NavController, ToastController         } from 'ionic-angular'                      ;
+import { AuthSrvcs                              } from '../../providers/auth-srvcs'         ;
+import { SrvrSrvcs                              } from '../../providers/srvr-srvcs'         ;
+import { DbBulkuploadSrvc                       } from '../../providers/db-bulkupload-srvc' ;
+import { GeolocService                          } from '../../providers/geoloc-service'     ;
+import { AlertService                           } from '../../providers/alerts'             ;
+import   * as PouchDB                             from 'pouchdb'                            ;
+import { Log, CONSOLE                           } from '../../config/config.functions'      ;
+import { reportDocs                             } from '../../test/test.reports'            ;
 
 @IonicPage({name: 'OnSiteHome'})
 
@@ -35,45 +35,36 @@ export class HomePage implements OnInit {
   }
 
   ngOnInit() {
-      this.platform.registerBackButtonAction(() => {
-        Log.l("Back button pressed (defined in home.ts).");
-        if(typeof this['navCtrl'] != 'undefined') {
-          window['nav1'] = this.navCtrl;
-          if (this.backButtonPressedOnceToExit) {
-            Log.l("Leaving app.");
-            this.platform.exitApp();
-          } else {
-            this.showToast("Press back again to exit");
-            this.backButtonPressedOnceToExit = true;
-            setTimeout(() => {
-              this.backButtonPressedOnceToExit = false;
-            },2000)
-          }
-        } else {
-          Log.l("Back button undefined, can't navigate at the moment.");
-        }
-      });
-      if(HomePage.startOfApp) {
-        this.setupAppData();
-      } else {
-        this.isDeveloper();
-        this.userLoggedIn = true;
-      }
-  }
-  showToast(text: string) {
-    let toast = this.toastCtrl.create({
-      message: text,
-      duration: 3000
-    });
-    toast.present();
+      // this.platform.registerBackButtonAction(() => {
+      //   Log.l("Back button pressed (defined in home.ts).");
+
+      //   if(typeof this['navCtrl'] != 'undefined') {
+      //     window['nav1'] = this.navCtrl;
+
+      //     if (this.backButtonPressedOnceToExit) { Log.l("Leaving app."); this.platform.exitApp(); }
+      //     else {
+      //       this.showToast("Press back again to exit");
+      //       this.backButtonPressedOnceToExit = true;
+      //       setTimeout( () => { this.backButtonPressedOnceToExit = false; },2000) } }
+
+      //   else { Log.l("Back button undefined, can't navigate at the moment."); } });
+
+      if(HomePage.startOfApp) { this.setupAppData(); }
+      else { this.isDeveloper(); this.userLoggedIn = true; }
+
   }
 
+  // showToast(text: string) {
+  //   let toast = this.toastCtrl.create({
+  //     message: text,
+  //     duration: 3000
+  //   });
+  //   toast.present();
+  // }
+
   isFirstItem() {
-    if(this.userLoggedIn) {
-      return 'logged-in';
-    } else {
-      return '';
-    }
+    if(this.userLoggedIn) { return 'logged-in'; }
+    else { return ''; }
   }
 
   setupAppData() {

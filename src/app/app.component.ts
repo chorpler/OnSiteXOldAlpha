@@ -24,9 +24,10 @@ import * as moment                             from 'moment'                    
 export class OnSiteApp {
   @ViewChild(Nav) nav: Nav;
 
-  title       : string = 'OnSiteHome';
-  rootPage    : any                  ;
-  pouchOptions: any    = {          };
+  title       : string  = 'OnSiteHome';
+  rootPage    : any                   ;
+  pouchOptions: any     = {          };
+  bkBtnPrsd2nd: boolean = false       ;
 
   private network: any;
 
@@ -73,9 +74,23 @@ export class OnSiteApp {
         this.nav.setRoot('Tech Settings');
 
       });
+
+      this.platform.registerBackButtonAction(() => {
+        if ( this.bkBtnPrsd2nd ) { this.platform.exitApp }
+        else {
+          this.showToast("Press back again to exit");
+          this.bkBtnPrsd2nd = true;
+          setTimeout( () => { this.bkBtnPrsd2nd = false; },2000 )
+        }})
   }
 
-  terminateApp() { this.platform.exitApp(); }
+    showToast(text: string) {
+    let toast = this.toast.create({
+      message: text,
+      duration: 3000
+    });
+    toast.present();
+  }
 
 }
 
