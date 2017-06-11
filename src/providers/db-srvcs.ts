@@ -32,7 +32,8 @@ export class DBSrvcs {
   public static rdb           : any = new Map()                                    ;
   public static ldbs          : any                                                ;
   public static rdbs          : any                                                ;
-  public static server        : string = "martiancouch.hplx.net"                   ;
+  // public static server        : string = "martiancouch.hplx.net"                   ;
+  public static server        : string = "securedb.sesaonsite.com"                   ;
   // public static server        : string = "162.243.157.16"                          ;
   public static protocol      : string = "https"                                   ;
   // public static server        : string = "192.168.0.140:5984"                      ;

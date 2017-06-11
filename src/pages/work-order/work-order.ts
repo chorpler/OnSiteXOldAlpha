@@ -74,7 +74,8 @@ export class WorkOrderPage implements OnInit {
 
   public shiftDateInputDisabled:boolean = true;
   public shiftDateInput2Disabled:boolean = false;
-  public selectedShiftText:string = "None a'tall";
+  // public selectedShiftText:string = "None a'tall";
+  public selectedShiftText:string = "";
   // , private dbSrvcs: DBSrvcs
 
   constructor(
@@ -130,14 +131,13 @@ export class WorkOrderPage implements OnInit {
       this._startTime = this.workOrderForm.controls.timeStarts;
       this._endTime = this.workOrderForm.controls.endTime;
       this._repairHours = this.workOrderForm.controls.repairHours;
-      this._shift = this.workOrderForm.controls.selected_shift;
+      this._selected_shift = this.workOrderForm.controls.selected_shift;
       // this._startDate = this.workOrder.controls['rprtDate'];
       this.workOrderForm.valueChanges.debounceTime(500).subscribe((value: any) => {
         Log.l("workOrderForm: valueChanges fired for:\n", value);
         if (value.selected_shift != null) {
           let shiftHours = this.techProfile.shiftLength;
           let shiftStartsAt = this.techProfile.shiftStartTime;
-          // let shiftStartDay = 
         }
       });
       this.dataReady = true;
@@ -215,6 +215,7 @@ export class WorkOrderPage implements OnInit {
       if(data != null) {
         this.selectedShift = data;
         this.selectedShiftText = this.selectedShift.toString();
+        this.workOrderForm.controls['selected_shift'].setValue(this.selectedShift);
       }
     });
     fancySelectModal.present();
@@ -417,6 +418,7 @@ export class WorkOrderPage implements OnInit {
                 Log.l("processWO(): Error while trying to sync work order to CouchDB server!");
                 Log.w(err);
                 this.syncError = true;
+                this.alert.hideSpinner();
                 // resolve(false);
                 resolve(-6);
               });
@@ -432,15 +434,21 @@ export class WorkOrderPage implements OnInit {
         } else {
           console.error("processWO(): Tech profile does not exist. Contact developers.");
           // resolve(false);
+          this.alert.hideSpinner();
           resolve(-8);
         }
       }).catch((outerError) => {
         Log.l("processWO(): Error checking existence of local document _local/techProfile.");
         Log.w(outerError);
         // resolve(false);
+        this.alert.hideSpinner();
         resolve(-9);
       });
     });
+  }
+
+  cancel() {
+    Log.l("WorkOrderPage: User canceled work order.");
   }
 }
 
