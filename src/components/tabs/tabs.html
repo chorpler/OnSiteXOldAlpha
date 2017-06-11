@@ -16,6 +16,9 @@
       <button ion-button icon-only [disabled]="tabDisabled" (click)="goSettings()">
         <ion-icon [class.hlght]="tabClass[4]" id="tab5" name="settings"></ion-icon>
       </button>
+      <button ion-button icon-only [disabled]="tabDisabled" *ngIf="isDeveloper()" (click)="goDev()">
+        <ion-icon [class.hlght]="tabClass[5]" id="tab6" name="options"></ion-icon>
+      </button>
     </div>
   </ion-toolbar>
 </ion-footer>
