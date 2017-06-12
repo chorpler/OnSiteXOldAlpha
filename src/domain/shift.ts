@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { Log } from '../config/config.functions';
+import { sprintf } from 'sprintf-js';
 
 const XL = moment([1900, 1, 1]);
 
