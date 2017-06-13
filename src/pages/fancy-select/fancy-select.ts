@@ -38,6 +38,7 @@ export class FancySelectPage implements OnInit {
   public selected:any = null;
   public svgNumbers:any = [];
   public circChars:any = UserData.circled_numbers_chars;
+  public circled_numbers: Array<string> = ["⓵", "⓶", "⓷", "⓸", "⓹", "⓺", "⓻", "⓼", "⓽"];
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController, public domSanitizer:DomSanitizer) {
     if (this.navParams.get('selectData') !== undefined) {
        this.selectData = this.navParams.get('selectData');
@@ -53,10 +54,10 @@ export class FancySelectPage implements OnInit {
 
   ngOnInit() {
     Log.l('FancySelect: ngOnInit called. SelectData is:\n', this.selectData);
-    let len = this.selectData.numbers.length;
-    for(let i = 0; i < len; i++) {
-      this.svgNumbers.push(this.domSanitizer.bypassSecurityTrustHtml(this.selectData.numbers[i]));
-    }
+    // let len = this.selectData.numbers.length;
+    // for(let i = 0; i < len; i++) {
+    //   this.svgNumbers.push(this.domSanitizer.bypassSecurityTrustHtml(this.selectData.numbers[i]));
+    // }
   }
 
   selectOption(number) {

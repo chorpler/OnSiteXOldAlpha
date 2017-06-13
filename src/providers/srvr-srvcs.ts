@@ -5,6 +5,7 @@ import * as PouchDB         from 'pouchdb'                    ;
 import * as PouchDBAuth     from 'pouchdb-authentication'     ;
 import * as pdbSeamlessAuth from 'pouchdb-seammless-auth'     ;
 import { Log, CONSOLE }     from '../config/config.functions' ;
+import { WorkOrder } from '../domain/workorder';
 
 export const noDD     = "_\uffff";
 export const noDesign = {include_docs: true, startkey: noDD };
@@ -176,29 +177,41 @@ export class SrvrSrvcs {
       }
   }
 
-  getReportsForTech(tech:any) {
+  getReportsForTech(tech:string):Promise<Array<WorkOrder>> {
     return new Promise((resolve, reject) => {
       let u = SrvrSrvcs.userInfo;
+      let woArray = new Array<WorkOrder>();
       this.loginToServer(u.u, u.p, 'reports').then((res) => {
         if (res) {
           let rpdb = SrvrSrvcs.rdb.get('reports');
-          rpdb.allDocs({include_docs:true}).then((result) => {
-            let data = [];
-            let docs = result.rows.map((row) => {
-              resolve(data);
-            });
-          }).catch((error) => {
-            Log.l("getReports(): Error getting reports for user.");
-            Log.e(error);
-            resolve([]);
+          // let username = tech.username;
+          let query = {selector: {username: {$eq: tech}}};
+          // query.selector.username['$eq'] = username;
+          rpdb.find(query).then((res) => {
+            Log.l(`getReportsForTech(): Got reports for '${tech}':\n`, res);
+            let woArray = new Array<WorkOrder>();
+            for(let doc in res.docs) {
+              let wo = new WorkOrder();
+              wo.readFromDoc(doc);
+              woArray.push(wo);
+            }
+            // let docs  = res.docs;
+            // for(let row in res.docs) {
+              // No processing yet
+            // }
+            resolve(woArray);
+          }).catch((err) => {
+            Log.l(`getReportsForTech(): Error getting reports for '${tech}'.`);
+            Log.l(err);
+            resolve(woArray);
           });
         } else {
-          resolve([]);
+          resolve(woArray);
         }
       }).catch((err) => {
-        Log.l("getReports(): Error logging in to server.")
+        Log.l("getReportsForTech(): Error logging in to server.")
         Log.e(err);
-        resolve([]);
+        resolve(woArray);
       });
     });
   }
@@ -244,7 +257,6 @@ export class SrvrSrvcs {
       Log.e(err);
     });
   }
-
 
   syncToServer(dbname: string, pdb: any) {
     Log.l(`syncSquaredToServer(): About to attempt replication of '${dbname}'->remote`);

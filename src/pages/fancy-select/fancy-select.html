@@ -15,7 +15,7 @@
     <button ion-item class="fancy-select-item" (click)="selectOption(i)" *ngFor="let option of options; let i=index">
       <div class="one-ion-option" [ngClass]="option.shift.getShiftColor()">
         <!--<div class="shift-svg-number" [class.red]="option.shift.isRed()" [class.green]="option.shift.isGreen()" [class.blue]="option.shift.isBlue()" [innerHTML]="svgNumbers[i]"></div>:-->
-        <div class="shift-svg-number">{{circChars[i]}}</div>
+        <div class="shift-svg-number">{{circled_numbers[option.shift.shift_number - 1]}}</div>
         <!--<div class="shift-text">{{option.shift.getShiftDescription()}}</div>-->
         <div class="shift-text">{{option.shift.start_time.format("MMM DD")}} (Payroll week {{option.shift.shift_week.format("MMM DD")}})</div>
       </div>

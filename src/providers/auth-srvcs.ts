@@ -422,7 +422,10 @@ export class AuthSrvcs {
     Log.l("logout(): Attempting to remove logged-in flag...");
     return new Promise((resolve,reject) => {
       this.clearLoginFlag().then((res) => {
-        Log.l("AuthSrvcs.logout(): Cleared hasLoggedIn flag. User is now logged out.");
+        Log.l("AuthSrvcs.logout(): Cleared hasLoggedIn flag, now removing stored credentials.");
+        return this.clearCredentials();
+      }).then((res) =>{
+        Log.l("AuthSrvcs.logout(): Cleared user credentials. User is now well and truly logged out.");
         resolve(res);
       }).catch((err) => {
         Log.l("AuthSrvcs.logout(): Error while logging out.");

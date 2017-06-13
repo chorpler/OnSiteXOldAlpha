@@ -448,7 +448,7 @@ export class DBSrvcs {
     });
   }
 
-  get
+  // get
 
   allDoc() {
     return new Promise(resolve => {

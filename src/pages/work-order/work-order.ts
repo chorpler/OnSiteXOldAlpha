@@ -15,6 +15,7 @@ import { Status } from '../../providers/status';
 import { UserData } from '../../providers/user-data';
 import moment from 'moment';
 import { sprintf } from 'sprintf-js';
+import { MultiPickerModule } from 'ion-multi-picker';
 import { FancySelectComponent } from '../../components/fancy-select/fancy-select';
 import { SafePipe } from '../../pipes/safe';
 
@@ -50,6 +51,7 @@ export class WorkOrderPage implements OnInit {
   repairTime: any;
   public shiftTotalHours:any = 0;
   public payrollPeriodHours:any = 0;
+  public currentRepairHours:number = 0;
 
   rprtDate: any = moment();
   timeStarts: any = moment();
@@ -74,6 +76,8 @@ export class WorkOrderPage implements OnInit {
   controlValueAccessor: any;
   public dataReady: boolean = false;
 
+  public techWorkOrders:Array<WorkOrder> = [];
+
   public shiftDateInputDisabled:boolean = true;
   public shiftDateInput2Disabled:boolean = false;
   // public selectedShiftText:string = "None a'tall";
@@ -89,7 +93,8 @@ export class WorkOrderPage implements OnInit {
     public loadingCtrl: LoadingController,
     public alert: AlertService,
     public modal: ModalController,
-    public zone:NgZone)
+    public zone:NgZone,
+    public ud:UserData)
   {
     this.db = this.dbSrvcs;
     this.shifter = Shift;
@@ -101,12 +106,12 @@ export class WorkOrderPage implements OnInit {
 
   ngOnInit() {
     if (this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
-    console.log(this.mode);
-    console.log(this.setDate);
-    console.log(this.year);
-    console.log(this.rprtDate);
+    // console.log(this.mode);
+    // console.log(this.setDate);
+    // console.log(this.year);
+    // console.log(this.rprtDate);
 
-    this.shiftDateOptions = {"interface": "popover"};
+    // this.shiftDateOptions = {"interface": "popover"};
 
     this.chooseHours = [
       {"name": "Hours", "options": [] },
@@ -127,6 +132,7 @@ export class WorkOrderPage implements OnInit {
       Log.l(`WorkOrderPage: Success getting tech profile! Result:\n`, res);
       // this.controlValueAccessor = {}
       this.techProfile = res;
+      this.workOrder = new WorkOrder();
       this.setupShifts();
       this.initializeForm();
       this._startDate = this.workOrderForm.controls.rprtDate;
@@ -135,17 +141,32 @@ export class WorkOrderPage implements OnInit {
       this._repairHours = this.workOrderForm.controls.repairHours;
       this._selected_shift = this.workOrderForm.controls.selected_shift;
       // this._startDate = this.workOrder.controls['rprtDate'];
-      this.workOrderForm.valueChanges.debounceTime(500).subscribe((value: any) => {
+      this.workOrderForm.valueChanges.subscribe((value: any) => {
         Log.l("workOrderForm: valueChanges fired for:\n", value);
         if (value.selected_shift != null) {
+          let ss = value.selected_shift;
+          this.updateActiveShiftWorkOrders();
+          let shift_time = moment(ss.start_time);
+          let shift_serial = ss.getShiftSerial();
+          this.workOrder.shift_serial = shift_serial;
           let shiftHours = this.techProfile.shiftLength;
           let shiftStartsAt = this.techProfile.shiftStartTime;
+
+          // let shiftDay = moment()
           // let shiftStartDay =
         }
         if(value.repair_time != null) {
-          this.workOrder.repair_hours = value.repair_time;
-
+          let dur1 = value.repair_time.split(":");
+          let hrs = Number(dur1[0]);
+          let min = Number(dur1[1]);
+          let iDur = hrs + (min / 60);
+          this.currentRepairHours = iDur;
+          this.workOrder.setRepairHours(iDur);
         }
+        // if(value.start_time != null) {
+        //   let tmp1 = value.start_time;
+        //   let start = moment(tmp1);
+        // }
       });
       this.dataReady = true;
     }).catch((err) => {
@@ -158,6 +179,10 @@ export class WorkOrderPage implements OnInit {
     //   Log.l("valueChanged for _locID:\n", value);
     //   this.locIDChanged(this._locID.value);
     // });
+  }
+
+  public updateActiveShiftWorkOrders() {
+    // this.techWorkOrders = 
   }
 
   /**
@@ -190,24 +215,16 @@ export class WorkOrderPage implements OnInit {
       // let shiftStartDay = moment(now).subtract(i, 'days');
       let thisShift = new Shift('SITENAME', null, 'AM', shift_day, 8);
       thisShift.updateShiftWeek();
+      thisShift.updateShiftNumber();
+      thisShift.getExcelDates();
       this.shifts.push(thisShift);
       Log.l(`Now adding day ${i}: ${moment(shift_day).format()}`);
     }
-
+    this.selectedShiftText = this.shifts[0].toString();
   }
 
   public showFancySelect() {
     Log.l("showFancySelect(): Called!");
-    let template = `
-    <ion-list class="fancy-select">
-      <button ion-item (click)="selectOption(i)" *ngFor="let option of options; let i=index">
-        <span class="one-ion-option">
-          <span [class]="option.shift.getShiftColor()">{{selectData.numbers[i]}}: </span>
-          <span class="shift-text">{{option.shift.getShiftDescription()}}</span>
-        </span>
-      </button>
-    </ion-list>
-`;
     let options = [];
     let selectData = {numbers: UserData.circled_numbers, options: options};
     for(let shift of this.shifts) {
@@ -251,6 +268,7 @@ export class WorkOrderPage implements OnInit {
     let shiftID = shift.getShiftSerial();
     this.workOrder.shift_serial = shiftID;
     Log.l("getTotalHoursForShift(): set work order shift_serial to:\n", shiftID);
+
     
   }
 
@@ -267,6 +285,8 @@ export class WorkOrderPage implements OnInit {
   onSubmit() {
     this.processWO();
   }
+
+  
 
   /**
    * Calcualtes workOrderData.timeEnds given workOrderData.timeStarts
@@ -347,7 +367,9 @@ export class WorkOrderPage implements OnInit {
     //   console.log( this.idDate );
     // let firstInitial = this.profile.firstName.slice(0,1);
     // let lastInitial = this.profile.lastName.slice(0,1);
-    this.docID = this.profile.avatarName + '_' + this.idDate + this.idTime;
+    let now = moment();
+    let idDateTime = now.format("dddDDMMMYYYYHHmmss");
+    this.docID = this.profile.avatarName + '_' + idDateTime;
     console.log(this.docID);
   }
 

@@ -8,6 +8,7 @@ import { REPORTHEADER, REPORTMETA                     } from '../../config/repor
 import { DBSrvcs                                      } from '../../providers/db-srvcs'               ;
 import { ReportBuildSrvc                              } from '../../providers/report-build-srvc'      ;
 import { Login                                        } from '../login/login'                         ;
+import { UserData                                     } from '../../providers/user-data'              ;
 import { TabsComponent                                } from '../../components/tabs/tabs'             ;
 
 
@@ -51,11 +52,13 @@ export class TechSettingsPage implements OnInit {
 
   constructor( public navCtrl: NavController, public navParams    : NavParams,
                public db     : DBSrvcs,       public reportBuilder: ReportBuildSrvc,
-               public tabs   : TabsComponent, public viewCtrl     : ViewController   ) {
+               public tabs   : TabsComponent, public viewCtrl     : ViewController,
+               public ud     : UserData ) {
 
     window["onsite"] = window["onsite"] || {};
     window["onsite"]["settings"] = this;
     window["onsite"]["settingsClass"] = TechSettingsPage;
+    window["techsettings"] = this;
   }
 
   ngOnInit() {
