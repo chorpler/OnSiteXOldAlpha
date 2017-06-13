@@ -1,6 +1,6 @@
 import { Component, OnInit                                                       } from '@angular/core'                  ;
 import { IonicPage, NavController, NavParams, LoadingController, AlertController } from 'ionic-angular'                  ;
-import { PopoverController, ViewController                                       } from 'ionic-angular'                  ;
+import { PopoverController, ViewController, Events                               } from 'ionic-angular'                  ;
 import { FormGroup, FormControl, Validators                                      } from "@angular/forms"                 ;
 import { AuthSrvcs                                                               } from '../../providers/auth-srvcs'     ;
 import { SrvrSrvcs                                                               } from '../../providers/srvr-srvcs'     ;
@@ -43,7 +43,8 @@ export class Login implements OnInit {
     private network: NetworkStatus,
     private alerter: AlertService,
     public viewCtrl: ViewController,
-    public ud: UserData
+    public ud: UserData,
+    public events: Events
   ) {
     window['loginscreen'] = this;
   }
@@ -113,7 +114,9 @@ export class Login implements OnInit {
         Log.l("loginAttempt(): Finished validating and saving user info.")
         let creds = { user: this.username, pass: this.password };
         this.ud.storeCredentials(creds);
+        this.ud.setLoginStatus(true);
         this.hideSpinner();
+        this.events.publish('startup:finished', this.ud.getLoginStatus());
         this.viewCtrl.dismiss(creds);
       }).catch((err) => {
         Log.l("loginAttempt(): Error validating and saving user info.");

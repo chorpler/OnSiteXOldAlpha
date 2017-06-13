@@ -1,5 +1,5 @@
 import { Component, OnInit, NgZone              } from '@angular/core';
-import { Platform, IonicPage, NavParams         } from 'ionic-angular';
+import { Platform, IonicPage, NavParams, Events } from 'ionic-angular';
 import { NavController, ToastController         } from 'ionic-angular';
 import { ModalController                        } from 'ionic-angular';
 import { Log } from '../../config/config.functions';
@@ -53,7 +53,8 @@ export class HomePage {
                public navParams: NavParams,
                public server: SrvrSrvcs,
                public ud: UserData,
-               public db: DBSrvcs ) 
+               public db: DBSrvcs,
+               public events: Events ) 
   {
     this.shftOne   = this.numChars[0];
     this.shftTwo   = this.numChars[1];
@@ -66,32 +67,57 @@ export class HomePage {
   }
 
   ionViewDidEnter() {
+    Log.l("HomePage: ionViewDidEnter() called. First wait ot make sure app is finished loading.");
+    this.dataReady = false;
+    // this.events.subscribe('pageload:finished', (loggedIn) => {
+    //   Log.l("HomePage: pageload:finished event detected. Login status: ", loggedIn);
+    //   this.events.unsubscribe('pageload:finished', () => {
+    //     Log.l("HomePage: no longer receiving pageload:finished events.");
+    //   });
+      this.runEveryTime();
+    // });
+  }
+
+  ionViewDidLoad() {
+    Log.l("HomePage: ionViewDidLoad() called. FIRST, waiting for app to finish loading.");
+    // this.events.subscribe('startup:finished', (loggedIn) => {
+    //   Log.l("HomePage: startup:finished event detected. Login status: ", loggedIn);
+    //   this.events.unsubscribe('startup:finished', () => {
+      //   Log.l("HomePage: no longer receiving startup:finished events.");
+      // });
+      this.runWhenReady();
+    // });
+  }
+
+  runEveryTime() {
     if (this.ud.getLoginStatus() === false) {
       this.presentLoginModal();
-    } else if(!this.ud.woArrayInitialized()) {
+    } else if (!this.ud.woArrayInitialized()) {
       Log.l("HomePage: ionViewDidEnter() says work order array not initialized, fetching work orders.");
       this.fetchTechWorkorders().then((res) => {
         Log.l("HomePage: ionViewDidEnter() fetched work orders, maybe:\n", res);
         this.ud.setWorkOrderList(res);
-      });
+        this.ud.createShifts();
+        this.dataReady = true;
+     });
     }
-    this.ud.createShifts();
     // this.chkHrs();
   }
 
-  ionViewDidLoad() {
-    Log.l("HomePage: ionViewDidLoad() called. Checking user login status.");
+  runWhenReady() {
+    Log.l("HomePage: app finished loading. Now, checking user login status.");
     if (this.ud.getLoginStatus()) {
       Log.l("HomePage: user logged in, fetching work orders.");
       this.fetchTechWorkorders().then((res) => {
         Log.l("HomePage: fetched work orders, maybe:\n", res);
+        this.ud.createShifts();
+        this.shifts = this.ud.getPeriodShifts();
+        HomePage.pageLoadedPreviously = true;
+        this.events.publish('pageload:finished', this.ud.getLoginStatus());
       });
     } else {
       Log.l("HomePage: user not authorized in ionViewDidLoad(). Guess ionViewDidEnter() can present a login modal.");
     }
-    this.ud.createShifts();
-    this.shifts = this.ud.getPeriodShifts();
-    HomePage.pageLoadedPreviously = true;
   }
 
   fetchTechWorkorders():Promise<Array<any>> {

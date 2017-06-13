@@ -4,6 +4,9 @@ import { IonicPage, NavController, NavParams, LoadingController, AlertController
 import { DBSrvcs                                                                 } from '../../providers/db-srvcs'          ;
 import { SrvrSrvcs                                                               } from '../../providers/srvr-srvcs'        ;
 import { AuthSrvcs                                                               } from '../../providers/auth-srvcs'        ;
+import { UserData                                                                } from '../../providers/user-data'         ;
+import { WorkOrder                                                               } from '../../domain/workorder'            ;
+import { Shift                                                                   } from '../../domain/shift'                ;
 import { TimeSrvc                                                                } from '../../providers/time-parse-srvc'   ;
 import { ReportBuildSrvc                                                         } from '../../providers/report-build-srvc' ;
 import * as moment                                                                 from 'moment'                            ;
@@ -16,7 +19,7 @@ export class EditReport implements OnInit {
   title         : string      = 'Report Edit'          ;
   syncError     : boolean     = false                  ;
   workOrderForm : FormGroup                            ;
-  workOrder     : any         = {}                     ;
+  workOrder     : WorkOrder                            ;
   mode          : string      = 'Edit'                 ;
   setDate       : Date        = new Date()             ;
   loading       : any         = {}                     ;
@@ -34,12 +37,12 @@ export class EditReport implements OnInit {
   ngOnInit() {
     if (this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
     this.workOrder = this.navParams.get('item');
-    let h = this.workOrder.repairHrs;
-    let hr = parseInt(h) + (parseInt(h.split(":")[1]) / 60);
-    this.workOrder.repairHrs = hr;
-    let ts = this.workOrder.timeStarts;
-    let t = ts.split(":")[0];
-    if(t.length < 2) { this.workOrder.timeStarts = "0" + ts;}
+    let h = this.workOrder.repair_hours;
+    // let hr = parseInt(h) + (parseInt(h.split(":")[1]) / 60);
+    // this.workOrder.repairHrs = hr;
+    // let ts = this.workOrder.timeStarts;
+    // let t = ts.split(":")[0];
+    // if(t.length < 2) { this.workOrder.timeStarts = "0" + ts;}
     this.initializeForm();
   }
 
@@ -52,14 +55,14 @@ export class EditReport implements OnInit {
 
   initializeForm() {
     this.workOrderForm = new FormGroup({
-      'timeStarts': new FormControl(this.workOrder.timeStarts, Validators.required),
-      'timeEnds'  : new FormControl(this.workOrder.timeEnds, Validators.required),
-      'repairHrs' : new FormControl(this.workOrder.repairHrs, Validators.required),
-      'uNum'      : new FormControl(this.workOrder.uNum, Validators.required),
-      'wONum'     : new FormControl(this.workOrder.wONum, Validators.required),
+      'timeStarts': new FormControl(this.workOrder.time_start, Validators.required),
+      'timeEnds'  : new FormControl(this.workOrder.time_end, Validators.required),
+      'repairHrs' : new FormControl(this.workOrder.repair_hours, Validators.required),
+      'uNum'      : new FormControl(this.workOrder.unit_number, Validators.required),
+      'wONum'     : new FormControl(this.workOrder.work_order_number, Validators.required),
       'notes'     : new FormControl(this.workOrder.notes, Validators.required),
-      'rprtDate'  : new FormControl(this.workOrder.rprtDate, Validators.required),
-      'timeStamp' : new FormControl({ value: this.workOrder.timeStamp, disabled: true}, Validators.required)
+      'rprtDate'  : new FormControl(this.workOrder.report_date, Validators.required),
+      'timeStamp' : new FormControl({ value: this.workOrder.timestamp, disabled: true}, Validators.required)
     });
   }
 
@@ -98,17 +101,17 @@ export class EditReport implements OnInit {
   updateWorkOrder() {
     const WO = this.workOrderForm.getRawValue();
     Log.l("updateWorkOrder(): Form is:\n",WO);
-    this.workOrder.timeStarts = WO.timeStarts ;
-    this.workOrder.timeEnds   = WO.timeEnds   ;
-    this.workOrder.repairHrs  = WO.repairHrs  ;
-    this.workOrder.uNum       = WO.uNum       ;
-    this.workOrder.wONum      = WO.wONum      ;
-    this.workOrder.notes      = WO.notes      ;
-    this.workOrder.rprtDate   = WO.rprtDate   ;
-    this.workOrder.timeStamp  = WO.timeStamp  ;
+    this.workOrder.time_start        = WO.time_start       ; 
+    this.workOrder.time_end          = WO.time_end         ; 
+    this.workOrder.repair_hours      = WO.repair_hours     ; 
+    this.workOrder.unit_number       = WO.unit_number      ; 
+    this.workOrder.work_order_number = WO.work_order_number; 
+    this.workOrder.notes             = WO.notes            ; 
+    this.workOrder.report_date       = WO.report_date      ; 
+    this.workOrder.timestamp         = WO.timestamp        ; 
     Log.l("updateWorkOrder(): About to call calcEndTime()");
 
-    this.timeSrvc.calcEndTime(this.workOrder);
+    // this.timeSrvc.calcEndTime(this.workOrder);
     Log.l("updateWorkOrder(): Updated Work Order is:\n", this.workOrder);
   }
 

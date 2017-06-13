@@ -113,12 +113,8 @@ export class WorkOrderPage implements OnInit {
 
   ngOnInit() {
     if (this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
-    // console.log(this.mode);
-    // console.log(this.setDate);
-    // console.log(this.year);
-    // console.log(this.rprtDate);
-
-    // this.shiftDateOptions = {"interface": "popover"};
+    if(this.navParams.get('workOrder') !== undefined) { this.workOrder = this.navParams.get('workOrder'); }
+    this.title = `${this.mode} Work Order`;
 
     this.chooseHours = [
       {"name": "Hours", "options": [] },
@@ -139,7 +135,9 @@ export class WorkOrderPage implements OnInit {
       Log.l(`WorkOrderPage: Success getting tech profile! Result:\n`, res);
       // this.controlValueAccessor = {}
       this.techProfile = res;
-      this.workOrder = new WorkOrder();
+      if(this.mode === 'Add') {
+        this.workOrder = new WorkOrder();
+      }
       this.setupShifts();
       this.setupWorkOrderList();
       this.initializeForm();
@@ -301,16 +299,20 @@ export class WorkOrderPage implements OnInit {
   }
 
   private initializeForm() {
+    let wo = this.workOrder;
+    let rprtDate = moment(this.shifts[0].getStartTime());
+    let ts = wo.timestamp || moment().format();
     this.workOrderForm = new FormGroup({
       // 'timeStarts': new FormControl(this.startTime.format("HH:00"), Validators.required),
-      'selected_shift': new FormControl(this.shifts[0], Validators.required),
       // 'timeEnds': new FormControl(null, Validators.required),
-      'repair_time': new FormControl(null, Validators.required),
-      'uNum': new FormControl(null, Validators.required),
-      'wONum': new FormControl(null, Validators.required),
-      'notes': new FormControl(null, Validators.required),
-      'rprtDate': new FormControl(this.reportDate.format("YYYY-MM-DD"), Validators.required),
-      'timeStamp': new FormControl({ value: moment().format(), disabled: true }, Validators.required)
+      'selected_shift': new FormControl(this.shifts[0], Validators.required),
+      'repair_time': new FormControl(wo.getRepairHoursString(), Validators.required),
+      'uNum': new FormControl(wo.unit_number, Validators.required),
+      'wONum': new FormControl(wo.work_order_number, Validators.required),
+      'notes': new FormControl(wo.notes, Validators.required),
+      'rprtDate': new FormControl(rprtDate.format("YYYY-MM-DD"), Validators.required),
+      'timeStamp': new FormControl({ value: ts, disabled: true }, Validators.required)
+      // 'timeStamp': new FormControl({ value: moment().format(), disabled: true }, Validators.required)
     });
   }
 
@@ -388,20 +390,38 @@ export class WorkOrderPage implements OnInit {
 
     // return new Promise((resolve, reject) => {
     let tempWO = this.createReport();
-    this.dbSrvcs.addDoc(tempWO).then((res) => {
-      Log.l("processWO(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
-      return this.db.syncSquaredToServer('reports');
-    }).then((res) => {
-      Log.l("processWO(): Successfully synchronized work order to remote.");
-      this.alert.hideSpinner();
-      // setTimeout(() => { this.navCtrl.setRoot('OnSiteHome'); });
-      setTimeout(() => { this.tabs.goHome() });
-    }).catch((err) => {
-      Log.l("processWO(): Error saving work order to local database.");
-      Log.e(err);
-      this.alert.hideSpinner();
-      // reject(err);
-    });
+    if(this.mode === 'Add') {
+      this.dbSrvcs.addDoc(tempWO).then((res) => {
+        Log.l("processWO(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
+        return this.db.syncSquaredToServer('reports');
+      }).then((res) => {
+        Log.l("processWO(): Successfully synchronized work order to remote.");
+        this.alert.hideSpinner();
+        // setTimeout(() => { this.navCtrl.setRoot('OnSiteHome'); });
+        setTimeout(() => { this.tabs.goHome() });
+      }).catch((err) => {
+        Log.l("processWO(): Error saving work order to local database.");
+        Log.e(err);
+        this.alert.hideSpinner();
+        // reject(err);
+      });
+    } else {
+      this.dbSrvcs.updateDoc(tempWO).then((res) => {
+        Log.l("processWO(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
+        return this.db.syncSquaredToServer('reports');
+      }).then((res) => {
+        Log.l("processWO(): Successfully synchronized work order to remote.");
+        this.alert.hideSpinner();
+        // setTimeout(() => { this.navCtrl.setRoot('OnSiteHome'); });
+        setTimeout(() => { this.tabs.goHome() });
+      }).catch((err) => {
+        Log.l("processWO(): Error saving work order to local database.");
+        Log.e(err);
+        this.alert.hideSpinner();
+        // reject(err);
+      });
+
+    }
     // });
     //   this.dbSrvcs.checkLocalDoc('_local/techProfile').then((docExists) => {
     //     if (docExists) {
@@ -503,6 +523,8 @@ export class WorkOrderPage implements OnInit {
 
   cancel() {
     Log.l("WorkOrderPage: User canceled work order.");
+    // setTimeout(() => { this.tabs.goHome() });
+    this.tabs.goHome();
   }
 
   createReport() {
@@ -520,6 +542,12 @@ export class WorkOrderPage implements OnInit {
     console.log(partialReport);
     let newReport:any = {};
     let newID = this.genReportID();
+    if(this.mode !== 'Add') {
+      newID = wo._id; 
+    }
+    if(wo._rev !== undefined && wo._rev !== null && wo._rev !== '') {
+      newReport._rev = wo._rev;
+    }
     newReport._id            = newID                             ;
     newReport.timeStarts     = wo.time_start.format()            ;
     newReport.timeEnds       = wo.time_end.format()              ;

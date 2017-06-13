@@ -107,19 +107,26 @@ export class UserData {
     let total = 0;
     for(let wo of filtered) {
       let subtotal = wo.getRepairHours();
-      let payrollhour = subtotal;
-      if(subtotal >= 8 && subtotal <= 11) {
-        payrollhour += 3;
-      } else if(subtotal > 11) {
-        payrollhour *= 2;
+      let bonushours = 0;
+      if(wo.location !== 'WESLACO' && wo.location !== 'LAS CUATAS') {
+        if(subtotal >= 8 && subtotal <= 11) {
+          bonushours = 3;
+        } else if(subtotal > 11) {
+          bonushours = ((subtotal - 11)*2)+3;
+        }
       }
-      total += payrollhour;
+      subtotal += bonushours;
+      total += subtotal;
     }
     return total;
   }
 
   getUsername() {
     return UserData.loginData['user'] || null;
+  }
+
+  getPassword() {
+    return UserData.loginData['pass'] || null;
   }
 
   getCredentials() {
@@ -129,10 +136,10 @@ export class UserData {
   storeCredentials(loginData:any, pass?:any) {
     if(typeof loginData == 'object') {
       UserData.loginData = loginData;
-      UserData.userLoggedIn = true;
+      // UserData.userLoggedIn = true;
     } else if(typeof loginData == 'string' && typeof pass == 'string') {
       UserData.loginData = {user: loginData, pass: pass};
-      UserData.userLoggedIn = true;
+      // UserData.userLoggedIn = true;
     } else {
       Log.l("UserData.storeCredentials(): Invalid login data provided:\n", loginData);
     }
@@ -140,11 +147,21 @@ export class UserData {
 
   getLoginStatus() {
     Log.l("UD.getLoginStatus(): login status is:\n", UserData.userLoggedIn);
+    Log.l("UD.getLoginStatus(): creds are: ", UserData.userLoggedIn, "\n", UserData.loginData);
     return UserData.userLoggedIn;
   }
 
   setLoginStatus(status:boolean) {
     UserData.userLoggedIn = status;
+  }
+
+  clearCredentials() {
+    UserData.userLoggedIn = false;
+    UserData.loginData = null;
+  }
+
+  logout() {
+    this.clearCredentials();
   }
 
   woArrayInitialized() {

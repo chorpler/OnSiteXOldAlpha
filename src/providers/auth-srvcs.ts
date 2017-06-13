@@ -184,7 +184,7 @@ export class AuthSrvcs {
               this.setUser(userInfo.username);
               this.setPassword(userInfo.password);
               this.ud.storeCredentials(userInfo.username, userInfo.password);
-              this.ud.setLoginStatus(true);
+              // this.ud.setLoginStatus(true);
               resolve(userInfo);
             } else {
               Log.l("getCredentials(): Credentials not available.");
@@ -205,7 +205,7 @@ export class AuthSrvcs {
               this.setUser(userInfo.username);
               this.setPassword(userInfo.password);
               this.ud.storeCredentials(userInfo.username, userInfo.password);
-              this.ud.setLoginStatus(true);
+              // this.ud.setLoginStatus(true);
               resolve(userInfo);
             } else {
               Log.l("getCredentials(): Credentials not available.");
@@ -274,7 +274,7 @@ export class AuthSrvcs {
             this.setUser(userInfo.username);
             this.setPassword(userInfo.password);
             this.ud.storeCredentials(userInfo.username, userInfo.password);
-            this.ud.setLoginStatus(true);
+            // this.ud.setLoginStatus(true);
             resolve(userInfo);
           }).catch((err) => {
             console.log("getCredentials(): Error getting credentials from secure storage!");
@@ -290,7 +290,7 @@ export class AuthSrvcs {
             this.setUser(userInfo.username);
             this.setPassword(userInfo.password);
             this.ud.storeCredentials(userInfo.username, userInfo.password);
-            this.ud.setLoginStatus(true);
+            // this.ud.setLoginStatus(true);
             resolve(userInfo);
           }).catch((err) => {
             console.log("getCredentials(): Error retrieving credentials from local storage!");
@@ -433,6 +433,7 @@ export class AuthSrvcs {
         Log.l("AuthSrvcs.logout(): Cleared hasLoggedIn flag, now removing stored credentials.");
         return this.clearCredentials();
       }).then((res) =>{
+        this.ud.logout();
         Log.l("AuthSrvcs.logout(): Cleared user credentials. User is now well and truly logged out.");
         resolve(res);
       }).catch((err) => {

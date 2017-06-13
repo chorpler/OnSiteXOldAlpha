@@ -137,7 +137,8 @@ export class SrvrSrvcs {
 			let authToken = 'Basic ' + window.btoa(user + ':' + pass);
 			let ajaxOpts = { headers: { Authorization: authToken } };
 			let opts = {adapter: SrvrSrvcs.protocol, skipSetup: true, ajax: {withCredentials: true, ajaxOpts, auth: {username: user, password: pass}}};
-			let rdb1 = SrvrSrvcs.addRDB(dbURL);
+			let rdb1 = this.addRDB(dbURL);
+      let tprofile = null;
       Log.l(`loginToServer(): About to login with u '${user}', p '${pass}', dburl '${dbURL}'.`);
 			rdb1.login(user, pass, {ajax: ajaxOpts}).then((res) => {
   			return rdb1.getSession();
@@ -150,18 +151,20 @@ export class SrvrSrvcs {
 					Log.l("loginToServer(): Authentication successful.");
 					SrvrSrvcs.userInfo = {u: user, p: pass};
           this.ud.storeCredentials(user, pass);
-          this.ud.setLoginStatus(true);
+          // this.ud.setLoginStatus(true);
           let rdb2 = this.addRDB('sesa-employees');
           let uid = `org.couchdb.user:${user}`;
           rdb2.get(uid).then((res) => {
             Log.l("loginToServer(): got user object from server!\n", res);
-            let tprofile = res;
+            tprofile = res;
             // tprofile.docID = tprofile._id;
             // tprofile._id = "_local/techProfile";
             return this.saveTechProfile(tprofile);
           }).then((res) => {
             Log.l("loginToServer(): Successfully saved user profile!\n", res);
-					  resolve(session);
+            this.ud.setTechProfile(tprofile);
+            this.ud.setLoginStatus(true);
+            resolve(session);
           }).catch((err) => {
             Log.l("loginToServer(): Error getting user object from server!");
             Log.e(err);
@@ -231,24 +234,30 @@ export class SrvrSrvcs {
     // let updateFunction = (original) => {}
     let localID = '_local/techProfile';
     let newProfileDoc = null, uid = null, rdb1 = null, db1 = null, localProfileDoc = null;
+    localProfileDoc = Object.assign({}, doc);
+    localProfileDoc.docID = doc._id;
+    localProfileDoc._id   = localID;
     return new Promise((resolve, reject) => {
       db1 = this.addDB('reports');
       db1.get(localID).then((res) => {
-        Log.l("Server.saveTechProfile(): Found techProfile locally.");
-        localProfileDoc = res;
-        var strID = res['_id'];
-        var strRev = res['_rev'];
-        newProfileDoc = { ...res, ...doc, "_id": strID, "_rev": strRev };
-        Log.l("Server.saveTechProfile(): Merged profile is:");
-        Log.l(newProfileDoc);
-        Log.l("Server.saveTechProfile(): now attempting save...");
+        Log.l("Server.saveTechProfile(): Found techProfile locally. Deleting it.");
+        let id = res._id;
+        let rev = res._rev;
+        return db1.remove(id, rev);
+      }).then((res) => {
+        Log.l("Server.saveTechProfile(): Deleted techProfile locally. Now updating it.");
+        return db1.put(localProfileDoc);
+      }).then((res) => {
+        Log.l("Server.saveTechProfile(): Saved local profile successfully!\n", res);
+        resolve(localProfileDoc);
       }).catch((err) => {
         Log.l("Server.saveTechProfile(): Local tech profile not found. Creating.");
-        doc.docID = doc._id;
-        doc._id = localID;
-        delete doc._rev;
+        delete localProfileDoc._rev;
+        // doc.docID = doc._id;
+        // doc._id = localID;
+        // delete doc._rev;
         Log.l("Server.saveTechProfile(): Attempting to save local tech profile:\n", doc);
-        return db1.put(doc);
+        return db1.put(localProfileDoc);
       }).then((res) => {
         Log.l("Server.saveTechProfile(): Successfully saved local tech profile:\n", res);
       //   rdb1 = this.srvr.addRDB('sesa-employees');
@@ -262,7 +271,7 @@ export class SrvrSrvcs {
       //   return rdb1.put(newProfileDoc);
       // }).then((res) => {
       //   Log.l("saveTechProfile(): Saved updated techProfile:\n", res);
-        resolve(res);
+        resolve(localProfileDoc);
       }).catch((err) => {
         Log.l("Server.saveTechProfile(): Error saving to local tech profile!");
         Log.e(err);
@@ -273,9 +282,12 @@ export class SrvrSrvcs {
 
   getReportsForTech(tech:string):Promise<Array<WorkOrder>> {
     return new Promise((resolve, reject) => {
-      let u = SrvrSrvcs.userInfo;
+      let u = this.ud.getUsername();
+      let p = this.ud.getPassword();
+      // let c = this.ud.getCredentials();
+      // Log.l("getReportsForTech(): Got credentials:\n", c);
       let woArray = new Array<WorkOrder>();
-      this.loginToServer(u.u, u.p, 'reports').then((res) => {
+      this.loginToServer(u, p, 'reports').then((res) => {
         if (res) {
           let rpdb = SrvrSrvcs.rdb.get('reports');
           // let username = tech.username;
@@ -311,11 +323,12 @@ export class SrvrSrvcs {
 
   getReports(user: string) {
     return new Promise((resolve,reject) => {
-    	let u = SrvrSrvcs.userInfo;
-      this.loginToServer(u.u, u.p, 'reports').then((res) => {
+      let u = this.ud.getUsername();
+      let p = this.ud.getPassword();
+      this.loginToServer(u, p, 'reports').then((res) => {
       	if(res) {
       		let rpdb = SrvrSrvcs.rdb.get('reports');
-      		rpdb.allDocs(noDesign).then((result) => {
+      		rpdb.allDocs({include_docs: true}).then((result) => {
 		        let data = [];
 						let docs = result.rows.map((row) => {
 							if( row.doc.username === user ) { data.push(row.doc); }

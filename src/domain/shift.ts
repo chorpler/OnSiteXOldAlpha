@@ -54,6 +54,14 @@ export class Shift {
     this.getShiftColor();
   }
 
+  public getStartTime() {
+    if(isMoment(this.start_time)) {
+      return moment(this.start_time);
+    } else {
+      Log.w("getStartTime(): Can't, start_time is not a moment:\n", this.start_time);
+    }
+  }
+
   public getShiftWeek() {
     let scheduleStartsOnDay = 3;
     let day = moment(this.start_time);

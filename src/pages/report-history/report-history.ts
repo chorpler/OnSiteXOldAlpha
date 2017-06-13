@@ -3,8 +3,11 @@ import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-an
 import { DBSrvcs                                                } from '../../providers/db-srvcs'      ;
 import { AuthSrvcs                                              } from '../../providers/auth-srvcs'    ;
 import { SrvrSrvcs                                              } from '../../providers/srvr-srvcs'    ;
+import { UserData                                               } from '../../providers/user-data'     ;
 import { AlertService                                           } from '../../providers/alerts'        ;
 import { Log, CONSOLE                                           } from '../../config/config.functions' ;
+import { WorkOrder                                              } from '../../domain/workorder'        ;
+import { Shift                                                  } from '../../domain/shift'            ;
 import moment from 'moment';
 
 
@@ -24,7 +27,7 @@ export class ReportHistory implements OnInit {
   constructor( public navCtrl : NavController , public navParams  : NavParams         ,
                public dbSrvcs : DBSrvcs       , public alert      : AlertService      ,
                private auth   : AuthSrvcs     , public loadingCtrl: LoadingController ,
-               public srvr    : SrvrSrvcs ) {
+               public srvr    : SrvrSrvcs     , public ud         : UserData          ) {
     this.moment = moment;
     window["reporthistory"] = this;
   }
@@ -32,25 +35,27 @@ export class ReportHistory implements OnInit {
   ngOnInit() {
     let u = this.auth.getUser();
     Log.l("ReportHistory: pulling reports...");
-    this.showSpinner('Retrieving reports...');
-    this.srvr.getReports(u).then(res => {
-      Log.l("ReportHistory: Got report list:\n",res);
-      this.data = res;
-      this.items = [];
-      for(let i = this.data.length - 1; i >= 0; i--) { this.items.push(this.data[i]); }
-      this.selectedItem = this.navParams.get('item');
-      Log.l("ReportHistory: pulled data:\n", this.items);
-      this.hideSpinner();
-      this.pageReady = true;
-    }).catch((err) => {
-      Log.l("Error while getting reports from server.");
-      Log.l(err);
-      this.hideSpinner();
-      this.pageReady = true;
-    });
+    // this.showSpinner('Retrieving reports...');
+    this.items = this.ud.getWorkOrderList();
+    this.pageReady = true;
+    // this.srvr.getReports(u).then(res => {
+    //   Log.l("ReportHistory: Got report list:\n",res);
+    //   this.data = res;
+    //   this.items = [];
+    //   for(let i = this.data.length - 1; i >= 0; i--) { this.items.push(this.data[i]); }
+    //   this.selectedItem = this.navParams.get('item');
+    //   Log.l("ReportHistory: pulled data:\n", this.items);
+    //   this.hideSpinner();
+    //   this.pageReady = true;
+    // }).catch((err) => {
+    //   Log.l("Error while getting reports from server.");
+    //   Log.l(err);
+    //   this.hideSpinner();
+    //   this.pageReady = true;
+    // });
   }
 
-    goBack() {
+  goBack() {
     Log.l("Home button tapped.");
     this.navCtrl.setRoot('OnSiteHome');
   }
@@ -74,7 +79,10 @@ export class ReportHistory implements OnInit {
     });
   }
 
-  itemTapped(event, item) { this.navCtrl.setRoot('Report Edit', {  item: item }); }
+  itemTapped(event, item) {
+    // this.navCtrl.setRoot('Report Edit', { item: item });
+    this.navCtrl.setRoot('WorkOrder', { mode: 'Edit', workOrder: item });
+  }
 
   deleteWorkOrder(event, item) {
     Log.l("deleteWorkOrder() clicked ...");

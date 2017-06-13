@@ -20,8 +20,8 @@
     <!-- <ion-item block *ngIf="items && !items.length">No Work Orders Found</ion-item> -->
     <ion-item-sliding *ngFor="let item of items">
       <ion-item (click)="itemTapped($event, item)">
-        <ion-icon name="create" item-left></ion-icon>{{item.rprtDate}}
-        <div class="item-note" item-right>{{item.uNum}}</div>
+        <ion-icon name="create" item-left></ion-icon>{{item.report_date}}
+        <div class="item-note" item-right>{{item.unit_number}}</div>
       </ion-item>
       <ion-item-options side="right">
         <button ion-button color="danger" (click)="deleteWorkOrder($event, item)">

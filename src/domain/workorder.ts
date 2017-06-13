@@ -99,6 +99,14 @@ export class WorkOrder {
     return val;
   }
 
+  public getRepairHoursString() {
+    let hours = this.getRepairHours();
+    let h = parseInt(hours);
+    let m = (hours - h) * 60;
+    let out = sprintf("%02d:%02d", h, m);
+    return out;
+  }
+
   public setStartTime(time:any) {
     if (isMoment(time) || moment.isDate(time)) {
       this.time_start = moment(time);
