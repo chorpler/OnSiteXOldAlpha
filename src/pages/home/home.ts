@@ -50,7 +50,7 @@ export class HomePage {
                public authService: AuthSrvcs,
                public navParams: NavParams,
                public server: SrvrSrvcs,
-               public ud: UserData ) 
+               public ud: UserData )
   {
     this.shftOne   = this.numChars[0];
     this.shftTwo   = this.numChars[1];
@@ -98,7 +98,7 @@ export class HomePage {
         Log.l(`HomePage: getReportsForTech(${techid}): Success! Result:\n`, res);
         this.ud.setWorkOrderList(res);
         this.techWorkOrders = this.ud.getWorkOrderList();
-        
+
         let now = moment();
         let payrollPeriod = this.ud.getPayrollPeriodForDate(now);
         this.payrollWorkOrders = this.ud.getWorkOrdersForPayrollPeriod(payrollPeriod);
@@ -124,14 +124,19 @@ export class HomePage {
 
   isAuthorized() {
     Log.l("HomePage.isAuthorized(): Checking auth status...");
-    let authorized = Boolean(this.loginData !== undefined && this.loginData !== null && typeof this.loginData.user === 'string' && typeof this.loginData.pass === 'string' && this.loginData.user !== '' && this.loginData.pass !== '');
+    let authorized = Boolean( this.loginData !== undefined
+                              && this.loginData !== null
+                              && typeof this.loginData.user === 'string'
+                              && typeof this.loginData.pass === 'string'
+                              && this.loginData.user !== ''
+                              && this.loginData.pass !== '');
     Log.l("HomePage.isAuthorized(): Auth status is: ", authorized);
     return authorized;
   }
-  
+
   isLoggedIn() {
     Log.l("HomePage.isLoggedIn(): Checking login status...");
-    let loggedin = Boolean(this.isAuthorized() && this.userLoggedIn);
+    let loggedin = Boolean( this.isAuthorized() && this.userLoggedIn );
     Log.l("HomePage.isLoggedIn(): Login status: ", loggedin);
     return loggedin;
   }
