@@ -3,6 +3,8 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { AuthSrvcs                 } from '../../providers/auth-srvcs'     ;
 import { GeolocService                 } from '../../providers/geoloc-service' ;
 import { Log, CONSOLE               } from '../../config/config.functions'  ;
+import { TimeSrvc               } from '../../providers/time-parse-srvc';
+
 
 /**
  * Generated class for the DeveloperPage page.
@@ -20,8 +22,15 @@ export class DeveloperPage implements OnInit {
   title        : string  = 'Developers';
   GeolocStatus : boolean = true;
   geolocToggle : boolean = this.GeolocStatus;
+  onSiteTimeStamp: number;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public geoloc: GeolocService) { }
+  constructor(public navCtrl: NavController,
+              public navParams: NavParams,
+              public geoloc: GeolocService,
+              public timeSrvc: TimeSrvc ) {
+  }
+
+  timeStamp() { this.onSiteTimeStamp = this.timeSrvc.getTimeStamp(); }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad DeveloperPage');

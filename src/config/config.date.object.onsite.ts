@@ -37,3 +37,6 @@ export interface OSXD {
   gmtOffset : string
   tmZone    : string
 }
+
+export const UETO = 86400000;
+export const EDNO = 25569;

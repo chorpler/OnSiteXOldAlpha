@@ -1,43 +1,56 @@
-import { Injectable            } from                       '@angular/core' ;
-import                                              'rxjs/add/operator/map' ;
-import { REGXMMM, REGXDDD      } from '../config/config.date.object.onsite' ;
-import { REGXMIN, REGXSEC      } from '../config/config.date.object.onsite' ;
-import { REGXDAY, REGXYEAR     } from '../config/config.date.object.onsite' ;
-import { XGMTOFFSET, XTIMEZONE } from '../config/config.date.object.onsite' ;
-import { REGXTIME, REGXHOUR    } from '../config/config.date.object.onsite' ;
-import { MONTH, OSXD           } from '../config/config.date.object.onsite' ;
+import { Injectable              } from                       '@angular/core' ;
+import                                                'rxjs/add/operator/map' ;
+import { REGXMMM, REGXDDD        } from '../config/config.date.object.onsite' ;
+import { REGXMIN, REGXSEC        } from '../config/config.date.object.onsite' ;
+import { REGXDAY, REGXYEAR       } from '../config/config.date.object.onsite' ;
+import { XGMTOFFSET, XTIMEZONE   } from '../config/config.date.object.onsite' ;
+import { REGXTIME, REGXHOUR      } from '../config/config.date.object.onsite' ;
+import { MONTH, OSXD, UETO, EDNO } from '../config/config.date.object.onsite' ;
 
 
 @Injectable()
 
 export class TimeSrvc {
 
-  date       : any   ; 
-  _arrD      : any[  ] = []; 
-  dstr       : string; 
-  month      : any   ; 
-  weekDay    : any   ; 
-  mDay       : any   ; 
-  year       : any   ; 
-  hours      : any   ; 
-  min        : any   ; 
-  sec        : any   ; 
-  time       : any   ; 
-  gmtOffset  : any   ; 
-  tmZoneStr  : any   ; 
-  onSiteXDate: OSXD  ; 
-  prsHrs     : any   ; 
-  strtHrs    : any   ; 
-  prsMin     : any   ; 
-  strtMin    : any   ; 
-  hrsHrs     : any   ; 
-  hrsMin     : any   ; 
-  endHrs     : any   ; 
-  timeEnds   : any   ; 
-  endMin     : any   ; 
-  
+  date       : any   ;
+  _arrD      : any[  ] = [];
+  dstr       : string;
+  month      : any   ;
+  weekDay    : any   ;
+  mDay       : any   ;
+  year       : any   ;
+  hours      : any   ;
+  min        : any   ;
+  sec        : any   ;
+  time       : any   ;
+  gmtOffset  : any   ;
+  tmZoneStr  : any   ;
+  onSiteXDate: OSXD  ;
+  prsHrs     : any   ;
+  strtHrs    : any   ;
+  prsMin     : any   ;
+  strtMin    : any   ;
+  hrsHrs     : any   ;
+  hrsMin     : any   ;
+  endHrs     : any   ;
+  timeEnds   : any   ;
+  endMin     : any   ;
+  JSDN       : number;
+  JSND       : Date  ;
+  TZO        : number;
+  timeStamp  : number;
 
-  constructor( ) { console.log('Hello TimeSrvc Provider'); }
+  constructor( ) {
+    console.log('Hello TimeSrvc Provider');
+  }
+
+  getTimeStamp() {
+    this.JSDN = Date.now();
+    this.JSND = new Date();
+    this.TZO = this.JSND.getTimezoneOffset() / 60;
+    this.timeStamp = (this.JSDN/UETO)+EDNO-(this.TZO/24);
+    return this.timeStamp;
+  }
 
   getParsedDate() {
 
