@@ -1,9 +1,6 @@
 import { Injectable   }     from '@angular/core'              ;
 import { Http         }     from '@angular/http'              ;
 import 'rxjs/add/operator/map'                                ;
-// import * as PouchDB         from 'pouchdb'                    ;
-// import * as PouchDBAuth     from 'pouchdb-authentication'     ;
-// import * as pdbSeamlessAuth from 'pouchdb-seammless-auth'     ;
 import { PouchDBService } from '../providers/pouchdb-service' ;
 import { Log          }     from '../config/config.functions' ;
 import { WorkOrder } from '../domain/workorder'               ;
@@ -25,13 +22,13 @@ export class SrvrSrvcs {
 	public RemoteDB             : any    = {                                                }     ;
 	public static staticRDB     : any    = {                                                }     ;
 	public static rdb           : any    = new Map()                                              ;
+  public static ldb           : any    = new Map()                                              ;
 	public static StaticPouchDB : any                                                             ;
-  // public static server        : string = "nano.hplx.net"                                ;
-  // public static server        : string = "martiancouch.hplx.net"                                ;
-  public static server        : string = "securedb.sesaonsite.com"                                ;
-  public static port          : string = '443'                                                     ;
+  public static server        : string = "securedb.sesaonsite.com"                              ;
+  public static port          : string = '443'                                                  ;
 	public static protocol      : string = "https"                                                ;
 	public static userInfo      : any    = {u       : '', p                         : ''    }     ;
+  public static opts          : any    = { adapter: 'websql', auto_compaction: true       }     ;
 	public static ropts         : any    = {adapter : SrvrSrvcs.protocol, skipSetup : true  }     ;
 	public static cropts        : any    = {adapter : SrvrSrvcs.protocol                    }     ;
 	public static repopts       : any    = {live    : false, retry : false                  }     ;
@@ -154,7 +151,23 @@ export class SrvrSrvcs {
 					SrvrSrvcs.userInfo = {u: user, p: pass};
           this.ud.storeCredentials(user, pass);
           this.ud.setLoginStatus(true);
-					resolve(session);
+          let rdb2 = this.addRDB('sesa-employees');
+          let uid = `org.couchdb.user:${user}`;
+          rdb2.get(uid).then((res) => {
+            Log.l("loginToServer(): got user object from server!\n", res);
+            let tprofile = res;
+            // tprofile.docID = tprofile._id;
+            // tprofile._id = "_local/techProfile";
+            return this.saveTechProfile(tprofile);
+          }).then((res) => {
+            Log.l("loginToServer(): Successfully saved user profile!\n", res);
+					  resolve(session);
+          }).catch((err) => {
+            Log.l("loginToServer(): Error getting user object from server!");
+            Log.e(err);
+            SrvrSrvcs.userInfo = {u: '', p: ''};
+            resolve(false);
+          });
 				}
 			}).catch((err) => {
 				Log.l("loginToServer(): Authentication successful.");
@@ -170,20 +183,9 @@ export class SrvrSrvcs {
 		return rdb1.getUser(user);
   }
 
-  // static addRDB(dbname: string) {
-  //   let db1 = SrvrSrvcs.rdb;
-  //   let url = SrvrSrvcs.rdbServer.protocol + "://" + SrvrSrvcs.rdbServer.server + "/" + dbname;
-  //     Log.l(`addRDB(): Now fetching remote DB ${dbname} at ${url} ...`);
-  //     if(db1.has(dbname)) {
-  //       return db1.get(dbname);
-  //     } else {
-  //       let rdb1 = SrvrSrvcs.StaticPouchDB(url, SrvrSrvcs.ropts);
-  //       db1.set(dbname, rdb1);
-  //       let u = SrvrSrvcs.userInfo;
-	// 			let authToken = 'Basic ' + window.btoa(u.u + ':' + u.p);
-	// 			SrvrSrvcs.ajaxOpts.headers.Authorization = authToken;
-  //     }
-  // }
+  public addRDB(dbname:string) {
+    return SrvrSrvcs.addRDB(dbname);
+  }
 
   public static addRDB(dbname: string) {
     let db1 = SrvrSrvcs.rdb;
@@ -202,6 +204,71 @@ export class SrvrSrvcs {
       db1.set(dbname, rdb1);
       return rdb1;
     }
+  }
+
+  public addDB(dbname:string) {
+    return SrvrSrvcs.addDB(dbname);
+  }
+
+  public static addDB(dbname: string) {
+    let db1 = SrvrSrvcs.ldb;
+    // Log.l(`Server.addDB(): Now checking local db '${dbname}' ...`);
+    let ldb1 = null;
+    if (db1.has(dbname)) {
+      // Log.l(`Found DB '${dbname}' already exists, returning...`);
+      ldb1 = db1.get(dbname);
+      return ldb1;
+    } else {
+      // Log.l(`DB '${dbname}' does not already exist, storing and returning...`);
+      ldb1 = PouchDBService.StaticPouchDB(dbname, SrvrSrvcs.opts);
+      db1.set(dbname, ldb1);
+      return ldb1;
+    }
+  }
+
+  saveTechProfile(doc) {
+    Log.l("Server.saveTechProfile(): Attempting to save local techProfile...");
+    // let updateFunction = (original) => {}
+    let localID = '_local/techProfile';
+    let newProfileDoc = null, uid = null, rdb1 = null, db1 = null, localProfileDoc = null;
+    return new Promise((resolve, reject) => {
+      db1 = this.addDB('reports');
+      db1.get(localID).then((res) => {
+        Log.l("Server.saveTechProfile(): Found techProfile locally.");
+        localProfileDoc = res;
+        var strID = res['_id'];
+        var strRev = res['_rev'];
+        newProfileDoc = { ...res, ...doc, "_id": strID, "_rev": strRev };
+        Log.l("Server.saveTechProfile(): Merged profile is:");
+        Log.l(newProfileDoc);
+        Log.l("Server.saveTechProfile(): now attempting save...");
+      }).catch((err) => {
+        Log.l("Server.saveTechProfile(): Local tech profile not found. Creating.");
+        doc.docID = doc._id;
+        doc._id = localID;
+        delete doc._rev;
+        Log.l("Server.saveTechProfile(): Attempting to save local tech profile:\n", doc);
+        return db1.put(doc);
+      }).then((res) => {
+        Log.l("Server.saveTechProfile(): Successfully saved local tech profile:\n", res);
+      //   rdb1 = this.srvr.addRDB('sesa-employees');
+      //   uid = `org.couchdb.user:${doc.username}`;
+      //   Log.l(`saveTechProfile(): Now fetching remote copy with id '${uid}'...`);
+      //   return rdb1.get(uid);
+      // }).then((res) => {
+      //   Log.l(`saveTechProfile(): Got remote user ${uid}:\n`, res);
+      //   newProfileDoc._id = res._id;
+      //   newProfileDoc._rev = res._rev;
+      //   return rdb1.put(newProfileDoc);
+      // }).then((res) => {
+      //   Log.l("saveTechProfile(): Saved updated techProfile:\n", res);
+        resolve(res);
+      }).catch((err) => {
+        Log.l("Server.saveTechProfile(): Error saving to local tech profile!");
+        Log.e(err);
+        reject(err);
+      });
+    });
   }
 
   getReportsForTech(tech:string):Promise<Array<WorkOrder>> {
@@ -225,10 +292,6 @@ export class SrvrSrvcs {
               wo.readFromDoc(doc);
               woArray.push(wo);
             }
-            // let docs  = res.docs;
-            // for(let row in res.docs) {
-              // No processing yet
-            // }
             resolve(woArray);
           }).catch((err) => {
             Log.l(`getReportsForTech(): Error getting reports for '${tech}'.`);
@@ -278,9 +341,10 @@ export class SrvrSrvcs {
     return SrvrSrvcs.staticRDB.put(doc);
   }
 
-  deleteDoc(doc) {
+  deleteDoc(dbname, doc) {
     Log.l(`deleteDoc(): Attempting to delete doc ${doc._id}...`);
-    return SrvrSrvcs.staticRDB.remove(doc._id, doc._rev).then((res) => {
+    let rdb1 = SrvrSrvcs.addRDB(dbname);
+    return rdb1.remove(doc._id, doc._rev).then((res) => {
       Log.l("deleteDoc(): Success:\n", res);
     }).catch((err) => {
       Log.l("deleteDoc(): Error!");

@@ -4,13 +4,10 @@ import { Log, CONSOLE       } from '../config/config.functions' ;
 import { Storage            } from '@ionic/storage'             ;
 import { NativeStorage      } from 'ionic-native'               ;
 import 'rxjs/add/operator/map'                                  ;
-// import * as PouchDB2          from 'pouchdb'                    ;
-// import * as pdbAuth           from 'pouchdb-authentication'     ;
-// import * as pdbUpsert         from 'pouchdb-upsert'             ;
-import { PouchDBService    } from '../providers/pouchdb-service';
+import { PouchDBService    } from './pouchdb-service'           ;
 import { AuthSrvcs         } from './auth-srvcs'                ;
 import { SrvrSrvcs         } from './srvr-srvcs'                ;
-
+import { UserData          } from './user-data'                 ;
 export const noDD = "_\uffff";
 export const noDesign = { include_docs: true, startkey: noDD };
 export const liveNoDesign = { live: true, since: 'now', include_docs: true, startkey: noDD };
@@ -35,10 +32,11 @@ export class DBSrvcs {
   public static rdb           : any = new Map()                                    ;
   public static ldbs          : any                                                ;
   public static rdbs          : any                                                ;
-  // public static server        : string = "martiancouch.hplx.net"                   ;
-  public static server        : string = "securedb.sesaonsite.com"                   ;
-  // public static server        : string = "162.243.157.16"                          ;
+  public static server        : string = "securedb.sesaonsite.com"                 ;
   public static protocol      : string = "https"                                   ;
+  public static port          : string = "443"                                     ;
+  // public static server        : string = "martiancouch.hplx.net"                   ;
+  // public static server        : string = "162.243.157.16"                          ;
   // public static server        : string = "192.168.0.140:5984"                      ;
   // public static protocol      : string = "http"                                    ;
   public static opts          : any = {adapter: 'websql', auto_compaction: true}   ;
@@ -54,7 +52,7 @@ export class DBSrvcs {
    * @param {NgZone}
    */
   // constructor(public http: Http, public zone: NgZone, private storage: Storage, private auth: AuthSrvcs) {
-  constructor(public http: Http, public zone: NgZone, private storage: Storage, private auth: AuthSrvcs, private srvr: SrvrSrvcs) {
+  constructor(public http: Http, public zone: NgZone, private storage: Storage, private auth: AuthSrvcs, private srvr: SrvrSrvcs, public ud:UserData) {
     // this.PouchDB = require("pouchdb");
     DBSrvcs.StaticPouchDB = PouchDBService.PouchInit();
     this.PouchDB = DBSrvcs.StaticPouchDB;
@@ -106,6 +104,10 @@ export class DBSrvcs {
     return DBSrvcs.protocol + "://" + DBSrvcs.server;
   }
 
+  addDB(dbname: string) {
+    return DBSrvcs.addDB(dbname);
+  }
+
   static addDB(dbname: string) {
     let db1 = DBSrvcs.pdb;
     if(db1.has(dbname)) {
@@ -118,6 +120,10 @@ export class DBSrvcs {
       DBSrvcs.db = db1.get(dbname);
       return DBSrvcs.db;
     }
+  }
+
+  addRDB(dbname: string) {
+    return SrvrSrvcs.addRDB(dbname);
   }
 
   static addRDB(dbname: string) {
@@ -249,27 +255,27 @@ export class DBSrvcs {
 
   addDoc(doc) {
     return new Promise((resolve, reject) => {
-      console.log("Adding document...");
-      console.log(doc);
+      Log.l("Adding document...");
+      Log.l(doc);
       if (typeof doc._id === 'undefined') { doc._id = 'INVALID_DOC' }
       this.getDoc(doc._id).then((result) => {
-        console.log(`Cannot add document ${doc._id}, document already exists.`);
-        console.log(result);
+        Log.l(`Cannot add document ${doc._id}, document already exists.`);
+        Log.l(result);
         reject('Doc exists');
       }).catch((error) => {
-        console.log(`addDoc(): Could not get document ${doc._id}, hopefully it does not exist...`);
+        Log.l(`addDoc(): Could not get document ${doc._id}, hopefully it does not exist...`);
         if (error.status == '404') {
           DBSrvcs.db.put(doc).then((res) => {
-            console.log("addDoc(): Successfully added document.");
-            console.log(res);
+            Log.l("addDoc(): Successfully added document.");
+            Log.l(res);
             resolve(res);
           }).catch((err) => {
-            console.log("addDoc(): Failed while trying to add document (after 404 error in get)");
+            Log.l("addDoc(): Failed while trying to add document (after 404 error in get)");
             console.error(err);
             reject(err);
           });
         } else {
-          console.log("addDoc(): Some other error occurred.");
+          Log.l("addDoc(): Some other error occurred.");
           console.error(error);
           reject(error);
         }
@@ -280,10 +286,10 @@ export class DBSrvcs {
   updateReport(doc) {
     Log.l(`updateReport(): About to put doc ${doc._id}`);
     return DBSrvcs.db.put(doc).then((res) => {
-      console.log("updateReport(): Successfully added document.");
-      console.log(res);
+      Log.l("updateReport(): Successfully added document.");
+      Log.l(res);
     }).catch((err) => {
-      console.log("updateReport(): Failed while trying to add document (after 404 error in get)");
+      Log.l("updateReport(): Failed while trying to add document (after 404 error in get)");
       console.error(err);
     });
   }
@@ -293,10 +299,10 @@ export class DBSrvcs {
     return new Promise((resolve, reject) => {
       // this.db.get(docID).then((result) => {
       DBSrvcs.db.get(docID).then((result) => {
-        console.log(`Got document ${docID}`);
+        Log.l(`Got document ${docID}`);
         resolve(result);
       }).catch((error) => {
-        console.log("Error in DBSrvcs.getDoc()!");
+        Log.l("Error in DBSrvcs.getDoc()!");
         console.error(error);
         reject(error);
       });
@@ -307,9 +313,10 @@ export class DBSrvcs {
     return DBSrvcs.db.put(doc);
   }
 
-  deleteDoc(doc) {
+  deleteDoc(dbname, doc) {
     Log.l(`deleteDoc(): Attempting to delete doc ${doc._id}...`);
-    return DBSrvcs.db.remove(doc._id, doc._rev).then((res) => {
+    let rdb1 = DBSrvcs.addDB(dbname);
+    rdb1.remove(doc._id, doc._rev).then((res) => {
       Log.l("deleteDoc(): Success:\n", res);
     }).catch((err) => {
       Log.l("deleteDoc(): Error!");
@@ -320,49 +327,49 @@ export class DBSrvcs {
   checkLocalDoc(docID) {
     return new Promise((resolve, reject) => {
       DBSrvcs.db.get(docID).then((result) => {
-        console.log(`Local doc ${docID} exists`);
+        Log.l(`Local doc ${docID} exists`);
         resolve(true);
       }).catch((error) => {
-        console.log(`Local doc ${docID} does not exist`);
+        Log.l(`Local doc ${docID} does not exist`);
         resolve(false);
       });
     })
   }
 
   addLocalDoc(newDoc) {
-    console.log("Attempting to add local document...");
-    console.log("Local document to add:");
-    console.log(newDoc);
+    Log.l("Attempting to add local document...");
+    Log.l("Local document to add:");
+    Log.l(newDoc);
     return new Promise((resolve, reject) => {
       DBSrvcs.db.get(newDoc._id).then((res1) => {
-        console.log(`Now removing existing local document ${newDoc._id}`);
+        Log.l(`Now removing existing local document ${newDoc._id}`);
         return new Promise((resolveRemove, rejectRemove) => {
           let strID = res1._id;
           let strRev = res1._rev;
           DBSrvcs.db.remove(strID, strRev).then((res2) => {
-            console.log(`Successfully deleted local doc ${newDoc._id}, need to add new copy`);
+            Log.l(`Successfully deleted local doc ${newDoc._id}, need to add new copy`);
             resolveRemove(res2);
           }).catch((errRemove) => {
-            console.log(`Error while removing local doc ${newDoc._id}.`);
-            console.log(newDoc);
+            Log.l(`Error while removing local doc ${newDoc._id}.`);
+            Log.l(newDoc);
             rejectRemove(errRemove);
           });
         });
       }).then(() => {
         if (typeof newDoc._rev == 'string') { delete newDoc._rev; }
-        console.log(`Now adding fresh copy of local document ${newDoc._id}`);
+        Log.l(`Now adding fresh copy of local document ${newDoc._id}`);
         return DBSrvcs.db.put(newDoc);
       }).then((success) => {
-        console.log(`Successfully deleted and re-saved local document ${newDoc._id}`);
+        Log.l(`Successfully deleted and re-saved local document ${newDoc._id}`);
         resolve(success);
       }).catch((err) => {
-        console.log(`Local document ${newDoc._id} does not exist, saving...`);
+        Log.l(`Local document ${newDoc._id} does not exist, saving...`);
         if (typeof newDoc._rev == 'string') { delete newDoc._rev; }
         DBSrvcs.db.put(newDoc).then((final) => {
-          console.log(`Local document ${newDoc._id} was newly saved successfully`);
+          Log.l(`Local document ${newDoc._id} was newly saved successfully`);
           resolve(final);
         }).catch((err) => {
-          console.log(`Error while saving new copy of local doc ${newDoc._id}!`);
+          Log.l(`Error while saving new copy of local doc ${newDoc._id}!`);
           console.warn(err);
           resolve(null);
         })
@@ -371,14 +378,14 @@ export class DBSrvcs {
   }
 
   deleteLocalDoc(doc) {
-    console.log("Attempting to delete local document...");
+    Log.l("Attempting to delete local document...");
     return new Promise((resolve, reject) => {
       DBSrvcs.db.remove(doc).then((res) => {
-        console.log(`Successfully deleted local doc ${doc._id}`);
+        Log.l(`Successfully deleted local doc ${doc._id}`);
         resolve(true);
       }).catch((err) => {
-        console.log(`Error while deleting local doc ${doc._id}`);
-        console.log(doc);
+        Log.l(`Error while deleting local doc ${doc._id}`);
+        Log.l(doc);
         console.error(err);
         resolve(false);
       });
@@ -386,29 +393,40 @@ export class DBSrvcs {
   }
 
   saveTechProfile(doc) {
-    console.log("Attempting to save local techProfile...");
+    Log.l("Attempting to save local techProfile...");
     // let updateFunction = (original) => {}
     doc._id = '_local/techProfile';
+    let newProfileDoc = null, uid = null, rdb1 = null;
     return new Promise((resolve, reject) => {
       this.getTechProfile().then((res) => {
-        console.log("saveTechProfile(): About to process old and new:");
-        console.log(res);
-        console.log(doc);
-        // let oldTechProfile = res;
-        // let profileChanges = doc;
+        Log.l("saveTechProfile(): About to process old and new:");
+        Log.l(res);
+        Log.l(doc);
         var strID = res['_id'];
         var strRev = res['_rev'];
-        let newProfileDoc = { ...res, ...doc, "_id": strID, "_rev": strRev };
-        console.log("saveTechProfile(): Merged profile is:");
-        console.log(newProfileDoc);
-        console.log("saveTechProfile(): now attempting save...");
+        newProfileDoc = { ...res, ...doc, "_id": strID, "_rev": strRev };
+        Log.l("saveTechProfile(): Merged profile is:");
+        Log.l(newProfileDoc);
+        Log.l("saveTechProfile(): now attempting save...");
         return this.addLocalDoc(newProfileDoc);
       }).then((res) => {
-        console.log("saveTechProfile(): Saved updated techProfile");
+        rdb1 = this.srvr.addRDB('sesa-employees');
+        let name = this.ud.getUsername();
+        uid = `org.couchdb.user:${name}`;
+        Log.l(`saveTechProfile(): Now fetching remote copy with id '${uid}'...`);
+        return rdb1.get(uid);
+      }).then((res) => {
+        Log.l(`saveTechProfile(): Got remote user ${uid}:\n`, res);
+        newProfileDoc._id = res._id;
+        newProfileDoc._rev = res._rev;
+        return rdb1.put(newProfileDoc);
+      }).then((res) => {
+        Log.l("saveTechProfile(): Saved updated techProfile:\n", res);
         resolve(res);
       }).catch((err) => {
-        console.log("saveTechProfile(): Error merging or saving profile!");
-        console.error(err);
+        Log.l("saveTechProfile(): Error saving to sesa-employees database!");
+        Log.l("saveTechProfile(): Error merging or saving profile!");
+        Log.e(err);
         reject(err);
       });
     });
@@ -418,15 +436,15 @@ export class DBSrvcs {
     let documentID = "_local/techProfile";
     return new Promise((resolve, reject) => {
       return this.checkLocalDoc(documentID).then((res) => {
-        console.log("techProfile exists, reading it in...");
+        Log.l("techProfile exists, reading it in...");
         return this.getDoc(documentID);
       }).then((res) => {
-        console.log("techProfile read successfully:");
-        console.log(res);
+        Log.l("techProfile read successfully:");
+        Log.l(res);
         resolve(res);
         // this.techProfile = res;
       }).catch((err) => {
-        console.log("techProfile not found, user not logged in.");
+        Log.l("techProfile not found, user not logged in.");
         console.error(err);
         reject(err);
       });
@@ -470,7 +488,7 @@ export class DBSrvcs {
 
         })
 
-        .catch((error) => { console.log(error); });
+        .catch((error) => { Log.l(error); });
 
     });
   }

@@ -82,7 +82,7 @@ export class ReportHistory implements OnInit {
       if(res) {
         Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
         let i = this.items.indexOf(item);
-        this.srvr.deleteDoc(item).then((res) => {
+        this.srvr.deleteDoc('reports', item).then((res) => {
           Log.l("deleteWorkOrder(): Success:\n", res);
           this.items.splice(i, 1);
         }).catch((err) => {

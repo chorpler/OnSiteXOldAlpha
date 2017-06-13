@@ -102,6 +102,26 @@ export class UserData {
     return total;
   }
 
+  getTotalPayrollHoursForPayrollPeriod(period:any):number {
+    let filtered = this.getWorkOrdersForPayrollPeriod(period);
+    let total = 0;
+    for(let wo of filtered) {
+      let subtotal = wo.getRepairHours();
+      let payrollhour = subtotal;
+      if(subtotal >= 8 && subtotal <= 11) {
+        payrollhour += 3;
+      } else if(subtotal > 11) {
+        payrollhour *= 2;
+      }
+      total += payrollhour;
+    }
+    return total;
+  }
+
+  getUsername() {
+    return UserData.loginData['user'] || null;
+  }
+
   getCredentials() {
     return UserData.loginData;
   }
@@ -188,7 +208,7 @@ export class UserData {
         Log.l(`Now adding day ${i}: ${moment(shift_day).format()}`);
       }
     } else {
-      Log.e("createShifts(): Failed, techProfile does not exist.")
+      Log.w("createShifts(): Failed, techProfile does not exist.")
     }
   }
 

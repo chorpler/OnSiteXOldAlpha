@@ -3,6 +3,7 @@ import { Platform, IonicPage, NavParams         } from 'ionic-angular';
 import { NavController, ToastController         } from 'ionic-angular';
 import { ModalController                        } from 'ionic-angular';
 import { Log } from '../../config/config.functions';
+import { DBSrvcs } from '../../providers/db-srvcs' ;
 import { AuthSrvcs } from '../../providers/auth-srvcs' ;
 import { SrvrSrvcs } from '../../providers/srvr-srvcs';
 import { UserData } from '../../providers/user-data';
@@ -44,13 +45,15 @@ export class HomePage {
   public shifts:Array<Shift> = [];
   public payrollPeriodHoursTotal:number = 0;
   public payrollPeriodHours:number = 0;
+  public payrollPeriodBonusHours:number = 0;
 
   constructor( public navCtrl: NavController,
                public modalCtrl: ModalController,
                public authService: AuthSrvcs,
                public navParams: NavParams,
                public server: SrvrSrvcs,
-               public ud: UserData ) 
+               public ud: UserData,
+               public db: DBSrvcs ) 
   {
     this.shftOne   = this.numChars[0];
     this.shftTwo   = this.numChars[1];
@@ -110,8 +113,9 @@ export class HomePage {
         }
         let thisPayPeriod = this.ud.getPayrollPeriodForDate(moment());
         this.payrollPeriodHours = this.ud.getTotalHoursForPayrollPeriod(thisPayPeriod);
+        this.payrollPeriodBonusHours = this.ud.getTotalPayrollHoursForPayrollPeriod(thisPayPeriod);
         this.techProfile = this.ud.getTechProfile();
-        this.payrollPeriodHoursTotal = this.techProfile.shiftLength * 5;
+        // this.payrollPeriodHoursTotal = this.techProfile.shiftLength * 5;
         this.dataReady = true;
         resolve(res);
       }).catch((err) => {

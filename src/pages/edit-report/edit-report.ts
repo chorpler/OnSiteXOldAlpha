@@ -118,7 +118,7 @@ export class EditReport implements OnInit {
       Log.l("deleteWorkOrder(): Success:\n", res);
       if(res) {
         Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
-        this.srvr.deleteDoc(this.workOrder).then((res) => {
+        this.srvr.deleteDoc('reports', this.workOrder).then((res) => {
           Log.l("deleteWorkOrder(): Success:\n", res);
           setTimeout(() => {this.navCtrl.setRoot('OnSiteHome')});
         }).catch((err) => {

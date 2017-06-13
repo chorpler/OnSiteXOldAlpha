@@ -183,6 +183,8 @@ export class AuthSrvcs {
               let userInfo = JSON.parse(res);
               this.setUser(userInfo.username);
               this.setPassword(userInfo.password);
+              this.ud.storeCredentials(userInfo.username, userInfo.password);
+              this.ud.setLoginStatus(true);
               resolve(userInfo);
             } else {
               Log.l("getCredentials(): Credentials not available.");
@@ -202,6 +204,8 @@ export class AuthSrvcs {
               let userInfo = res;
               this.setUser(userInfo.username);
               this.setPassword(userInfo.password);
+              this.ud.storeCredentials(userInfo.username, userInfo.password);
+              this.ud.setLoginStatus(true);
               resolve(userInfo);
             } else {
               Log.l("getCredentials(): Credentials not available.");
@@ -269,6 +273,8 @@ export class AuthSrvcs {
             let userInfo = JSON.parse(res);
             this.setUser(userInfo.username);
             this.setPassword(userInfo.password);
+            this.ud.storeCredentials(userInfo.username, userInfo.password);
+            this.ud.setLoginStatus(true);
             resolve(userInfo);
           }).catch((err) => {
             console.log("getCredentials(): Error getting credentials from secure storage!");
@@ -283,6 +289,8 @@ export class AuthSrvcs {
             let userInfo = res;
             this.setUser(userInfo.username);
             this.setPassword(userInfo.password);
+            this.ud.storeCredentials(userInfo.username, userInfo.password);
+            this.ud.setLoginStatus(true);
             resolve(userInfo);
           }).catch((err) => {
             console.log("getCredentials(): Error retrieving credentials from local storage!");
