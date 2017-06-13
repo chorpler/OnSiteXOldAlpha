@@ -1,11 +1,13 @@
 import { Injectable   }     from '@angular/core'              ;
 import { Http         }     from '@angular/http'              ;
 import 'rxjs/add/operator/map'                                ;
-import * as PouchDB         from 'pouchdb'                    ;
-import * as PouchDBAuth     from 'pouchdb-authentication'     ;
-import * as pdbSeamlessAuth from 'pouchdb-seammless-auth'     ;
-import { Log, CONSOLE }     from '../config/config.functions' ;
-import { WorkOrder } from '../domain/workorder';
+// import * as PouchDB         from 'pouchdb'                    ;
+// import * as PouchDBAuth     from 'pouchdb-authentication'     ;
+// import * as pdbSeamlessAuth from 'pouchdb-seammless-auth'     ;
+import { PouchDBService } from '../providers/pouchdb-service' ;
+import { Log          }     from '../config/config.functions' ;
+import { WorkOrder } from '../domain/workorder'               ;
+import { UserData } from '../providers/user-data'             ;
 
 export const noDD     = "_\uffff";
 export const noDesign = {include_docs: true, startkey: noDD };
@@ -23,14 +25,11 @@ export class SrvrSrvcs {
 	public RemoteDB             : any    = {                                                }     ;
 	public static staticRDB     : any    = {                                                }     ;
 	public static rdb           : any    = new Map()                                              ;
-	public static StaticPouchDB : any    = PouchDB                                                ;
+	public static StaticPouchDB : any                                                             ;
   // public static server        : string = "nano.hplx.net"                                ;
   // public static server        : string = "martiancouch.hplx.net"                                ;
   public static server        : string = "securedb.sesaonsite.com"                                ;
   public static port          : string = '443'                                                     ;
-	// public static port          : string = '5984'                                                     ;
-	// public static server     : string = "162.243.157.16"                                       ;
-  // public static protocol      : string = "https"                                                ;
 	public static protocol      : string = "https"                                                ;
 	public static userInfo      : any    = {u       : '', p                         : ''    }     ;
 	public static ropts         : any    = {adapter : SrvrSrvcs.protocol, skipSetup : true  }     ;
@@ -45,7 +44,20 @@ export class SrvrSrvcs {
 			skipSetup : true}
 		};
 
-  constructor(public http: Http) {
+  constructor(public http: Http, public ud:UserData) {
+    window["serverServices"] = this;
+    window["SrvrSrvcs"] = SrvrSrvcs;
+    SrvrSrvcs.StaticPouchDB = PouchDBService.PouchInit();
+    this.PouchDB = SrvrSrvcs.StaticPouchDB;
+    this.RemoteDB = SrvrSrvcs.StaticPouchDB;
+    Log.l("SrvrSrvcs: StaticPouchDB is:\n",SrvrSrvcs.StaticPouchDB);
+  }
+
+
+  static getAuthHeaders(user: string, pass: string) {
+    let authToken = 'Basic ' + window.btoa(user + ':' + pass);
+    let ajaxOpts = { headers: { Authorization: authToken } };
+    return ajaxOpts;
   }
 
   static getBaseURL() {
@@ -64,10 +76,11 @@ export class SrvrSrvcs {
     }
   }
 
-  static getAuthHeaders(user:string, pass:string) {
-    let authToken = 'Basic ' + window.btoa(user + ':' + pass);
-    let ajaxOpts = { headers: { Authorization: authToken } };
-    return ajaxOpts;
+  public static getRemoteDatabaseURL(dbname?: string) {
+    let url1 = SrvrSrvcs.getBaseURL();
+    let name = dbname || "_session";
+    url1 = `${url1}/${name}`;
+    return url1;
   }
 
   static getGeolocationHeaders(user:string, pass:string) {
@@ -104,6 +117,7 @@ export class SrvrSrvcs {
 				} else {
 					Log.l("querySession(): Authentication successful.");
 					SrvrSrvcs.userInfo = {u: user, p: pass};
+
 					resolve(session);
 				}
   		}).catch((err) => {
@@ -118,7 +132,7 @@ export class SrvrSrvcs {
 
   loginToServer(user:string, pass:string, dbname?:string) {
   	return new Promise((resolve,reject) => {
-  		let dbURL = '_session';
+      let dbURL = '_session';
   		if(dbname) {
   			dbURL = dbname;
   		}
@@ -126,19 +140,10 @@ export class SrvrSrvcs {
 			let authToken = 'Basic ' + window.btoa(user + ':' + pass);
 			let ajaxOpts = { headers: { Authorization: authToken } };
 			let opts = {adapter: SrvrSrvcs.protocol, skipSetup: true, ajax: {withCredentials: true, ajaxOpts, auth: {username: user, password: pass}}};
-			if(dbname) {
-				if(SrvrSrvcs.rdb.has(dbname)) {
-					SrvrSrvcs.staticRDB = SrvrSrvcs.rdb.get(dbname);
-				} else {
-					SrvrSrvcs.staticRDB = SrvrSrvcs.StaticPouchDB(url, opts);
-					SrvrSrvcs.rdb.set(dbname, SrvrSrvcs.staticRDB);
-				}
-			} else {
-				SrvrSrvcs.staticRDB = SrvrSrvcs.StaticPouchDB(url, opts);
-			}
-			this.RemoteDB = SrvrSrvcs.staticRDB;
-			this.RemoteDB.login(user, pass, {ajax: ajaxOpts}).then((res) => {
-  			return this.RemoteDB.getSession();
+			let rdb1 = SrvrSrvcs.addRDB(dbURL);
+      Log.l(`loginToServer(): About to login with u '${user}', p '${pass}', dburl '${dbURL}'.`);
+			rdb1.login(user, pass, {ajax: ajaxOpts}).then((res) => {
+  			return rdb1.getSession();
   		}).then((session) => {
 				if(typeof session.info == 'undefined' || typeof session.info.authenticated != 'string') {
 					Log.l("loginToServer(): Authentication failed");
@@ -147,6 +152,8 @@ export class SrvrSrvcs {
 				} else {
 					Log.l("loginToServer(): Authentication successful.");
 					SrvrSrvcs.userInfo = {u: user, p: pass};
+          this.ud.storeCredentials(user, pass);
+          this.ud.setLoginStatus(true);
 					resolve(session);
 				}
 			}).catch((err) => {
@@ -159,22 +166,42 @@ export class SrvrSrvcs {
   }
 
   getUserData(user) {
-		return this.RemoteDB.getUser(user);
+    let rdb1 = SrvrSrvcs.addRDB('reports');
+		return rdb1.getUser(user);
   }
 
-  static addRDB(dbname: string) {
+  // static addRDB(dbname: string) {
+  //   let db1 = SrvrSrvcs.rdb;
+  //   let url = SrvrSrvcs.rdbServer.protocol + "://" + SrvrSrvcs.rdbServer.server + "/" + dbname;
+  //     Log.l(`addRDB(): Now fetching remote DB ${dbname} at ${url} ...`);
+  //     if(db1.has(dbname)) {
+  //       return db1.get(dbname);
+  //     } else {
+  //       let rdb1 = SrvrSrvcs.StaticPouchDB(url, SrvrSrvcs.ropts);
+  //       db1.set(dbname, rdb1);
+  //       let u = SrvrSrvcs.userInfo;
+	// 			let authToken = 'Basic ' + window.btoa(u.u + ':' + u.p);
+	// 			SrvrSrvcs.ajaxOpts.headers.Authorization = authToken;
+  //     }
+  // }
+
+  public static addRDB(dbname: string) {
     let db1 = SrvrSrvcs.rdb;
-    let url = SrvrSrvcs.rdbServer.protocol + "://" + SrvrSrvcs.rdbServer.server + "/" + dbname;
-      Log.l(`addRDB(): Now fetching remote DB ${dbname} at ${url} ...`);
-      if(db1.has(dbname)) {
-        return db1.get(dbname);
-      } else {
-        let rdb1 = SrvrSrvcs.StaticPouchDB(url, SrvrSrvcs.ropts);
-        db1.set(dbname, rdb1);
-        let u = SrvrSrvcs.userInfo;
-				let authToken = 'Basic ' + window.btoa(u.u + ':' + u.p);
-				SrvrSrvcs.ajaxOpts.headers.Authorization = authToken;
-      }
+    let url = SrvrSrvcs.getRemoteDatabaseURL(dbname);
+    Log.l(`addRDB(): Now fetching remote DB '${dbname}' at '${url}' ...`);
+    let rdb1 = null;
+    if (db1.has(dbname)) {
+      // return db1.get(dbname);
+      Log.l(`Found DB '${dbname}' already exists, returning...`);
+      rdb1 = db1.get(dbname);
+      // resolve(rdb1);
+      return rdb1;
+    } else {
+      Log.l(`DB '${dbname}' does not already exist, storing and returning...`);
+      rdb1 = PouchDBService.StaticPouchDB(url, SrvrSrvcs.ropts);
+      db1.set(dbname, rdb1);
+      return rdb1;
+    }
   }
 
   getReportsForTech(tech:string):Promise<Array<WorkOrder>> {
@@ -187,10 +214,13 @@ export class SrvrSrvcs {
           // let username = tech.username;
           let query = {selector: {username: {$eq: tech}}};
           // query.selector.username['$eq'] = username;
-          rpdb.find(query).then((res) => {
+          rpdb.createIndex({index: {fields: ['username']}}).then((res) => {
+            Log.l(`getReportsForTech(): index created successfully, now running query...`);
+            return rpdb.find(query);
+          }).then((res) => {
             Log.l(`getReportsForTech(): Got reports for '${tech}':\n`, res);
             let woArray = new Array<WorkOrder>();
-            for(let doc in res.docs) {
+            for(let doc of res.docs) {
               let wo = new WorkOrder();
               wo.readFromDoc(doc);
               woArray.push(wo);

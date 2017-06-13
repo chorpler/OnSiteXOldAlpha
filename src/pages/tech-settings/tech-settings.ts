@@ -70,6 +70,7 @@ export class TechSettingsPage implements OnInit {
     this.db.getTechProfile().then((res) => {
       console.log("Settings: Got tech profile, now initFormData()...");
       this.techProfile = res;
+      this.ud.setTechProfile(res);
       return this.initFormData();
     }).then((res2) => {
       console.log("Settings: initFormData() done, now initializeForm()...");

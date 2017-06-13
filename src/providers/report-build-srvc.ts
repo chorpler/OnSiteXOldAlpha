@@ -4,7 +4,10 @@ import 'rxjs/add/operator/map'                                  ;
 import * as PouchDB from 'pouchdb'                              ;
 import { DBSrvcs            } from './db-srvcs'                 ;
 import { AuthSrvcs          } from './auth-srvcs'               ;
-import { Log, CONSOLE       } from '../config/config.functions' ;
+import { Log                } from '../config/config.functions' ;
+import { UserData           } from './user-data'                ;
+import { WorkOrder          } from '../domains/workorder'       ;
+import { Shift              } from '../domains/shift'           ;
 
 
 

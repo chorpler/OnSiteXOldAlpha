@@ -23,6 +23,9 @@ export class WorkOrder {
   public timestamp        : any; 
   public username         : any;
   public shift_serial     : any;
+  public payroll_period   : any;
+  public _id              : any;
+  public _rev             : any;
   
   constructor(start?: any, end?: any, hours?: any, unit?: any, wo?: any, nts?: any, date?: any, last?: any, first?: any, shift?: any, client?: any, loc?: any, locid?: any, loc2?: any, shiftTime?: any, shiftLength?: any, shiftStartTime?: any, tech?: any, timestamp?: any, user?: any) {
     this.time_start = start || null;
@@ -39,7 +42,7 @@ export class WorkOrder {
     this.location = loc || null;
     this.location_id = locid || null;
     this.location_2 = loc2 || null;
-    this.shift_serial = 
+    this.shift_serial = null;
     this.shift_time = shiftTime || null;
     this.shift_length = shiftLength || null;
     this.shift_start_time = shiftStartTime || null;
@@ -47,12 +50,53 @@ export class WorkOrder {
     this.timestamp = timestamp || null;
     this.username = user || null;
     this.shift_serial = null;
+    this.payroll_period = null;
+    this._id = null;
+    this._rev = null;
   }
 
   public readFromDoc(doc:any) {
-    for(let prop in doc) {
-      this[prop] = doc[prop];
+    // for(let prop in doc) {
+    //   this[prop] = doc[prop];
+    // }
+    let fields = [
+      ["_id"           , "_id"              ], 
+      ["_rev"          , "_rev"             ], 
+      ["timeStarts"    , "time_start"       ], 
+      ["timeEnds"      , "time_end"         ], 
+      ["repairHrs"     , "repair_hours"     ], 
+      ["uNum"          , "unit_number"      ], 
+      ["wONum"         , "work_order_number"], 
+      ["notes"         , "notes"            ], 
+      ["rprtDate"      , "report_date"      ], 
+      ["lastName"      , "last_name"        ], 
+      ["firstName"     , "first_name"       ], 
+      ["client"        , "client"           ], 
+      ["location"      , "location"         ], 
+      ["locID"         , "location_id"      ], 
+      ["loc2nd"        , "location_2"       ], 
+      ["shift"         , "shift_time"       ], 
+      ["shiftLength"   , "shift_length"     ], 
+      ["shiftStartTime", "shift_start_time" ],
+      ["shiftSerial"   , "shift_serial"     ],
+      ["payrollPeriod" , "payroll_period"   ],
+      ["technician"    , "technician"       ],
+      ["timeStamp"     , "timestamp"        ], 
+      ["username"      , "username"         ]
+    ];
+    let len = fields.length;
+    for(let i = 0; i < len; i++) {
+      let docKey  = fields[i][0];
+      let thisKey = fields[i][1];
+      this[thisKey] = doc[docKey];
     }
+    this.time_start = moment(this.time_start);
+    this.time_end   = moment(this.time_end);
+  }
+
+  public getRepairHours() {
+    let val = this.repair_hours || 0;
+    return val;
   }
 
   public setStartTime(time:any) {
@@ -89,12 +133,21 @@ export class WorkOrder {
     let start = this.time_start;
     let end = this.time_end;
     let time = this.repair_hours;
-    if(!(isMoment(start) && isMoment(end) && typeof time == 'number')) {
+    if(isMoment(start) && isMoment(end) && typeof time == 'number') {
       let check = moment(start).add(time, 'hours');
       if (!check.isSame(end)) {
         Log.e("WO.checkTimeCalculations(): Start time plus repair hours does not equal end time!");
         Log.e("Start: %s\nEnd: %s\nHours: %s", start.format(), end.format(), time);
       }
+    } else if(isMoment(start) && typeof time === 'number') {
+      let end = moment(start).add(time, 'hours');
+      this.time_end = end;
+    } else if(isMoment(end) && typeof time === 'number') {
+      let start = moment(end).subtract(time, 'hours');
+      this.time_start = start;
+    } else if(isMoment(start) && isMoment(end)) {
+      let hours = moment(end).diff(start, 'hours', true);
+      this.repair_hours = hours;
     } else {
       Log.e("WO.checkTimeCalculations(): Start or end times are not moments, or repair hours is not a number/duration!");
       Log.e("Start: %s\nEnd: %s\nHours: %s", start, end, time);

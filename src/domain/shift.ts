@@ -1,8 +1,8 @@
 import moment from 'moment';
-import { Log } from '../config/config.functions';
+import { Log, isMoment } from '../config/config.functions';
 import { sprintf } from 'sprintf-js';
 
-const XL = moment([1900, 1, 1]);
+const XL = moment([1900, 0, 1]);
 
 export class Shift {
   public site_name:string;
@@ -41,6 +41,9 @@ export class Shift {
       this.getShiftWeek();
       this.getShiftColor();
       this.getCurrentPayrollWeek();
+      this.getExcelDates();
+      this.getShiftNumber();
+      this.getShiftSerial();
     }
   }
 // 
@@ -77,7 +80,7 @@ export class Shift {
     if (now.isoWeekday() >= scheduleStartsOnDay) {
       this.current_payroll_week = now.isoWeekday(scheduleStartsOnDay);
     } else {
-      this.current_payroll_week = moment(now).subtract(1, 'weeks').isoWeekday(scheduleStartsOnDay);
+      this.current_payroll_week = moment(now).subtract(1, 'weeks').isoWeekday(scheduleStartsOnDay).startOf('day');
     }
     return this.current_payroll_week;
   }
@@ -115,11 +118,15 @@ export class Shift {
 
   public getShiftWeekID() {
     let shift_week_number = -1;
-    let start_date = moment([1900, 1, 1]);
+    // let start_date = moment(XL);
     if(moment.isMoment(this.shift_week)) {
-      shift_week_number = this.shift_week.diff(start_date, 'days') + 1;
+      shift_week_number = this.shift_week.diff(XL, 'days') + 2;
     }
     return shift_week_number;
+  }
+
+  public getPayrollPeriod() {
+    return this.getShiftWeekID();
   }
 
   public isShiftInCurrentPayPeriod() {
@@ -139,13 +146,9 @@ export class Shift {
 
   getShiftSerial() {
     this.getExcelDates();
-    let weekXL = this.shift_week_id;
-    let payrollPeriodID = weekXL;
-    let shiftXL = this.XL.shift_time;
-    let shiftNum = shiftXL - weekXL + 1;
-    let strWeekID = `${weekXL}`;
-    let strShiftNum = sprintf("%02d", shiftNum);
-    let strShiftID = `${strWeekID}_${strShiftNum}`;
+    let week = this.shift_week_id;
+    let num = sprintf("%02d", this.shift_number);
+    let strShiftID = `${week}_${num}`;
     this.shift_serial = strShiftID;
     return strShiftID;
   }
@@ -155,12 +158,13 @@ export class Shift {
     let day = moment(this.start_time);
     let week = moment(this.getShiftWeek());
     let nowWeek = moment(this.getCurrentPayrollWeek());
-    let nowXL = now.diff(XL, 'days') + 1;
-    let dayXL = day.diff(XL, 'days') + 1;
-    let weekXL = week.diff(XL, 'days') + 1;
-    let currentWeekXL = nowWeek.diff(XL, 'days') + 1;
+    let nowXL = now.diff(XL, 'days') + 2;
+    let dayXL = day.diff(XL, 'days') + 2;
+    let weekXL = week.diff(XL, 'days') + 2;
+    let currentWeekXL = nowWeek.diff(XL, 'days') + 2;
     let nextWeekXL = weekXL + 7;
     this.shift_week_id = weekXL;
+    this.payroll_period = weekXL;
     this.shift_id = dayXL;
     this.XL.today_XL   = nowXL;
     this.XL.shift_time = dayXL;
@@ -194,7 +198,7 @@ export class Shift {
     } else {
       colorClass="blue";
     }
-    Log.l("getShiftColor(): Shift is now:\n", this);
+    // Log.l("getShiftColor(): Shift is now:\n", this);
     return colorClass;
   }
 

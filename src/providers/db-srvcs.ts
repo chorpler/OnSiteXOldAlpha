@@ -4,11 +4,12 @@ import { Log, CONSOLE       } from '../config/config.functions' ;
 import { Storage            } from '@ionic/storage'             ;
 import { NativeStorage      } from 'ionic-native'               ;
 import 'rxjs/add/operator/map'                                  ;
-import * as PouchDB2          from 'pouchdb'                    ;
-import * as pdbAuth           from 'pouchdb-authentication'     ;
-import * as pdbUpsert         from 'pouchdb-upsert'             ;
-import { AuthSrvcs         }  from './auth-srvcs'               ;
-import { SrvrSrvcs         }  from './srvr-srvcs'               ;
+// import * as PouchDB2          from 'pouchdb'                    ;
+// import * as pdbAuth           from 'pouchdb-authentication'     ;
+// import * as pdbUpsert         from 'pouchdb-upsert'             ;
+import { PouchDBService    } from '../providers/pouchdb-service';
+import { AuthSrvcs         } from './auth-srvcs'                ;
+import { SrvrSrvcs         } from './srvr-srvcs'                ;
 
 export const noDD = "_\uffff";
 export const noDesign = { include_docs: true, startkey: noDD };
@@ -29,7 +30,7 @@ export class DBSrvcs {
   PouchDB                     : any                                                ;
   remoteDB                    : any                                                ;
   pdbOpts                     : any                                                ;
-  public static StaticPouchDB : any = PouchDB2                                     ;
+  public static StaticPouchDB : any                                                ;
   public static pdb           : any = new Map()                                    ;
   public static rdb           : any = new Map()                                    ;
   public static ldbs          : any                                                ;
@@ -55,9 +56,10 @@ export class DBSrvcs {
   // constructor(public http: Http, public zone: NgZone, private storage: Storage, private auth: AuthSrvcs) {
   constructor(public http: Http, public zone: NgZone, private storage: Storage, private auth: AuthSrvcs, private srvr: SrvrSrvcs) {
     // this.PouchDB = require("pouchdb");
-    this.PouchDB = PouchDB2;
-    this.PouchDB.plugin(pdbAuth);
-    this.PouchDB.plugin(pdbUpsert);
+    DBSrvcs.StaticPouchDB = PouchDBService.PouchInit();
+    this.PouchDB = DBSrvcs.StaticPouchDB;
+    // this.PouchDB.plugin(pdbAuth);
+    // this.PouchDB.plugin(pdbUpsert);
     // this.PouchDB.plugin(require('pouchdb-upsert'));
     // this.PouchDB.plugin(require('pouchdb-authentication'));
 
@@ -106,16 +108,16 @@ export class DBSrvcs {
 
   static addDB(dbname: string) {
     let db1 = DBSrvcs.pdb;
-      if(db1.has(dbname)) {
-        Log.l(`addDB(): Not adding local database ${dbname} because it already exists.`);
-        DBSrvcs.db = db1.get(dbname);
-        return DBSrvcs.db;
-      } else {
-        db1.set(dbname, DBSrvcs.StaticPouchDB('reports', DBSrvcs.opts));
-        Log.l(`addDB(): Added local database ${dbname} to the list.`);
-        DBSrvcs.db = db1.get(dbname);
-        return DBSrvcs.db;
-      }
+    if(db1.has(dbname)) {
+      Log.l(`addDB(): Not adding local database ${dbname} because it already exists.`);
+      DBSrvcs.db = db1.get(dbname);
+      return DBSrvcs.db;
+    } else {
+      db1.set(dbname, PouchDBService.StaticPouchDB('reports', DBSrvcs.opts));
+      Log.l(`addDB(): Added local database ${dbname} to the list.`);
+      DBSrvcs.db = db1.get(dbname);
+      return DBSrvcs.db;
+    }
   }
 
   static addRDB(dbname: string) {

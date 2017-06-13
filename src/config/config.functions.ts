@@ -20,7 +20,7 @@ var _emptyFunc = function() {};
 // var t1 = function(res) { console.log("Success!"); console.log(res); window["res1"] = res;};
 // var c1 = function(err) { console.log("Failure!"); console.log(err); window["err1"] = err;};
 
-export const isMoment = moment.isMoment;
+export const isMoment = function(val) { return (moment.isMoment(val) && moment(val).isValid()) ; }
 
 
 export var CONSOLE = {

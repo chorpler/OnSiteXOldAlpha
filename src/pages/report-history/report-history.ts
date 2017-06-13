@@ -5,6 +5,7 @@ import { AuthSrvcs                                              } from '../../pr
 import { SrvrSrvcs                                              } from '../../providers/srvr-srvcs'    ;
 import { AlertService                                           } from '../../providers/alerts'        ;
 import { Log, CONSOLE                                           } from '../../config/config.functions' ;
+import moment from 'moment';
 
 
 @IonicPage({ name    : 'ReportHistory'                                          })
@@ -19,11 +20,12 @@ export class ReportHistory implements OnInit {
   public items        : Array<{title: string, note: string}> = new Array<{title:string, note:string}>() ;
   public data         : any                                  = []                                       ;
   public loading      : any                                                                             ;
-
+  public moment       : any;
   constructor( public navCtrl : NavController , public navParams  : NavParams         ,
                public dbSrvcs : DBSrvcs       , public alert      : AlertService      ,
                private auth   : AuthSrvcs     , public loadingCtrl: LoadingController ,
                public srvr    : SrvrSrvcs ) {
+    this.moment = moment;
     window["reporthistory"] = this;
   }
 

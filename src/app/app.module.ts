@@ -35,9 +35,10 @@ import { GeolocService                                           } from '../prov
 import { Status                                                  } from '../providers/status'                  ;
 import { StatusProvider                                          } from '../providers/status/status'           ;
 import { MultiPickerModule                                       } from 'ion-multi-picker'                     ;
-import { Ion3TimeDurationPickerModule  } from '../components/ion3-time-duration-picker/ion3-time-duration-picker.module';
+// import { Ion3TimeDurationPickerModule  } from '../components/ion3-time-duration-picker/ion3-time-duration-picker.module';
 import { PipesModule } from '../pipes/pipes.module';
 import { TabsComponent } from '../components/tabs/tabs';
+import { PouchDBService } from '../providers/pouchdb-service';
 
 @NgModule({
   declarations   : [
@@ -57,7 +58,7 @@ import { TabsComponent } from '../components/tabs/tabs';
                       }),
                       IonicModule.forRoot(OnSiteApp),
                       MultiPickerModule,
-                      Ion3TimeDurationPickerModule,
+                      // Ion3TimeDurationPickerModule,
                       // NumericModule,
                       // DatePickerModule
                                                        ],
@@ -89,7 +90,8 @@ import { TabsComponent } from '../components/tabs/tabs';
                       LocalNotifications,
                       GeolocService,
                       Status,
-                      TabsComponent
+                      TabsComponent,
+                      PouchDBService,
                                                       ]
 })
 

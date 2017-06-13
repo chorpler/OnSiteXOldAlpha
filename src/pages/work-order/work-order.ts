@@ -18,6 +18,7 @@ import { sprintf } from 'sprintf-js';
 import { MultiPickerModule } from 'ion-multi-picker';
 import { FancySelectComponent } from '../../components/fancy-select/fancy-select';
 import { SafePipe } from '../../pipes/safe';
+import { TabsComponent } from '../../components/tabs/tabs';
 
 @IonicPage({ name: 'WorkOrder' })
 @Component({
@@ -36,6 +37,7 @@ export class WorkOrderPage implements OnInit {
   mode: string = 'New';
   workOrderForm: FormGroup;
   workOrder: any;
+  workOrderReport: any;
   repairHrs: any;
   profile: any = {};
   tmpReportData: any;
@@ -52,6 +54,7 @@ export class WorkOrderPage implements OnInit {
   public shiftTotalHours:any = 0;
   public payrollPeriodHours:any = 0;
   public currentRepairHours:number = 0;
+  public shiftHoursColor:string = "black";
 
   rprtDate: any = moment();
   timeStarts: any = moment();
@@ -69,6 +72,7 @@ export class WorkOrderPage implements OnInit {
   _repairHours: any;
   _shift: any;
   _selected_shift: any;
+  _notes: any;
 
   public userdata:any;
   public shiftDateOptions:any;
@@ -82,6 +86,8 @@ export class WorkOrderPage implements OnInit {
   public shiftDateInput2Disabled:boolean = false;
   // public selectedShiftText:string = "None a'tall";
   public selectedShiftText:string = "";
+  public workOrderList:any;
+  public filteredWOList:any;
   // , private dbSrvcs: DBSrvcs
 
   constructor(
@@ -94,6 +100,7 @@ export class WorkOrderPage implements OnInit {
     public alert: AlertService,
     public modal: ModalController,
     public zone:NgZone,
+    public tabs:TabsComponent,
     public ud:UserData)
   {
     this.db = this.dbSrvcs;
@@ -134,39 +141,59 @@ export class WorkOrderPage implements OnInit {
       this.techProfile = res;
       this.workOrder = new WorkOrder();
       this.setupShifts();
+      this.setupWorkOrderList();
       this.initializeForm();
+      this.updateActiveShiftWorkOrders(this.shifts[0]);
+
       this._startDate = this.workOrderForm.controls.rprtDate;
       this._startTime = this.workOrderForm.controls.timeStarts;
       this._endTime = this.workOrderForm.controls.endTime;
-      this._repairHours = this.workOrderForm.controls.repairHours;
+      this._repairHours = this.workOrderForm.controls.repair_time;
       this._selected_shift = this.workOrderForm.controls.selected_shift;
-      // this._startDate = this.workOrder.controls['rprtDate'];
-      this.workOrderForm.valueChanges.subscribe((value: any) => {
+      this._notes = this.workOrderForm.controls.notes;
+      this._startDate = this.workOrderForm.controls.rprtDate;
+      this.workOrderForm.valueChanges.debounceTime(500).subscribe((value: any) => {
         Log.l("workOrderForm: valueChanges fired for:\n", value);
-        if (value.selected_shift != null) {
-          let ss = value.selected_shift;
-          this.updateActiveShiftWorkOrders();
-          let shift_time = moment(ss.start_time);
-          let shift_serial = ss.getShiftSerial();
-          this.workOrder.shift_serial = shift_serial;
-          let shiftHours = this.techProfile.shiftLength;
-          let shiftStartsAt = this.techProfile.shiftStartTime;
-
-          // let shiftDay = moment()
-          // let shiftStartDay =
+        let notes = value.notes;
+        let unit = value.uNum;
+        let woNum = value.woNum;
+        let fields = [['notes', 'notes'], ['wONum','work_order_number'],['uNum', 'unit_number']];
+        let len = fields.length;
+        for(let i = 0; i < len; i++) {
+          let key1 = fields[i][0];
+          let key2 = fields[i][1];
+          if(value[key1] !== null && value[key1] !== undefined) {
+            this.workOrder[key2] = value[key1];
+          }
         }
-        if(value.repair_time != null) {
-          let dur1 = value.repair_time.split(":");
-          let hrs = Number(dur1[0]);
-          let min = Number(dur1[1]);
-          let iDur = hrs + (min / 60);
-          this.currentRepairHours = iDur;
-          this.workOrder.setRepairHours(iDur);
+        Log.l("workOrderForm: overall valueChanges, ended up with work ordder:\n", this.workOrder);
+      });
+      this._repairHours.valueChanges.subscribe((hours:any) => {
+        Log.l("workOrderForm: valueChanges fired for repair_hours: ", hours);
+        let dur1 = hours.split(":");
+        let hrs = Number(dur1[0]);
+        let min = Number(dur1[1]);
+        let iDur = hrs + (min / 60);
+        this.currentRepairHours = iDur;
+        this.workOrder.setRepairHours(iDur);
+        if(this.selectedShift !== undefined && this.selectedShift !== null) {
+          this.shiftHoursColor = this.getShiftHoursStatus(this.selectedShift);
+        } else {
+          this.shiftHoursColor = this.getShiftHoursStatus(this.shifts[0]);
         }
-        // if(value.start_time != null) {
-        //   let tmp1 = value.start_time;
-        //   let start = moment(tmp1);
-        // }
+      })
+      this._selected_shift.valueChanges.subscribe((shift:any) => {
+        Log.l("workOrderForm: valueChanges fired for selected_shift:\n", shift);
+        let ss = shift;
+        this.updateActiveShiftWorkOrders(shift);
+        // this.getTotalHoursForShift(ss);
+        // let shift_time = moment(ss.start_time);
+        // let shift_serial = ss.getShiftSerial();
+        // this.workOrder.shift_serial = shift_serial;
+        // Log.l("workOrderForm: setting shift_serial to: ", shift_serial);
+        // let shiftHours = this.techProfile.shiftLength;
+        // let shiftStartsAt = this.techProfile.shiftStartTime;
+        // this.shiftHoursColor = this.getShiftHoursStatus();
       });
       this.dataReady = true;
     }).catch((err) => {
@@ -181,8 +208,27 @@ export class WorkOrderPage implements OnInit {
     // });
   }
 
-  public updateActiveShiftWorkOrders() {
-    // this.techWorkOrders = 
+  public updateActiveShiftWorkOrders(shift:Shift) {
+    let ss = shift;
+    this.getTotalHoursForShift(ss);
+    let shift_time = moment(ss.start_time);
+    let shift_serial = ss.getShiftSerial();
+    let payroll_period = ss.getPayrollPeriod();
+    this.workOrder.shift_serial = shift_serial;
+    this.workOrder.payroll_period = payroll_period;
+    Log.l("workOrderForm: setting shift_serial to: ", shift_serial);
+    let shiftHours = this.techProfile.shiftLength;
+    let shiftStartsAt = this.techProfile.shiftStartTime;
+    this.shiftHoursColor = this.getShiftHoursStatus(ss);
+  }
+
+  public setupWorkOrderList() {
+    let tmpWOL = new Array<WorkOrder>();
+    if(this.ud.woArrayInitialized) {
+      tmpWOL = this.ud.getWorkOrderList();
+    }
+    this.workOrderList = tmpWOL;
+    Log.l("setupWorkOrderList(): Got work order list:\n", tmpWOL);
   }
 
   /**
@@ -211,9 +257,13 @@ export class WorkOrderPage implements OnInit {
       // } else {
 
       // }
-      let shift_day = moment(now).subtract(i, 'days');
+      let tmpDay = moment(now).subtract(i, 'days');
+      let shift_day = tmpDay.startOf('day');
+      let tmpStart = this.techProfile.shiftStartTime;
+      let shift_start_time = moment(shift_day).add(tmpStart, 'hours');
       // let shiftStartDay = moment(now).subtract(i, 'days');
-      let thisShift = new Shift('SITENAME', null, 'AM', shift_day, 8);
+      let client = this.techProfile.client || "SITENAME";
+      let thisShift = new Shift(client, null, 'AM', shift_start_time, 8);
       thisShift.updateShiftWeek();
       thisShift.updateShiftNumber();
       thisShift.getExcelDates();
@@ -221,6 +271,11 @@ export class WorkOrderPage implements OnInit {
       Log.l(`Now adding day ${i}: ${moment(shift_day).format()}`);
     }
     this.selectedShiftText = this.shifts[0].toString();
+    // let startTime = moment(this.shifts[0].shift_time);
+    let shift = this.shifts[0];
+    let shiftStartDay = moment(shift.start_time);
+
+    this.workOrder.setStartTime(moment(this.shifts[0].start_time));
   }
 
   public showFancySelect() {
@@ -255,20 +310,28 @@ export class WorkOrderPage implements OnInit {
       'wONum': new FormControl(null, Validators.required),
       'notes': new FormControl(null, Validators.required),
       'rprtDate': new FormControl(this.reportDate.format("YYYY-MM-DD"), Validators.required),
-      'timeStamp': new FormControl({ value: Date(), disabled: true }, Validators.required)
+      'timeStamp': new FormControl({ value: moment().format(), disabled: true }, Validators.required)
     });
   }
 
-  getTotalHoursForShift() {
-    if(this.selectedShift !== undefined && this.selectedShift !== null ) {
-      
+  getTotalHoursForShift(shift:Shift) {
+    let ss = shift;
+    if (ss === undefined || ss === null ) {
+      Log.l("getTotalHoursForShift(): no selected shift somehow.");
+    } else {
+      let shiftID = shift.getShiftSerial();
+      this.workOrder.shift_serial = shiftID;
+      Log.l("getTotalHoursForShift(): set work order shift_serial to:\n", shiftID);
+      let filteredList = this.ud.getWorkOrdersForShift(shiftID);
+      this.filteredWOList = filteredList;
+      Log.l("getTotalHoursForShift(): Ended up with filtered work order list:\n", filteredList);
+      let totalHours = 0;
+      for(let wo of filteredList) {
+        totalHours += Number(wo['repair_hours']);
+      }
+      ss.shift_hours = totalHours;
+      Log.l(`getTotalHoursForShift(): Total hours for shift '${shiftID}' are ${totalHours}.`);
     }
-    let shift = this.selectedShift;
-
-    let shiftID = shift.getShiftSerial();
-    this.workOrder.shift_serial = shiftID;
-    Log.l("getTotalHoursForShift(): set work order shift_serial to:\n", shiftID);
-
     
   }
 
@@ -282,209 +345,205 @@ export class WorkOrderPage implements OnInit {
     return shift.getShiftColor();
   }
 
+  getShiftHoursStatus(shift:Shift) {
+    let ss = shift;
+    if(ss !== undefined && ss !== null) {
+      let subtotal = Number(ss.getShiftHours());
+      let newhours = Number(this.workOrder.getRepairHours());
+      let target = Number(this.techProfile.shiftLength);
+      let total = subtotal + newhours;
+      Log.l(`getShiftHoursStatus(): total = ${total}, target = ${target}.`);
+      if(total === target) {
+        return 'green';
+      } else {
+        return 'red';
+      }
+    } else {
+      return 'black'
+    }
+  }
+
   onSubmit() {
     this.processWO();
   }
 
-  
-
-  /**
-   * Calcualtes workOrderData.timeEnds given workOrderData.timeStarts
-   * and workOrderData.repairHrs
-   *
-   * @private
-   * @param {any} workOrderData
-   *
-   * @memberOf WorkOrder
-   */
-  public calcEndTime(workOrderData) {
-    Log.l("Calculating end time for:\n", workOrderData);
-    // const _Xdec = /(00|15|30|45)(?!\:\d{2})/;
-    // const _Xhrs = /([0-9]{2})(?=:\d{2})/;
-
-    // this.prsHrs = _Xhrs.exec(workOrderData.timeStarts);
-    // this.strtHrs = parseInt(this.prsHrs[0]).toString();
-    // this.prsMin = _Xdec.exec(workOrderData.timeStarts);
-
-    // if (parseInt(this.prsMin[0]) === 0) {
-    //   this.strtMin = '00';
-    // }
-    // else if (parseInt(this.prsMin[0]) === 15) {
-    //   this.strtMin = '15';
-    // }
-    // else if (parseInt(this.prsMin[0]) === 30) {
-    //   this.strtMin = '30';
-    // }
-    // else {
-    //   this.strtMin = '45';
-    // }
-
-    // workOrderData.timeStarts = this.strtHrs + ':' + this.strtMin;
-
-    // this.hrsHrs = Math.floor(workOrderData.repairHrs);
-    // this.hrsMin = (workOrderData.repairHrs%1)*60;
-
-    // if (parseInt(this.strtMin) + this.hrsMin > 60) {
-
-    //   if (parseInt(this.strtHrs) + this.hrsHrs + 1 > 24)
-    //         { this.endHrs = parseInt(this.strtHrs) + this.hrsHrs -23; this.endMin = parseInt(this.strtMin) + this.hrsMin - 60; }
-    //   else  { this.endHrs = parseInt(this.strtHrs) + this.hrsHrs + 1; this.endMin = parseInt(this.strtMin) + this.hrsMin - 60; }
-    // }
-
-    // else {
-    //   if (parseInt(this.strtHrs) + this.hrsHrs > 24)
-    //         { this.endHrs = parseInt(this.strtHrs) + this.hrsHrs -24; this.endMin = parseInt(this.strtMin) + this.hrsMin;      }
-    //   else  { this.endHrs = parseInt(this.strtHrs) + this.hrsHrs;     this.endMin = parseInt(this.strtMin) + this.hrsMin;      }
-    // }
-
-    // if( this.endHrs < 10 ) {
-    //   if( this.endHrs === 0 ) { this.endHrs = '00'       }
-    //   else { this.endHrs = '0' + this.endHrs.toString(); }
-    // } else { this.endHrs = this.endHrs.toString();       }
-
-    // if( this.endMin === 0 ) { this.endMin = '00';        }
-    // if( this.hrsMin === 0 ) { this.hrsMin = '00';        }
-
-    // this.timeEnds           = this.endHrs + ':' + this.endMin;
-    // workOrderData.timeEnds  = this.endHrs + ':' + this.endMin;
-    // workOrderData.repairHrs = this.hrsHrs + ':' + this.hrsMin;
-
-    // console.log(this.strtHrs);
-    // console.log(this.endHrs);
-
-    // workOrderData.repairHrs = this.hrsHrs + ':' + this.hrsMin;
-  }
-
   genReportID() {
-    // this.timeSrvc.getParsedDate();
-    // this.idDate = this.timeSrvc._arrD[1].toString() +
-    //               this.timeSrvc._arrD[2].toString() +
-    //               this.timeSrvc._arrD[0].toString() +
-    //               this.timeSrvc._arrD[3].toString();
-    // this.idTime = this.timeSrvc._arrD[4].toString() +
-    //               this.timeSrvc._arrD[5].toString() +
-    //               this.timeSrvc._arrD[6].toString();
-    //   console.log( this.idDate );
-    // let firstInitial = this.profile.firstName.slice(0,1);
-    // let lastInitial = this.profile.lastName.slice(0,1);
     let now = moment();
     let idDateTime = now.format("dddDDMMMYYYYHHmmss");
-    this.docID = this.profile.avatarName + '_' + idDateTime;
-    console.log(this.docID);
+    let docID = this.techProfile.avatarName + '_' + idDateTime;
+    // this.workOrder._id = docID;
+    Log.l("genReportID(): Generated ID:\n", docID);
+    return docID;
+  }
+
+  convertFormToWorkOrder() {
+    let sWO = this.workOrderForm.getRawValue();
+    let wo = this.workOrder;
+
   }
 
   processWO() {
-    const workOrderData = this.workOrderForm.getRawValue();
-    // workOrderData.timeStamp = Date();
-    this.calcEndTime(workOrderData);
-    console.log("processWO() has initial workOrderData:");
-    console.log(workOrderData);
-
+    let workOrderData = this.workOrderForm.getRawValue();
     this.alert.showSpinner("Saving...");
 
-    return new Promise((resolve, reject) => {
-      this.dbSrvcs.checkLocalDoc('_local/techProfile').then((docExists) => {
-        if (docExists) {
-          console.log("processWO(): docExists is true");
-          this.dbSrvcs.getDoc('_local/techProfile').then(res => {
-            this.profile = res;
-            if (typeof this.profile.avatarName == 'undefined') {
-              this.profile.avatarName = 'PaleRider';
-            }
-            delete this.profile._id;
-            delete this.profile._rev;
-            this.genReportID();
-            if (typeof this.profile.updated == 'undefined') {
-              /* This shouldn't happen as long as the user is logged in and the profile was created */
-              Log.l("processWO(): Tech profile does not exist at all. This should not happen.");
-              setTimeout(() => { this.navCtrl.setRoot( 'User'); });
-              // resolve(false);
-              resolve(-1);
-            } else if (typeof this.profile.updated != 'undefined' && this.profile.updated === false) {
-              /* Update flag exists but is false, so tech needs to verify settings */
-              Log.l("processWO(): Update flag exists in profile, but is false. Need tech to OK settings changes.");
-              this.tmpReportData = workOrderData;
-              this.tmpReportData._id = '_local/tmpReport';
-              this.tmpReportData.docID = this.docID;
-              // this.tmpReportData._rev = ;
-              Log.l("processWO(): tmpReportData is: ", this.tmpReportData);
-              this.dbSrvcs.addLocalDoc(this.tmpReportData).then((res) => {
-                Log.l("processWO(): Created temporary work report. Now going to Settings page to OK changes.");
-                Log.l(res);
-                this.alert.hideSpinner();
-                setTimeout(() => { this.navCtrl.setRoot( 'User'); });
-                // resolve(res);
-                resolve(-2);
-              }).catch((err) => {
-                Log.l("processWO(): Error trying to save temporary work report! Can't take tech to settings page!");
-                Log.w(err);
-                // resolve(false);
-                resolve(-3);
-              });
-
-              /* Notify user and go to Settings page */
-              this.alert.hideSpinner();
-              setTimeout(() => { this.navCtrl.setRoot( 'User'); });
-              resolve(-4);
-            } else {
-              /* Update flag is true, good to submit work order */
-              console.log("processWO(): docExists is false");
-              this.tmpReportData = workOrderData;
-              this.tmpReportData.profile = this.profile;
-              this.tmpReportData._id = '_local/tmpReport';
-              this.tmpReportData.docID = this.docID;
-              // this.tmpReportData._rev = '0-1';
-              console.log("processWO(): Update flag set, tmpReportData is:");
-              console.log(this.tmpReportData);
-
-              this.dbSrvcs.addLocalDoc(this.tmpReportData).then((res) => {
-                console.log("processWO(): About to generate work order");
-                return this.reportBuilder.getLocalDocs();
-              }).then((final) => {
-                console.log("processWO(): Done generating work order.");
-                return this.db.syncSquaredToServer('reports');
-              }).then((final2) => {
-                Log.l("processWO(): Successfully synchronized work order to CouchDB server!");
-                Log.l(final2);
-                this.alert.hideSpinner();
-                setTimeout(() => { this.navCtrl.setRoot('OnSiteHome'); });
-                // resolve(final2);
-                resolve(-5);
-              }).catch((err) => {
-                Log.l("processWO(): Error while trying to sync work order to CouchDB server!");
-                Log.w(err);
-                this.syncError = true;
-                this.alert.hideSpinner();
-                // resolve(false);
-                resolve(-6);
-              });
-            }
-          }).catch((anotherError) => {
-            Log.l("processWO(): Could not retrieve _local/techProfile. Please set it up again.");
-            Log.w(anotherError);
-            this.alert.hideSpinner();
-            // resolve(false);
-            setTimeout(() => { this.navCtrl.setRoot( 'User'); });
-            resolve(-7);
-          })
-        } else {
-          console.error("processWO(): Tech profile does not exist. Contact developers.");
-          // resolve(false);
-          this.alert.hideSpinner();
-          resolve(-8);
-        }
-      }).catch((outerError) => {
-        Log.l("processWO(): Error checking existence of local document _local/techProfile.");
-        Log.w(outerError);
-        // resolve(false);
-        this.alert.hideSpinner();
-        resolve(-9);
-      });
+    // return new Promise((resolve, reject) => {
+    let tempWO = this.createReport();
+    this.dbSrvcs.addDoc(tempWO).then((res) => {
+      Log.l("processWO(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
+      return this.db.syncSquaredToServer('reports');
+    }).then((res) => {
+      Log.l("processWO(): Successfully synchronized work order to remote.");
+      this.alert.hideSpinner();
+      // setTimeout(() => { this.navCtrl.setRoot('OnSiteHome'); });
+      setTimeout(() => { this.tabs.goHome() });
+    }).catch((err) => {
+      Log.l("processWO(): Error saving work order to local database.");
+      Log.e(err);
+      this.alert.hideSpinner();
+      // reject(err);
     });
+    // });
+    //   this.dbSrvcs.checkLocalDoc('_local/techProfile').then((docExists) => {
+    //     if (docExists) {
+    //       console.log("processWO(): docExists is true");
+    //       this.dbSrvcs.getDoc('_local/techProfile').then(res => {
+    //         this.profile = res;
+    //         if (typeof this.profile.avatarName == 'undefined') {
+    //           this.profile.avatarName = 'PaleRider';
+    //         }
+    //         delete this.profile._id;
+    //         delete this.profile._rev;
+    //         this.genReportID();
+    //         if (typeof this.profile.updated == 'undefined') {
+    //           /* This shouldn't happen as long as the user is logged in and the profile was created */
+    //           Log.l("processWO(): Tech profile does not exist at all. This should not happen.");
+    //           setTimeout(() => { this.navCtrl.setRoot( 'User'); });
+    //           // resolve(false);
+    //           resolve(-1);
+    //         } else if (typeof this.profile.updated != 'undefined' && this.profile.updated === false) {
+    //           /* Update flag exists but is false, so tech needs to verify settings */
+    //           Log.l("processWO(): Update flag exists in profile, but is false. Need tech to OK settings changes.");
+    //           this.tmpReportData = workOrderData;
+    //           this.tmpReportData._id = '_local/tmpReport';
+    //           Log.l("processWO(): tmpReportData is: ", this.tmpReportData);
+    //           this.dbSrvcs.addLocalDoc(this.tmpReportData).then((res) => {
+    //             Log.l("processWO(): Created temporary work report. Now going to Settings page to OK changes.");
+    //             Log.l(res);
+    //             this.alert.hideSpinner();
+    //             setTimeout(() => { this.navCtrl.setRoot( 'User'); });
+    //             // resolve(res);
+    //             resolve(-2);
+    //           }).catch((err) => {
+    //             Log.l("processWO(): Error trying to save temporary work report! Can't take tech to settings page!");
+    //             Log.w(err);
+    //             // resolve(false);
+    //             resolve(-3);
+    //           });
+
+    //           /* Notify user and go to Settings page */
+    //           this.alert.hideSpinner();
+    //           setTimeout(() => { this.navCtrl.setRoot( 'User'); });
+    //           resolve(-4);
+    //         } else {
+    //           /* Update flag is true, good to submit work order */
+    //           console.log("processWO(): docExists is false");
+    //           this.tmpReportData = workOrderData;
+    //           this.tmpReportData.profile = this.profile;
+    //           this.tmpReportData._id = '_local/tmpReport';
+    //           this.tmpReportData.docID = this.docID;
+    //           // this.tmpReportData._rev = '0-1';
+    //           console.log("processWO(): Update flag set, tmpReportData is:");
+    //           console.log(this.tmpReportData);
+
+    //           this.dbSrvcs.addLocalDoc(this.tmpReportData).then((res) => {
+    //             console.log("processWO(): About to generate work order");
+    //             return this.reportBuilder.getLocalDocs();
+    //           }).then((final) => {
+    //             console.log("processWO(): Done generating work order.");
+    //             return this.db.syncSquaredToServer('reports');
+    //           }).then((final2) => {
+    //             Log.l("processWO(): Successfully synchronized work order to CouchDB server!");
+    //             Log.l(final2);
+    //             this.alert.hideSpinner();
+    //             setTimeout(() => { this.navCtrl.setRoot('OnSiteHome'); });
+    //             // resolve(final2);
+    //             resolve(-5);
+    //           }).catch((err) => {
+    //             Log.l("processWO(): Error while trying to sync work order to CouchDB server!");
+    //             Log.w(err);
+    //             this.syncError = true;
+    //             this.alert.hideSpinner();
+    //             // resolve(false);
+    //             resolve(-6);
+    //           });
+    //         }
+    //       }).catch((anotherError) => {
+    //         Log.l("processWO(): Could not retrieve _local/techProfile. Please set it up again.");
+    //         Log.w(anotherError);
+    //         this.alert.hideSpinner();
+    //         // resolve(false);
+    //         setTimeout(() => { this.navCtrl.setRoot( 'User'); });
+    //         resolve(-7);
+    //       })
+    //     } else {
+    //       console.error("processWO(): Tech profile does not exist. Contact developers.");
+    //       // resolve(false);
+    //       this.alert.hideSpinner();
+    //       resolve(-8);
+    //     }
+    //   }).catch((outerError) => {
+    //     Log.l("processWO(): Error checking existence of local document _local/techProfile.");
+    //     Log.w(outerError);
+    //     // resolve(false);
+    //     this.alert.hideSpinner();
+    //     resolve(-9);
+    //   });
+    // });
   }
 
   cancel() {
     Log.l("WorkOrderPage: User canceled work order.");
+  }
+
+  createReport() {
+    Log.l("WorkOrderPage: createReport(): Now creating report...");
+    let partialReport = this.workOrderForm.getRawValue();
+    let ts = moment(partialReport.timeStamp);
+    let wo = this.workOrder;
+    Log.l("createReport(): timestamp moment is now:\n", ts);
+    let XLDate = moment([1900, 0, 1]);
+    let xlStamp = ts.diff(XLDate, 'days', true) + 2;
+    // workOrderData.timeStamp = moment(workOrderData.timeStamp).format;
+    partialReport.timeStamp = xlStamp;
+    // this.calcEndTime(workOrderData);
+    console.log("processWO() has initial partialReport:");
+    console.log(partialReport);
+    let newReport:any = {};
+    let newID = this.genReportID();
+    newReport._id            = newID                             ;
+    newReport.timeStarts     = wo.time_start.format()            ;
+    newReport.timeEnds       = wo.time_end.format()              ;
+    newReport.repairHrs      = wo.repair_hours                   ;
+    newReport.shiftSerial    = wo.shift_serial                   ;
+    newReport.payrollPeriod  = wo.payroll_period                 ;
+    newReport.uNum           = partialReport.uNum                ;
+    newReport.wONum          = partialReport.wONum               ;
+    newReport.notes          = partialReport.notes               ;
+    newReport.rprtDate       = partialReport.rprtDate            ;
+    newReport.timeStamp      = partialReport.timeStamp           ;
+    newReport.lastName       = this.techProfile.lastName         ;
+    newReport.firstName      = this.techProfile.firstName        ;
+    newReport.client         = this.techProfile.client           ;
+    newReport.location       = this.techProfile.location         ;
+    newReport.locID          = this.techProfile.locID            ;
+    newReport.loc2nd         = this.techProfile.loc2nd           ;
+    newReport.shift          = this.techProfile.shift            ;
+    newReport.shiftLength    = this.techProfile.shiftLength      ;
+    newReport.shiftStartTime = this.techProfile.shiftStartTime   ;
+    newReport.technician     = this.techProfile.technician       ;
+    newReport.username       = this.techProfile.avatarName       ;
+    this.workOrderReport = newReport;
+    return newReport;
   }
 }
 
