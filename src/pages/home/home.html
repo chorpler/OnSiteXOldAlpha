@@ -8,7 +8,7 @@
     </ion-title>
     <ion-buttons right>
       <button ion-button color="light" icon-only (click)="terminateApp()">
-        <ion-icon name="close" ></ion-icon>
+        <ion-icon class="header-close-button" name="close"></ion-icon>
       </button>
     </ion-buttons>
   </ion-navbar>
@@ -18,34 +18,10 @@
   <h5> Hours Submitted for Payroll </h5>
   <div *ngIf="dataReady">
     <p *ngFor="let shift of shifts; let i=index" [ngClass]="getShiftColor(i)">
-      <span class="shft-num-icon">{{numChars[i]}}</span> {{hoursTotalList[i]}}Hrs of {{techProfile.shiftLength}}Hrs submitted for this shift
+      <span class="shft-num-icon">{{numChars[shift.shift_number]}}</span> {{hoursTotalList[i]}}Hrs of {{techProfile.shiftLength}}Hrs submitted for this shift
       <span class="chk-box-icon" [class.hrsCompleted]="getShiftStatus(i)">{{getCheckbox(i)}}</span>
     </p>
   </div>
-  <!--<p>
-      <span class="shft-num-icon" >{{ shftTwo}}   </span> {{ hrsLogged}}Hrs of {{ shftHrs}}Hrs submitted for this shift
-       <span class="chk-box-icon" [class.hrsCompleted]="chkBxBool">{{chkBx}}</span>
-    </p>
-    <p>
-      <span class="shft-num-icon" >{{ shftThree}} </span> {{ hrsLogged}}Hrs of {{ shftHrs}}Hrs submitted for this shift
-       <span class="chk-box-icon" [class.hrsCompleted]="chkBxBool">{{chkBx}}</span>
-    </p>
-    <p>
-      <span class="shft-num-icon" >{{ shftFour}}  </span> {{ hrsLogged}}Hrs of {{ shftHrs}}Hrs submitted for this shift
-       <span class="chk-box-icon" [class.hrsCompleted]="chkBxBool">{{chkBx}}</span>
-    </p>
-    <p>
-      <span class="shft-num-icon" >{{ shftFive}}  </span> {{ hrsLogged}}Hrs of {{ shftHrs}}Hrs submitted for this shift
-       <span class="chk-box-icon" [class.hrsCompleted]="chkBxBool">{{chkBx}}</span>
-    </p>
-    <p>
-      <span class="shft-num-icon" >{{ shftSix}}   </span> {{ hrsLogged}}Hrs of {{ shftHrs}}Hrs submitted for this shift
-       <span class="chk-box-icon" [class.hrsCompleted]="chkBxBool">{{chkBx}}</span>
-    </p>
-    <p>
-      <span class="shft-num-icon" >{{ shftSeven}} </span> {{ hrsLogged}}Hrs of {{ shftHrs}}Hrs submitted for this shift
-       <span class="chk-box-icon" [class.hrsCompleted]="chkBxBool">{{ chkBx }}</span>
-    </p>-->
   <h6> Hrs submitted for this payroll period: {{ payrollPeriodHours }} </h6>
   <h6> Payroll hours for this payroll period: {{ payrollPeriodBonusHours }} </h6>
   <p>

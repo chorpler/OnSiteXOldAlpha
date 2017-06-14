@@ -34,7 +34,7 @@ export class WorkOrderPage implements OnInit {
   title: string = 'Work Report';
   setDate: Date = new Date();
   year: number = this.setDate.getFullYear();
-  mode: string = 'New';
+  mode: string = 'Add';
   workOrderForm: FormGroup;
   workOrder: any;
   workOrderReport: any;
@@ -249,12 +249,6 @@ export class WorkOrderPage implements OnInit {
     let endDay = 2;
     let now = moment();
     for (let i = 0; i < 7; i++) {
-      // if(moment(now).day() == 3) {
-      //   /* Today is Wednesday, so the shift start day will be today */
-
-      // } else {
-
-      // }
       let tmpDay = moment(now).subtract(i, 'days');
       let shift_day = tmpDay.startOf('day');
       let tmpStart = this.techProfile.shiftStartTime;
@@ -268,18 +262,30 @@ export class WorkOrderPage implements OnInit {
       this.shifts.push(thisShift);
       Log.l(`Now adding day ${i}: ${moment(shift_day).format()}`);
     }
-    this.selectedShiftText = this.shifts[0].toString();
+    if(this.mode === 'Add') {
+      this.selectedShift = this.shifts[0];
+    } else {
+      let woShiftSerial = this.workOrder.shift_serial;
+      for(let shift of this.shifts) {
+        if(shift.getShiftSerial() === woShiftSerial) {
+          this.selectedShift = shift;
+          break;
+        }
+      }
+    }
+    this.selectedShiftText = this.selectedShift.toString();
     // let startTime = moment(this.shifts[0].shift_time);
-    let shift = this.shifts[0];
-    let shiftStartDay = moment(shift.start_time);
-
-    this.workOrder.setStartTime(moment(this.shifts[0].start_time));
+    // let shift = this.shifts[0];
+    // let shiftStartDay = moment(this.selectedShift.start_time);
+    if(this.mode === 'Add') {
+      this.workOrder.setStartTime(moment(this.selectedShift.start_time));
+    }
   }
 
   public showFancySelect() {
     Log.l("showFancySelect(): Called!");
     let options = [];
-    let selectData = {numbers: UserData.circled_numbers, options: options};
+    let selectData = {options: options};
     for(let shift of this.shifts) {
       let option = {shift: shift};
       options.push(option);
@@ -420,105 +426,7 @@ export class WorkOrderPage implements OnInit {
         this.alert.hideSpinner();
         // reject(err);
       });
-
     }
-    // });
-    //   this.dbSrvcs.checkLocalDoc('_local/techProfile').then((docExists) => {
-    //     if (docExists) {
-    //       console.log("processWO(): docExists is true");
-    //       this.dbSrvcs.getDoc('_local/techProfile').then(res => {
-    //         this.profile = res;
-    //         if (typeof this.profile.avatarName == 'undefined') {
-    //           this.profile.avatarName = 'PaleRider';
-    //         }
-    //         delete this.profile._id;
-    //         delete this.profile._rev;
-    //         this.genReportID();
-    //         if (typeof this.profile.updated == 'undefined') {
-    //           /* This shouldn't happen as long as the user is logged in and the profile was created */
-    //           Log.l("processWO(): Tech profile does not exist at all. This should not happen.");
-    //           setTimeout(() => { this.navCtrl.setRoot( 'User'); });
-    //           // resolve(false);
-    //           resolve(-1);
-    //         } else if (typeof this.profile.updated != 'undefined' && this.profile.updated === false) {
-    //           /* Update flag exists but is false, so tech needs to verify settings */
-    //           Log.l("processWO(): Update flag exists in profile, but is false. Need tech to OK settings changes.");
-    //           this.tmpReportData = workOrderData;
-    //           this.tmpReportData._id = '_local/tmpReport';
-    //           Log.l("processWO(): tmpReportData is: ", this.tmpReportData);
-    //           this.dbSrvcs.addLocalDoc(this.tmpReportData).then((res) => {
-    //             Log.l("processWO(): Created temporary work report. Now going to Settings page to OK changes.");
-    //             Log.l(res);
-    //             this.alert.hideSpinner();
-    //             setTimeout(() => { this.navCtrl.setRoot( 'User'); });
-    //             // resolve(res);
-    //             resolve(-2);
-    //           }).catch((err) => {
-    //             Log.l("processWO(): Error trying to save temporary work report! Can't take tech to settings page!");
-    //             Log.w(err);
-    //             // resolve(false);
-    //             resolve(-3);
-    //           });
-
-    //           /* Notify user and go to Settings page */
-    //           this.alert.hideSpinner();
-    //           setTimeout(() => { this.navCtrl.setRoot( 'User'); });
-    //           resolve(-4);
-    //         } else {
-    //           /* Update flag is true, good to submit work order */
-    //           console.log("processWO(): docExists is false");
-    //           this.tmpReportData = workOrderData;
-    //           this.tmpReportData.profile = this.profile;
-    //           this.tmpReportData._id = '_local/tmpReport';
-    //           this.tmpReportData.docID = this.docID;
-    //           // this.tmpReportData._rev = '0-1';
-    //           console.log("processWO(): Update flag set, tmpReportData is:");
-    //           console.log(this.tmpReportData);
-
-    //           this.dbSrvcs.addLocalDoc(this.tmpReportData).then((res) => {
-    //             console.log("processWO(): About to generate work order");
-    //             return this.reportBuilder.getLocalDocs();
-    //           }).then((final) => {
-    //             console.log("processWO(): Done generating work order.");
-    //             return this.db.syncSquaredToServer('reports');
-    //           }).then((final2) => {
-    //             Log.l("processWO(): Successfully synchronized work order to CouchDB server!");
-    //             Log.l(final2);
-    //             this.alert.hideSpinner();
-    //             setTimeout(() => { this.navCtrl.setRoot('OnSiteHome'); });
-    //             // resolve(final2);
-    //             resolve(-5);
-    //           }).catch((err) => {
-    //             Log.l("processWO(): Error while trying to sync work order to CouchDB server!");
-    //             Log.w(err);
-    //             this.syncError = true;
-    //             this.alert.hideSpinner();
-    //             // resolve(false);
-    //             resolve(-6);
-    //           });
-    //         }
-    //       }).catch((anotherError) => {
-    //         Log.l("processWO(): Could not retrieve _local/techProfile. Please set it up again.");
-    //         Log.w(anotherError);
-    //         this.alert.hideSpinner();
-    //         // resolve(false);
-    //         setTimeout(() => { this.navCtrl.setRoot( 'User'); });
-    //         resolve(-7);
-    //       })
-    //     } else {
-    //       console.error("processWO(): Tech profile does not exist. Contact developers.");
-    //       // resolve(false);
-    //       this.alert.hideSpinner();
-    //       resolve(-8);
-    //     }
-    //   }).catch((outerError) => {
-    //     Log.l("processWO(): Error checking existence of local document _local/techProfile.");
-    //     Log.w(outerError);
-    //     // resolve(false);
-    //     this.alert.hideSpinner();
-    //     resolve(-9);
-    //   });
-    // });
   }
 
   cancel() {
@@ -545,9 +453,12 @@ export class WorkOrderPage implements OnInit {
     if(this.mode !== 'Add') {
       newID = wo._id; 
     }
-    if(wo._rev !== undefined && wo._rev !== null && wo._rev !== '') {
+    if(this.mode === 'Edit') {
       newReport._rev = wo._rev;
     }
+    // if(wo._rev !== undefined && wo._rev !== null && wo._rev !== '') {
+    //   newReport._rev = wo._rev;
+    // }
     newReport._id            = newID                             ;
     newReport.timeStarts     = wo.time_start.format()            ;
     newReport.timeEnds       = wo.time_end.format()              ;

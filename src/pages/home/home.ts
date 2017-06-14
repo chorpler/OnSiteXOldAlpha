@@ -23,7 +23,7 @@ export class HomePage {
   username     : string        = "unknown"                                          ;
   userLoggedIn : boolean                                                            ;
   title        : string        = 'OnSite Home'                                      ;
-  numChars     : Array<string> = ["①", "②", "③", "④", "⑤", "⑥", "⑦"]             ;
+  numChars     : Array<string> = ["⓪", "①", "②", "③", "④", "⑤", "⑥", "⑦"]           ;
   shftOne      : string                                                             ;
   shftTwo      : string                                                             ;
   shftThree    : string                                                             ;
@@ -224,8 +224,12 @@ export class HomePage {
   }
 
   chkHrs(i) {
-    if(this.shftHrs === this.hrsSubmitted ) { this.chkBx = '☑'; this.chkBxBool = true; }
-    else { this.chkBx = '☒'; this.chkBxBool = false; }
+    if(this.shftHrs === this.hrsSubmitted ) {
+      this.chkBx = '☑'; this.chkBxBool = true;
+    } else {
+      let tmpBx = '☒';
+      this.chkBxBool = false;
+    }
   }
 
   presentUserModal() {

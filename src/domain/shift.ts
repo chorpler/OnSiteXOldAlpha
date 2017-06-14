@@ -233,7 +233,8 @@ export class Shift {
     let strOut:string = null;
     let start:string = moment(this.start_time).format("MMM DD");
     let weekID = this.getShiftWeekID();
-    strOut = `${start} (Payroll week #${weekID})`;
+    let weekStart = moment(this.shift_week).format("MMM DD");
+    strOut = `${start} (Payroll week ${weekStart})`;
     Log.l('Shift.toString() should output:\n', strOut);
     return strOut;
   }

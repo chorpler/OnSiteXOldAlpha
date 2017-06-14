@@ -7,6 +7,11 @@
 <ion-header>
   <ion-navbar>
     <ion-title>{{title}}</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="deleteWorkOrder(workOrder)" *ngIf="mode=='Edit'">
+        <ion-icon class="work-order-delete-button" name="ios-trash-outline"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
@@ -17,11 +22,10 @@
         <span class="shift-label">Shift</span> #
         <span class="shift-number">{{workOrderForm.value.selected_shift.updateShiftNumber()}}</span>
         <span class="shift-label">hours</span>:
-        <!--<span class="shift-hours">{{workOrderForm.value.selected_shift.getShiftHours()+currentRepairHours}}</span>-->
         <span class="shift-hours">{{workOrderForm.value.selected_shift.getShiftHours()+currentRepairHours}}</span>
         <span class="shift-label">of</span>
         <span class="shift-hours">{{techProfile.shiftLength}}</span>
-        </span>
+      </span>
     </div>
     <form [formGroup]="workOrderForm" (ngSubmit)="onSubmit()" *ngIf="dataReady">
       <ion-list padding>
@@ -32,7 +36,7 @@
         </ion-item>
         <ion-item>
           <ion-label>Repair Time</ion-label>
-          <ion-multi-picker item-content [multiPickerColumns]="chooseHours" [separator]="':'" formControlName='repair_time'></ion-multi-picker>
+          <ion-multi-picker class="repair-hours-picker" item-content [multiPickerColumns]="chooseHours" [separator]="':'" formControlName='repair_time'></ion-multi-picker>
           <ion-icon item-right class="shift-repair-time-icon" name="arrow-dropdown"></ion-icon>
         </ion-item>
         <ion-item>

@@ -83,10 +83,12 @@ export class OnSiteApp {
       this.checkLogin().then((res) => {
         Log.l("initializeApp(): User passed login check. Should be fine!");
         this.events.publish('startup:finished', this.ud.getLoginStatus());
-        this.nav.setRoot( 'OnSiteHome');
+        // this.nav.setRoot( 'OnSiteHome');
+        this.rootPage = 'OnSiteHome';
       }).catch((err) => {
         Log.l("initializeApp(): User failed login check. Sending to login.");
-        this.nav.setRoot('Login');
+        // this.nav.setRoot('Login');
+        this.rootPage = 'Login';
       })
     });
   }

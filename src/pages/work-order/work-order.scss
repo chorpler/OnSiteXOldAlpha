@@ -46,14 +46,18 @@ page-work-order {
   }
   .shift-date-select-results {
     text-align: left;
-    width: 80%;
+    // width: 80%;
     display: inline-block;
     input {
       text-align: right;
-      width: 80%;
+      opacity: 1 !important;
+      // width: 80%;
     }
   }
   .shift-date-select-icon {
     // border: 1px solid black;
+  }
+  .work-order-delete-button {
+    color: black;
   }
 }
