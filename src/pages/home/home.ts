@@ -41,7 +41,7 @@ export class HomePage {
   public shiftWorkOrders:Array<WorkOrder>;
   public static pageLoadedPreviously:boolean = false;
   public payrollWorkOrders:Array<WorkOrder>;
-  public hoursTotalList:Array<any>;
+  public hoursTotalList:Array<any> = [];
   public shifts:Array<Shift> = [];
   public payrollPeriodHoursTotal:number = 0;
   public payrollPeriodHours:number = 0;
@@ -67,7 +67,7 @@ export class HomePage {
   }
 
   ionViewDidEnter() {
-    Log.l("HomePage: ionViewDidEnter() called. First wait ot make sure app is finished loading.");
+    Log.l("HomePage: ionViewDidEnter() called. First wait to make sure app is finished loading.");
     this.dataReady = false;
     // this.events.subscribe('pageload:finished', (loggedIn) => {
     //   Log.l("HomePage: pageload:finished event detected. Login status: ", loggedIn);
@@ -85,19 +85,22 @@ export class HomePage {
     //   this.events.unsubscribe('startup:finished', () => {
       //   Log.l("HomePage: no longer receiving startup:finished events.");
       // });
-      this.runWhenReady();
+    // this.runWhenReady();
     // });
   }
 
   runEveryTime() {
     if (this.ud.getLoginStatus() === false) {
       this.presentLoginModal();
-    } else if (!this.ud.woArrayInitialized()) {
+    // } else if (!this.ud.woArrayInitialized()) {
+    } else {
       Log.l("HomePage: ionViewDidEnter() says work order array not initialized, fetching work orders.");
       this.fetchTechWorkorders().then((res) => {
         Log.l("HomePage: ionViewDidEnter() fetched work orders, maybe:\n", res);
         this.ud.setWorkOrderList(res);
         this.ud.createShifts();
+        this.shifts = this.ud.getPeriodShifts();
+        this.countHoursForShifts();
         this.dataReady = true;
      });
     }
@@ -132,10 +135,12 @@ export class HomePage {
         let payrollPeriod = this.ud.getPayrollPeriodForDate(now);
         this.payrollWorkOrders = this.ud.getWorkOrdersForPayrollPeriod(payrollPeriod);
         Log.l(`HomePage: filteredWorkOrders(${payrollPeriod}) returned:\n`, this.payrollWorkOrders);
-        this.hoursTotalList = [];
-        for(let shift of this.shifts) {
-          let total = this.ud.getTotalHoursForShift(shift.getShiftSerial());
-          this.hoursTotalList.push(total);
+        if(this.shifts && this.shifts.length) {
+          this.hoursTotalList = [];
+          for(let shift of this.shifts) {
+            let total = this.ud.getTotalHoursForShift(shift.getShiftSerial());
+            this.hoursTotalList.push(total);
+          }
         }
         let thisPayPeriod = this.ud.getPayrollPeriodForDate(moment());
         this.payrollPeriodHours = this.ud.getTotalHoursForPayrollPeriod(thisPayPeriod);
@@ -171,13 +176,20 @@ export class HomePage {
     return loggedin;
   }
 
-  countHoursForPayrollPeriod() {
-    let fwo = this.payrollWorkOrders;
-    let len = fwo.length;
-    let total = 0;
-    for(let i = 0; i < len; i++) {
-      let wo = fwo[i];
-      total += wo.getRepairHours();
+  countHoursForShifts() {
+    // let fwo = this.payrollWorkOrders;
+    // let len = fwo.length;
+    // let total = 0;
+    // for(let i = 0; i < len; i++) {
+    //   let wo = fwo[i];
+    //   total += wo.getRepairHours();
+    // }
+    if(this.shifts && this.shifts.length) {
+      this.hoursTotalList = [];
+      for(let shift of this.shifts) {
+        let hours = this.ud.getTotalHoursForShift(shift.getShiftSerial());
+        this.hoursTotalList.push(hours);
+      }
     }
   }
 

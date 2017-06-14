@@ -43,7 +43,8 @@ export class OnSiteApp {
                 public ud          : UserData          ,
                 public auth        : AuthSrvcs         ,
                 public server      : SrvrSrvcs         ,
-                public events      : Events            ) {
+                public events      : Events            ,
+                public tabs:TabsComponent              ) {
 
     window['appcomp'] = this;
     window['moment'] = moment;
@@ -84,6 +85,7 @@ export class OnSiteApp {
         Log.l("initializeApp(): User passed login check. Should be fine!");
         this.events.publish('startup:finished', this.ud.getLoginStatus());
         // this.nav.setRoot( 'OnSiteHome');
+        // this.tabs.goHome();
         this.rootPage = 'OnSiteHome';
       }).catch((err) => {
         Log.l("initializeApp(): User failed login check. Sending to login.");

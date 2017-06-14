@@ -27,10 +27,6 @@ import { TabsComponent } from '../../components/tabs/tabs';
 })
 
 export class WorkOrderPage implements OnInit {
-  // @ViewChild('reportDate') reportDateField;
-  // @ViewChild('startTime') startTimeField;
-  // @ViewChild(DatePickerDirective) private datepickerDirective: DatePickerDirective;
-
   title: string = 'Work Report';
   setDate: Date = new Date();
   year: number = this.setDate.getFullYear();

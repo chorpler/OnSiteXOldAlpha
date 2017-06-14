@@ -230,7 +230,7 @@ export class UserData {
   }
 
   getPeriodShifts():Array<Shift> {
-    return UserData.shifts || [];
+    return UserData.shifts;
   }
 
   setTechProfile(profile:any) {
