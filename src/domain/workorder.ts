@@ -1,5 +1,6 @@
 import * as moment from 'moment';
 import { Log, isMoment } from '../config/config.functions';
+import { sprintf } from 'sprintf-js';
 
 export class WorkOrder {
   public time_start       : any; 

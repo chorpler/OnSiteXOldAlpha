@@ -35,7 +35,6 @@ export class ReportHistory implements OnInit {
   ngOnInit() {
     let u = this.auth.getUser();
     Log.l("ReportHistory: pulling reports...");
-    // this.showSpinner('Retrieving reports...');
     this.items = this.ud.getWorkOrderList();
     this.pageReady = true;
     // this.srvr.getReports(u).then(res => {

@@ -304,6 +304,7 @@ export class WorkOrderPage implements OnInit {
     let wo = this.workOrder;
     let rprtDate = moment(this.shifts[0].getStartTime());
     let ts = wo.timestamp || moment().format();
+    this.currentRepairHours = wo.getRepairHours();
     this.workOrderForm = new FormGroup({
       // 'timeStarts': new FormControl(this.startTime.format("HH:00"), Validators.required),
       // 'timeEnds': new FormControl(null, Validators.required),
@@ -428,7 +429,11 @@ export class WorkOrderPage implements OnInit {
   cancel() {
     Log.l("WorkOrderPage: User canceled work order.");
     // setTimeout(() => { this.tabs.goHome() });
-    this.tabs.goHome();
+    if(this.mode === 'Add') {
+      this.tabs.goHome();
+    } else {
+      this.tabs.goHistory();
+    }
   }
 
   createReport() {

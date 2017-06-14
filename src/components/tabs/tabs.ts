@@ -25,31 +25,37 @@ export class TabsComponent implements OnInit {
 
   goHome() {
     console.log('entering page: OnSite Home' );
+    this.nav = this.app.getActiveNav();
     this.highlightTab(0); this.nav.setRoot('OnSiteHome'   );
   }
 
   goReport() {
     console.log('entering page: WorkOrder' );
+    this.nav = this.app.getActiveNav();
     this.highlightTab(1); this.nav.setRoot('WorkOrder'    );
   }
 
   goHistory() {
     console.log('entering page: ReportHistory' );
+    this.nav = this.app.getActiveNav();
     this.highlightTab(2); this.nav.setRoot('ReportHistory');
   }
 
   goUser() {
     console.log('entering page: User' );
+    this.nav = this.app.getActiveNav();
     this.highlightTab(3); this.nav.setRoot( 'User'        );
   }
 
   goSettings() {
     console.log('entering page: Settings' );
+    this.nav = this.app.getActiveNav();
     this.highlightTab(4); this.nav.setRoot('Settings'     );
   }
 
   goDev() {
     console.log('entering page: DevPage' );
+    this.nav = this.app.getActiveNav();
     this.highlightTab(5); this.nav.setRoot('DevPage'      );
   }
 

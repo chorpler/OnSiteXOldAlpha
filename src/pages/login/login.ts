@@ -9,6 +9,7 @@ import { AlertService                                                           
 import { NetworkStatus                                                           } from '../../providers/network-status' ;
 import { UserData                                                                } from '../../providers/user-data'      ;
 import { Log                                                                     } from '../../config/config.functions'  ;
+import { TabsComponent                                                           } from '../../components/tabs/tabs'     ;
 
 /**
  * Generated class for the Login page.
@@ -33,6 +34,7 @@ export class Login implements OnInit {
   private formUser      : any                            ;
   private formPass      : any                            ;
   private submitAttempt : boolean = false                ;
+  public mode           : string = "modal"               ;
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
@@ -44,7 +46,8 @@ export class Login implements OnInit {
     private alerter: AlertService,
     public viewCtrl: ViewController,
     public ud: UserData,
-    public events: Events
+    public events: Events,
+    public tabs: TabsComponent
   ) {
     window['loginscreen'] = this;
   }
@@ -53,13 +56,18 @@ export class Login implements OnInit {
     Log.l('Login: ionViewDidLoad fired.');
   }
 
+  // ionViewCanLeave() {
+  //   if()
+  // }
+
   ngOnInit() {
     Log.l("Starting login page...");
+    if(this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
     this.initializeForm();
-    if(NetworkStatus.isConnected()) {
-    } else {
-      this.alerter.showAlert('OFFLINE', "There is no Internet connection. Login will not work right now.");
-    }
+    // if(NetworkStatus.isConnected()) {
+    // } else {
+    //   this.alerter.showAlert('OFFLINE', "There is no Internet connection. Login will not work right now.");
+    // }
   }
 
   private initializeForm() {
@@ -116,8 +124,13 @@ export class Login implements OnInit {
         this.ud.storeCredentials(creds);
         this.ud.setLoginStatus(true);
         this.hideSpinner();
-        this.events.publish('startup:finished', this.ud.getLoginStatus());
-        this.viewCtrl.dismiss(creds);
+        this.events.publish('startup:finished', true);
+        this.events.publish('login:finished', true);
+        if(this.mode === 'modal') {
+          this.viewCtrl.dismiss(creds);
+        } else {
+          this.tabs.goHome();
+        }
       }).catch((err) => {
         Log.l("loginAttempt(): Error validating and saving user info.");
         Log.l(err);
@@ -128,10 +141,4 @@ export class Login implements OnInit {
       this.alerter.showAlert('OFFLINE', "There is no Internet connection. Can't log in right now.");
     }
   }
-
-  // showPopover() {
-  //  let popover = this.popoverCtrl.create(LoginErrorPopover);
-  //  popover.present();
-  // }
-
 }

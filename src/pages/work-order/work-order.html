@@ -20,9 +20,11 @@
     <div class="work-order-payroll-hours-header">
       <span class="shift-hours-header" [ngClass]="shiftHoursColor" *ngIf="workOrderForm && workOrderForm.value && workOrderForm.value.selected_shift">
         <span class="shift-label">Shift</span> #
-        <span class="shift-number">{{workOrderForm.value.selected_shift.updateShiftNumber()}}</span>
+        <!--<span class="shift-number">{{workOrderForm.value.selected_shift.updateShiftNumber()}}</span>-->
+        <span class="shift-number">{{selectedShift.updateShiftNumber()}}</span>
         <span class="shift-label">hours</span>:
-        <span class="shift-hours">{{workOrderForm.value.selected_shift.getShiftHours()+currentRepairHours}}</span>
+        <!--<span class="shift-hours">{{workOrderForm.value.selected_shift.getShiftHours()+currentRepairHours}}</span>-->
+        <span class="shift-hours">{{selectedShift.getShiftHours()+currentRepairHours}}</span>
         <span class="shift-label">of</span>
         <span class="shift-hours">{{techProfile.shiftLength}}</span>
       </span>

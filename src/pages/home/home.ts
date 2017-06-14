@@ -194,7 +194,7 @@ export class HomePage {
   }
 
   presentLoginModal() {
-    let loginPage = this.modalCtrl.create('Login', {user: '', pass: ''}, { cssClass: 'login-modal'});
+    let loginPage = this.modalCtrl.create('Login', {user: '', pass: ''}, { enableBackdropDismiss: false, cssClass: 'login-modal'});
     loginPage.onDidDismiss(data => {
       Log.l("Got back:\n", data);
       // this.loginData = data;

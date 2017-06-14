@@ -442,7 +442,6 @@ export class DBSrvcs {
         Log.l("techProfile read successfully:");
         Log.l(res);
         resolve(res);
-        // this.techProfile = res;
       }).catch((err) => {
         Log.l("techProfile not found, user not logged in.");
         console.error(err);

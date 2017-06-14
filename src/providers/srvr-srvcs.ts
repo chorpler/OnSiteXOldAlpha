@@ -42,12 +42,13 @@ export class SrvrSrvcs {
 		};
 
   constructor(public http: Http, public ud:UserData) {
+    Log.l("Hello SrvrSrvcs provider");
     window["serverServices"] = this;
     window["SrvrSrvcs"] = SrvrSrvcs;
     SrvrSrvcs.StaticPouchDB = PouchDBService.PouchInit();
     this.PouchDB = SrvrSrvcs.StaticPouchDB;
     this.RemoteDB = SrvrSrvcs.StaticPouchDB;
-    Log.l("SrvrSrvcs: StaticPouchDB is:\n",SrvrSrvcs.StaticPouchDB);
+    // Log.l("SrvrSrvcs: StaticPouchDB is:\n",SrvrSrvcs.StaticPouchDB);
   }
 
 
@@ -96,38 +97,7 @@ export class SrvrSrvcs {
     return URL;
   }
 
-  querySession(user, pass) {
-  	Log.l("querySession(): About to try logging in to server.");
-  	return new Promise((resolve,reject) => {
-			let url = SrvrSrvcs.protocol + ':/' + '/' + SrvrSrvcs.server + "/_session";
-			let authToken = 'Basic ' + window.btoa(user + ':' + pass);
-			let ajaxOpts = { headers: { Authorization: authToken } };
-			let opts = {ajax: {withCredentials: true, headers: {Authorization: authToken}, auth: {username: user, password: pass}}};
-  		this.RemoteDB = this.PouchDB(url, {adapter: SrvrSrvcs.protocol, skipSetup: true, ajax: ajaxOpts});
-  		this.RemoteDB.login(user, pass, {ajax: ajaxOpts}).then((res) => {
-  			return this.RemoteDB.getSession();
-  		}).then((session) => {
-				if(typeof session.info == 'undefined' || typeof session.info.authenticated != 'string') {
-					Log.l("querySession(): Authentication failed");
-					SrvrSrvcs.userInfo = {u: '', p: ''};
-					resolve(false);
-				} else {
-					Log.l("querySession(): Authentication successful.");
-					SrvrSrvcs.userInfo = {u: user, p: pass};
-
-					resolve(session);
-				}
-  		}).catch((err) => {
-  			Log.l("querySession(): Error during validation of login credentials.");
-  			/* User-Friendly Dialog goes here */
-  			Log.e(err);
-				SrvrSrvcs.userInfo = {u: '', p: ''};
-  			resolve(false);
-  		});
-  	});
-  }
-
-  loginToServer(user:string, pass:string, dbname?:string) {
+  loginToServer(user:string, pass:string, dbname?:string, auto?:boolean) {
   	return new Promise((resolve,reject) => {
       let dbURL = '_session';
   		if(dbname) {
@@ -153,24 +123,32 @@ export class SrvrSrvcs {
           this.ud.storeCredentials(user, pass);
           // this.ud.setLoginStatus(true);
           let rdb2 = this.addRDB('sesa-employees');
-          let uid = `org.couchdb.user:${user}`;
-          rdb2.get(uid).then((res) => {
-            Log.l("loginToServer(): got user object from server!\n", res);
-            tprofile = res;
-            // tprofile.docID = tprofile._id;
-            // tprofile._id = "_local/techProfile";
-            return this.saveTechProfile(tprofile);
-          }).then((res) => {
-            Log.l("loginToServer(): Successfully saved user profile!\n", res);
-            this.ud.setTechProfile(tprofile);
-            this.ud.setLoginStatus(true);
-            resolve(session);
-          }).catch((err) => {
-            Log.l("loginToServer(): Error getting user object from server!");
-            Log.e(err);
-            SrvrSrvcs.userInfo = {u: '', p: ''};
-            resolve(false);
-          });
+          if(auto === undefined || auto === false) {
+            let uid = `org.couchdb.user:${user}`;
+            rdb2.get(uid).then((res) => {
+              Log.l("loginToServer(): got user object from server!\n", res);
+              tprofile = res;
+              // tprofile.docID = tprofile._id;
+              // tprofile._id = "_local/techProfile";
+              return this.saveTechProfile(tprofile);
+            }).then((res) => {
+              Log.l("loginToServer(): Successfully saved user profile!\n", res);
+              this.ud.setTechProfile(tprofile);
+              this.ud.setLoginStatus(true);
+              resolve(true);
+            }).catch((err) => {
+              Log.l("loginToServer(): Error getting user object from server!");
+              Log.e(err);
+              SrvrSrvcs.userInfo = {u: '', p: ''};
+              resolve(false);
+            });
+          } else {
+            this.getTechProfile().then((res) => {
+              this.ud.setTechProfile(res);
+              this.ud.setLoginStatus(true);
+              resolve(true);
+            });
+          }
 				}
 			}).catch((err) => {
 				Log.l("loginToServer(): Authentication successful.");
@@ -179,6 +157,20 @@ export class SrvrSrvcs {
   			resolve(false);
 			})
 		});
+  }
+
+  getTechProfile() {
+    let db1 = SrvrSrvcs.addDB('reports');
+    return new Promise((resolve,reject) => {
+      db1.get('_local/techProfile').then((res) => {
+        Log.l(`getTechProfile(): Success! Result:\n`, res);
+        resolve(res);;
+      }).catch((err) => {
+        Log.l(`getTechProfile(): Error!`);
+        Log.e(err);
+        reject(err);
+      });
+    });
   }
 
   getUserData(user) {
