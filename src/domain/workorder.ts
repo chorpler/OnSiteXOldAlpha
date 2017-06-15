@@ -158,8 +158,7 @@ export class WorkOrder {
       let hours = moment(end).diff(start, 'hours', true);
       this.repair_hours = hours;
     } else {
-      Log.e("WO.checkTimeCalculations(): Start or end times are not moments, or repair hours is not a number/duration!");
-      Log.e("Start: %s\nEnd: %s\nHours: %s", start, end, time);
+      Log.w("WO.checkTimeCalculations(): Start or end times are not moments, or repair hours is not a number/duration!\nStart: %s\nEnd: %s\nHours: %s", start, end, time);
     }
   }
 

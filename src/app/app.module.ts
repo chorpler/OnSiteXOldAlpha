@@ -20,7 +20,6 @@ import { TimeSrvc                                                } from '../prov
 import { ReportBuildSrvc                                         } from '../providers/report-build-srvc'       ;
 import { UserData                                                } from '../providers/user-data'               ;
 import { SrvrSrvcs                                               } from '../providers/srvr-srvcs'              ;
-import { DbBulkuploadSrvc                                        } from '../providers/db-bulkupload-srvc'      ;
 import { NetworkStatus                                           } from '../providers/network-status'          ;
 import { Geofence                                                } from '@ionic-native/geofence'               ;
 import { BackgroundGeolocation, BackgroundGeolocationConfig      } from '@ionic-native/background-geolocation' ;
@@ -35,10 +34,19 @@ import { GeolocService                                           } from '../prov
 import { Status                                                  } from '../providers/status'                  ;
 import { StatusProvider                                          } from '../providers/status/status'           ;
 import { MultiPickerModule                                       } from 'ion-multi-picker'                     ;
-// import { Ion3TimeDurationPickerModule  } from '../components/ion3-time-duration-picker/ion3-time-duration-picker.module';
-import { PipesModule } from '../pipes/pipes.module';
-import { TabsComponent } from '../components/tabs/tabs';
-import { PouchDBService } from '../providers/pouchdb-service';
+import { PipesModule                                             } from '../pipes/pipes.module'                ;
+import { TabsComponent                                           } from '../components/tabs/tabs'              ;
+import { PouchDBService                                          } from '../providers/pouchdb-service'         ;
+import { StorageService                                          } from '../providers/storage-service'         ;
+import { TranslateModule, TranslateLoader                        } from '@ngx-translate/core'                  ;
+import { TranslateHttpLoader                                     } from '@ngx-translate/http-loader'           ;
+import { Http                                                    } from '@angular/http'                        ;
+
+
+export function createTranslateLoader(http: Http) {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
+
 
 @NgModule({
   declarations   : [
@@ -54,9 +62,16 @@ import { PouchDBService } from '../providers/pouchdb-service';
                       HttpModule,
                       IonicStorageModule.forRoot({
                         name: '__onsitestorage',
-                        driverOrder: ['localstorage'  ]
+                        driverOrder: ['localstorage']
                       }),
                       IonicModule.forRoot(OnSiteApp),
+                      TranslateModule.forRoot({
+                        loader: {
+                          provide: TranslateLoader,
+                          useFactory: (createTranslateLoader),
+                          deps: [Http]
+                        }
+                      }),
                       MultiPickerModule,
                       // Ion3TimeDurationPickerModule,
                       // NumericModule,
@@ -81,7 +96,6 @@ import { PouchDBService } from '../providers/pouchdb-service';
                       ReportBuildSrvc,
                       UserData,
                       SrvrSrvcs,
-                      DbBulkuploadSrvc,
                       NetworkStatus,
                       Geofence,
                       BackgroundGeolocation,
@@ -92,6 +106,7 @@ import { PouchDBService } from '../providers/pouchdb-service';
                       Status,
                       TabsComponent,
                       PouchDBService,
+                      StorageService,
                                                       ]
 })
 

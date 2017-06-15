@@ -18,6 +18,7 @@ import { sprintf } from 'sprintf-js';
 import { MultiPickerModule } from 'ion-multi-picker';
 import { FancySelectComponent } from '../../components/fancy-select/fancy-select';
 import { SafePipe } from '../../pipes/safe';
+import { PREFS                              } from '../../config/config.strings'          ;
 import { TabsComponent } from '../../components/tabs/tabs';
 
 @IonicPage({ name: 'WorkOrder' })
@@ -47,15 +48,16 @@ export class WorkOrderPage implements OnInit {
   shiftsStart: any;
   shifter: any;
   repairTime: any;
+  public thisWorkOrderContribution:number = 0;
   public shiftTotalHours:any = 0;
   public payrollPeriodHours:any = 0;
   public currentRepairHours:number = 0;
   public shiftHoursColor:string = "black";
 
-  rprtDate: any = moment();
-  timeStarts: any = moment();
-  reportDate: any = moment();
-  startTime: any = moment();
+  rprtDate: any;
+  timeStarts: any;
+  reportDate: any;
+  startTime: any;
   timeEnds: any;
   syncError: boolean = false;
   chooseHours: any;
@@ -80,11 +82,9 @@ export class WorkOrderPage implements OnInit {
 
   public shiftDateInputDisabled:boolean = true;
   public shiftDateInput2Disabled:boolean = false;
-  // public selectedShiftText:string = "None a'tall";
   public selectedShiftText:string = "";
   public workOrderList:any;
   public filteredWOList:any;
-  // , private dbSrvcs: DBSrvcs
 
   constructor(
     public navCtrl: NavController,
@@ -112,6 +112,8 @@ export class WorkOrderPage implements OnInit {
     if(this.navParams.get('workOrder') !== undefined) { this.workOrder = this.navParams.get('workOrder'); }
     this.title = `${this.mode} Work Order`;
 
+    this.thisWorkOrderContribution = this.workOrder.repair_hours || 0;
+
     this.chooseHours = [
       {"name": "Hours", "options": [] },
       {"name": "Minutes", "options": [] }
@@ -129,23 +131,26 @@ export class WorkOrderPage implements OnInit {
     this.shifts = [];
     this.db.getTechProfile().then((res) => {
       Log.l(`WorkOrderPage: Success getting tech profile! Result:\n`, res);
-      // this.controlValueAccessor = {}
       this.techProfile = res;
       if(this.mode === 'Add') {
         this.workOrder = new WorkOrder();
       }
       this.setupShifts();
       this.setupWorkOrderList();
+      this.updateActiveShiftWorkOrders(this.selectedShift);
+      if(this.mode === 'Add') {
+        let startTime = moment(this.selectedShift.start_time);
+        let addTime = this.selectedShift.getShiftHours();
+        let newStartTime = moment(startTime).add(addTime, 'hours');
+        Log.l("WorkOrderPage: Now setting work order start time. Start Time = %s, adding %f hours, gives:\n", startTime.format(), addTime, newStartTime);
+        this.workOrder.setStartTime(newStartTime);
+      }
       this.initializeForm();
-      this.updateActiveShiftWorkOrders(this.shifts[0]);
 
-      this._startDate = this.workOrderForm.controls.rprtDate;
-      this._startTime = this.workOrderForm.controls.timeStarts;
       this._endTime = this.workOrderForm.controls.endTime;
       this._repairHours = this.workOrderForm.controls.repair_time;
       this._selected_shift = this.workOrderForm.controls.selected_shift;
       this._notes = this.workOrderForm.controls.notes;
-      this._startDate = this.workOrderForm.controls.rprtDate;
       this.workOrderForm.valueChanges.debounceTime(500).subscribe((value: any) => {
         Log.l("workOrderForm: valueChanges fired for:\n", value);
         let notes = value.notes;
@@ -180,26 +185,40 @@ export class WorkOrderPage implements OnInit {
         Log.l("workOrderForm: valueChanges fired for selected_shift:\n", shift);
         let ss = shift;
         this.updateActiveShiftWorkOrders(shift);
-        // this.getTotalHoursForShift(ss);
-        // let shift_time = moment(ss.start_time);
-        // let shift_serial = ss.getShiftSerial();
-        // this.workOrder.shift_serial = shift_serial;
-        // Log.l("workOrderForm: setting shift_serial to: ", shift_serial);
-        // let shiftHours = this.techProfile.shiftLength;
-        // let shiftStartsAt = this.techProfile.shiftStartTime;
-        // this.shiftHoursColor = this.getShiftHoursStatus();
+        let rprtDate = moment(shift.getStartTime());
+        let woHoursSoFar = shift.getShiftHours();
+        let woStart = moment(shift.getStartTime()).add(woHoursSoFar, 'hours');
+        this.workOrder.setStartTime(woStart);
+        
+        this.workOrderForm.controls.rprtDate.setValue(rprtDate.format("YYYY-MM-DD"));
       });
       this.dataReady = true;
     }).catch((err) => {
       Log.l(`WorkOrderPage: Error getting tech profile!`);
       Log.e(err);
     });
+  }
 
-
-    // this._startDate.valueChanges.subscribe((value: any) => {
-    //   Log.l("valueChanged for _locID:\n", value);
-    //   this.locIDChanged(this._locID.value);
-    // });
+  private initializeForm() {
+    let wo = this.workOrder;
+    let ts, rprtDate;
+    if(this.mode == 'Add') {
+      rprtDate = moment(this.selectedShift.getStartTime());
+      ts = moment().format();
+    } else {
+      rprtDate = moment(wo.rprtDate);
+    }
+    ts = moment().format();
+    this.currentRepairHours = wo.getRepairHours();
+    this.workOrderForm = new FormGroup({
+      'selected_shift': new FormControl(this.shifts[0], Validators.required),
+      'repair_time': new FormControl(wo.getRepairHoursString(), Validators.required),
+      'uNum': new FormControl(wo.unit_number, Validators.required),
+      'wONum': new FormControl(wo.work_order_number, Validators.required),
+      'notes': new FormControl(wo.notes, Validators.required),
+      'rprtDate': new FormControl(rprtDate.format("YYYY-MM-DD"), Validators.required),
+      'timeStamp': new FormControl({ value: ts, disabled: true }, Validators.required)
+    });
   }
 
   public updateActiveShiftWorkOrders(shift:Shift) {
@@ -214,6 +233,7 @@ export class WorkOrderPage implements OnInit {
     let shiftHours = this.techProfile.shiftLength;
     let shiftStartsAt = this.techProfile.shiftStartTime;
     this.shiftHoursColor = this.getShiftHoursStatus(ss);
+    this.selectedShift = shift;
   }
 
   public setupWorkOrderList() {
@@ -225,22 +245,6 @@ export class WorkOrderPage implements OnInit {
     Log.l("setupWorkOrderList(): Got work order list:\n", tmpWOL);
   }
 
-  /**
-   * Sets up shifts for the past week.
-   *                                   now.add(x, 'days')
-   * today | Shift | Day num | Wed | Thu | Fri | Sat | Sun | Mon | Tue |
-   * ====================================================================
-   * Wed   |  1    |  3      |  0  | -6  | -5  | -4  | -3  | -2  | -1  |
-   * Thu   |  2    |  4      | -1  |  0  | -6  | -5  | -4  | -3  | -2  |
-   * Fri   |  3    |  5      | -2  | -1  |  0  | -6  | -5  | -4  | -3  |
-   * Sat   |  4    |  6      | -3  | -2  | -1  |  0  | -6  | -5  | -4  |
-   * Sun   |  5    |  7      | -4  | -3  | -2  | -1  |  0  | -6  | -5  |
-   * Mon   |  6    |  1      | -5  | -4  | -3  | -2  | -1  |  0  | -6  |
-   * Tue   |  7    |  2      | -6  | -5  | -4  | -3  | -2  | -1  |  0  |
-   * Conclusion: get current day number. Subtract 3. Unshift to array.
-   * Loop 7 times, subtracting one additional day per time.
-   * @method setupShifts
-   */
   setupShifts() {
     let endDay = 2;
     let now = moment();
@@ -249,14 +253,13 @@ export class WorkOrderPage implements OnInit {
       let shift_day = tmpDay.startOf('day');
       let tmpStart = this.techProfile.shiftStartTime;
       let shift_start_time = moment(shift_day).add(tmpStart, 'hours');
-      // let shiftStartDay = moment(now).subtract(i, 'days');
       let client = this.techProfile.client || "SITENAME";
       let thisShift = new Shift(client, null, 'AM', shift_start_time, 8);
       thisShift.updateShiftWeek();
       thisShift.updateShiftNumber();
       thisShift.getExcelDates();
       this.shifts.push(thisShift);
-      Log.l(`Now adding day ${i}: ${moment(shift_day).format()}`);
+      // Log.l(`Now adding day ${i}: ${moment(shift_day).format()}`);
     }
     if(this.mode === 'Add') {
       this.selectedShift = this.shifts[0];
@@ -265,17 +268,12 @@ export class WorkOrderPage implements OnInit {
       for(let shift of this.shifts) {
         if(shift.getShiftSerial() === woShiftSerial) {
           this.selectedShift = shift;
+          Log.l("EditWorkOrder: setting active shift to:\n", shift);
           break;
         }
       }
     }
     this.selectedShiftText = this.selectedShift.toString();
-    // let startTime = moment(this.shifts[0].shift_time);
-    // let shift = this.shifts[0];
-    // let shiftStartDay = moment(this.selectedShift.start_time);
-    if(this.mode === 'Add') {
-      this.workOrder.setStartTime(moment(this.selectedShift.start_time));
-    }
   }
 
   public showFancySelect() {
@@ -298,25 +296,6 @@ export class WorkOrderPage implements OnInit {
       }
     });
     fancySelectModal.present();
-  }
-
-  private initializeForm() {
-    let wo = this.workOrder;
-    let rprtDate = moment(this.shifts[0].getStartTime());
-    let ts = wo.timestamp || moment().format();
-    this.currentRepairHours = wo.getRepairHours();
-    this.workOrderForm = new FormGroup({
-      // 'timeStarts': new FormControl(this.startTime.format("HH:00"), Validators.required),
-      // 'timeEnds': new FormControl(null, Validators.required),
-      'selected_shift': new FormControl(this.shifts[0], Validators.required),
-      'repair_time': new FormControl(wo.getRepairHoursString(), Validators.required),
-      'uNum': new FormControl(wo.unit_number, Validators.required),
-      'wONum': new FormControl(wo.work_order_number, Validators.required),
-      'notes': new FormControl(wo.notes, Validators.required),
-      'rprtDate': new FormControl(rprtDate.format("YYYY-MM-DD"), Validators.required),
-      'timeStamp': new FormControl({ value: ts, disabled: true }, Validators.required)
-      // 'timeStamp': new FormControl({ value: moment().format(), disabled: true }, Validators.required)
-    });
   }
 
   getTotalHoursForShift(shift:Shift) {
@@ -391,12 +370,11 @@ export class WorkOrderPage implements OnInit {
     let workOrderData = this.workOrderForm.getRawValue();
     this.alert.showSpinner("Saving...");
 
-    // return new Promise((resolve, reject) => {
     let tempWO = this.createReport();
     if(this.mode === 'Add') {
       this.dbSrvcs.addDoc(tempWO).then((res) => {
         Log.l("processWO(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
-        return this.db.syncSquaredToServer('reports');
+        return this.db.syncSquaredToServer(PREFS.DB.reports);
       }).then((res) => {
         Log.l("processWO(): Successfully synchronized work order to remote.");
         this.alert.hideSpinner();
@@ -411,7 +389,7 @@ export class WorkOrderPage implements OnInit {
     } else {
       this.dbSrvcs.updateDoc(tempWO).then((res) => {
         Log.l("processWO(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
-        return this.db.syncSquaredToServer('reports');
+        return this.db.syncSquaredToServer(PREFS.DB.reports);
       }).then((res) => {
         Log.l("processWO(): Successfully synchronized work order to remote.");
         this.alert.hideSpinner();

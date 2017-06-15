@@ -1,5 +1,5 @@
 import { Component, ViewChild                   } from '@angular/core'                     ;
-import { Platform, Nav, ToastController, Events } from 'ionic-angular'                     ;
+import { Platform, Nav, ToastController, Events, App } from 'ionic-angular'                     ;
 import { StatusBar                              } from '@ionic-native/status-bar'          ;
 import { SplashScreen                           } from '@ionic-native/splash-screen'       ;
 import { Storage                                } from '@ionic/storage'                    ;
@@ -16,6 +16,8 @@ import { DOMTimeStamp, Coordinates, Position    } from '../config/geoloc'       
 import { LocalNotifications                     } from '@ionic-native/local-notifications' ;
 import * as moment                                from 'moment'                            ;
 import { TabsComponent                          } from '../components/tabs/tabs'           ;
+import { PREFS                                  } from '../config/config.strings'          ;
+import { TranslateService } from '@ngx-translate/core';
 
 
 @Component({ templateUrl: 'app.html' })
@@ -27,6 +29,7 @@ export class OnSiteApp {
   rootPage    : any                   ;
   pouchOptions: any     = {          };
   bkBtnPrsd2nd: boolean = false       ;
+  prefs       : any     = PREFS       ;
 
   private network: any;
 
@@ -44,11 +47,13 @@ export class OnSiteApp {
                 public auth        : AuthSrvcs         ,
                 public server      : SrvrSrvcs         ,
                 public events      : Events            ,
-                public tabs:TabsComponent              ) {
+                public tabs        : TabsComponent     ,
+                public app         : App               ,
+                public translate   : TranslateService) {
 
     window['appcomp'] = this;
     window['moment'] = moment;
-
+    translate.setDefaultLang('en');
     this.initializeApp();
   }
 
@@ -73,7 +78,7 @@ export class OnSiteApp {
       window["Platform"] = this.platform;
       window["PouchDB" ].defaults(this.pouchOptions);
 
-      DBSrvcs.addDB('reports');
+      // DBSrvcs.addDB(PREFS.DB.reports);
 
       window[ "PouchDB"].debug.disable('*');
       window[ 'moment' ] = moment;
@@ -81,17 +86,17 @@ export class OnSiteApp {
       window[ 't1'     ] = CONSOLE.t1;
       window[ 'c1'     ] = CONSOLE.c1;
 
-      this.checkLogin().then((res) => {
+      this.checkPreferences().then(() => {
+        Log.l("OnSite: Done messing with preferences, now checking login...");
+        return this.checkLogin();
+      }).then((res) => {
         Log.l("initializeApp(): User passed login check. Should be fine!");
         this.events.publish('startup:finished', this.ud.getLoginStatus());
-        // this.nav.setRoot( 'OnSiteHome');
-        // this.tabs.goHome();
         this.rootPage = 'OnSiteHome';
       }).catch((err) => {
         Log.l("initializeApp(): User failed login check. Sending to login.");
-        // this.nav.setRoot('Login');
         this.rootPage = 'Login';
-      })
+      });
     });
   }
 
@@ -101,6 +106,32 @@ export class OnSiteApp {
       duration: 3000
     });
     toast.present();
+  }
+
+  checkPreferences() {
+    return new Promise((resolve,reject) => {
+      this.storage.get('PREFS').then((prefs) => {
+        if(prefs) {
+          if(prefs.DB) {
+            PREFS.DB = prefs.DB;
+          }
+          if(prefs.SERVER) {
+            PREFS.SERVER = prefs.SERVER;
+          }
+          Log.l("OnSite: Preferences found saved and reloaded:\n", prefs);
+          resolve();
+        } else {
+          this.storage.set('PREFS', PREFS).then((res) => {
+            Log.l("OnSite: Preferences stored:\n", PREFS);
+            resolve();
+          });
+        }
+      }).catch((err) => {
+        Log.l("OnSite: Error while checking for stored preferences!");
+        Log.e(err);
+        reject(err);
+      });
+    });
   }
 
   checkLogin() {

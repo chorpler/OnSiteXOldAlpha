@@ -42,7 +42,10 @@ export class AlertService {
     return new Promise((resolve,reject) => {
       this.alert = this.alertCtrl.create({
         title: title,
-        message: text
+        message: text,
+        buttons: [
+          {text: 'OK', handler: () => {Log.l("OK clicked."); resolve(true);}}
+        ]
       });
       this.alert.present();
     });

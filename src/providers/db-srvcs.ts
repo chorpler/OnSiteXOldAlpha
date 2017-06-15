@@ -8,6 +8,8 @@ import { PouchDBService    } from './pouchdb-service'           ;
 import { AuthSrvcs         } from './auth-srvcs'                ;
 import { SrvrSrvcs         } from './srvr-srvcs'                ;
 import { UserData          } from './user-data'                 ;
+import { PREFS         } from '../config/config.strings'    ;
+
 export const noDD = "_\uffff";
 export const noDesign = { include_docs: true, startkey: noDD };
 export const liveNoDesign = { live: true, since: 'now', include_docs: true, startkey: noDD };
@@ -66,7 +68,7 @@ export class DBSrvcs {
 
     this.pdbOpts = {adapter: 'websql', auto_compaction: true};
 
-    DBSrvcs.addDB('reports');
+    DBSrvcs.addDB(PREFS.DB.reports);
 
     let options = {
       live: true,
@@ -115,7 +117,7 @@ export class DBSrvcs {
       DBSrvcs.db = db1.get(dbname);
       return DBSrvcs.db;
     } else {
-      db1.set(dbname, PouchDBService.StaticPouchDB('reports', DBSrvcs.opts));
+      db1.set(dbname, PouchDBService.StaticPouchDB(PREFS.DB.reports, DBSrvcs.opts));
       Log.l(`addDB(): Added local database ${dbname} to the list.`);
       DBSrvcs.db = db1.get(dbname);
       return DBSrvcs.db;
@@ -253,33 +255,21 @@ export class DBSrvcs {
     return this.PouchDB(dbURL)
   }
 
-  addDoc(doc) {
+  addDoc(doc, db?:string) {
     return new Promise((resolve, reject) => {
-      Log.l("Adding document...");
-      Log.l(doc);
-      if (typeof doc._id === 'undefined') { doc._id = 'INVALID_DOC' }
-      this.getDoc(doc._id).then((result) => {
-        Log.l(`Cannot add document ${doc._id}, document already exists.`);
-        Log.l(result);
-        reject('Doc exists');
-      }).catch((error) => {
-        Log.l(`addDoc(): Could not get document ${doc._id}, hopefully it does not exist...`);
-        if (error.status == '404') {
-          DBSrvcs.db.put(doc).then((res) => {
-            Log.l("addDoc(): Successfully added document.");
-            Log.l(res);
-            resolve(res);
-          }).catch((err) => {
-            Log.l("addDoc(): Failed while trying to add document (after 404 error in get)");
-            console.error(err);
-            reject(err);
-          });
-        } else {
-          Log.l("addDoc(): Some other error occurred.");
-          console.error(error);
-          reject(error);
-        }
-      })
+      Log.l(`addDoc(): Adding document to ${db}:\n`, doc);
+      let dbname = db ? db : PREFS.DB.reports;
+      let db1 = this.addDB(dbname);
+      // if (typeof doc._id === 'undefined') { doc._id = 'INVALID_DOC' }
+      db1.put(doc).then((res) => {
+        Log.l("addDoc(): Successfully added document.");
+        Log.l(res);
+        resolve(res);
+      }).catch((err) => {
+        Log.l("addDoc(): Failed while trying to add document!");
+        console.error(err);
+        reject(err);
+      });
     });
   }
 
@@ -467,7 +457,29 @@ export class DBSrvcs {
     });
   }
 
-  // get
+  savePreferences(prefs:any) {
+    return this.storage.set("PREFS", prefs).then((res) => {
+      Log.l("savePreferences(): Successfully saved preferences:\n", prefs);
+    }).catch((err) => {
+      Log.l("savePreferences(): Error saving preferences!");
+      Log.e(err);
+    });
+  }
+
+  getPreferences() {
+    return this.storage.get("PREFS").then((prefs) => {
+      if(prefs) {
+        Log.l("getPreferences(): PREFS found, returning.")
+        return prefs;
+      } else {
+        Log.l("getPreferences(): PREFS not found, returning null.");
+        return null;
+      }
+    }).catch((err) => {
+      Log.l("getPreferences(): Error trying to retrieve PREFS.");
+      Log.e(err);
+    });
+  }
 
   allDoc() {
     return new Promise(resolve => {

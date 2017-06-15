@@ -2,8 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { AuthSrvcs                 } from '../../providers/auth-srvcs'     ;
 import { GeolocService                 } from '../../providers/geoloc-service' ;
-import { Log, CONSOLE               } from '../../config/config.functions'  ;
+import { AlertService           } from '../../providers/alerts'         ;
+import { Log                    } from '../../config/config.functions'  ;
 import { TimeSrvc               } from '../../providers/time-parse-srvc';
+import { DBSrvcs                } from '../../providers/db-srvcs'       ;
+import { PREFS               } from '../../config/config.strings'   ;
+import { TranslateService } from '@ngx-translate/core';
 
 
 /**
@@ -23,11 +27,22 @@ export class DeveloperPage implements OnInit {
   GeolocStatus : boolean = true;
   geolocToggle : boolean = this.GeolocStatus;
   onSiteTimeStamp: number;
+  testDatabases: boolean = false;
+  preferences  : any     = PREFS;
+  useSpanish   : boolean = false;
+  spanishDefault : boolean = false;
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               public geoloc: GeolocService,
-              public timeSrvc: TimeSrvc ) {
+              public db: DBSrvcs,
+              public alert: AlertService,
+              public timeSrvc: TimeSrvc,
+              public translate: TranslateService )
+  {
+    this.spanishDefault = this.translate.currentLang === 'es' ? true : false;
+    this.useSpanish = this.spanishDefault;
+    window['onsitedev'] = this;
   }
 
   timeStamp() { this.onSiteTimeStamp = this.timeSrvc.getTimeStamp(); }
@@ -38,7 +53,19 @@ export class DeveloperPage implements OnInit {
 
   ngOnInit() {
     Log.l("Developer Settings page loaded.");
-    this.GeolocStatus = this.geoloc.isEnabled();
+    this.testDatabases = PREFS.DB.reports === 'test-reports' ? true : false;
+    this.GeolocStatus  = this.geoloc.isEnabled();
+  }
+
+  checkTestDatabase() {
+    if(this.testDatabases) {
+      Log.l("checkTestDatabases(): Now setting databases to test mode.")
+      PREFS.DB.reports = 'test-reports';
+    } else {
+      PREFS.DB.reports = 'reports';
+      Log.l("checkTestDatabases(): Now setting databases to normal mode.");
+    }
+    Log.l("checkTestDatabases(): PREFS are now:\n", PREFS);
   }
 
   toggleBackgroundGeolocation() {
@@ -46,7 +73,7 @@ export class DeveloperPage implements OnInit {
       this.geoloc.endBackgroundGeolocation().then((res) => {
         Log.l("Background Geolocation turned off.\n", res);
         this.GeolocStatus = false;
-        this.geolocToggle = this.GeolocStatus;
+        // this.geolocToggle = this.GeolocStatus;
       }).catch((err) => {
         Log.l("Background Geolocation could not be turned off.");
         Log.e(err);
@@ -55,11 +82,30 @@ export class DeveloperPage implements OnInit {
       this.geoloc.startBackgroundGeolocation().then((res) => {
         Log.l("Background Geolocation turned on.\n", res);
         this.GeolocStatus = true;
-        this.geolocToggle = this.GeolocStatus;
+        // this.geolocToggle = this.GeolocStatus;
       }).catch((err) => {
         Log.l("Background Geolocation could not be tuned on.");
         Log.e(err);
       })
+    }
+  }
+
+  updatePreferences() {
+    this.db.savePreferences(PREFS).then((res) => {
+      Log.l("checkTestDatabases(): Saved preferences successfully.");
+      this.alert.showAlert("SUCCESS", "Preferences saved!");
+    }).catch((err) => {
+      Log.l("checkTestDatabases(): Error saving preferences.");
+      Log.e(err);
+      this.alert.showAlert("ERROR", "Error saving preferences!");
+    });
+  }
+
+  toggleLanguage() {
+    if(this.useSpanish) {
+      this.translate.use('es');
+    } else {
+      this.translate.use('en');
     }
   }
 }

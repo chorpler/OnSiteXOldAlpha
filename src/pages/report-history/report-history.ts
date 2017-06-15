@@ -8,6 +8,7 @@ import { AlertService                                           } from '../../pr
 import { Log, CONSOLE                                           } from '../../config/config.functions' ;
 import { WorkOrder                                              } from '../../domain/workorder'        ;
 import { Shift                                                  } from '../../domain/shift'            ;
+import { PREFS                                              } from '../../config/config.strings'   ;
 import moment from 'moment';
 
 
@@ -21,6 +22,7 @@ export class ReportHistory implements OnInit {
   public pageReady    : boolean                              = false                                    ;
   public selectedItem : any                                                                             ;
   public items        : Array<{title: string, note: string}> = new Array<{title:string, note:string}>() ;
+  public reports      : Array<WorkOrder> = [];
   public data         : any                                  = []                                       ;
   public loading      : any                                                                             ;
   public moment       : any;
@@ -33,10 +35,21 @@ export class ReportHistory implements OnInit {
   }
 
   ngOnInit() {
-    let u = this.auth.getUser();
     Log.l("ReportHistory: pulling reports...");
     this.items = this.ud.getWorkOrderList();
     this.pageReady = true;
+    let u = this.ud.getUsername();
+    this.alert.showSpinner("Retrieving reports...");
+    this.srvr.getReportsForTech(u).then((res) => {
+      Log.l("ReportHistory: Got report list:\n", res);
+      this.reports = res;
+      this.alert.hideSpinner();
+    }).catch((err) => {
+      Log.l("ReportHistory: Error getting report list.");
+      Log.e(err);
+      this.alert.hideSpinner();
+      this.alert.showAlert("ERROR", "Could not connect to server. Please try again later.");
+    });
     // this.srvr.getReports(u).then(res => {
     //   Log.l("ReportHistory: Got report list:\n",res);
     //   this.data = res;
@@ -89,7 +102,7 @@ export class ReportHistory implements OnInit {
       if(res) {
         Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
         let i = this.items.indexOf(item);
-        this.srvr.deleteDoc('reports', item).then((res) => {
+        this.srvr.deleteDoc(PREFS.DB.reports, item).then((res) => {
           Log.l("deleteWorkOrder(): Success:\n", res);
           this.items.splice(i, 1);
         }).catch((err) => {

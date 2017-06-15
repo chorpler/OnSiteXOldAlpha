@@ -4,10 +4,10 @@
       <ion-icon class="startSingleIcon" name="ion-home"></ion-icon>
     </button>
     <ion-title>
-      {{title}}
+      {{"home_title" | translate}}
     </ion-title>
     <ion-buttons right>
-      <button ion-button color="light" icon-only (click)="terminateApp()">
+      <button ion-button color="light" icon-only (click)="tabs.terminateApp()">
         <ion-icon class="header-close-button" name="close"></ion-icon>
       </button>
     </ion-buttons>
@@ -15,22 +15,16 @@
 </ion-header>
 
 <ion-content padding>
-  <h5> Hours Submitted for Payroll </h5>
+  <h5> {{"home_hours_submitted_for_payroll" | translate}} </h5>
   <div *ngIf="dataReady">
     <p *ngFor="let shift of shifts; let i=index" [ngClass]="getShiftColor(i)">
-      <span class="shft-num-icon">{{numChars[shift.shift_number]}}</span> {{hoursTotalList[i]}}Hrs of {{techProfile.shiftLength}}Hrs submitted for this shift
+      <span class="shft-num-icon">{{numChars[shift.shift_number]}}</span> {{hoursTotalList[i]}} {{"home_hours_of" | translate}} {{techProfile.shiftLength}} {{"home_hours_submitted_for_shift" | translate}}
       <span class="chk-box-icon" [class.hrsCompleted]="getShiftStatus(i)">{{getCheckbox(i)}}</span>
     </p>
   </div>
-  <h6> Hrs submitted for this payroll period: {{ payrollPeriodHours }} </h6>
-  <h6> Payroll hours for this payroll period: {{ payrollPeriodBonusHours }} </h6>
+  <h6> {{"home_hours_submitted_for_payroll_period" | translate}}: {{ payrollPeriodHours }} </h6>
+  <h6> {{"home_payroll_hours_submitted" | translate}} : {{ payrollPeriodBonusHours }} </h6>
   <p>
-    Shifts are numbered 1 through 7: Wednesday = Shift 1, Tuesday = Shift 2 etc. Every payroll period has 7 shifts. If you do not work a shift, that shift still exists and you will have "0" hours for that shift. A green checkbox will be displayed at the end
-    of the shifts above when the hours in the work orders you have submitted for that shift are equal to the number of hours you should have worked for that shift. <br/> If submitted hours are not equal to shift hours, that is not necessarily bad.
-    The most important number(s) are the number of hours you worked and your total number of hours for the pay period (Wednesday through Tuesday of shifts 1 through 7). The number of hours submitted is the total of all shift hour submitted and this is
-    what will be used to calculate the hours in your paycheck. Payroll Hours are the hours calculated from your hours submitted. This is the number of hours you should be paid for in your paycheck. However, payroll hours displayed here are unverified
-    hours. If you made a mistake and submitted too many hours, then do not expect to see all of those hours on your paycheck. If you submitted too few hours, it is your responsibility to correct this by submitting the appropriate work reports. Too few
-    hours does not trigger a flag; too many hours will trigger a flag for your submitted hours. It is your responsibility to make sure you document all hours worked. The hours you see on this screen will be the hours you are paid for unless the hours
-    are flagged for being too many.
+    {{"home_app_help_text" | translate}}
   </p>
 </ion-content>

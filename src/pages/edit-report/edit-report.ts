@@ -10,7 +10,9 @@ import { Shift                                                                  
 import { TimeSrvc                                                                } from '../../providers/time-parse-srvc'   ;
 import { ReportBuildSrvc                                                         } from '../../providers/report-build-srvc' ;
 import * as moment                                                                 from 'moment'                            ;
-import { Log, CONSOLE                                                            } from '../../config/config.functions'     ;
+import { Log                                                                     } from '../../config/config.functions'     ;
+import { PREFS                                                               } from '../../config/config.strings'       ;
+import { TabsComponent                                                           } from '../../components/tabs/tabs'        ;
 
 @IonicPage({ name    : 'Report Edit'                                       })
 @Component({ selector: 'page-edit-report', templateUrl: 'edit-report.html' })
@@ -32,7 +34,8 @@ export class EditReport implements OnInit {
               private timeSrvc        : TimeSrvc,
               public reportBuilder    : ReportBuildSrvc,
               public loadingCtrl      : LoadingController,
-              private alertCtrl       : AlertController)  { window['editreport'] = this; }
+              private alertCtrl       : AlertController,
+              public tabs             : TabsComponent )  { window['editreport'] = this; }
 
   ngOnInit() {
     if (this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
@@ -121,8 +124,9 @@ export class EditReport implements OnInit {
       Log.l("deleteWorkOrder(): Success:\n", res);
       if(res) {
         Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
-        this.srvr.deleteDoc('reports', this.workOrder).then((res) => {
+        this.srvr.deleteDoc(PREFS.DB.reports, this.workOrder).then((res) => {
           Log.l("deleteWorkOrder(): Success:\n", res);
+          this.tabs.goHome();
           setTimeout(() => {this.navCtrl.setRoot('OnSiteHome')});
         }).catch((err) => {
           Log.l("deleteWorkOrder(): Error!");

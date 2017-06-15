@@ -5,6 +5,7 @@ import * as PDBAuth from 'pouchdb-authentication';
 import * as PouchDBAuth from 'pouchdb-auth';
 import * as pdbFind from 'pouchdb-find';
 import * as pdbUpsert from 'pouchdb-upsert';
+import * as pdbAllDBs from 'pouchdb-all-dbs';
 
 
 @Injectable()
@@ -22,10 +23,9 @@ export class PouchDBService {
     if (!PouchDBService.initialized) {
       let tmp = PouchDB;
       tmp.plugin(pdbUpsert);
-      // tmp.plugin(PouchDBAuth);
       tmp.plugin(PDBAuth);
       tmp.plugin(pdbFind);
-      // tmp.plugin(pdbFind);
+      tmp.plugin(pdbAllDBs);
       window["pouchdbserv"] = this;
       window["StaticPouchDB"] = tmp;
       PouchDBService.StaticPouchDB = tmp;

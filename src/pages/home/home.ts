@@ -6,11 +6,15 @@ import { Log } from '../../config/config.functions';
 import { DBSrvcs } from '../../providers/db-srvcs' ;
 import { AuthSrvcs } from '../../providers/auth-srvcs' ;
 import { SrvrSrvcs } from '../../providers/srvr-srvcs';
+import { AlertService } from '../../providers/alerts' ;
 import { UserData } from '../../providers/user-data';
 import { WorkOrder } from '../../domain/workorder';
 import { Shift } from '../../domain/shift';
 import { Employee } from '../../domain/employee';
 import moment from 'moment';
+import { TabsComponent } from '../../components/tabs/tabs';
+import { PREFS       } from '../../config/config.strings';
+import { TranslateService } from '@ngx-translate/core';
 
 @IonicPage({name: 'OnSiteHome'})
 @Component({
@@ -33,6 +37,7 @@ export class HomePage {
   shftSeven    : string                                                             ;
   chkBxBool    : boolean                                                            ;
   chkBx        : string                                                             ;
+  prefs        : any = PREFS;
   shftHrs: number;
   hrsSubmitted: number;
   dataReady:boolean = false;
@@ -46,6 +51,7 @@ export class HomePage {
   public payrollPeriodHoursTotal:number = 0;
   public payrollPeriodHours:number = 0;
   public payrollPeriodBonusHours:number = 0;
+  public databases = PREFS.DB;
 
   constructor( public navCtrl: NavController,
                public modalCtrl: ModalController,
@@ -54,7 +60,11 @@ export class HomePage {
                public server: SrvrSrvcs,
                public ud: UserData,
                public db: DBSrvcs,
-               public events: Events ) 
+               public events: Events,
+               public tabs: TabsComponent,
+               public alert: AlertService,
+               public zone: NgZone,
+               public translate:TranslateService ) 
   {
     this.shftOne   = this.numChars[0];
     this.shftTwo   = this.numChars[1];
@@ -63,12 +73,14 @@ export class HomePage {
     this.shftFive  = this.numChars[4];
     this.shftSix   = this.numChars[5];
     this.shftSeven = this.numChars[6];
+    translate.setDefaultLang('en');
     window["onsitehome"] = this;
   }
 
   ionViewDidEnter() {
     Log.l("HomePage: ionViewDidEnter() called. First wait to make sure app is finished loading.");
     this.dataReady = false;
+    this.tabs.highlightTab(0);
     // this.events.subscribe('pageload:finished', (loggedIn) => {
     //   Log.l("HomePage: pageload:finished event detected. Login status: ", loggedIn);
     //   this.events.unsubscribe('pageload:finished', () => {
@@ -80,13 +92,6 @@ export class HomePage {
 
   ionViewDidLoad() {
     Log.l("HomePage: ionViewDidLoad() called. FIRST, waiting for app to finish loading.");
-    // this.events.subscribe('startup:finished', (loggedIn) => {
-    //   Log.l("HomePage: startup:finished event detected. Login status: ", loggedIn);
-    //   this.events.unsubscribe('startup:finished', () => {
-      //   Log.l("HomePage: no longer receiving startup:finished events.");
-      // });
-    // this.runWhenReady();
-    // });
   }
 
   runEveryTime() {
@@ -95,16 +100,22 @@ export class HomePage {
     // } else if (!this.ud.woArrayInitialized()) {
     } else {
       Log.l("HomePage: ionViewDidEnter() says work order array not initialized, fetching work orders.");
+      this.alert.showSpinner("Fetching work orders...");
       this.fetchTechWorkorders().then((res) => {
         Log.l("HomePage: ionViewDidEnter() fetched work orders, maybe:\n", res);
         this.ud.setWorkOrderList(res);
         this.ud.createShifts();
         this.shifts = this.ud.getPeriodShifts();
         this.countHoursForShifts();
+        this.alert.hideSpinner();
         this.dataReady = true;
-     });
+      }).catch((err) => {
+        Log.l("HomePage: ionViewDidEnter() got error while fetching tech work orders.");
+        Log.e(err);
+        this.alert.hideSpinner();
+        this.alert.showAlert("ERROR", "Could not retrieve reports. Please try again later.");
+      });
     }
-    // this.chkHrs();
   }
 
   runWhenReady() {
@@ -146,13 +157,12 @@ export class HomePage {
         this.payrollPeriodHours = this.ud.getTotalHoursForPayrollPeriod(thisPayPeriod);
         this.payrollPeriodBonusHours = this.ud.getTotalPayrollHoursForPayrollPeriod(thisPayPeriod);
         this.techProfile = this.ud.getTechProfile();
-        // this.payrollPeriodHoursTotal = this.techProfile.shiftLength * 5;
         this.dataReady = true;
         resolve(res);
       }).catch((err) => {
         Log.l(`HomePage: getReportsForTech(${techid}): Error!`);
         Log.e(err);
-        resolve(new Array<WorkOrder>());
+        reject(err);
       });
     });
   }
@@ -177,13 +187,6 @@ export class HomePage {
   }
 
   countHoursForShifts() {
-    // let fwo = this.payrollWorkOrders;
-    // let len = fwo.length;
-    // let total = 0;
-    // for(let i = 0; i < len; i++) {
-    //   let wo = fwo[i];
-    //   total += wo.getRepairHours();
-    // }
     if(this.shifts && this.shifts.length) {
       this.hoursTotalList = [];
       for(let shift of this.shifts) {
