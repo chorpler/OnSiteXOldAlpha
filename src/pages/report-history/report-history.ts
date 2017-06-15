@@ -10,6 +10,7 @@ import { WorkOrder                                              } from '../../do
 import { Shift                                                  } from '../../domain/shift'            ;
 import { PREFS                                                  } from '../../config/config.strings'   ;
 import { TranslateService                                       } from '@ngx-translate/core'           ;
+import { TabsComponent } from '../../components/tabs/tabs';
 import moment from 'moment';
 
 

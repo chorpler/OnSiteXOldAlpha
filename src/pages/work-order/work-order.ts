@@ -371,10 +371,9 @@ export class WorkOrderPage implements OnInit {
   processWO() {
     let workOrderData = this.workOrderForm.getRawValue();
     this.alert.showSpinner("Saving...");
-
     let tempWO = this.createReport();
     if(this.mode === 'Add') {
-      this.db.addDoc(tempWO).then((res) => {
+      this.db.addDoc(PREFS.DB.reports, tempWO).then((res) => {
         Log.l("processWO(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
         return this.db.syncSquaredToServer(PREFS.DB.reports);
       }).then((res) => {
@@ -389,7 +388,7 @@ export class WorkOrderPage implements OnInit {
         // reject(err);
       });
     } else {
-      this.db.updateDoc(tempWO).then((res) => {
+      this.db.updateDoc(PREFS.DB.reports, tempWO).then((res) => {
         Log.l("processWO(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
         return this.db.syncSquaredToServer(PREFS.DB.reports);
       }).then((res) => {

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { Settings } from './settings';
 import { TranslateModule } from '@ngx-translate/core';
+import { TabsComponentModule } from '../../components/tabs/tabs.module'
 
 
 @NgModule({
@@ -11,9 +12,11 @@ import { TranslateModule } from '@ngx-translate/core';
   imports: [
     IonicPageModule.forChild(Settings),
     TranslateModule.forChild(),
+    TabsComponentModule,
   ],
   exports: [
-    Settings
+    Settings,
+    TabsComponentModule,
   ]
 })
 export class SettingsModule {}

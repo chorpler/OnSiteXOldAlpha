@@ -8,7 +8,7 @@ import { TimeSrvc               } from '../../providers/time-parse-srvc';
 import { DBSrvcs                } from '../../providers/db-srvcs'       ;
 import { PREFS               } from '../../config/config.strings'   ;
 import { TranslateService } from '@ngx-translate/core';
-
+import { TabsComponent } from '../../components/tabs/tabs';
 
 /**
  * Generated class for the DeveloperPage page.

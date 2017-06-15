@@ -1,12 +1,10 @@
 <ion-header>
-
   <ion-navbar>
     <ion-title> {{"report_history_title" | translate}} </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <!-- <ion-scroll class="scrollList" scrollY="true"> -->
   <ion-list>
     <ion-item>
       <div item-start>{{"date" | translate}}</div>
@@ -15,7 +13,6 @@
     </ion-item>
   </ion-list>
   <ion-list class="reportList" *ngIf="pageReady">
-    <!-- <ion-item block *ngIf="items && !items.length">No Work Orders Found</ion-item> -->
     <ion-item-sliding *ngFor="let report of reports">
       <ion-item (click)="itemTapped($event, report)">
         <ion-icon name="create" item-left></ion-icon>{{report.report_date}}
@@ -23,11 +20,11 @@
       </ion-item>
       <ion-item-options side="right">
         <button ion-button color="danger" (click)="deleteWorkOrder($event, report)">
-            <ion-icon name="trash"></ion-icon>
-            {{"delete_button" | translate}}
-          </button>
+          <ion-icon name="trash"></ion-icon>
+          {{"delete_button" | translate}}
+        </button>
       </ion-item-options>
     </ion-item-sliding>
   </ion-list>
-  <!-- </ion-scroll> -->
 </ion-content>
+<onsite-tabs></onsite-tabs>

@@ -3,6 +3,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { WorkOrderPage } from './work-order';
 import { MultiPickerModule } from 'ion-multi-picker';
 import { TranslateModule } from '@ngx-translate/core';
+import { TabsComponentModule } from '../../components/tabs/tabs.module'
 
 
 @NgModule({
@@ -13,8 +14,11 @@ import { TranslateModule } from '@ngx-translate/core';
     IonicPageModule.forChild(WorkOrderPage),
     TranslateModule.forChild(),
     MultiPickerModule,
+    TabsComponentModule,
   ],
   exports: [
-    WorkOrderPage  ]
+    WorkOrderPage,
+    TabsComponentModule,
+  ]
 })
 export class WorkOrderModule {}

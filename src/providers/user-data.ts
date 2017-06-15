@@ -104,23 +104,48 @@ export class UserData {
     return total;
   }
 
-  getTotalPayrollHoursForPayrollPeriod(period:any):number {
-    let filtered = this.getWorkOrdersForPayrollPeriod(period);
-    let total = 0;
-    for(let wo of filtered) {
-      let subtotal = wo.getRepairHours();
-      let bonushours = 0;
-      if(wo.location !== 'WESLACO' && wo.location !== 'LAS CUATAS') {
-        if(subtotal >= 8 && subtotal <= 11) {
-          bonushours = 3;
-        } else if(subtotal > 11) {
-          bonushours = ((subtotal - 11)*2)+3;
+  getPayrollHoursForPayrollPeriod(period:any):number {
+    let shifts = this.getPeriodShifts();
+    let payPeriodTotal = 0;
+    for(let shift of shifts) {
+      if(shift.getShiftWeekID() === period) {
+        let shiftReports = this.getWorkOrdersForShift(shift.getShiftSerial());
+        let shiftTotal = 0, countsForBonusHours = 0, count = 0, bonushours = 0;
+        for(let report of shiftReports) {
+          let subtotal = report.getRepairHours();
+          shiftTotal += subtotal;
+          count++;
+          if(report.client !== "SESA") {
+            countsForBonusHours += subtotal;
+          }
         }
+        if(countsForBonusHours >= 8 && countsForBonusHours <= 11) {
+          bonushours = 3;
+        } else if(countsForBonusHours > 11) {
+          bonushours = ((countsForBonusHours - 11) * 2) + 3;
+        }
+        Log.l("getPayrollHoursForPayrollPeriod(): For shift %s, %d reports, %f hours, and %f count for bonus hours, so bonus hours = %f.", shift.getShiftSerial(), count, shiftTotal, countsForBonusHours, bonushours);
+        shiftTotal += bonushours;
+        payPeriodTotal += shiftTotal;
       }
-      subtotal += bonushours;
-      total += subtotal;
     }
-    return total;
+    return payPeriodTotal;
+    // let filtered = this.getWorkOrdersForPayrollPeriod(period);
+    // let total = 0;
+    // for(let wo of filtered) {
+    //   let subtotal = wo.getRepairHours();
+    //   let bonushours = 0;
+    //   if(wo.location !== 'WESLACO' && wo.location !== 'LAS CUATAS') {
+    //     if(subtotal >= 8 && subtotal <= 11) {
+    //       bonushours = 3;
+    //     } else if(subtotal > 11) {
+    //       bonushours = ((subtotal - 11)*2)+3;
+    //     }
+    //   }
+    //   subtotal += bonushours;
+    //   total += subtotal;
+    // }
+    // return total;
   }
 
   getUsername() {

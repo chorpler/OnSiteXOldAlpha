@@ -8,7 +8,7 @@ import { Log                } from '../config/config.functions' ;
 import { UserData           } from './user-data'                ;
 import { WorkOrder          } from '../domains/workorder'       ;
 import { Shift              } from '../domains/shift'           ;
-
+import { PREFS } from '../config/config.strings';
 
 
 
@@ -19,18 +19,18 @@ export class ReportBuildSrvc {
   report   : any;
   profile  : any;
 
-  constructor(public http: Http, public zone: NgZone, private _localSrvcs: DBSrvcs, ) {
+  constructor(public http: Http, public zone: NgZone, private db: DBSrvcs ) {
     console.log('Hello ReportBuildSrvc Provider');
   }
 
   getLocalDocs() {
     return new Promise((resolve,reject) => {
       console.log("ReportBuilder: About to get tmpReport...");
-      this._localSrvcs.getDoc('_local/tmpReport').then((res) => {
+      this.db.getDoc(PREFS.DB.reports, '_local/tmpReport').then((res) => {
         console.log("ReportBuilder: Got tmpReport:\n", res);
         this.report = res;
         console.log("ReportBuilder: About to get techProfile");
-        return this._localSrvcs.getDoc('_local/techProfile');
+        return this.db.getDoc(PREFS.DB.reports, '_local/techProfile');
       }).then((res) => {
         this.profile = res;
         console.log("ReportBuilder: got techProfile:\n", res);
@@ -84,7 +84,7 @@ export class ReportBuildSrvc {
 
   putNewReport() {
     return new Promise((success, reject) => {
-      this._localSrvcs.addDoc( this.newReport ).then((res) => {
+      this.db.addDoc(PREFS.DB.reports, this.newReport ).then((res) => {
         console.log("putNewReport(): Success:\n", res);
         success(res);
       }).catch((err) => {

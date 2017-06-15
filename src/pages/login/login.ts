@@ -11,7 +11,7 @@ import { UserData                                                               
 import { Log                                                                     } from '../../config/config.functions'  ;
 import { TabsComponent                                                           } from '../../components/tabs/tabs'     ;
 import { TranslateService } from '@ngx-translate/core';
-
+import { PREFS } from '../../config/config.strings';
 /**
  * Generated class for the Login page.
  *
@@ -57,10 +57,6 @@ export class Login implements OnInit {
     Log.l('Login: ionViewDidLoad fired.');
   }
 
-  // ionViewCanLeave() {
-  //   if()
-  // }
-
   ngOnInit() {
     Log.l("Starting login page...");
     if(this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
@@ -78,31 +74,12 @@ export class Login implements OnInit {
     });
   }
 
-  // showSpinner(text: string) {
-  //   this.loading = this.loadingCtrl.create({
-  //     content: text,
-  //     showBackdrop: false,
-  //   });
-
-  //   this.loading.present().catch(() => {});
-  // }
-
-  // hideSpinner() {
-  //   setTimeout(() => {
-  //     this.loading.dismiss().catch((reason: any) => {
-  //       Log.l('EditReport: loading.dismiss() error:\n', reason);
-  //       this.loading.dismissAll();
-  //     });
-  //   });
-  // }
-
   onSubmit() {
     this.submitAttempt = true;
     this.loginClicked();
   }
 
   loginClicked() {
-    // this.tabs.setTabDisable(true);
     let tmpUserData = this.LoginForm.value;
     this.username = tmpUserData.formUser;
     this.password = tmpUserData.formPass;
@@ -119,7 +96,7 @@ export class Login implements OnInit {
         let udoc = res;
         udoc.updated = true;
         udoc._id = this.localURL;
-        return this.db.addLocalDoc(udoc);
+        return this.db.addLocalDoc(PREFS.DB.reports, udoc);
       }).then((res) => {
         Log.l("loginAttempt(): Finished validating and saving user info.")
         let creds = { user: this.username, pass: this.password };

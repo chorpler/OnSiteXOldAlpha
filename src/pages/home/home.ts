@@ -99,6 +99,7 @@ export class HomePage {
         Log.l("HomePage: ionViewDidEnter() fetched work orders, maybe:\n", res);
         this.ud.setWorkOrderList(res);
         this.ud.createShifts();
+        this.techProfile = this.ud.getTechProfile();
         this.shifts = this.ud.getPeriodShifts();
         this.countHoursForShifts();
         this.alert.hideSpinner();
@@ -147,11 +148,6 @@ export class HomePage {
             this.hoursTotalList.push(total);
           }
         }
-        let thisPayPeriod = this.ud.getPayrollPeriodForDate(moment());
-        this.payrollPeriodHours = this.ud.getTotalHoursForPayrollPeriod(thisPayPeriod);
-        this.payrollPeriodBonusHours = this.ud.getTotalPayrollHoursForPayrollPeriod(thisPayPeriod);
-        this.techProfile = this.ud.getTechProfile();
-        this.dataReady = true;
         resolve(res);
       }).catch((err) => {
         Log.l(`HomePage: getReportsForTech(${techid}): Error!`);
@@ -188,6 +184,9 @@ export class HomePage {
         this.hoursTotalList.push(hours);
       }
     }
+    let thisPayPeriod = this.ud.getPayrollPeriodForDate(moment());
+    this.payrollPeriodHours = this.ud.getTotalHoursForPayrollPeriod(thisPayPeriod);
+    this.payrollPeriodBonusHours = this.ud.getPayrollHoursForPayrollPeriod(thisPayPeriod);
   }
 
   presentLoginModal() {

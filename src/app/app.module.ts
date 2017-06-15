@@ -1,7 +1,7 @@
 import 'intl';
 import 'intl/locale-data/jsonp/en';
 import { BrowserModule                                           } from '@angular/platform-browser'            ;
-import { HttpModule                                              } from '@angular/http'                        ;
+import { Http,HttpModule                                         } from '@angular/http'                        ;
 import { ErrorHandler , NgModule                                 } from '@angular/core'                        ;
 import { IonicApp, IonicErrorHandler, IonicModule, NavController } from 'ionic-angular'                        ;
 import { IonicPageModule                                         } from 'ionic-angular'                        ;
@@ -32,12 +32,11 @@ import { Log                                                     } from '../conf
 import { AlertService                                            } from '../providers/alerts'                  ;
 import { GeolocService                                           } from '../providers/geoloc-service'          ;
 import { MultiPickerModule                                       } from 'ion-multi-picker'                     ;
-import { TabsComponent                                           } from '../components/tabs/tabs'              ;
 import { PouchDBService                                          } from '../providers/pouchdb-service'         ;
 import { StorageService                                          } from '../providers/storage-service'         ;
 import { TranslateModule, TranslateLoader                        } from '@ngx-translate/core'                  ;
 import { TranslateHttpLoader                                     } from '@ngx-translate/http-loader'           ;
-import { Http                                                    } from '@angular/http'                        ;
+import { TabsComponent                                           } from '../components/tabs/tabs'              ;
 
 
 export function createTranslateLoader(http: Http) {
@@ -47,7 +46,6 @@ export function createTranslateLoader(http: Http) {
 @NgModule({
   declarations   : [
                       OnSiteApp,
-                      TabsComponent
                    ],
   entryComponents: [  OnSiteApp                      ],
 
@@ -96,10 +94,10 @@ export function createTranslateLoader(http: Http) {
                       Push,
                       LocalNotifications,
                       GeolocService,
-                      TabsComponent,
                       PouchDBService,
                       StorageService,
-                                                      ]
+                      TabsComponent,
+                    ]
 })
 
 export class AppModule {}

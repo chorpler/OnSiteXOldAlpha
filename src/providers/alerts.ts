@@ -15,9 +15,15 @@ export class AlertService {
 
   public loading :any;
   public alert   :any;
+  public static ALERTS:Array<any> = [];
+  public static LOADINGS:Array<any> = [];
+  public alerts:any;
+  public loadings:any;
 
   constructor(public http: Http, public loadingCtrl: LoadingController, public alertCtrl:AlertController) {
     Log.l('Hello AlertService Provider');
+    this.alerts = AlertService.ALERTS;
+    this.loadings = AlertService.LOADINGS;
   }
 
   showSpinner(text: string) {
@@ -26,14 +32,19 @@ export class AlertService {
       showBackdrop: false,
     });
 
+    this.loadings.push(this.loading);
     this.loading.present().catch(() => {});
   }
 
   hideSpinner() {
     setTimeout(() => {
-      this.loading.dismiss().catch((reason: any) => {
+      let load = this.loadings.pop();
+      load.dismiss().catch((reason: any) => {
         Log.l('AlertService: loading.dismiss() error:\n', reason);
-        this.loading.dismissAll();
+        for(let i in this.loadings) {
+          this.loadings.pop().dismiss();
+          // oneload.dismissAll();
+        }
       });
     });
   }

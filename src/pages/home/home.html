@@ -24,7 +24,7 @@
   </div>
   <h6> {{"home_hours_submitted_for_payroll_period" | translate}}: {{ payrollPeriodHours }} </h6>
   <h6> {{"home_payroll_hours_submitted" | translate}} : {{ payrollPeriodBonusHours }} </h6>
-  <p>
-    {{"home_app_help_text" | translate}}
-  </p>
+  <div class="help_text" [innerHTML]="'home_app_help_text' | translate"></div>
 </ion-content>
+<onsite-tabs></onsite-tabs>
+

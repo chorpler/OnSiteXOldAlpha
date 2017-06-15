@@ -8,16 +8,12 @@ import { PouchDBService    } from './pouchdb-service'           ;
 import { AuthSrvcs         } from './auth-srvcs'                ;
 import { SrvrSrvcs         } from './srvr-srvcs'                ;
 import { UserData          } from './user-data'                 ;
-import { PREFS         } from '../config/config.strings'    ;
+import { PREFS             } from '../config/config.strings'    ;
 
 export const noDD = "_\uffff";
 export const noDesign = { include_docs: true, startkey: noDD };
 export const liveNoDesign = { live: true, since: 'now', include_docs: true, startkey: noDD };
 @Injectable()
-/**
- * @class DBSrvcs
- *        methods [ addDoc, getDoc, allDoc, hndlChange ]
- */
 export class DBSrvcs {
 
   data                        : any                                                ;
@@ -34,26 +30,11 @@ export class DBSrvcs {
   public static rdb           : any = new Map()                                    ;
   public static ldbs          : any                                                ;
   public static rdbs          : any                                                ;
-  public static server        : string = "securedb.sesaonsite.com"                 ;
-  public static protocol      : string = "https"                                   ;
-  public static port          : string = "443"                                     ;
-  // public static server        : string = "martiancouch.hplx.net"                   ;
-  // public static server        : string = "162.243.157.16"                          ;
-  // public static server        : string = "192.168.0.140:5984"                      ;
-  // public static protocol      : string = "http"                                    ;
-  public static opts          : any = {adapter: 'websql', auto_compaction: true}   ;
-  public static ropts         : any = {adapter: DBSrvcs.protocol, skipSetup: true} ;
-  public static cropts        : any = {adapter: DBSrvcs.protocol}                  ;
-  public static rdbServer     : any = {protocol: DBSrvcs.protocol, server: DBSrvcs.server, opts: {adapter: DBSrvcs.protocol, skipSetup: true}};
-  public static repopts       : any = {live: false, retry: false}                  ;
-  // public static noDesign      : any = { include_docs: true, startkey: noDD };
-  // public static liveNoDesign  : any = { live: true, since: 'now', include_docs: true, startkey: noDD };
 
   /**
    * @param {Http}
    * @param {NgZone}
    */
-  // constructor(public http: Http, public zone: NgZone, private storage: Storage, private auth: AuthSrvcs) {
   constructor(public http: Http, public zone: NgZone, private storage: Storage, private auth: AuthSrvcs, private srvr: SrvrSrvcs, public ud:UserData) {
     // this.PouchDB = require("pouchdb");
     DBSrvcs.StaticPouchDB = PouchDBService.PouchInit();
@@ -103,68 +84,27 @@ export class DBSrvcs {
   }
 
   static getServerInfo() {
-    return DBSrvcs.protocol + "://" + DBSrvcs.server;
+    return PREFS.SERVER.protocol + "://" + PREFS.SERVER.server;
   }
 
   addDB(dbname: string) {
-    return DBSrvcs.addDB(dbname);
+    return PouchDBService.addDB(dbname);
   }
 
   static addDB(dbname: string) {
-    let db1 = DBSrvcs.pdb;
-    if(db1.has(dbname)) {
-      Log.l(`addDB(): Not adding local database ${dbname} because it already exists.`);
-      DBSrvcs.db = db1.get(dbname);
-      return DBSrvcs.db;
-    } else {
-      db1.set(dbname, PouchDBService.StaticPouchDB(PREFS.DB.reports, DBSrvcs.opts));
-      Log.l(`addDB(): Added local database ${dbname} to the list.`);
-      DBSrvcs.db = db1.get(dbname);
-      return DBSrvcs.db;
-    }
+    return PouchDBService.addDB(dbname);
   }
 
   addRDB(dbname: string) {
-    return SrvrSrvcs.addRDB(dbname);
+    return PouchDBService.addRDB(dbname);
   }
 
   static addRDB(dbname: string) {
-    let db1 = DBSrvcs.rdb;
-    let url = DBSrvcs.rdbServer.protocol + "://" + DBSrvcs.rdbServer.server + "/" + dbname;
-    Log.l(`addRDB(): Now fetching remote DB ${dbname} at ${url} ...`);
-    if(db1.has(dbname)) {
-      return db1.get(dbname);
-    } else {
-      let rdb1 = DBSrvcs.StaticPouchDB(url, DBSrvcs.ropts);
-      db1.set(dbname, rdb1);
-      Log.l(`addRDB(): Added remote database ${url} to the list as ${dbname}.`);
-      return db1.get(dbname);
-    }
-  }
-
-  static getDB(dbname: string) {
-    let db1 = DBSrvcs.pdb;
-    if(db1.has(dbname)) {
-      Log.l(`getDB(): Found database ${dbname}.`);
-      return db1.get(dbname);
-    } else {
-      Log.l(`getDB(): Could not find database ${dbname}.`);
-      return false;
-    }
+    return PouchDBService.addRDB(dbname);
   }
 
   static getRDB(dbname: string) {
-    let db1 = DBSrvcs.rdb;
-    let url = "", oneRDB = null;
-    if(db1.has(dbname)) {
-      oneRDB = db1.get(dbname);
-      url = oneRDB.name;
-      Log.l(`getRDB(): Found database ${dbname} at ${url}.`);
-      return oneRDB;
-    } else {
-      Log.l(`getRDB(): Could not find database ${dbname}.`);
-      return null;
-    }
+    return PouchDBService.addRDB(dbname);
   }
 
   syncToServer(dbname: string) {
@@ -173,7 +113,7 @@ export class DBSrvcs {
     var db1 = DBSrvcs.addDB(dbname);
     var db2 = DBSrvcs.addRDB(dbname);
     // var done = DBSrvcs.StaticPouchDB.replicate(db1, db2, DBSrvcs.repopts);
-    var done = db1.replicate.to(db2, DBSrvcs.repopts)
+    var done = db1.replicate.to(db2, PREFS.SERVER.repopts)
     .on('change'   , info => ev1)
     .on('active'   , info => ev1)
     .on('paused'   , info => ev1)
@@ -191,8 +131,7 @@ export class DBSrvcs {
     var ev2 = function(b) { Log.l(b.status); Log.l(b);};
     var db1 = DBSrvcs.addRDB(dbname);
     var db2 = DBSrvcs.addDB(dbname);
-    // var done = DBSrvcs.StaticPouchDB.replicate(db1, db2, DBSrvcs.repopts);
-    var done = db1.replicate.to(db2, DBSrvcs.repopts)
+    var done = db1.replicate.to(db2, PREFS.SERVER.repopts)
     .on('change'   , info => ev2)
     .on('active'   , info => ev2)
     .on('paused'   , info => ev2)
@@ -212,7 +151,7 @@ export class DBSrvcs {
     var db2 = DBSrvcs.addRDB(dbname);
     // var done = DBSrvcs.StaticPouchDB.replicate(db1, db2, DBSrvcs.repopts);
     return new Promise((resolve, reject) => {
-      db1.replicate.to(db2, DBSrvcs.repopts).then((res) => {
+      db1.replicate.to(db2, PREFS.SERVER.repopts).then((res) => {
         Log.l(`syncSquaredToServer(): Successfully replicated '${dbname}'->remote!`);
         Log.l(res);
         resolve(res);
@@ -230,7 +169,7 @@ export class DBSrvcs {
     var db1 = DBSrvcs.addRDB(dbname);
     var db2 = DBSrvcs.addDB(dbname);
     return new Promise((resolve, reject) => {
-      db2.replicate.to(db1, DBSrvcs.repopts).then((res) => {
+      db2.replicate.to(db1, PREFS.SERVER.repopts).then((res) => {
         Log.l(`syncSquaredFromServer(): Successfully replicated remote->'${dbname}'`);
         Log.l(res);
         resolve(res);
@@ -255,10 +194,11 @@ export class DBSrvcs {
     return this.PouchDB(dbURL)
   }
 
-  addDoc(doc, db?:string) {
+  addDoc(dbname:string, doc) {
     return new Promise((resolve, reject) => {
-      Log.l(`addDoc(): Adding document to ${db}:\n`, doc);
-      let dbname = db ? db : PREFS.DB.reports;
+      Log.l(`addDoc(): Adding document to ${dbname}:\n`, doc);
+      // let dbname = db ? db : PREFS.DB.reports;
+      // let dbname = db ? db : PREFS.DB.reports;
       let db1 = this.addDB(dbname);
       // if (typeof doc._id === 'undefined') { doc._id = 'INVALID_DOC' }
       db1.put(doc).then((res) => {
@@ -275,7 +215,8 @@ export class DBSrvcs {
 
   updateReport(doc) {
     Log.l(`updateReport(): About to put doc ${doc._id}`);
-    return DBSrvcs.db.put(doc).then((res) => {
+    let db1 = this.addDB(PREFS.DB.reports);
+    return db1.put(doc).then((res) => {
       Log.l("updateReport(): Successfully added document.");
       Log.l(res);
     }).catch((err) => {
@@ -285,10 +226,10 @@ export class DBSrvcs {
   }
 
 
-  getDoc(docID) {
+  getDoc(dbname:string, docID) {
     return new Promise((resolve, reject) => {
-      // this.db.get(docID).then((result) => {
-      DBSrvcs.db.get(docID).then((result) => {
+      let db1 = this.addDB(PREFS.DB.reports);
+      db1.get(docID).then((result) => {
         Log.l(`Got document ${docID}`);
         resolve(result);
       }).catch((error) => {
@@ -299,14 +240,15 @@ export class DBSrvcs {
     });
   }
 
-  updateDoc(doc) {
-    return DBSrvcs.db.put(doc);
+  updateDoc(dbname:string, doc) {
+    let db1 = this.addDB(PREFS.DB.reports);
+    return db1.put(doc);
   }
 
   deleteDoc(dbname, doc) {
     Log.l(`deleteDoc(): Attempting to delete doc ${doc._id}...`);
-    let rdb1 = DBSrvcs.addDB(dbname);
-    rdb1.remove(doc._id, doc._rev).then((res) => {
+    let db1 = this.addDB(dbname);
+    return db1.remove(doc._id, doc._rev).then((res) => {
       Log.l("deleteDoc(): Success:\n", res);
     }).catch((err) => {
       Log.l("deleteDoc(): Error!");
@@ -314,9 +256,10 @@ export class DBSrvcs {
     });
   }
 
-  checkLocalDoc(docID) {
+  checkLocalDoc(dbname:string, docID:any) {
     return new Promise((resolve, reject) => {
-      DBSrvcs.db.get(docID).then((result) => {
+      let db1 = this.addDB(dbname);
+      db1.get(docID).then((result) => {
         Log.l(`Local doc ${docID} exists`);
         resolve(true);
       }).catch((error) => {
@@ -326,79 +269,48 @@ export class DBSrvcs {
     })
   }
 
-  addLocalDoc(newDoc) {
-    Log.l("Attempting to add local document...");
-    Log.l("Local document to add:");
-    Log.l(newDoc);
+  addLocalDoc(dbname:string, newDoc:any) {
     return new Promise((resolve, reject) => {
-      DBSrvcs.db.get(newDoc._id).then((res1) => {
-        Log.l(`Now removing existing local document ${newDoc._id}`);
-        return new Promise((resolveRemove, rejectRemove) => {
-          let strID = res1._id;
-          let strRev = res1._rev;
-          DBSrvcs.db.remove(strID, strRev).then((res2) => {
-            Log.l(`Successfully deleted local doc ${newDoc._id}, need to add new copy`);
-            resolveRemove(res2);
-          }).catch((errRemove) => {
-            Log.l(`Error while removing local doc ${newDoc._id}.`);
-            Log.l(newDoc);
-            rejectRemove(errRemove);
-          });
-        });
-      }).then(() => {
-        if (typeof newDoc._rev == 'string') { delete newDoc._rev; }
-        Log.l(`Now adding fresh copy of local document ${newDoc._id}`);
-        return DBSrvcs.db.put(newDoc);
-      }).then((success) => {
-        Log.l(`Successfully deleted and re-saved local document ${newDoc._id}`);
-        resolve(success);
+      let db1 = this.addDB(dbname);
+      db1.remove(newDoc._id).catch(() => {}).then(() => {
+        return db1.put(newDoc);
+      }).then((res) => {
+        Log.l(`addLocalDoc(): Added local document '${newDoc._id}'.`)
+        resolve(res);
       }).catch((err) => {
-        Log.l(`Local document ${newDoc._id} does not exist, saving...`);
-        if (typeof newDoc._rev == 'string') { delete newDoc._rev; }
-        DBSrvcs.db.put(newDoc).then((final) => {
-          Log.l(`Local document ${newDoc._id} was newly saved successfully`);
-          resolve(final);
-        }).catch((err) => {
-          Log.l(`Error while saving new copy of local doc ${newDoc._id}!`);
-          console.warn(err);
-          resolve(null);
-        })
-      })
-    })
+        Log.l(`addLocalDoc(): Error adding local doc ${newDoc._id}.`);
+        Log.e(err)
+        reject(err);
+      });
+    });
   }
 
-  deleteLocalDoc(doc) {
+  deleteLocalDoc(dbname:string, doc) {
     Log.l("Attempting to delete local document...");
-    return new Promise((resolve, reject) => {
-      DBSrvcs.db.remove(doc).then((res) => {
-        Log.l(`Successfully deleted local doc ${doc._id}`);
-        resolve(true);
-      }).catch((err) => {
-        Log.l(`Error while deleting local doc ${doc._id}`);
-        Log.l(doc);
-        console.error(err);
-        resolve(false);
-      });
+    let db1 = this.addDB(dbname);
+    return db1.remove(doc).then((res) => {
+      Log.l(`Successfully deleted local doc ${doc._id}`);
+    }).catch((err) => {
+      Log.l(`Error while deleting local doc ${doc._id}`);
+      Log.e(err);
     });
   }
 
   saveTechProfile(doc) {
     Log.l("Attempting to save local techProfile...");
-    // let updateFunction = (original) => {}
-    doc._id = '_local/techProfile';
-    let newProfileDoc = null, uid = null, rdb1 = null;
+    let rdb1, uid, newProfileDoc;
     return new Promise((resolve, reject) => {
       this.getTechProfile().then((res) => {
         Log.l("saveTechProfile(): About to process old and new:");
         Log.l(res);
         Log.l(doc);
-        var strID = res['_id'];
-        var strRev = res['_rev'];
+        let strID = res['_id'];
+        let strRev = res['_rev'];
         newProfileDoc = { ...res, ...doc, "_id": strID, "_rev": strRev };
         Log.l("saveTechProfile(): Merged profile is:");
         Log.l(newProfileDoc);
         Log.l("saveTechProfile(): now attempting save...");
-        return this.addLocalDoc(newProfileDoc);
+        return this.addLocalDoc(PREFS.DB.reports, newProfileDoc);
       }).then((res) => {
         rdb1 = this.srvr.addRDB('sesa-employees');
         let name = this.ud.getUsername();
@@ -425,9 +337,9 @@ export class DBSrvcs {
   getTechProfile() {
     let documentID = "_local/techProfile";
     return new Promise((resolve, reject) => {
-      return this.checkLocalDoc(documentID).then((res) => {
+      this.checkLocalDoc(PREFS.DB.reports, documentID).then((res) => {
         Log.l("techProfile exists, reading it in...");
-        return this.getDoc(documentID);
+        return this.getDoc(PREFS.DB.reports, documentID);
       }).then((res) => {
         Log.l("techProfile read successfully:");
         Log.l(res);
@@ -437,23 +349,6 @@ export class DBSrvcs {
         console.error(err);
         reject(err);
       });
-    });
-  }
-
-  allDocsOf(dbname: string) {
-    return new Promise((resolve,reject) => {
-      let db1 = DBSrvcs.addDB(dbname);
-      db1.allDocs(noDesign).then((result) => {
-        this.data = [];
-        let docs = result.rows.map((row) => {
-          if( row.doc.username === this.auth.getUser() ) { this.data.push(row.doc); }
-          resolve(this.data);
-        });
-      }).catch((err) => {
-        Log.l(`allDocsOf(): Error retrieving all documents from '${dbname}'`);
-        Log.e(err);
-        reject(err);
-      })
     });
   }
 
@@ -481,49 +376,4 @@ export class DBSrvcs {
     });
   }
 
-  allDoc() {
-    return new Promise(resolve => {
-      DBSrvcs.rdb.allDocs(noDesign)
-
-        .then((result) => {
-
-          this.data = [];
-          let docs = result.rows.map((row) => {
-            if( row.doc.username === this.auth.getUser() ) { this.data.push(row.doc); }
-            resolve(this.data);
-          });
-
-          // this.db.changes(DBSrvcs.liveNoDesign)
-          DBSrvcs.db.changes(liveNoDesign)
-            .on('change', (change) => { this.hndlChange(change); });
-
-        })
-
-        .catch((error) => { Log.l(error); });
-
-    });
-  }
-
-  hndlChange(change) {
-
-    this.zone.run(() => {
-      let changedDoc = null;
-      let changedIndex = null;
-
-      this.data.forEach((doc, index) => {
-        if (doc._id === change.id) {
-          changedDoc = doc;
-          changedIndex = index;
-        }
-      });
-
-      if (change.deleted) { this.data.splice(changedIndex, 1); }
-      else {
-        if (changedDoc) { this.data[changedIndex] = change.doc; }
-        else { this.data.push(change.doc); }
-      }
-    });
-
-  }
-
-} // Close exported Class: DBSrvcs
+}
