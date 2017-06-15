@@ -233,9 +233,13 @@ export class HomePage {
       checkBox = '⚐';
       //checkBox = '⚑';
     } else if(hours < total) {
-      checkBox = '☒';
+      // checkBox = '🗷';
+      checkBox = '✖';
+      // checkBox = '☒';
     } else {
-      checkBox = '☑';
+      // checkBox = '🗹';
+      checkBox = '✔';
+      // checkBox = '☑';
     }
     return checkBox;
   }
