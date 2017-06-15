@@ -4,6 +4,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IonicPage, NavController, NavParams, LoadingController, PopoverController, ModalController } from 'ionic-angular';
 import 'rxjs/add/operator/debounceTime';
 import { DBSrvcs } from '../../providers/db-srvcs';
+import { SrvrSrvcs } from '../../providers/srvr-srvcs';
 import { AuthSrvcs } from '../../providers/auth-srvcs';
 import { TimeSrvc } from '../../providers/time-parse-srvc';
 import { ReportBuildSrvc } from '../../providers/report-build-srvc';
@@ -18,8 +19,9 @@ import { sprintf } from 'sprintf-js';
 import { MultiPickerModule } from 'ion-multi-picker';
 import { FancySelectComponent } from '../../components/fancy-select/fancy-select';
 import { SafePipe } from '../../pipes/safe';
-import { PREFS                              } from '../../config/config.strings'          ;
+import { PREFS, STRINGS                     } from '../../config/config.strings'          ;
 import { TabsComponent } from '../../components/tabs/tabs';
+import { TranslateService } from '@ngx-translate/core';
 
 @IonicPage({ name: 'WorkOrder' })
 @Component({
@@ -62,7 +64,6 @@ export class WorkOrderPage implements OnInit {
   syncError: boolean = false;
   chooseHours: any;
   chooseMins : any;
-  db: any = {};
   loading: any = {};
   _startDate: any;
   _startTime: any;
@@ -89,7 +90,8 @@ export class WorkOrderPage implements OnInit {
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    private dbSrvcs: DBSrvcs,
+    private db: DBSrvcs,
+    public server: SrvrSrvcs,
     private timeSrvc: TimeSrvc,
     public reportBuilder: ReportBuildSrvc,
     public loadingCtrl: LoadingController,
@@ -97,9 +99,9 @@ export class WorkOrderPage implements OnInit {
     public modal: ModalController,
     public zone:NgZone,
     public tabs:TabsComponent,
-    public ud:UserData)
+    public ud:UserData,
+    public translate:TranslateService)
   {
-    this.db = this.dbSrvcs;
     this.shifter = Shift;
     this.userdata = UserData;
     window["workorder"] = this;
@@ -111,8 +113,6 @@ export class WorkOrderPage implements OnInit {
     if (this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
     if(this.navParams.get('workOrder') !== undefined) { this.workOrder = this.navParams.get('workOrder'); }
     this.title = `${this.mode} Work Order`;
-
-    this.thisWorkOrderContribution = this.workOrder.repair_hours || 0;
 
     this.chooseHours = [
       {"name": "Hours", "options": [] },
@@ -145,6 +145,7 @@ export class WorkOrderPage implements OnInit {
         Log.l("WorkOrderPage: Now setting work order start time. Start Time = %s, adding %f hours, gives:\n", startTime.format(), addTime, newStartTime);
         this.workOrder.setStartTime(newStartTime);
       }
+      this.thisWorkOrderContribution = this.workOrder.repair_hours || 0;
       this.initializeForm();
 
       this._endTime = this.workOrderForm.controls.endTime;
@@ -211,7 +212,8 @@ export class WorkOrderPage implements OnInit {
     ts = moment().format();
     this.currentRepairHours = wo.getRepairHours();
     this.workOrderForm = new FormGroup({
-      'selected_shift': new FormControl(this.shifts[0], Validators.required),
+      // 'selected_shift': new FormControl(this.shifts[0], Validators.required),
+      'selected_shift': new FormControl(this.selectedShift, Validators.required),
       'repair_time': new FormControl(wo.getRepairHoursString(), Validators.required),
       'uNum': new FormControl(wo.unit_number, Validators.required),
       'wONum': new FormControl(wo.work_order_number, Validators.required),
@@ -248,11 +250,12 @@ export class WorkOrderPage implements OnInit {
   setupShifts() {
     let endDay = 2;
     let now = moment();
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < STRINGS.NUMBER_OF_SHIFTS; i++) {
       let tmpDay = moment(now).subtract(i, 'days');
       let shift_day = tmpDay.startOf('day');
       let tmpStart = this.techProfile.shiftStartTime;
       let shift_start_time = moment(shift_day).add(tmpStart, 'hours');
+      let shift_length = this.techProfile.shiftLength;
       let client = this.techProfile.client || "SITENAME";
       let thisShift = new Shift(client, null, 'AM', shift_start_time, 8);
       thisShift.updateShiftWeek();
@@ -372,7 +375,7 @@ export class WorkOrderPage implements OnInit {
 
     let tempWO = this.createReport();
     if(this.mode === 'Add') {
-      this.dbSrvcs.addDoc(tempWO).then((res) => {
+      this.db.addDoc(tempWO).then((res) => {
         Log.l("processWO(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
         return this.db.syncSquaredToServer(PREFS.DB.reports);
       }).then((res) => {
@@ -387,7 +390,7 @@ export class WorkOrderPage implements OnInit {
         // reject(err);
       });
     } else {
-      this.dbSrvcs.updateDoc(tempWO).then((res) => {
+      this.db.updateDoc(tempWO).then((res) => {
         Log.l("processWO(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
         return this.db.syncSquaredToServer(PREFS.DB.reports);
       }).then((res) => {
@@ -463,5 +466,40 @@ export class WorkOrderPage implements OnInit {
     this.workOrderReport = newReport;
     return newReport;
   }
+
+  deleteWorkOrder(event, item) {
+    Log.l("deleteWorkOrder() clicked ...");
+    this.alert.showConfirm('CONFIRM', 'Delete this work order?').then((res) => {
+      if(res) {
+        Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
+        let wo = this.workOrder.clone();
+        let woList = this.ud.getWorkOrderList();
+        let i = woList.indexOf(this.workOrder);
+        this.server.deleteDoc(PREFS.DB.reports, wo).then((res) => {
+          Log.l("deleteWorkOrder(): Success:\n", res);
+          // this.items.splice(i, 1);
+          woList.splice(i, 1);
+          if(this.mode === 'Add') {
+            // this.tabs.goHome();
+            this.tabs.goHome();
+          } else {
+            // this.tabs.goHistory();
+            this.navCtrl.pop();
+          }
+        }).catch((err) => {
+          Log.l("deleteWorkOrder(): Error!");
+          Log.e(err);
+        });
+      } else {
+        Log.l("User canceled deletion.");
+      }
+    }).catch((err) => {
+      Log.l("deleteWorkOrder(): Error!");
+      Log.e(err);
+    });
+  }
+
+
+
 }
 

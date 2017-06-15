@@ -1,32 +1,30 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title> {{title}} </ion-title>
+    <ion-title> {{"report_history_title" | translate}} </ion-title>
   </ion-navbar>
 </ion-header>
-
-
 
 <ion-content padding>
   <!-- <ion-scroll class="scrollList" scrollY="true"> -->
   <ion-list>
     <ion-item>
-      <div item-start>Date</div>
-      <div class="center">{{items.length}} reports</div>
-      <div item-end>Unit #</div>
+      <div item-start>{{"date" | translate}}</div>
+      <div class="center">{{reports.length}} {{"reports" | translate}}</div>
+      <div item-end> {{"unit_number" | translate}} </div>
     </ion-item>
   </ion-list>
   <ion-list class="reportList" *ngIf="pageReady">
     <!-- <ion-item block *ngIf="items && !items.length">No Work Orders Found</ion-item> -->
-    <ion-item-sliding *ngFor="let item of items">
-      <ion-item (click)="itemTapped($event, item)">
-        <ion-icon name="create" item-left></ion-icon>{{item.report_date}}
-        <div class="item-note" item-right>{{item.unit_number}}</div>
+    <ion-item-sliding *ngFor="let report of reports">
+      <ion-item (click)="itemTapped($event, report)">
+        <ion-icon name="create" item-left></ion-icon>{{report.report_date}}
+        <div class="item-note" item-right>{{report.unit_number}}</div>
       </ion-item>
       <ion-item-options side="right">
-        <button ion-button color="danger" (click)="deleteWorkOrder($event, item)">
+        <button ion-button color="danger" (click)="deleteWorkOrder($event, report)">
             <ion-icon name="trash"></ion-icon>
-            Delete
+            {{"delete_button" | translate}}
           </button>
       </ion-item-options>
     </ion-item-sliding>

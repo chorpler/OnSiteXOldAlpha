@@ -23,6 +23,10 @@ export class TabsComponent implements OnInit {
     window['onSiteTabs'] = this;
   }
 
+  setTabDisable(val:boolean) {
+    this.tabDisabled = val;
+  }
+
   goHome() {
     console.log('entering page: OnSite Home' );
     this.nav = this.app.getActiveNav();

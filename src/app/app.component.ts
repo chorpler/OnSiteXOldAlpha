@@ -29,7 +29,7 @@ export class OnSiteApp {
   rootPage    : any                   ;
   pouchOptions: any     = {          };
   bkBtnPrsd2nd: boolean = false       ;
-  prefs       : any     = PREFS       ;
+  PREFS       : any     = PREFS       ;
 
   private network: any;
 
@@ -78,8 +78,6 @@ export class OnSiteApp {
       window["Platform"] = this.platform;
       window["PouchDB" ].defaults(this.pouchOptions);
 
-      // DBSrvcs.addDB(PREFS.DB.reports);
-
       window[ "PouchDB"].debug.disable('*');
       window[ 'moment' ] = moment;
       window[ 'Log'    ] = Log;
@@ -110,20 +108,15 @@ export class OnSiteApp {
 
   checkPreferences() {
     return new Promise((resolve,reject) => {
-      this.storage.get('PREFS').then((prefs) => {
-        if(prefs) {
-          if(prefs.DB) {
-            PREFS.DB = prefs.DB;
-          }
-          if(prefs.SERVER) {
-            PREFS.SERVER = prefs.SERVER;
-          }
-          Log.l("OnSite: Preferences found saved and reloaded:\n", prefs);
-          resolve();
+      this.storage.get('PREFS').then((storedPrefs) => {
+        if(storedPrefs !== null && storedPrefs != undefined && storedPrefs !== 'undefined') {
+          PREFS.setPrefs(storedPrefs);
+          Log.l("OnSite: Preferences found saved and reloaded:\n", PREFS.getPrefs());
+          resolve(storedPrefs);
         } else {
-          this.storage.set('PREFS', PREFS).then((res) => {
-            Log.l("OnSite: Preferences stored:\n", PREFS);
-            resolve();
+          this.storage.set('PREFS', PREFS.getPrefs()).then((res) => {
+            Log.l("OnSite: Preferences stored:\n", PREFS.getPrefs());
+            resolve(res);
           });
         }
       }).catch((err) => {

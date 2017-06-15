@@ -1,9 +1,26 @@
 {
   "home_title": "OnSite Home",
+  "report_history_title": "Report History",
+  "settings_title": "App Settings",
+  "login_title": "Login",
+  "shift_select_title": "Select Shift",
   "home_app_help_text": "Shifts are numbered 1 through 7: Wednesday = Shift 1, Tuesday = Shift 2 etc.\n\nEvery payroll period has 7 shifts. If you do not work a shift, that shift still\nexists and you will have \"0\" hours for that shift.\n\nA green checkbox will be displayed at the end of the shifts above when the hours\nin the work orders you have submitted for that shift are equal to the number of\nhours you should have worked for that shift.\n\nIf submitted hours are not equal to shift hours, that is not necessarily bad.\nThe most important number(s) are the number of hours you worked and your total\nnumber of hours for the pay period (Wednesday through Tuesday of shifts 1\nthrough 7).\n\nThe number of hours submitted is the total of all shift hour submitted: this\nnumber is what will be used to calculate the hours in your paycheck.\n\nPayroll Hours are the hours calculated from your hours submitted. This is the\nnumber of hours you should be paid for in your paycheck. However, payroll hours\ndisplayed here are **UNVERIFIED** hours.\n\nIf you made a mistake and submitted **too many** hours, then do not expect to\nsee all of those hours on your paycheck.\n\nIf you submitted **too few** hours, it is **your** responsibility to correct\nthis by submitting the appropriate work reports.\n\nToo few hours do not trigger a flag; too many hours will trigger a flag for your\nsubmitted hours. It is your responsibility to make sure you document all hours\nworked. The hours you see on this screen will be the hours you are paid unless\nthe hours are flagged.",
   "home_hours_submitted_for_payroll": "Hours Submitted for Payroll",
   "home_hours_of": "hours of",
   "home_hours_submitted_for_shift": "hours submitted for this shift",
   "home_hours_submitted_for_payroll_period": "Hours submitted for this payroll period",
   "home_payroll_hours_submitted": "Payroll hours submitted for this payroll period"
+  ,"confirm": "Confirm"
+  ,"delete_report": "Delete this report?"
+  ,"delete": "Delete"
+  ,"date": "Date"
+  ,"reports": "reports"
+  ,"unit_number": "Unit #"
+  ,"username_or_password_error" : "Username or password incorrect!"
+  ,"username": "Username"
+  ,"password": "Password"
+  ,"username_error": "Please enter a valid username"
+  ,"password_error": "Please enter a valid password"
+  ,"sign_in": "Sign In"
+
 }

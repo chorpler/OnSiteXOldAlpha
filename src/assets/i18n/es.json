@@ -1,10 +1,27 @@
 {
   "home_title": "Casa de OnSite",
+  "report_history_title": "Historial del Informe",
+  "settings_title": "Ajustes de Aplicacion",
+  "login_title": "Autenticar",
+  "shift_select_title": "Elegir cambio",
   "home_app_help_text": "Los turnos se numeran de 1 a 7: Mi\u00e9rcoles = Turno 1, Martes = Turno 2, etc.\n\nCada per\u00edodo de n\u00f3mina tiene 7 turnos. Si usted no trabaja un turno, ese turno\ntodav\u00eda existe y usted tendr\u00e1 \"0\" horas para ese cambio.\n\n\u00a0Una casilla de verificaci\u00f3n verde se mostrar\u00e1 al final de los turnos cuando las\nhoras en las \u00f3rdenes de trabajo que ha enviado para ese turno son iguales al\nn\u00famero de horas que deber\u00eda haber trabajado para ese turno.\n\nSi las horas presentadas no son iguales a las horas de turno, eso no es\nnecesariamente malo. Los n\u00fameros m\u00e1s importantes son el n\u00famero de horas que\ntrabaj\u00f3 y el n\u00famero total de horas para el per\u00edodo de pago (de mi\u00e9rcoles a\nmartes de turnos de 1 a 7).\n\nEl n\u00famero de horas declaradas en sus informes es el total de todas las horas de\nturno informadas: este n\u00famero es lo que se utilizar\u00e1 para calcular las horas en\nsu cheque de pago.\n\nHoras de pago son las horas calculadas a partir de las horas enviadas. El n\u00famero\nde horas de n\u00f3mina deber\u00eda ser igual a las horas en su cheque. Sin embargo, los\nhoras de n\u00f3mina que se muestran aqu\u00ed son **INCONFIRMADO** horas.\n\nSi usted cometi\u00f3 un error y envi\u00f3 **demasiadas horas**, entonces no espere ver\ntodas esas horas en su cheque de pago.\n\nSi ha enviado **menos horas**, es **su** responsabilidad corregirlo enviando los\ninformes de trabajo apropiados.\n\nMenos horas no activan una bandera.\n\nDemasiadas horas desencadenar\u00e1n una bandera para las horas enviadas. Es su\nresponsabilidad asegurarse de documentar todas las horas trabajadas. Las horas\nque ve en esta pantalla ser\u00e1n las horas que le pagan a menos que las horas est\u00e9n\nmarcadas como excepci\u00f3n.",
   "home_hours_submitted_for_payroll": "Horas presentadas para la nómina",
   "home_hours_of": "horas de",
   "home_hours_submitted_for_shift": "horas presentado para este cambio",
   "home_hours_submitted_for_payroll_period": "Horas presentadas para este período de nómina",
   "home_payroll_hours_submitted": "Horas de nómina para este período de nómina"
+  ,"confirm": "Confirmar"
+  ,"delete_report": "¿Eliminar este informe?"
+  ,"delete": "Borrar"
+  ,"date": "Fecha"
+  ,"reports": "informes"
+  ,"unit_number": "Unidad"
+  ,"username_or_password_error": "¡Usuario o contraseña incorrectos!"
+  ,"username": "Nombre de usuario"
+  ,"password": "Contraseña"
+  ,"username_error": "Ingrese un nombre de usuario válido"
+  ,"password_error": "Ingrese una contraseña válida"
+  ,"sign_in": "Registrarse"
+
 }
 

@@ -13,7 +13,7 @@ import { Shift } from '../../domain/shift';
 import { Employee } from '../../domain/employee';
 import moment from 'moment';
 import { TabsComponent } from '../../components/tabs/tabs';
-import { PREFS       } from '../../config/config.strings';
+import { PREFS, STRINGS } from '../../config/config.strings';
 import { TranslateService } from '@ngx-translate/core';
 
 @IonicPage({name: 'OnSiteHome'})
@@ -23,21 +23,21 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class HomePage {
 
-  loginData    : any           = null                                               ;
-  username     : string        = "unknown"                                          ;
-  userLoggedIn : boolean                                                            ;
-  title        : string        = 'OnSite Home'                                      ;
-  numChars     : Array<string> = ["⓪", "①", "②", "③", "④", "⑤", "⑥", "⑦"]           ;
-  shftOne      : string                                                             ;
-  shftTwo      : string                                                             ;
-  shftThree    : string                                                             ;
-  shftFour     : string                                                             ;
-  shftFive     : string                                                             ;
-  shftSix      : string                                                             ;
-  shftSeven    : string                                                             ;
-  chkBxBool    : boolean                                                            ;
-  chkBx        : string                                                             ;
-  prefs        : any = PREFS;
+  loginData    : any           = null             ;
+  username     : string        = "unknown"        ;
+  userLoggedIn : boolean                          ;
+  title        : string        = 'OnSite Home'    ;
+  numChars     : Array<string> = STRINGS.NUMCHARS ;
+  shftOne      : string                           ;
+  shftTwo      : string                           ;
+  shftThree    : string                           ;
+  shftFour     : string                           ;
+  shftFive     : string                           ;
+  shftSix      : string                           ;
+  shftSeven    : string                           ;
+  chkBxBool    : boolean                          ;
+  chkBx        : string                           ;
+  PREFS        : any = PREFS;
   shftHrs: number;
   hrsSubmitted: number;
   dataReady:boolean = false;
@@ -51,7 +51,7 @@ export class HomePage {
   public payrollPeriodHoursTotal:number = 0;
   public payrollPeriodHours:number = 0;
   public payrollPeriodBonusHours:number = 0;
-  public databases = PREFS.DB;
+  public databases = this.PREFS.DB;
 
   constructor( public navCtrl: NavController,
                public modalCtrl: ModalController,
@@ -220,11 +220,22 @@ export class HomePage {
 
   getCheckbox(idx:number) {
     let checkBox = '?';
-    let status = this.getShiftStatus(idx);
-    if(status) {
-      checkBox = '☑';
-    } else {
+    // let status = this.getShiftStatus(idx);
+    let hours = this.hoursTotalList[idx];
+    let total = this.techProfile.shiftLength;
+
+    // if(status) {
+    //   checkBox = '☑';
+    // } else {
+    //   checkBox = '☒';
+    // }
+    if(hours > total) {
+      checkBox = '⚐';
+      //checkBox = '⚑';
+    } else if(hours < total) {
       checkBox = '☒';
+    } else {
+      checkBox = '☑';
     }
     return checkBox;
   }
@@ -240,7 +251,8 @@ export class HomePage {
 
   chkHrs(i) {
     if(this.shftHrs === this.hrsSubmitted ) {
-      this.chkBx = '☑'; this.chkBxBool = true;
+      this.chkBx = '☑';
+      this.chkBxBool = true;
     } else {
       let tmpBx = '☒';
       this.chkBxBool = false;

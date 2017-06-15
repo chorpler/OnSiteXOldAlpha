@@ -18,6 +18,8 @@ import { UserData } from '../../providers/user-data';
 import { sprintf } from 'sprintf-js';
 import { SafePipe } from '../../pipes/safe';
 import { FancySelectComponent } from '../../components/fancy-select/fancy-select';
+import { TranslateService } from '@ngx-translate/core';
+import { PREFS, STRINGS } from '../../config/config.strings';
 
 
 /**
@@ -32,14 +34,15 @@ import { FancySelectComponent } from '../../components/fancy-select/fancy-select
   templateUrl: 'fancy-select.html',
 })
 export class FancySelectPage implements OnInit {
-  public title:string = "Fancy Select";
+  public title:string = "Shift Select";
   public selectData:any = {};
   public options:Array<any> = [];
   public selected:any = null;
   public svgNumbers:any = [];
   public circChars:any = UserData.circled_numbers_chars;
-  public circled_numbers: Array<string> = ["⓵", "⓶", "⓷", "⓸", "⓹", "⓺", "⓻", "⓼", "⓽"];
-  constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController, public domSanitizer:DomSanitizer) {
+  // public circled_numbers: Array<string> = ["⓵", "⓶", "⓷", "⓸", "⓹", "⓺", "⓻", "⓼", "⓽"];
+  public circled_numbers:Array<string> = STRINGS.NUMCHARS;
+  constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController, public domSanitizer:DomSanitizer, public translate:TranslateService) {
     if (this.navParams.get('selectData') !== undefined) {
        this.selectData = this.navParams.get('selectData');
        this.options = this.selectData.options;

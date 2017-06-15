@@ -6,6 +6,7 @@ import { DBSrvcs                } from './db-srvcs'                 ;
 import { Shift                  } from '../domain/shift'            ;
 import { WorkOrder              } from '../domain/workorder'        ;
 import { Log, isMoment          } from '../config/config.functions' ;
+import { PREFS, STRINGS         } from '../config/config.strings'   ;
 import moment from 'moment';
 
 const XL = moment([1900, 0, 1]);
@@ -19,7 +20,8 @@ export class UserData {
   public static workOrderList: Array<WorkOrder>;
   public static current_shift_hours: any;
   public static circled_numbers:Array<string>;
-  public static circled_numbers_chars: Array<string> = ["⓵", "⓶", "⓷", "⓸", "⓹", "⓺", "⓻", "⓼", "⓽"];
+  // public static circled_numbers_chars: Array<string> = ["⓵", "⓶", "⓷", "⓸", "⓹", "⓺", "⓻", "⓼", "⓽"];
+  public static circled_numbers_chars: Array<string> = STRINGS.NUMCHARS;
   public static techWOArrayInitialized:boolean = false;
   public static shifts:Array<Shift> = [];
   public static techProfile:any;
@@ -49,7 +51,7 @@ export class UserData {
     UserData.shift = shift;
   }
 
-  getWorkOrderList():Array<any> {
+  getWorkOrderList():Array<WorkOrder> {
     return UserData.workOrderList;
   }
 
@@ -208,7 +210,7 @@ export class UserData {
     UserData.shifts = [];
     let tp = UserData.techProfile;
     if(tp !== undefined && tp !== null) {
-      for (let i = 0; i < 7; i++) {
+      for (let i = 0; i < STRINGS.NUMBER_OF_SHIFTS; i++) {
         let tmpDay = moment(now).subtract(i, 'days');
         let shift_day = tmpDay.startOf('day');
         let tmpStart = UserData.techProfile.shiftStartTime;

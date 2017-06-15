@@ -7,7 +7,7 @@
 <ion-header>
 
 	<ion-navbar>
-		<ion-title>{{title}}</ion-title>
+		<ion-title>{{"login_title" | translate}}</ion-title>
 	</ion-navbar>
 
 </ion-header>
@@ -15,24 +15,24 @@
 	<form [formGroup]="LoginForm" (ngSubmit)="onSubmit()">
 		<ion-list>
 			<ion-item *ngIf="loginError" color="danger">
-				<span class="center error">Username or password incorrect!</span>
+				<span class="center error"> {{"username_or_password_error" | translate}} </span>
 			</ion-item>
 			<ion-item>
-				<ion-label floating>Username</ion-label>
+				<ion-label floating> {{"username" | translate}} </ion-label>
 				<ion-input type="text" formControlName="formUser" [class.invalid]="!LoginForm.controls.formUser.valid && (LoginForm.controls.formUser.dirty || submitAttempt)"></ion-input>
 			</ion-item>
 			<ion-item *ngIf="(!LoginForm.controls.formUser.valid && (LoginForm.controls.formUser.dirty || submitAttempt))">
-				<p>Please enter a valid username.</p>
+				<p> {{"username_error" | translate }} </p>
 			</ion-item>
 			<ion-item>
-				<ion-label floating>Password</ion-label>
+				<ion-label floating> {{"password" | translate}} </ion-label>
 				<ion-input type="password" formControlName="formPass" [class.invalid]="!LoginForm.controls.formPass.valid && (LoginForm.controls.formPass.dirty || submitAttempt)"></ion-input>
 			</ion-item>
 			<ion-item *ngIf="(!LoginForm.controls.formPass.valid && (LoginForm.controls.formPass.dirty || submitAttempt))">
-				<p>Please enter a valid password.</p>
+				<p> {{"password_error" | translate}} </p>
 			</ion-item>
 			<div padding></div>
-			<button ion-button color="primary" block color="favorite" [disabled]="(!LoginForm.controls.formUser.valid && (LoginForm.controls.formUser.dirty || submitAttempt)) || (!LoginForm.controls.formPass.valid && (LoginForm.controls.formPass.dirty || submitAttempt))">Sign In</button>
+			<button ion-button color="primary" block color="favorite" [disabled]="(!LoginForm.controls.formUser.valid && (LoginForm.controls.formUser.dirty || submitAttempt)) || (!LoginForm.controls.formPass.valid && (LoginForm.controls.formPass.dirty || submitAttempt))">{{"sign_in" | translate}}</button>
 		</ion-list>
 	</form>
 </ion-content>

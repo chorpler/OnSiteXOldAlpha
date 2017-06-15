@@ -162,4 +162,19 @@ export class WorkOrder {
     }
   }
 
+  public clone() {
+    let newWO = new WorkOrder();
+    let keys = Object.keys(this);
+    for(let key of keys) {
+      if(moment.isMoment(this[key])) {
+        newWO[key] = moment(this[key]);
+      } else if(typeof this[key] === 'object') {
+        newWO[key] = Object.assign({}, this[key]);
+      } else {
+        newWO[key] = this[key];
+      }
+    }
+    return newWO;
+  }
+
 }

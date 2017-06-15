@@ -28,7 +28,7 @@ export class DeveloperPage implements OnInit {
   geolocToggle : boolean = this.GeolocStatus;
   onSiteTimeStamp: number;
   testDatabases: boolean = false;
-  preferences  : any     = PREFS;
+  prefs        : any     = PREFS;
   useSpanish   : boolean = false;
   spanishDefault : boolean = false;
 
@@ -60,12 +60,12 @@ export class DeveloperPage implements OnInit {
   checkTestDatabase() {
     if(this.testDatabases) {
       Log.l("checkTestDatabases(): Now setting databases to test mode.")
-      PREFS.DB.reports = 'test-reports';
+      PREFS.setDB('reports', 'test-reports');
     } else {
-      PREFS.DB.reports = 'reports';
       Log.l("checkTestDatabases(): Now setting databases to normal mode.");
+      PREFS.setDB('reports', 'reports');
     }
-    Log.l("checkTestDatabases(): PREFS are now:\n", PREFS);
+    Log.l("checkTestDatabases(): PREFS are now:\n", PREFS.getPrefs());
   }
 
   toggleBackgroundGeolocation() {
@@ -91,7 +91,7 @@ export class DeveloperPage implements OnInit {
   }
 
   updatePreferences() {
-    this.db.savePreferences(PREFS).then((res) => {
+    this.db.savePreferences(PREFS.getPrefs()).then((res) => {
       Log.l("checkTestDatabases(): Saved preferences successfully.");
       this.alert.showAlert("SUCCESS", "Preferences saved!");
     }).catch((err) => {

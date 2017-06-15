@@ -10,6 +10,7 @@ import { NetworkStatus                                                          
 import { UserData                                                                } from '../../providers/user-data'      ;
 import { Log                                                                     } from '../../config/config.functions'  ;
 import { TabsComponent                                                           } from '../../components/tabs/tabs'     ;
+import { TranslateService } from '@ngx-translate/core';
 
 /**
  * Generated class for the Login page.
@@ -39,15 +40,15 @@ export class Login implements OnInit {
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
     private auth: AuthSrvcs,
-    private srvr: SrvrSrvcs,
+    private server: SrvrSrvcs,
     private db: DBSrvcs,
-    private loadingCtrl: LoadingController,
     private network: NetworkStatus,
-    private alerter: AlertService,
+    private alert: AlertService,
     public viewCtrl: ViewController,
     public ud: UserData,
     public events: Events,
-    public tabs: TabsComponent
+    public tabs: TabsComponent,
+    public translate: TranslateService
   ) {
     window['loginscreen'] = this;
   }
@@ -77,23 +78,23 @@ export class Login implements OnInit {
     });
   }
 
-  showSpinner(text: string) {
-    this.loading = this.loadingCtrl.create({
-      content: text,
-      showBackdrop: false,
-    });
+  // showSpinner(text: string) {
+  //   this.loading = this.loadingCtrl.create({
+  //     content: text,
+  //     showBackdrop: false,
+  //   });
 
-    this.loading.present().catch(() => {});
-  }
+  //   this.loading.present().catch(() => {});
+  // }
 
-  hideSpinner() {
-    setTimeout(() => {
-      this.loading.dismiss().catch((reason: any) => {
-        Log.l('EditReport: loading.dismiss() error:\n', reason);
-        this.loading.dismissAll();
-      });
-    });
-  }
+  // hideSpinner() {
+  //   setTimeout(() => {
+  //     this.loading.dismiss().catch((reason: any) => {
+  //       Log.l('EditReport: loading.dismiss() error:\n', reason);
+  //       this.loading.dismissAll();
+  //     });
+  //   });
+  // }
 
   onSubmit() {
     this.submitAttempt = true;
@@ -101,18 +102,19 @@ export class Login implements OnInit {
   }
 
   loginClicked() {
+    this.tabs.setTabDisable(true);
     let tmpUserData = this.LoginForm.value;
     this.username = tmpUserData.formUser;
     this.password = tmpUserData.formPass;
     if(NetworkStatus.isConnected()) {
-      this.showSpinner('Logging in...');
+      this.alert.showSpinner('Logging in...');
       Log.l("Login: Now attempting login:");
       this.auth.setUser(this.username);
       this.auth.setPassword(this.password);
       Log.l("About to call auth.login()");
       this.auth.login().then((res) => {
         Log.l("Login succeeded.", res);
-        return this.srvr.getUserData(this.username);
+        return this.server.getUserData(this.username);
       }).then((res) => {
         let udoc = res;
         udoc.updated = true;
@@ -123,22 +125,26 @@ export class Login implements OnInit {
         let creds = { user: this.username, pass: this.password };
         this.ud.storeCredentials(creds);
         this.ud.setLoginStatus(true);
-        this.hideSpinner();
+        this.alert.hideSpinner();
         this.events.publish('startup:finished', true);
         this.events.publish('login:finished', true);
         if(this.mode === 'modal') {
+          this.tabs.setTabDisable(false);
           this.viewCtrl.dismiss(creds);
         } else {
-          this.tabs.goHome();
+          // this.tabs.goHome();
+          this.tabs.setTabDisable(false);
+          this.navCtrl.setRoot('OnSiteHome');
         }
       }).catch((err) => {
         Log.l("loginAttempt(): Error validating and saving user info.");
         Log.l(err);
         this.loginError = true;
-        this.hideSpinner();
+        this.alert.hideSpinner();
       });
     } else {
-      this.alerter.showAlert('OFFLINE', "There is no Internet connection. Can't log in right now.");
+      this.alert.hideSpinner();
+      this.alert.showAlert('OFFLINE', "There is no Internet connection. Can't log in right now.");
     }
   }
 }
