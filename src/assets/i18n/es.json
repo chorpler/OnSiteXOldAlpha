@@ -9,19 +9,18 @@
   "home_hours_of": "horas de",
   "home_hours_submitted_for_shift": "horas presentado para este cambio",
   "home_hours_submitted_for_payroll_period": "Horas presentadas para este período de nómina",
-  "home_payroll_hours_submitted": "Horas de nómina para este período de nómina"
-  ,"confirm": "Confirmar"
-  ,"delete_report": "¿Eliminar este informe?"
-  ,"delete": "Borrar"
-  ,"date": "Fecha"
-  ,"reports": "informes"
-  ,"unit_number": "Unidad"
-  ,"username_or_password_error": "¡Usuario o contraseña incorrectos!"
-  ,"username": "Nombre de usuario"
-  ,"password": "Contraseña"
-  ,"username_error": "Ingrese un nombre de usuario válido"
-  ,"password_error": "Ingrese una contraseña válida"
-  ,"sign_in": "Registrarse"
-
+  "home_payroll_hours_submitted": "Horas de nómina para este período de nómina",
+  "confirm": "Confirmar",
+  "delete_report": "¿Eliminar este informe?",
+  "delete": "Borrar",
+  "date": "Fecha",
+  "reports": "informes",
+  "unit_number": "Unidad",
+  "username_or_password_error": "¡Usuario o contraseña incorrectos!",
+  "username": "Nombre de usuario",
+  "password": "Contraseña",
+  "username_error": "Ingrese un nombre de usuario válido",
+  "password_error": "Ingrese una contraseña válida",
+  "sign_in": "Registrarse"
 }
 

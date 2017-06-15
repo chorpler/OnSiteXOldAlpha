@@ -1,4 +1,5 @@
 import { Component, OnInit, NgZone              } from '@angular/core';
+import { Http                                   } from '@angular/http';
 import { Platform, IonicPage, NavParams, Events } from 'ionic-angular';
 import { NavController, ToastController         } from 'ionic-angular';
 import { ModalController                        } from 'ionic-angular';
@@ -53,7 +54,8 @@ export class HomePage {
   public payrollPeriodBonusHours:number = 0;
   public databases = this.PREFS.DB;
 
-  constructor( public navCtrl: NavController,
+  constructor( public http: Http,
+    public navCtrl: NavController,
                public modalCtrl: ModalController,
                public authService: AuthSrvcs,
                public navParams: NavParams,
@@ -66,14 +68,6 @@ export class HomePage {
                public zone: NgZone,
                public translate:TranslateService ) 
   {
-    this.shftOne   = this.numChars[0];
-    this.shftTwo   = this.numChars[1];
-    this.shftThree = this.numChars[2];
-    this.shftFour  = this.numChars[3];
-    this.shftFive  = this.numChars[4];
-    this.shftSix   = this.numChars[5];
-    this.shftSeven = this.numChars[6];
-    translate.setDefaultLang('en');
     window["onsitehome"] = this;
   }
 

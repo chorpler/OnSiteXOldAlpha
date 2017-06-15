@@ -1,23 +1,23 @@
 import { Component                            } from '@angular/core'           ;
 import { IonicPage, NavController, Platform, ModalController, ViewController   } from 'ionic-angular'           ;
-import { DBSrvcs                              } from '../../providers/db-srvcs';
-import { Login                                } from '../login/login'          ;
+import { DBSrvcs                              } from '../../providers/db-srvcs'     ;
+import { Login                                } from '../login/login'               ;
 import { Log                                  } from '../../config/config.functions';
-import { AuthSrvcs                            } from '../../providers/auth-srvcs';
-import { AlertService                         } from '../../providers/alerts'    ;
-import { TabsComponent                        } from '../../components/tabs/tabs';
-import { TranslateService } from '@ngx-translate/core';
+import { AuthSrvcs                            } from '../../providers/auth-srvcs'   ;
+import { AlertService                         } from '../../providers/alerts'       ;
+import { TabsComponent                        } from '../../components/tabs/tabs'   ;
+import { TranslateService                     } from '@ngx-translate/core'          ;
 
 
 @IonicPage({ name: 'Settings' })
 
 @Component({
-  selector: 'page-settings',
+  selector: 'page-settings'   ,
   templateUrl: 'settings.html',
 })
 
 export class Settings {
-  title: string = "App Settings";
+  title: string = "App Settings" ;
   confirmTitle = 'Confirm Logout';
   logOutMsg = 'Logout is only necessary if another user wants to log into your device.  If you want to close the app and terminate all preocesses, click the "x" in the top right corner of the screen.' ;
 

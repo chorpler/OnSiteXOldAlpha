@@ -7,7 +7,7 @@ import { BackgroundGeolocation, BackgroundGeolocationConfig } from '@ionic-nativ
 import { BackgroundGeolocationResponse                      } from '@ionic-native/background-geolocation'       ;
 import { Geolocation                                        } from '../domain/geolocation'                      ;
 import { DOMTimeStamp, Coordinates, Position                } from '../config/geoloc'                           ;
-import { Log, CONSOLE                                       } from '../config/config.functions'                 ;
+import { Log                                                } from '../config/config.functions'                 ;
 import { SrvrSrvcs                                          } from '../providers/srvr-srvcs'                    ;
 import { AuthSrvcs                                          } from '../providers/auth-srvcs'                    ;
 

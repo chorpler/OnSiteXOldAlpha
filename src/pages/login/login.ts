@@ -102,7 +102,7 @@ export class Login implements OnInit {
   }
 
   loginClicked() {
-    this.tabs.setTabDisable(true);
+    // this.tabs.setTabDisable(true);
     let tmpUserData = this.LoginForm.value;
     this.username = tmpUserData.formUser;
     this.password = tmpUserData.formPass;
@@ -132,9 +132,10 @@ export class Login implements OnInit {
           this.tabs.setTabDisable(false);
           this.viewCtrl.dismiss(creds);
         } else {
-          // this.tabs.goHome();
           this.tabs.setTabDisable(false);
-          this.navCtrl.setRoot('OnSiteHome');
+          this.tabs.goHome();
+          // this.tabs.setTabDisable(false);
+          // this.navCtrl.setRoot('OnSiteHome');
         }
       }).catch((err) => {
         Log.l("loginAttempt(): Error validating and saving user info.");

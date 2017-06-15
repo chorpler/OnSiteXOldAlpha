@@ -31,10 +31,7 @@ import { UniqueDeviceID                                          } from '@ionic-
 import { Log                                                     } from '../config/config.functions'           ;
 import { AlertService                                            } from '../providers/alerts'                  ;
 import { GeolocService                                           } from '../providers/geoloc-service'          ;
-import { Status                                                  } from '../providers/status'                  ;
-import { StatusProvider                                          } from '../providers/status/status'           ;
 import { MultiPickerModule                                       } from 'ion-multi-picker'                     ;
-import { PipesModule                                             } from '../pipes/pipes.module'                ;
 import { TabsComponent                                           } from '../components/tabs/tabs'              ;
 import { PouchDBService                                          } from '../providers/pouchdb-service'         ;
 import { StorageService                                          } from '../providers/storage-service'         ;
@@ -46,7 +43,6 @@ import { Http                                                    } from '@angula
 export function createTranslateLoader(http: Http) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
-
 
 @NgModule({
   declarations   : [
@@ -73,10 +69,7 @@ export function createTranslateLoader(http: Http) {
                         }
                       }),
                       MultiPickerModule,
-                      // Ion3TimeDurationPickerModule,
-                      // NumericModule,
-                      // DatePickerModule
-                                                       ],
+                   ],
 
   providers      : [
                       StatusBar,
@@ -103,7 +96,6 @@ export function createTranslateLoader(http: Http) {
                       Push,
                       LocalNotifications,
                       GeolocService,
-                      Status,
                       TabsComponent,
                       PouchDBService,
                       StorageService,

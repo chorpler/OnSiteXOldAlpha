@@ -9,18 +9,17 @@
   "home_hours_of": "hours of",
   "home_hours_submitted_for_shift": "hours submitted for this shift",
   "home_hours_submitted_for_payroll_period": "Hours submitted for this payroll period",
-  "home_payroll_hours_submitted": "Payroll hours submitted for this payroll period"
-  ,"confirm": "Confirm"
-  ,"delete_report": "Delete this report?"
-  ,"delete": "Delete"
-  ,"date": "Date"
-  ,"reports": "reports"
-  ,"unit_number": "Unit #"
-  ,"username_or_password_error" : "Username or password incorrect!"
-  ,"username": "Username"
-  ,"password": "Password"
-  ,"username_error": "Please enter a valid username"
-  ,"password_error": "Please enter a valid password"
-  ,"sign_in": "Sign In"
-
+  "home_payroll_hours_submitted": "Payroll hours submitted for this payroll period",
+  "confirm": "Confirm",
+  "delete_report": "Delete this report?",
+  "delete": "Delete",
+  "date": "Date",
+  "reports": "reports",
+  "unit_number": "Unit #",
+  "username_or_password_error" : "Username or password incorrect!",
+  "username": "Username",
+  "password": "Password",
+  "username_error": "Please enter a valid username",
+  "password_error": "Please enter a valid password",
+  "sign_in": "Sign In"
 }

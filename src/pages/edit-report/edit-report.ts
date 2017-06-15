@@ -41,20 +41,15 @@ export class EditReport implements OnInit {
     if (this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
     this.workOrder = this.navParams.get('item');
     let h = this.workOrder.repair_hours;
-    // let hr = parseInt(h) + (parseInt(h.split(":")[1]) / 60);
-    // this.workOrder.repairHrs = hr;
-    // let ts = this.workOrder.timeStarts;
-    // let t = ts.split(":")[0];
-    // if(t.length < 2) { this.workOrder.timeStarts = "0" + ts;}
     this.initializeForm();
   }
 
   ionViewDidLoad() { console.log('ionViewDidLoad EditReportPage'); }
 
-  goBack() {
-    Log.l("Home button tapped.");
-    this.navCtrl.setRoot('OnSiteHome');
-  }
+  // goBack() {
+  //   Log.l("Home button tapped.");
+  //   this.navCtrl.setRoot('OnSiteHome');
+  // }
 
   initializeForm() {
     this.workOrderForm = new FormGroup({

@@ -8,12 +8,12 @@ import { AlertService                                           } from '../../pr
 import { Log, CONSOLE                                           } from '../../config/config.functions' ;
 import { WorkOrder                                              } from '../../domain/workorder'        ;
 import { Shift                                                  } from '../../domain/shift'            ;
-import { PREFS                                              } from '../../config/config.strings'   ;
-import { TranslateService } from '@ngx-translate/core';
+import { PREFS                                                  } from '../../config/config.strings'   ;
+import { TranslateService                                       } from '@ngx-translate/core'           ;
 import moment from 'moment';
 
 
-@IonicPage({ name    : 'ReportHistory'                                          })
+@IonicPage({ name    : 'ReportHistory'                                           })
 @Component({ selector: 'page-report-history', templateUrl: 'report-history.html' })
 
 
@@ -22,16 +22,15 @@ export class ReportHistory implements OnInit {
 
   public pageReady    : boolean                              = false                                    ;
   public selectedItem : any                                                                             ;
-  // public items        : Array<{title: string, note: string}> = new Array<{title:string, note:string}>() ;
   public items        : Array<{title: string, note: string}> = new Array<{title:string, note:string}>() ;
-  public reports      : Array<WorkOrder> = [];
-  public data         : any                                  = []                                       ;
+  public reports      : Array<WorkOrder> = []                                                           ;
+  public data         : any              = []                                                           ;
   public loading      : any                                                                             ;
   public moment       : any;
-  constructor( public navCtrl : NavController , public navParams  : NavParams         ,
-               public db : DBSrvcs       , public alert      : AlertService      ,
-               private auth   : AuthSrvcs     , public loadingCtrl: LoadingController ,
-               public server    : SrvrSrvcs     , public ud         : UserData,
+  constructor( public navCtrl: NavController      , public navParams  : NavParams         ,
+               public db : DBSrvcs                , public alert      : AlertService      ,
+               private auth: AuthSrvcs            , public loadingCtrl: LoadingController ,
+               public server: SrvrSrvcs           , public ud         : UserData          ,
                public translate: TranslateService          ) {
     this.moment = moment;
     window["reporthistory"] = this;
@@ -40,7 +39,6 @@ export class ReportHistory implements OnInit {
   ngOnInit() {
     Log.l("ReportHistory: pulling reports...");
     this.reports = this.ud.getWorkOrderList();
-    // this.items = this.ud.getWorkOrderList();
     this.pageReady = true;
     let u = this.ud.getUsername();
     this.alert.showSpinner("Retrieving reports...");
@@ -55,27 +53,8 @@ export class ReportHistory implements OnInit {
       this.alert.hideSpinner();
       this.alert.showAlert("ERROR", "Could not connect to server. Please try again later.");
     });
-    // this.server.getReports(u).then(res => {
-    //   Log.l("ReportHistory: Got report list:\n",res);
-    //   this.data = res;
-    //   this.items = [];
-    //   for(let i = this.data.length - 1; i >= 0; i--) { this.items.push(this.data[i]); }
-    //   this.selectedItem = this.navParams.get('item');
-    //   Log.l("ReportHistory: pulled data:\n", this.items);
-    //   this.hideSpinner();
-    //   this.pageReady = true;
-    // }).catch((err) => {
-    //   Log.l("Error while getting reports from server.");
-    //   Log.l(err);
-    //   this.hideSpinner();
-    //   this.pageReady = true;
-    // });
   }
 
-  goBack() {
-    Log.l("Home button tapped.");
-    this.navCtrl.setRoot('OnSiteHome');
-  }
 
   itemTapped(event, item) {
     // this.navCtrl.setRoot('Report Edit', { item: item });
@@ -104,5 +83,4 @@ export class ReportHistory implements OnInit {
       Log.e(err);
     });
   }
-
 }

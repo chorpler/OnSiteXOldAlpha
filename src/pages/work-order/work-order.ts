@@ -18,7 +18,6 @@ import moment from 'moment';
 import { sprintf } from 'sprintf-js';
 import { MultiPickerModule } from 'ion-multi-picker';
 import { FancySelectComponent } from '../../components/fancy-select/fancy-select';
-import { SafePipe } from '../../pipes/safe';
 import { PREFS, STRINGS                     } from '../../config/config.strings'          ;
 import { TabsComponent } from '../../components/tabs/tabs';
 import { TranslateService } from '@ngx-translate/core';
@@ -480,11 +479,10 @@ export class WorkOrderPage implements OnInit {
           // this.items.splice(i, 1);
           woList.splice(i, 1);
           if(this.mode === 'Add') {
-            // this.tabs.goHome();
             this.tabs.goHome();
           } else {
-            // this.tabs.goHistory();
-            this.navCtrl.pop();
+            this.tabs.goHistory();
+            // this.navCtrl.pop();
           }
         }).catch((err) => {
           Log.l("deleteWorkOrder(): Error!");
