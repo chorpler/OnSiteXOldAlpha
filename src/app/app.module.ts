@@ -12,8 +12,6 @@ import { IonicStorageModule                                      } from '@ionic/
 import { SecureStorage, SecureStorageObject                      } from '@ionic-native/secure-storage'         ;
 import { OnSiteApp                                               } from './app.component.ts'                   ;
 import { ProfileSettings                                         } from '../providers/profile-settings.ts'     ;
-import * as PouchDB                                                from 'pouchdb'                              ;
-import * as moment                                                 from 'moment'                               ;
 import { AuthSrvcs                                               } from '../providers/auth-srvcs'              ;
 import { DBSrvcs                                                 } from '../providers/db-srvcs'                ;
 import { TimeSrvc                                                } from '../providers/time-parse-srvc'         ;

@@ -16,6 +16,8 @@ export class PouchDBService {
   public static initialized   : boolean       = false                                        ;
   public static pdb           : any           = new Map()                                    ;
   public static rdb           : any           = new Map()                                    ;
+  public static PREFERENCES   : any           = new PREFS()                                  ;
+  public prefs                : any           = PouchDBService.PREFERENCES                   ;
 
   constructor() {
     console.log('Hello PouchDBService Provider');
@@ -71,7 +73,7 @@ export class PouchDBService {
       Log.l(`addDB(): Not adding local database ${dbname} because it already exists.`);
       return dbmap.get(dbname);
     } else {
-      dbmap.set(dbname, PouchDBService.StaticPouchDB(PREFS.getDB().reports, PREFS.getServer().opts));
+      dbmap.set(dbname, PouchDBService.StaticPouchDB(dbname, PouchDBService.PREFERENCES.SERVER.opts));
       Log.l(`addDB(): Added local database ${dbname} to the list.`);
       return dbmap.get(dbname);
     }
@@ -83,12 +85,12 @@ export class PouchDBService {
 
   static addRDB(dbname: string) {
     let rdbmap = PouchDBService.rdb;
-    let url = PREFS.getServer().rdbServer.protocol + "://" + PREFS.getServer().rdbServer.server + "/" + dbname;
+    let url = PouchDBService.PREFERENCES.SERVER.rdbServer.protocol + "://" + PouchDBService.PREFERENCES.SERVER.rdbServer.server + "/" + dbname;
     Log.l(`addRDB(): Now fetching remote DB ${dbname} at ${url} ...`);
     if(rdbmap.has(dbname)) {
       return rdbmap.get(dbname);
     } else {
-      let rdb1 = PouchDBService.StaticPouchDB(url, PREFS.getServer().ropts);
+      let rdb1 = PouchDBService.StaticPouchDB(url, PouchDBService.PREFERENCES.SERVER.ropts);
       rdbmap.set(dbname, rdb1);
       Log.l(`addRDB(): Added remote database ${url} to the list as ${dbname}.`);
       return rdbmap.get(dbname);

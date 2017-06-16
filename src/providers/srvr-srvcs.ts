@@ -47,17 +47,17 @@ export class SrvrSrvcs {
 
   static getBaseURL() {
     if(PREFS.SERVER.port != '') {
-      return `${PREFS.SERVER.protocol}://${PREFS.SERVER.server}:${PREFS.SERVER.port}`; 
+      return `${PREFS.SERVER.protocol}://${PREFS.SERVER.server}:${PREFS.SERVER.port}`;
     } else {
-      return `${PREFS.SERVER.protocol}://${PREFS.SERVER.server}`; 
+      return `${PREFS.SERVER.protocol}://${PREFS.SERVER.server}`;
     }
   }
 
   static getInsecureLoginBaseURL(user:string, pass:string) {
     if(PREFS.SERVER.port != '') {
-      return `${PREFS.SERVER.protocol}://${user}:${pass}@${PREFS.SERVER.server}:${PREFS.SERVER.port}`; 
+      return `${PREFS.SERVER.protocol}://${user}:${pass}@${PREFS.SERVER.server}:${PREFS.SERVER.port}`;
     } else {
-      return `${PREFS.SERVER.protocol}://${user}:${pass}@${PREFS.SERVER.server}`; 
+      return `${PREFS.SERVER.protocol}://${user}:${pass}@${PREFS.SERVER.server}`;
     }
   }
 
@@ -217,7 +217,7 @@ export class SrvrSrvcs {
     localProfileDoc.docID = doc._id;
     localProfileDoc._id   = localID;
     return new Promise((resolve, reject) => {
-      db1 = this.addDB(PREFS.DB.reports);
+      db1 = this.addDB('reports');
       db1.get(localID).then((res) => {
         Log.l("Server.saveTechProfile(): Found techProfile locally. Deleting it.");
         let id = res._id;

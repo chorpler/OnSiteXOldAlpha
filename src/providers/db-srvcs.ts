@@ -30,6 +30,8 @@ export class DBSrvcs {
   public static rdb           : any = new Map()                                    ;
   public static ldbs          : any                                                ;
   public static rdbs          : any                                                ;
+  public static prefs         : any = new PREFS()                                  ;
+  public prefs                : any = DBSrvcs.prefs                                ;
 
   /**
    * @param {Http}
@@ -49,7 +51,7 @@ export class DBSrvcs {
 
     this.pdbOpts = {adapter: 'websql', auto_compaction: true};
 
-    DBSrvcs.addDB(PREFS.DB.reports);
+    DBSrvcs.addDB(this.prefs.DB.reports);
 
     let options = {
       live: true,
@@ -62,7 +64,7 @@ export class DBSrvcs {
 
   // -------------- DBSrvcs METHODS------------------------
 
-  
+
   /**
    * Returns a copy of the PouchDB method, which can be used as normal.
    * @type {PouchDB}
@@ -71,20 +73,20 @@ export class DBSrvcs {
     return this.PouchDB;
   }
 
-  static getThisDB() {
+  getThisDB() {
     return DBSrvcs.db;
   }
 
-  static getDBs() {
+  getDBs() {
     return DBSrvcs.pdb;
   }
 
-  static getRDBs() {
+  getRDBs() {
     return DBSrvcs.rdb;
   }
 
-  static getServerInfo() {
-    return PREFS.SERVER.protocol + "://" + PREFS.SERVER.server;
+  getServerInfo() {
+    return this.prefs.SERVER.protocol + "://" + this.prefs.SERVER.server;
   }
 
   addDB(dbname: string) {
@@ -113,7 +115,7 @@ export class DBSrvcs {
     var db1 = DBSrvcs.addDB(dbname);
     var db2 = DBSrvcs.addRDB(dbname);
     // var done = DBSrvcs.StaticPouchDB.replicate(db1, db2, DBSrvcs.repopts);
-    var done = db1.replicate.to(db2, PREFS.SERVER.repopts)
+    var done = db1.replicate.to(db2, this.prefs.SERVER.repopts)
     .on('change'   , info => ev1)
     .on('active'   , info => ev1)
     .on('paused'   , info => ev1)
@@ -131,7 +133,7 @@ export class DBSrvcs {
     var ev2 = function(b) { Log.l(b.status); Log.l(b);};
     var db1 = DBSrvcs.addRDB(dbname);
     var db2 = DBSrvcs.addDB(dbname);
-    var done = db1.replicate.to(db2, PREFS.SERVER.repopts)
+    var done = db1.replicate.to(db2, this.prefs.SERVER.repopts)
     .on('change'   , info => ev2)
     .on('active'   , info => ev2)
     .on('paused'   , info => ev2)
@@ -151,7 +153,7 @@ export class DBSrvcs {
     var db2 = DBSrvcs.addRDB(dbname);
     // var done = DBSrvcs.StaticPouchDB.replicate(db1, db2, DBSrvcs.repopts);
     return new Promise((resolve, reject) => {
-      db1.replicate.to(db2, PREFS.SERVER.repopts).then((res) => {
+      db1.replicate.to(db2, this.prefs.SERVER.repopts).then((res) => {
         Log.l(`syncSquaredToServer(): Successfully replicated '${dbname}'->remote!`);
         Log.l(res);
         resolve(res);
@@ -169,7 +171,7 @@ export class DBSrvcs {
     var db1 = DBSrvcs.addRDB(dbname);
     var db2 = DBSrvcs.addDB(dbname);
     return new Promise((resolve, reject) => {
-      db2.replicate.to(db1, PREFS.SERVER.repopts).then((res) => {
+      db2.replicate.to(db1, this.prefs.SERVER.repopts).then((res) => {
         Log.l(`syncSquaredFromServer(): Successfully replicated remote->'${dbname}'`);
         Log.l(res);
         resolve(res);
@@ -197,8 +199,8 @@ export class DBSrvcs {
   addDoc(dbname:string, doc) {
     return new Promise((resolve, reject) => {
       Log.l(`addDoc(): Adding document to ${dbname}:\n`, doc);
-      // let dbname = db ? db : PREFS.DB.reports;
-      // let dbname = db ? db : PREFS.DB.reports;
+      // let dbname = db ? db : this.prefs.DB.reports;
+      // let dbname = db ? db : this.prefs.DB.reports;
       let db1 = this.addDB(dbname);
       // if (typeof doc._id === 'undefined') { doc._id = 'INVALID_DOC' }
       db1.put(doc).then((res) => {
@@ -215,7 +217,7 @@ export class DBSrvcs {
 
   updateReport(doc) {
     Log.l(`updateReport(): About to put doc ${doc._id}`);
-    let db1 = this.addDB(PREFS.DB.reports);
+    let db1 = this.addDB(this.prefs.DB.reports);
     return db1.put(doc).then((res) => {
       Log.l("updateReport(): Successfully added document.");
       Log.l(res);
@@ -228,7 +230,7 @@ export class DBSrvcs {
 
   getDoc(dbname:string, docID) {
     return new Promise((resolve, reject) => {
-      let db1 = this.addDB(PREFS.DB.reports);
+      let db1 = this.addDB(this.prefs.DB.reports);
       db1.get(docID).then((result) => {
         Log.l(`Got document ${docID}`);
         resolve(result);
@@ -241,7 +243,7 @@ export class DBSrvcs {
   }
 
   updateDoc(dbname:string, doc) {
-    let db1 = this.addDB(PREFS.DB.reports);
+    let db1 = this.addDB(this.prefs.DB.reports);
     return db1.put(doc);
   }
 
@@ -264,7 +266,7 @@ export class DBSrvcs {
         resolve(true);
       }).catch((error) => {
         Log.l(`Local doc ${docID} does not exist`);
-        resolve(false);
+        reject(false);
       });
     })
   }
@@ -272,13 +274,29 @@ export class DBSrvcs {
   addLocalDoc(dbname:string, newDoc:any) {
     return new Promise((resolve, reject) => {
       let db1 = this.addDB(dbname);
-      db1.remove(newDoc._id).catch(() => {}).then(() => {
+      Log.l("addLocalDoc(): 01) Now removing and adding local doc:\n", newDoc);
+      db1.get(newDoc._id).then(res => {
+        Log.l("addLocalDoc(): 02) Now removing result:\n",res);
+        return db1.remove(res);
+      }).catch((err) => {
+        Log.l("addLocalDoc(): 03) Caught error removing res!");
+        Log.e(err);
+        Log.l("addLocalDoc(): 04) Now removing original doc:\n", newDoc);
+        return db1.remove(newDoc);
+      }).catch((err) => {
+        Log.l("addLocalDoc(): 05) Caught error removing newDoc!");
+        Log.e(err);
+        Log.l("addLocalDoc(): 06) Now continuing to save doc.");
+        return Promise.resolve();
+      }).then(() => {
+        Log.l("addLocalDoc(): 07) No more copy of local doc, now putting back:\n", newDoc);
+        delete newDoc._rev;
         return db1.put(newDoc);
       }).then((res) => {
-        Log.l(`addLocalDoc(): Added local document '${newDoc._id}'.`)
+        Log.l(`addLocalDoc(): 08) Added local document '${newDoc._id}'.`)
         resolve(res);
       }).catch((err) => {
-        Log.l(`addLocalDoc(): Error adding local doc ${newDoc._id}.`);
+        Log.l(`addLocalDoc(): 09) Error adding local doc ${newDoc._id}.`);
         Log.e(err)
         reject(err);
       });
@@ -298,19 +316,18 @@ export class DBSrvcs {
 
   saveTechProfile(doc) {
     Log.l("Attempting to save local techProfile...");
-    let rdb1, uid, newProfileDoc;
+    let rdb1, uid, newProfileDoc, strID, strRev;
     return new Promise((resolve, reject) => {
       this.getTechProfile().then((res) => {
         Log.l("saveTechProfile(): About to process old and new:");
         Log.l(res);
         Log.l(doc);
-        let strID = res['_id'];
-        let strRev = res['_rev'];
-        newProfileDoc = { ...res, ...doc, "_id": strID, "_rev": strRev };
+        strID = res['_id'];
+        newProfileDoc = { ...res, ...doc, "_id": strID};
         Log.l("saveTechProfile(): Merged profile is:");
         Log.l(newProfileDoc);
         Log.l("saveTechProfile(): now attempting save...");
-        return this.addLocalDoc(PREFS.DB.reports, newProfileDoc);
+        return this.addLocalDoc('reports', newProfileDoc);
       }).then((res) => {
         rdb1 = this.srvr.addRDB('sesa-employees');
         let name = this.ud.getUsername();
@@ -337,16 +354,16 @@ export class DBSrvcs {
   getTechProfile() {
     let documentID = "_local/techProfile";
     return new Promise((resolve, reject) => {
-      this.checkLocalDoc(PREFS.DB.reports, documentID).then((res) => {
+      this.checkLocalDoc('reports', documentID).then((res) => {
         Log.l("techProfile exists, reading it in...");
-        return this.getDoc(PREFS.DB.reports, documentID);
+        return this.getDoc('reports', documentID);
       }).then((res) => {
         Log.l("techProfile read successfully:");
         Log.l(res);
         resolve(res);
       }).catch((err) => {
         Log.l("techProfile not found, user not logged in.");
-        console.error(err);
+        Log.e(err);
         reject(err);
       });
     });

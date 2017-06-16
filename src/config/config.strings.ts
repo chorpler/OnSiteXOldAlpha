@@ -27,15 +27,15 @@ export const STRINGS = {
       'login': '_session'
     };
     public static SERVER:any = {
-      server        : "securedb.sesaonsite.com"                          ,
-      port          : '443'                                              ,
-      protocol      : 'https'                                            ,
-      opts          : {adapter : 'websql', auto_compaction: true       } ,
-      ropts         : {adapter : null, skipSetup : true       } ,
-      cropts        : {adapter : null                         } ,
-      repopts       : {live    : false, retry : false                  } ,
-      ajaxOpts      : {headers : { Authorization: ''                   }},
-      remoteDBInfo  : {                                                } ,
+      server        : "securedb.sesaonsite.com"                           ,
+      port          : '443'                                               ,
+      protocol      : 'https'                                             ,
+      opts          : {adapter : 'websql', auto_compaction: true  }       ,
+      ropts         : {adapter : null, skipSetup : true       }           ,
+      cropts        : {adapter : null                         }           ,
+      repopts       : {live    : false, retry : false                  }  ,
+      ajaxOpts      : {headers : { Authorization: ''                   }} ,
+      remoteDBInfo  : {                                                }  ,
       rdbServer     : {
         protocol: null,
         server: null,
@@ -45,15 +45,18 @@ export const STRINGS = {
         }
       }
     };
+    public DB:any = PREFS.DB;
+    public SERVER:any = PREFS.SERVER;
     public db:any = PREFS.DB;
     public server:any = PREFS.SERVER;
     constructor() {
       window["onsiteprefs"] = this;
-      PREFS.SERVER.ropts.adapter          = PREFS.SERVER.protocol; 
-      PREFS.SERVER.cropts.adapter         = PREFS.SERVER.protocol; 
-      PREFS.SERVER.rdbServer.protocol     = PREFS.SERVER.protocol; 
-      PREFS.SERVER.rdbServer.server       = PREFS.SERVER.server  ; 
-      PREFS.SERVER.rdbServer.opts.adapter = PREFS.SERVER.protocol;
+      let protocol = PREFS.SERVER.protocol;
+      PREFS.SERVER.ropts.adapter          = protocol;
+      PREFS.SERVER.cropts.adapter         = protocol;
+      PREFS.SERVER.rdbServer.protocol     = protocol;
+      PREFS.SERVER.rdbServer.server       = PREFS.SERVER.server  ;
+      PREFS.SERVER.rdbServer.opts.adapter = protocol;
     }
 
     getPrefs() {
@@ -67,7 +70,7 @@ export const STRINGS = {
     getServer() {
       PREFS.getServer();
     }
-    
+
 
     static getPrefs() {
       return {DB: PREFS.DB, SERVER: PREFS.SERVER};
