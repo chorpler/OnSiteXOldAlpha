@@ -23,7 +23,6 @@ import { TranslateService } from '@ngx-translate/core';
   templateUrl: 'home.html'
 })
 export class HomePage {
-
   loginData    : any           = null             ;
   username     : string        = "unknown"        ;
   userLoggedIn : boolean                          ;
@@ -66,9 +65,10 @@ export class HomePage {
                public tabs: TabsComponent,
                public alert: AlertService,
                public zone: NgZone,
-               public translate:TranslateService ) 
+               public translate:TranslateService )
   {
     window["onsitehome"] = this;
+    Log.l("Hi, I'm the HomePage class! And I personally am a logger. In half I pee feces.");
   }
 
   ionViewDidEnter() {

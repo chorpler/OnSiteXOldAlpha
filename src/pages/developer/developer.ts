@@ -38,7 +38,8 @@ export class DeveloperPage implements OnInit {
               public db: DBSrvcs,
               public alert: AlertService,
               public timeSrvc: TimeSrvc,
-              public translate: TranslateService )
+              public translate: TranslateService,
+              public tabs: TabsComponent )
   {
     this.spanishDefault = this.translate.currentLang === 'es' ? true : false;
     this.useSpanish = this.spanishDefault;

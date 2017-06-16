@@ -10,7 +10,7 @@ import { WorkOrder                                              } from '../../do
 import { Shift                                                  } from '../../domain/shift'            ;
 import { PREFS                                                  } from '../../config/config.strings'   ;
 import { TranslateService                                       } from '@ngx-translate/core'           ;
-import { TabsComponent } from '../../components/tabs/tabs';
+import { TabsComponent                                          } from '../../components/tabs/tabs'    ;
 import moment from 'moment';
 
 
@@ -28,11 +28,12 @@ export class ReportHistory implements OnInit {
   public data         : any              = []                                                           ;
   public loading      : any                                                                             ;
   public moment       : any;
+  public static PREFS : any              = new PREFS();
   constructor( public navCtrl: NavController      , public navParams  : NavParams         ,
                public db : DBSrvcs                , public alert      : AlertService      ,
                private auth: AuthSrvcs            , public loadingCtrl: LoadingController ,
                public server: SrvrSrvcs           , public ud         : UserData          ,
-               public translate: TranslateService          ) {
+               public translate: TranslateService , public tabs       : TabsComponent     ) {
     this.moment = moment;
     window["reporthistory"] = this;
   }
@@ -56,11 +57,11 @@ export class ReportHistory implements OnInit {
     });
   }
 
-
   itemTapped(event, item) {
     // this.navCtrl.setRoot('Report Edit', { item: item });
     // this.navCtrl.setRoot('WorkOrder', { mode: 'Edit', workOrder: item });
-    this.navCtrl.push('WorkOrder', {mode: 'Edit', workOrder: item})
+    // this.navCtrl.push('WorkOrder', {mode: 'Edit', workOrder: item})
+    this.tabs.goToPage('WorkOrder', {mode: 'Edit', workOrder: item})
   }
 
   deleteWorkOrder(event, item) {

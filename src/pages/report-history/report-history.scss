@@ -31,4 +31,15 @@ page-report-history {
 	.reportList {
 
 	}
+  .report-history-list-item-sliding {
+
+  }
+  .report-history-list-item {
+     :hover {
+      background-color: rgba(0, 0, 128, 0.02);
+    }
+     :active {
+      background-color: rgba(0, 0, 255, 0.3);
+    }
+  }
 }

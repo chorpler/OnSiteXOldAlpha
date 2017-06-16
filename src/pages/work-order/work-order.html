@@ -58,7 +58,8 @@
           <div>Error submitting work order. Please try again.</div>
         </ion-item>
       </ion-list>
-      <button type="submit" ion-button block color="favorite">Submit {{title}} </button>
+      <button type="submit" ion-button block color="favorite" *ngIf="mode==='Add'">Submit Work Report</button>
+      <button type="submit" ion-button block color="favorite" *ngIf="mode==='Edit'">Save Work Report</button>
       <button type="button" ion-button block color="light" (click)="cancel()">Cancel</button>
     </form>
   </div>

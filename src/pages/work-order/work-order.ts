@@ -30,6 +30,9 @@ import { TranslateService } from '@ngx-translate/core';
 
 export class WorkOrderPage implements OnInit {
   title: string = 'Work Report';
+  static PREFS:any = new PREFS();
+  prefs:any = WorkOrderPage.PREFS;
+
   setDate: Date = new Date();
   year: number = this.setDate.getFullYear();
   mode: string = 'Add';
@@ -165,7 +168,7 @@ export class WorkOrderPage implements OnInit {
             this.workOrder[key2] = value[key1];
           }
         }
-        Log.l("workOrderForm: overall valueChanges, ended up with work ordder:\n", this.workOrder);
+        Log.l("workOrderForm: overall valueChanges, ended up with work order:\n", this.workOrder);
       });
       this._repairHours.valueChanges.subscribe((hours:any) => {
         Log.l("workOrderForm: valueChanges fired for repair_hours: ", hours);
@@ -189,7 +192,7 @@ export class WorkOrderPage implements OnInit {
         let woHoursSoFar = shift.getShiftHours();
         let woStart = moment(shift.getStartTime()).add(woHoursSoFar, 'hours');
         this.workOrder.setStartTime(woStart);
-        
+
         this.workOrderForm.controls.rprtDate.setValue(rprtDate.format("YYYY-MM-DD"));
       });
       this.dataReady = true;
@@ -318,7 +321,7 @@ export class WorkOrderPage implements OnInit {
       ss.shift_hours = totalHours;
       Log.l(`getTotalHoursForShift(): Total hours for shift '${shiftID}' are ${totalHours}.`);
     }
-    
+
   }
 
   getNumberClass(i) {
@@ -373,9 +376,9 @@ export class WorkOrderPage implements OnInit {
     this.alert.showSpinner("Saving...");
     let tempWO = this.createReport();
     if(this.mode === 'Add') {
-      this.db.addDoc(PREFS.DB.reports, tempWO).then((res) => {
+      this.db.addDoc(this.prefs.DB.reports, tempWO).then((res) => {
         Log.l("processWO(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
-        return this.db.syncSquaredToServer(PREFS.DB.reports);
+        return this.db.syncSquaredToServer(this.prefs.DB.reports);
       }).then((res) => {
         Log.l("processWO(): Successfully synchronized work order to remote.");
         this.alert.hideSpinner();
@@ -388,14 +391,16 @@ export class WorkOrderPage implements OnInit {
         // reject(err);
       });
     } else {
-      this.db.updateDoc(PREFS.DB.reports, tempWO).then((res) => {
+      tempWO._rev = this.workOrder._rev;
+      Log.l("processWO(): In Edit mode, now trying to save report:\n", tempWO);
+      this.db.updateDoc(this.prefs.DB.reports, tempWO).then((res) => {
         Log.l("processWO(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
-        return this.db.syncSquaredToServer(PREFS.DB.reports);
+        return this.db.syncSquaredToServer(this.prefs.DB.reports);
       }).then((res) => {
         Log.l("processWO(): Successfully synchronized work order to remote.");
         this.alert.hideSpinner();
         // setTimeout(() => { this.navCtrl.setRoot('OnSiteHome'); });
-        setTimeout(() => { this.tabs.goHome() });
+        setTimeout(() => { this.tabs.goHistory() });
       }).catch((err) => {
         Log.l("processWO(): Error saving work order to local database.");
         Log.e(err);
@@ -431,14 +436,11 @@ export class WorkOrderPage implements OnInit {
     let newReport:any = {};
     let newID = this.genReportID();
     if(this.mode !== 'Add') {
-      newID = wo._id; 
+      newID = wo._id;
     }
     if(this.mode === 'Edit') {
       newReport._rev = wo._rev;
     }
-    // if(wo._rev !== undefined && wo._rev !== null && wo._rev !== '') {
-    //   newReport._rev = wo._rev;
-    // }
     newReport._id            = newID                             ;
     newReport.timeStarts     = wo.time_start.format()            ;
     newReport.timeEnds       = wo.time_end.format()              ;
@@ -473,7 +475,7 @@ export class WorkOrderPage implements OnInit {
         let wo = this.workOrder.clone();
         let woList = this.ud.getWorkOrderList();
         let i = woList.indexOf(this.workOrder);
-        this.server.deleteDoc(PREFS.DB.reports, wo).then((res) => {
+        this.server.deleteDoc(this.prefs.DB.reports, wo).then((res) => {
           Log.l("deleteWorkOrder(): Success:\n", res);
           // this.items.splice(i, 1);
           woList.splice(i, 1);

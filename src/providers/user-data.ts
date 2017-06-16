@@ -17,17 +17,17 @@ export class UserData {
   public static HAS_LOGGED_IN = 'hasLoggedIn';
   public static HAS_SEEN_TUTORIAL = 'hasSeenTutorial';
   public static shift: Shift;
-  public static workOrderList: Array<WorkOrder>;
+  public static PREFS:any = new PREFS();
+  public prefs:any = UserData.PREFS;
+  public static workOrderList: Array<WorkOrder> = [];
   public static current_shift_hours: any;
   public static circled_numbers:Array<string>;
-  // public static circled_numbers_chars: Array<string> = ["⓵", "⓶", "⓷", "⓸", "⓹", "⓺", "⓻", "⓼", "⓽"];
   public static circled_numbers_chars: Array<string> = STRINGS.NUMCHARS;
   public static techWOArrayInitialized:boolean = false;
   public static shifts:Array<Shift> = [];
   public static techProfile:any;
   public static userLoggedIn:boolean = false;
   private static loginData:any = null;
-
 
   constructor(public events: Events, public storage: Storage, public platform: Platform) {
     window["onsiteuserdata"] = this;
@@ -122,7 +122,7 @@ export class UserData {
         if(countsForBonusHours >= 8 && countsForBonusHours <= 11) {
           bonushours = 3;
         } else if(countsForBonusHours > 11) {
-          bonushours = ((countsForBonusHours - 11) * 2) + 3;
+          bonushours = 3 + (countsForBonusHours - 11);
         }
         Log.l("getPayrollHoursForPayrollPeriod(): For shift %s, %d reports, %f hours, and %f count for bonus hours, so bonus hours = %f.", shift.getShiftSerial(), count, shiftTotal, countsForBonusHours, bonushours);
         shiftTotal += bonushours;

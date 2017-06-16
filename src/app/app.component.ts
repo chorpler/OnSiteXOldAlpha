@@ -29,7 +29,8 @@ export class OnSiteApp {
   rootPage    : any                   ;
   pouchOptions: any     = {          };
   bkBtnPrsd2nd: boolean = false       ;
-  PREFS       : any     = PREFS       ;
+  static PREFS: any     = new PREFS()       ;
+  prefs       : any     = OnSiteApp.PREFS;
 
   private network: any;
 
@@ -110,12 +111,12 @@ export class OnSiteApp {
     return new Promise((resolve,reject) => {
       this.storage.get('PREFS').then((storedPrefs) => {
         if(storedPrefs !== null && storedPrefs != undefined && storedPrefs !== 'undefined') {
-          PREFS.setPrefs(storedPrefs);
-          Log.l("OnSite: Preferences found saved and reloaded:\n", PREFS.getPrefs());
+          this.prefs.setPrefs(storedPrefs);
+          Log.l("OnSite: Preferences found saved and reloaded:\n", this.prefs.getPrefs());
           resolve(storedPrefs);
         } else {
-          this.storage.set('PREFS', PREFS.getPrefs()).then((res) => {
-            Log.l("OnSite: Preferences stored:\n", PREFS.getPrefs());
+          this.storage.set('PREFS', this.prefs.getPrefs()).then((res) => {
+            Log.l("OnSite: Preferences stored:\n", this.prefs.getPrefs());
             resolve(res);
           });
         }

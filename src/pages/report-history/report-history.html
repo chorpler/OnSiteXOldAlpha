@@ -13,8 +13,8 @@
     </ion-item>
   </ion-list>
   <ion-list class="reportList" *ngIf="pageReady">
-    <ion-item-sliding *ngFor="let report of reports">
-      <ion-item (click)="itemTapped($event, report)">
+    <ion-item-sliding class="report-history-list-item-sliding" *ngFor="let report of reports">
+      <ion-item class="report-history-list-item" (click)="itemTapped($event, report)">
         <ion-icon name="create" item-left></ion-icon>{{report.report_date}}
         <div class="item-note" item-right>{{report.unit_number}}</div>
       </ion-item>

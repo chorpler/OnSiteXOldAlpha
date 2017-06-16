@@ -30,8 +30,8 @@ export class DBSrvcs {
   public static rdb           : any = new Map()                                    ;
   public static ldbs          : any                                                ;
   public static rdbs          : any                                                ;
-  public static prefs         : any = new PREFS()                                  ;
-  public prefs                : any = DBSrvcs.prefs                                ;
+  public static PREFS         : any = new PREFS()                                  ;
+  public prefs                : any = DBSrvcs.PREFS                                ;
 
   /**
    * @param {Http}
@@ -230,7 +230,7 @@ export class DBSrvcs {
 
   getDoc(dbname:string, docID) {
     return new Promise((resolve, reject) => {
-      let db1 = this.addDB(this.prefs.DB.reports);
+      let db1 = this.addDB(dbname);
       db1.get(docID).then((result) => {
         Log.l(`Got document ${docID}`);
         resolve(result);
@@ -243,7 +243,7 @@ export class DBSrvcs {
   }
 
   updateDoc(dbname:string, doc) {
-    let db1 = this.addDB(this.prefs.DB.reports);
+    let db1 = this.addDB(dbname);
     return db1.put(doc);
   }
 
