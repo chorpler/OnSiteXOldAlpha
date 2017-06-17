@@ -1,8 +1,9 @@
-import { NgModule         } from '@angular/core'; 
-import { IonicPageModule  } from 'ionic-angular'; 
-import { ReportHistory    } from './report-history';
-import { TranslateModule } from '@ngx-translate/core';
-import { TabsComponentModule } from '../../components/tabs/tabs.module'
+import { NgModule            } from '@angular/core';
+import { IonicPageModule     } from 'ionic-angular';
+import { ReportHistory       } from './report-history';
+import { TranslateModule     } from '@ngx-translate/core';
+import { TabsComponentModule } from '../../components/tabs/tabs.module';
+import { PipesModule         } from '../../pipes/pipes.module';
 
 @NgModule({
   declarations: [
@@ -12,6 +13,7 @@ import { TabsComponentModule } from '../../components/tabs/tabs.module'
     IonicPageModule.forChild(ReportHistory),
     TranslateModule.forChild(),
     TabsComponentModule,
+    PipesModule,
   ],
   exports: [
     ReportHistory,

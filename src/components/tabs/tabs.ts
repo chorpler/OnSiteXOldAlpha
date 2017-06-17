@@ -1,7 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { App, Platform     } from 'ionic-angular';
-import { AuthSrvcs         } from '../../providers/auth-srvcs';
+// import { AuthSrvcs         } from '../../providers/auth-srvcs';
 import { NgZone            } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { UserData } from '../../providers/user-data';
+
+
+enum Pages {
+  'OnSiteHome'    = 0,
+  'WorkOrder'     = 1,
+  'ReportHistory' = 2,
+  'User'          = 3,
+  'Settings'      = 4,
+  'DevPage'       = 5,
+}
 
 @Component({
   selector: 'onsite-tabs',
@@ -30,13 +42,16 @@ export class TabsComponent implements OnInit {
   onSitePage: any;
   userLoggedIn: boolean;
   userIsDeveloper:boolean;
+  enumPages:any;
+  enumPagesDef:any;
 
-  constructor( public app:App, public platform: Platform,
-               public auth: AuthSrvcs, public zone: NgZone ) {
-    TabsComponent.nav = this.app.getActiveNav();
-    this.nav = TabsComponent.nav;
+  constructor( public app: App, public platform: Platform, public zone: NgZone, public translate: TranslateService, public ud:UserData ) {
+    // TabsComponent.nav = this.app.getActiveNav();
+    // this.nav = TabsComponent.nav;
     this.getActiveNav();
     window['onSiteTabs'] = this;
+    this.enumPages = Pages.OnSiteHome;
+    this.enumPagesDef = Pages;
   }
 
   getActiveNav() {
@@ -44,29 +59,29 @@ export class TabsComponent implements OnInit {
     this.nav = TabsComponent.nav;
   }
 
-  goToPage(pagename:string, params?:any) {
-    console.log(`Tabs: entering page '${pagename}'`);
-    // let i = this.tabNames.indexOf(pagename);
+  goToPage(page:string|number, params?:any) {
     let tabs = this.tabInfo;
-    let len = this.tabInfo.length;
-    let index = -1;
-    let i = 0;
-    for(let tab of tabs) {
-      if(tab.name === pagename) {
-        tab.active = true;
-      } else {
-        tab.active = false;
-        i++;
-      }
+    let pagename = "OnSiteHome";
+    if(typeof page === 'number') {
+      pagename = tabs[page].name;
+    } else {
+      pagename = page;
     }
-    // for(let i = 0; i < len; i++) {
-    //   if(tabs[i].name === pagename) {
-    //     index = i;
+    console.log(`Tabs: entering page '${pagename}'`);
+
+    this.highlightPageTab(pagename);
+    // let len = tabs.length;
+    // let index = -1;
+    // let i = 0;
+    // for(let tab of tabs) {
+    //   if(tab.name === pagename) {
     //     tab.active = true;
+    //   } else {
+    //     tab.active = false;
+    //     i++;
     //   }
     // }
-    console.log(`Tabs: found page ${pagename} at index ${i}...`);
-    // if (index !== -1) { this.highlightTab(index); }
+    console.log(`Tabs: found page ${pagename} at index ${Pages[pagename]}...`);
     this.getActiveNav();
     if(params) {
       this.nav.setRoot(pagename, params);
@@ -75,45 +90,55 @@ export class TabsComponent implements OnInit {
     }
   }
 
+  highlightPageTab(page:string|number) {
+    let tabs = this.tabInfo;
+    let pagename = "OnSiteHome";
+    if(typeof page === 'number') {
+      pagename = tabs[page].name;
+    } else {
+      pagename = page;
+    }
+    for(let tab of tabs) {
+      tab.active = false;
+    }
+    let pageNum = Pages[pagename];
+    if(pageNum !== undefined) {
+      tabs[pageNum].active = true;
+    }
+  }
+
   setTabDisable(val:boolean) {
-    // this.tabDisabled = val;
     TabsComponent.allTabs.disabled = val;
   }
 
   goHome() {
     console.log('entering page: OnSite Home' );
-    this.getActiveNav();
-    this.highlightTab(0); this.nav.setRoot('OnSiteHome'   );
+    this.goToPage('OnSiteHome');
   }
 
   goReport(params?:any) {
     console.log('entering page: WorkOrder' );
-    this.getActiveNav();
-    this.highlightTab(1); this.nav.setRoot('WorkOrder'    );
+    this.goToPage('WorkOrder');
   }
 
   goHistory() {
     console.log('entering page: ReportHistory' );
-    this.getActiveNav();
-    this.highlightTab(2); this.nav.setRoot('ReportHistory');
+    this.goToPage('ReportHistory');
   }
 
   goUser() {
     console.log('entering page: User' );
-    this.getActiveNav();
-    this.highlightTab(3); this.nav.setRoot( 'User'        );
+    this.goToPage('User');
   }
 
   goSettings() {
     console.log('entering page: Settings' );
-    this.getActiveNav();
-    this.highlightTab(4); this.nav.setRoot('Settings'     );
+    this.goToPage('Settings');
   }
 
   goDev() {
     console.log('entering page: DevPage' );
-    this.getActiveNav();
-    this.highlightTab(5); this.nav.setRoot('DevPage'      );
+    this.goToPage('DevPage');
   }
 
   highlightStatus(i: number) {
@@ -130,7 +155,9 @@ export class TabsComponent implements OnInit {
   }
 
   isDeveloper() {
-    if( this.auth.getUser() === 'Chorpler' || this.auth.getUser() === 'Hachero' || this.auth.getUser() === 'mike' ) {
+    // if( this.auth.getUser() === 'Chorpler' || this.auth.getUser() === 'Hachero' || this.auth.getUser() === 'mike' ) {
+    let un = this.ud.getUsername();
+    if( un === 'Chorpler' || un === 'Hachero' || un === 'mike' ) {
       this.userIsDeveloper = true;
       return true;
     } else {
@@ -143,6 +170,7 @@ export class TabsComponent implements OnInit {
 
   ngOnInit() {
     window['onSiteTabs'] = this;
-    if( this.onSitePage === 'Login') { TabsComponent.allTabs.disabled = true; }
+    // if( this.onSitePage === 'Login') { TabsComponent.allTabs.disabled = true; }
+    if (this.onSitePage === 'Login') { this.setTabDisable(true); }
   }
 }

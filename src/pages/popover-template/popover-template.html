@@ -1,0 +1,28 @@
+<!--
+  Generated template for the PopoverTemplatePage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<!-- <ion-header>
+
+  <ion-navbar>
+    <ion-title>PopoverTemplate</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+</ion-content> -->
+
+ <ion-content class="popover-ion-content" padding>
+   <!-- <p class="popover-contents">{{popoverData}}</p> -->
+   <!-- <p class="popover-contents">{{popoverData | translate | safe: 'html'}}</p> -->
+   <p class="popover-contents" [innerHTML]="popoverData | translate"></p>
+   <!-- <p class="popover-contents">{{popoverData | translate}}</p> -->
+   <!-- <p class="popover-contents" [innerHTML]="popoverData | safe: 'html'"></p> -->
+   <!-- <p class="popover-contents" [innerHTML]="popoverData | safe: 'html'"></p> -->
+   <button ion-button block color="primary" (click)="closePopover()">OK</button>
+ </ion-content>

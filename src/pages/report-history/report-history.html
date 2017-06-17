@@ -5,26 +5,55 @@
 </ion-header>
 
 <ion-content padding>
-  <ion-list>
+  <!-- <ion-list>
     <ion-item>
       <div item-start>{{"date" | translate}}</div>
       <div class="center">{{reports.length}} {{"reports" | translate}}</div>
       <div item-end> {{"unit_number" | translate}} </div>
     </ion-item>
-  </ion-list>
-  <ion-list class="reportList" *ngIf="pageReady">
-    <ion-item-sliding class="report-history-list-item-sliding" *ngFor="let report of reports">
-      <ion-item class="report-history-list-item" (click)="itemTapped($event, report)">
-        <ion-icon name="create" item-left></ion-icon>{{report.report_date}}
-        <div class="item-note" item-right>{{report.unit_number}}</div>
-      </ion-item>
-      <ion-item-options side="right">
-        <button ion-button color="danger" (click)="deleteWorkOrder($event, report)">
-          <ion-icon name="trash"></ion-icon>
-          {{"delete_button" | translate}}
-        </button>
-      </ion-item-options>
-    </ion-item-sliding>
-  </ion-list>
+  </ion-list> -->
+  <div class="report-history-container" *ngIf="pageReady">
+    <ion-list class="reportList">
+      <ion-item-group class="report-history-group-date" *ngFor="let shift of shifts; let i=index">
+        <ion-item-divider color="light">{{shift.getStartTime().format("ddd, MMM D")}}</ion-item-divider>
+        <div class="report-history-reports-subcontainer" *ngIf="filtReports[filterKeys[i]].length">
+          <ion-item-sliding class="report-history-list-item-sliding" *ngFor="let report of filtReports[filterKeys[i]]">
+            <ion-item class="report-history-list-item" (click)="itemTapped($event, report)">
+              <!-- <ion-icon class="report-history-list-item-icon" name="create" item-left></ion-icon> -->
+               <!-- <div class="report-history-list-item-label"> -->
+                <div class="report-history-report-item">
+                  <span class="report-history-report-item-header">{{'report_label_wo_number' | translate}}:</span>
+                  <span class="report-history-report-item-data">{{report.work_order_number}}</span>
+                </div>
+                <div class="report-history-report-item">
+                  <span class="report-history-report-item-header">{{'report_label_unit_number' | translate}}:</span>
+                  <span class="report-history-report-item-data">{{report.unit_number}}</span>
+                </div>
+                <div class="report-history-report-notes-item">
+                  <span class="report-history-report-item-header">{{'report_label_notes' | translate}}:</span>
+                  <div class="report-history-notes-data"><p>{{report.notes}}</p></div>
+                </div>
+               <!-- </div> -->
+             </ion-item>
+            <ion-item-options side="right">
+              <button ion-button color="danger" (click)="deleteWorkOrder($event, report)">
+                <ion-icon name="trash"></ion-icon>
+                {{"delete_button" | translate}}
+              </button>
+            </ion-item-options>
+          </ion-item-sliding>
+        </div>
+        <div class="report-history-reports-subcontainer" *ngIf="!filtReports[filterKeys[i]].length">
+          <ion-item class="report-history-list-item">
+            <!-- <div class="report-history-report-item"> -->
+              <!-- <div class="report-history-report-item"> -->
+                <div class="report-history-no-report">{{'no_reports_for_date' | translate}} </div>
+              <!-- </div> -->
+            <!-- </div> -->
+          </ion-item>
+        </div>
+      </ion-item-group>
+    </ion-list>
+  </div>
 </ion-content>
 <onsite-tabs></onsite-tabs>

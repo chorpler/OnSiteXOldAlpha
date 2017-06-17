@@ -1,5 +1,6 @@
+import { Http                                   } from '@angular/http'                     ;
 import { Component, ViewChild                   } from '@angular/core'                     ;
-import { Platform, Nav, ToastController, Events, App } from 'ionic-angular'                     ;
+import { Platform, Nav, ToastController, Events, App } from 'ionic-angular'                ;
 import { StatusBar                              } from '@ionic-native/status-bar'          ;
 import { SplashScreen                           } from '@ionic-native/splash-screen'       ;
 import { Storage                                } from '@ionic/storage'                    ;
@@ -54,7 +55,6 @@ export class OnSiteApp {
 
     window['appcomp'] = this;
     window['moment'] = moment;
-    translate.setDefaultLang('en');
     this.initializeApp();
   }
 
@@ -71,6 +71,8 @@ export class OnSiteApp {
         }
       });
       Log.l("Platform Ready was fired.\n", res);
+      // this.translate.addLangs(['en', 'es']);
+      this.translate.setDefaultLang('en');
       this.statusBar.styleDefault();
       this.splashScreen.hide();
       NetworkStatus.watchForDisconnect();
@@ -110,7 +112,7 @@ export class OnSiteApp {
   checkPreferences() {
     return new Promise((resolve,reject) => {
       this.storage.get('PREFS').then((storedPrefs) => {
-        if(storedPrefs !== null && storedPrefs != undefined && storedPrefs !== 'undefined') {
+        if(storedPrefs !== null && storedPrefs !== undefined && typeof storedPrefs !== 'undefined' && storedPrefs !== 'undefined') {
           this.prefs.setPrefs(storedPrefs);
           Log.l("OnSite: Preferences found saved and reloaded:\n", this.prefs.getPrefs());
           resolve(storedPrefs);

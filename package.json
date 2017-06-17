@@ -1,11 +1,66 @@
 {
     "name": "onsitex",
-    "author": "Michael Bates",
-    "description": "OnSiteX: PouchDB Angular4 NodeJS Ionic3 CouchDB; a 'PANIC' Stack App",
+    "version": "0.0.14",
+    "author": {
+        "name": "Michael Bates",
+        "email": "hachero@gmail.com",
+        "url": "https://www.sesaonsite.com"
+    },
+    "contributors": [
+        {
+            "name": "Michael Bates",
+            "email": "hachero@gmail.com",
+            "url": "https://www.sesaonsite.com"
+        },
+        {
+            "name": "David Sargeant",
+            "email": "starmobiledevelopers@gmail.com",
+            "url": "https://www.starmobiledevelopers.com"
+        }
+    ],
+    "description": "OnSiteX: PouchDB Angular4 NodeJS Ionic3 CouchDB: a 'PANIC' Stack App",
+    "keywords": [
+        "SESA",
+        "SESA Fleet Services",
+        "SESA OnSite",
+        "OnSite",
+        "OnSiteX",
+        "sesaonsite.com",
+        "sesafleetservices.com",
+        "enterprise",
+        "technician",
+        "mechanic",
+        "Texas",
+        "PANIC",
+        "PANIC Stack",
+        "MEAN alternative",
+        "Alternative to MEAN",
+        "Alternative to MEAN Stack",
+        "MEAN sucks",
+        "Express.js sucks",
+        "Mike has strong opinions",
+        "PouchDB",
+        "Angular",
+        "Angular2",
+        "Angular4",
+        "Angular 2",
+        "Angular 4",
+        "Node",
+        "NodeJS",
+        "Node.js",
+        "Ionic",
+        "Ionic2",
+        "Ionic3",
+        "Ionic 2",
+        "Ionic 3",
+        "CouchDB",
+        "CouchDB 2.0"
+    ],
     "config": {
         "ionic_source_map": "source-map",
         "ionic_bundler": "webpack",
-        "ionic_source_map_types": "#inline-source-map"
+        "ionic_source_map_types": "#inline-source-map",
+        "ionic_copy": "./src/config/ionic-copy.config.js"
     },
     "homepage": "https://github.com/starmobiledevelopers/OnSiteX/",
     "private": true,
@@ -63,6 +118,7 @@
         "angular2-google-maps": "^0.17.0",
         "async": "^2.4.1",
         "cordova-android": "^6.2.3",
+        "cordova-android-play-services-gradle-release": "0.0.1",
         "cordova-browser": "^4.1.0",
         "cordova-ios": "^4.4.0",
         "cordova-plugin-add-swift-support": "^1.6.2",
@@ -95,7 +151,7 @@
         "moment-round": "^1.0.1",
         "moment-timer": "^1.1.5",
         "object-keys": "^1.0.11",
-        "phonegap-plugin-push": "^2.0.0-rc4",
+        "phonegap-plugin-push": "^1.10.5",
         "pouchdb": "^6.2.0",
         "pouchdb-all-dbs": "^1.0.2",
         "pouchdb-authentication": "^0.5.5",
@@ -111,7 +167,8 @@
         "sw-toolbox": "3.6.0",
         "twix": "^1.2.0",
         "uuid": "^3.0.1",
-        "zone.js": "^0.8.12"
+        "zone.js": "^0.8.12",
+        "cordova-android-support-gradle-release": "~0.0.1"
     },
     "devDependencies": {
         "@ionic/app-scripts": "^1.3.7",
@@ -125,6 +182,7 @@
     "scripts": {
         "clean": "ionic-app-scripts clean",
         "build": "ionic-app-scripts build",
+        "lint": "ionic-app-scripts lint",
         "ionic:build": "ionic-app-scripts build --dev",
         "ionic:serve": "ionic-app-scripts serve --dev"
     },
@@ -150,7 +208,8 @@
                 "SENDER_ID": "915660787055"
             },
             "de.appplant.cordova.plugin.local-notification": {},
-            "cordova-plugin-uniquedeviceid": {}
+            "cordova-plugin-uniquedeviceid": {},
+            "cordova-android-support-gradle-release": {}
         },
         "platforms": [
             "android",

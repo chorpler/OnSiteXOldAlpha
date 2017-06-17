@@ -264,7 +264,6 @@ export class WorkOrderPage implements OnInit {
       thisShift.updateShiftNumber();
       thisShift.getExcelDates();
       this.shifts.push(thisShift);
-      // Log.l(`Now adding day ${i}: ${moment(shift_day).format()}`);
     }
     if(this.mode === 'Add') {
       this.selectedShift = this.shifts[0];
@@ -326,9 +325,6 @@ export class WorkOrderPage implements OnInit {
 
   getNumberClass(i) {
     let shift = this.shifts[i];
-    // let shift_num = shift.updateShiftNumber();
-    // let shift_week = moment(shift.getShiftWeek());
-    // let shift_day  = moment(shift.shift_time);
     let shiftColor = shift.getShiftColor();
     Log.l(`getNumberClass(): Shift color is: '${shiftColor}'`);
     return shift.getShiftColor();
@@ -360,7 +356,6 @@ export class WorkOrderPage implements OnInit {
     let now = moment();
     let idDateTime = now.format("dddDDMMMYYYYHHmmss");
     let docID = this.techProfile.avatarName + '_' + idDateTime;
-    // this.workOrder._id = docID;
     Log.l("genReportID(): Generated ID:\n", docID);
     return docID;
   }
@@ -373,7 +368,7 @@ export class WorkOrderPage implements OnInit {
 
   processWO() {
     let workOrderData = this.workOrderForm.getRawValue();
-    this.alert.showSpinner("Saving...");
+    this.alert.showSpinner("Saving report...");
     let tempWO = this.createReport();
     if(this.mode === 'Add') {
       this.db.addDoc(this.prefs.DB.reports, tempWO).then((res) => {
@@ -382,13 +377,12 @@ export class WorkOrderPage implements OnInit {
       }).then((res) => {
         Log.l("processWO(): Successfully synchronized work order to remote.");
         this.alert.hideSpinner();
-        // setTimeout(() => { this.navCtrl.setRoot('OnSiteHome'); });
-        setTimeout(() => { this.tabs.goHome() });
+        this.tabs.goToPage('OnSiteHome');
       }).catch((err) => {
         Log.l("processWO(): Error saving work order to local database.");
         Log.e(err);
         this.alert.hideSpinner();
-        // reject(err);
+        this.alert.showAlert('ERROR', 'Error saving work report. Please try again later.');
       });
     } else {
       tempWO._rev = this.workOrder._rev;
@@ -399,13 +393,14 @@ export class WorkOrderPage implements OnInit {
       }).then((res) => {
         Log.l("processWO(): Successfully synchronized work order to remote.");
         this.alert.hideSpinner();
-        // setTimeout(() => { this.navCtrl.setRoot('OnSiteHome'); });
-        setTimeout(() => { this.tabs.goHistory() });
+        this.tabs.goToPage('ReportHistory');
+        // setTimeout(() => { this.tabs.goToPage('History') });
+        // this.tabs.goToPage('History');
       }).catch((err) => {
         Log.l("processWO(): Error saving work order to local database.");
         Log.e(err);
         this.alert.hideSpinner();
-        // reject(err);
+        this.alert.showAlert('ERROR', 'Error saving work report. Please try again later.');
       });
     }
   }
@@ -414,9 +409,9 @@ export class WorkOrderPage implements OnInit {
     Log.l("WorkOrderPage: User canceled work order.");
     // setTimeout(() => { this.tabs.goHome() });
     if(this.mode === 'Add') {
-      this.tabs.goHome();
+      this.tabs.goToPage('OnSiteHome');
     } else {
-      this.tabs.goHistory();
+      this.tabs.goToPage('ReportHistory');
     }
   }
 
@@ -469,8 +464,9 @@ export class WorkOrderPage implements OnInit {
 
   deleteWorkOrder(event, item) {
     Log.l("deleteWorkOrder() clicked ...");
-    this.alert.showConfirm('CONFIRM', 'Delete this work order?').then((res) => {
+    this.alert.showConfirm('CONFIRM', 'Delete this work report?').then((res) => {
       if(res) {
+        this.alert.showSpinner('Deleting work report...');
         Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
         let wo = this.workOrder.clone();
         let woList = this.ud.getWorkOrderList();
@@ -480,21 +476,26 @@ export class WorkOrderPage implements OnInit {
           // this.items.splice(i, 1);
           woList.splice(i, 1);
           if(this.mode === 'Add') {
-            this.tabs.goHome();
+            this.alert.hideSpinner();
+            this.tabs.goToPage('OnSiteHome');
           } else {
-            this.tabs.goHistory();
-            // this.navCtrl.pop();
+            this.alert.hideSpinner();
+            this.tabs.goToPage('ReportHistory');
           }
         }).catch((err) => {
+          this.alert.hideSpinner();
           Log.l("deleteWorkOrder(): Error!");
           Log.e(err);
+          this.alert.showAlert('ERROR', 'Error deleting work report. Please try again later.');
         });
       } else {
         Log.l("User canceled deletion.");
       }
     }).catch((err) => {
+      this.alert.hideSpinner();
       Log.l("deleteWorkOrder(): Error!");
       Log.e(err);
+      this.alert.showAlert('ERROR', 'Error deleting work report. Please try again later.');
     });
   }
 

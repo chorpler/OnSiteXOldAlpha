@@ -126,11 +126,9 @@ export class WorkOrder {
   public setRepairHours(duration:any) {
     if(moment.isDuration(duration)) {
       this.repair_hours = duration.asHours();
-      this.adjustEndTime();
       this.checkTimeCalculations(2);
     } else if(typeof duration === 'number') {
       this.repair_hours = duration;
-      this.adjustEndTime();
       this.checkTimeCalculations(2);
     } else {
       Log.l("WorkOrder.setRepairHours(): Need a duration or number, was given this:\n", duration);
@@ -170,6 +168,7 @@ export class WorkOrder {
       if (!check.isSame(end)) {
         Log.e("WO.checkTimeCalculations(): Start time plus repair hours does not equal end time!");
         Log.e("Start: %s\nEnd: %s\nHours: %s", start.format(), end.format(), time);
+        this.adjustEndTime();
       }
     } else if(isMoment(start) && typeof time === 'number') {
       let end = moment(start).add(time, 'hours');

@@ -49,6 +49,10 @@
     <ion-item>
       {{onSiteTimeStamp}}
     </ion-item>
+    <button ion-button (click)="getSomeCharacters()">Unicode Characters</button>
+    <ion-item>
+      {{unicodeChars}}
+    </ion-item>
   </ion-item-group>
   <button ion-button block color="primary" (click)="updatePreferences()">Save</button>
 </ion-content>

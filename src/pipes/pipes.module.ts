@@ -1,15 +1,18 @@
-// import { NgModule } from '@angular/core';
-// import { SafePipe } from "./safe";
+import { NgModule } from '@angular/core';
+import { OrderBy } from "./orderby";
+import { SafePipe } from './safe';
 
-// @NgModule({
-//   declarations: [
-//     SafePipe,
-//   ],
-//   imports: [
+@NgModule({
+  declarations: [
+    SafePipe,
+    OrderBy,
+  ],
+  imports: [
 
-//   ],
-//   exports: [
-//     SafePipe,
-//   ]
-// })
-// export class PipesModule { }
+  ],
+  exports: [
+    SafePipe,
+    OrderBy,
+  ]
+})
+export class PipesModule { }

@@ -19,7 +19,7 @@ import { TranslateService                     } from '@ngx-translate/core'      
 export class Settings {
   title: string = "App Settings" ;
   confirmTitle = 'Confirm Logout';
-  logOutMsg = 'Logout is only necessary if another user wants to log into your device.  If you want to close the app and terminate all preocesses, click the "x" in the top right corner of the screen.' ;
+  logOutMsg = 'Logout is only necessary if another user wants to log into your device.  If you want to close the app and terminate all processes, click the "x" in the top right corner of the screen.' ;
 
   constructor( public navCtrl: NavController, public platform: Platform,  public auth: AuthSrvcs, public alert: AlertService, public tabs: TabsComponent, public translate: TranslateService) {
     window["onsitesettings"] = this;
@@ -29,13 +29,9 @@ export class Settings {
 
   logoutOfApp() {
     Log.l("User clicked logout button.");
-    this.auth.logout()
-    .then((res) => {
+    this.auth.logout().then((res) => {
       Log.l("Done logging out.");
-      // this.tabs.goHome();
-      // this.navCtrl.setRoot('OnSiteHome', { userLoggedIn: false });
-      this.navCtrl.setRoot('Login', { mode: 'page' });
-      // this.navCtrl.push('Login');
+      this.tabs.goToPage('Login', {mode: 'page'});
     });
   }
 

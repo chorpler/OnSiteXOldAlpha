@@ -2,7 +2,7 @@ import { Component, OnInit, NgZone              } from '@angular/core';
 import { Http                                   } from '@angular/http';
 import { Platform, IonicPage, NavParams, Events } from 'ionic-angular';
 import { NavController, ToastController         } from 'ionic-angular';
-import { ModalController                        } from 'ionic-angular';
+import { ModalController,ViewController,PopoverController } from 'ionic-angular';
 import { Log } from '../../config/config.functions';
 import { DBSrvcs } from '../../providers/db-srvcs' ;
 import { AuthSrvcs } from '../../providers/auth-srvcs' ;
@@ -16,11 +16,21 @@ import moment from 'moment';
 import { TabsComponent } from '../../components/tabs/tabs';
 import { PREFS, STRINGS } from '../../config/config.strings';
 import { TranslateService } from '@ngx-translate/core';
+import { Pipe, PipeTransform } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+import { SafePipe } from '../../pipes/safe';
+
+enum Icons {
+  'box-check-no'   = 0,
+  'box-check-yes'  = 1,
+  'flag-blank'     = 2,
+  'flag-checkered' = 3,
+}
 
 @IonicPage({name: 'OnSiteHome'})
 @Component({
   selector: 'page-home',
-  templateUrl: 'home.html'
+  templateUrl: 'home.html',
 })
 export class HomePage {
   loginData    : any           = null             ;
@@ -37,10 +47,11 @@ export class HomePage {
   shftSeven    : string                           ;
   chkBxBool    : boolean                          ;
   chkBx        : string                           ;
-  PREFS        : any = PREFS;
-  shftHrs: number;
-  hrsSubmitted: number;
-  dataReady:boolean = false;
+  static PREFS : any = new PREFS()                ;
+  PREFS        : any = HomePage.PREFS             ;
+  shftHrs      : number;
+  hrsSubmitted : number;
+  dataReady    : boolean = false;
   public techProfile:any;
   public techWorkOrders:Array<WorkOrder>;
   public shiftWorkOrders:Array<WorkOrder>;
@@ -52,10 +63,32 @@ export class HomePage {
   public payrollPeriodHours:number = 0;
   public payrollPeriodBonusHours:number = 0;
   public databases = this.PREFS.DB;
+  public checkboxes:any = [
+    '../../assets/images/box-check-yes.svg',
+    '../../assets/images/box-check-no.svg',
+    '../../assets/images/flag-blank.svg',
+    '../../assets/images/flag-checkered.svg'
+  ];
+  checkboxSVG  : any = [
+    `<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" version="1.1" preserveAspectRatio="xMidYMid meet" id="box-check-no">
+      <path d="M 45.833333,4.166667 V 45.833333 H 4.1666667 V 4.166667 Z M 50,0 H 0 v 50 h 50 z m -12.5,34.454167 -9.566667,-9.475 9.470834,-9.55625 -2.95,-2.922917 -9.46875,9.560417 L 15.427083,12.595833 12.5,15.522917 22.06875,25.00625 12.595833,34.572917 15.522917,37.5 25.0125,27.925 l 9.564583,9.479167 z" />
+    </svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" version="1.1" preserveAspectRatio="xMidYMid meet" id="box-check-yes">
+      <path d="M 22.916667,35.416667 12.5,24.377083 l 2.914583,-2.979166 7.445834,7.783333 13.691666,-14.597917 3.03125,2.922917 z m 22.916666,-31.25 V 45.833333 H 4.1666667 V 4.166667 Z M 50,0 H 0 v 50 h 50 z" />
+    </svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="50" viewBox="0 0 40 50" version="1.1" preserveAspectRatio="xMidYMid meet" id="flag-blank">
+      <path d="m 31.657777,6.790993 c -7.466667,0 -7.635555,-4.863905 -16.304444,-4.863905 -4.684444,0 -9.055555,1.646505 -10.9088886,2.846103 V 0 H 0 V 50 H 4.4444444 V 25.078958 C 7.075555,23.702948 11.064444,22.25471 15.384444,22.25471 c 8.186667,0 9.335555,4.62702 16.631111,4.62702 C 36.731111,26.88173 40,24.598447 40,24.598447 V 4.390126 c 0,0 -3.602223,2.400867 -8.342223,2.400867 z m 3.897778,16.034942 c -0.888889,0.347799 -2.131111,0.695571 -3.54,0.695571 -2.16,0 -3.328889,-0.60988 -5.268889,-1.619632 -2.435555,-1.26848 -5.768889,-3.007387 -11.362222,-3.007387 -4.397778,0 -8.244444,1.140786 -10.9399996,2.249668 V 8.56351 C 6.708889,7.048057 10.811111,5.288976 15.353333,5.288976 c 2.962222,0 4.208889,0.737577 6.091111,1.853162 2.146667,1.270155 5.084444,3.010744 10.213333,3.010744 1.393334,0 2.700001,-0.144488 3.897778,-0.374645 z" />
+    </svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" preserveAspectRatio="xMidYMid meet" id="flag-checkered">
+      <path d="m 35.200566,6.315625 c -6.533349,0 -6.681132,-4.5234375 -14.266395,-4.5234375 -4.098888,0 -7.923605,1.53125 -9.545282,2.646875 V 0 H 7.5 v 50 h 3.888889 V 23.323437 C 13.691106,22.04375 17.181394,20.696875 20.961394,20.696875 28.124717,20.696875 29.13,25 35.513606,25 39.639717,25 42.5,22.876562 42.5,22.876562 V 4.0828125 c 0,0 -3.151934,2.2328125 -7.299434,2.2328125 z m 3.41054,8.160938 C 33.911394,17.253125 28.8325,13.945313 26.263894,12.582812 v 5.732813 l 0.0061,0.0016 c -1.471946,-0.435935 -3.198612,-0.74531 -5.308336,-0.74531 -3.848051,0 -7.213888,1.060937 -9.572499,2.092188 V 13.742228 C 15.78331,10.660977 22.17081,10.253165 26.263875,12.582852 V 6.640625 c 1.878328,1.18125 4.448893,2.8 8.93666,2.8 1.219168,0 2.3625,-0.134375 3.410562,-0.3484375 z" />
+    </svg>`
+  ];
 
   constructor( public http: Http,
     public navCtrl: NavController,
                public modalCtrl: ModalController,
+               public viewCtrl : ViewController ,
+               public popoverCtrl: PopoverController,
                public authService: AuthSrvcs,
                public navParams: NavParams,
                public server: SrvrSrvcs,
@@ -94,6 +127,7 @@ export class HomePage {
     // } else if (!this.ud.woArrayInitialized()) {
     } else {
       Log.l("HomePage: ionViewDidEnter() says work order array not initialized, fetching work orders.");
+      this.tabs.highlightPageTab('OnSiteHome');
       this.alert.showSpinner("Fetching work orders...");
       this.fetchTechWorkorders().then((res) => {
         Log.l("HomePage: ionViewDidEnter() fetched work orders, maybe:\n", res);
@@ -201,14 +235,33 @@ export class HomePage {
         // this.userLoggedIn = true;
         this.presentUserModal(); }
       else { console.log("Login Modal did not succeed."); }
-    })
+    });
     loginPage.present();
   }
 
   getShiftStatus(idx:number) {
     let hours = this.hoursTotalList[idx];
     let total = this.techProfile.shiftLength;
-    return (hours === total);
+    // return (hours === total);
+    // let retVal = "hoursUnknown";
+    let retVal = (hours > total) ? "hoursOver" : (hours < total) ? "hoursUnder" : (hours === total) ? "hoursComplete" : "hoursUnknown";
+    return retVal;
+  }
+
+  getCheckboxSVG(idx:number) {
+    let checkBox = '?';
+    let chks = this.checkboxSVG;
+    let hours = this.hoursTotalList[idx];
+    let total = this.techProfile.shiftLength;
+    if (hours > total) {
+      checkBox = chks[Icons["flag-checkered"]];
+    } else if (hours < total) {
+      checkBox = chks[Icons["box-check-no"]];
+    } else {
+      checkBox = chks[Icons["box-check-yes"]];
+    }
+    return checkBox;
+
   }
 
   getCheckbox(idx:number) {
@@ -217,22 +270,12 @@ export class HomePage {
     let hours = this.hoursTotalList[idx];
     let total = this.techProfile.shiftLength;
 
-    // if(status) {
-    //   checkBox = '☑';
-    // } else {
-    //   checkBox = '☒';
-    // }
     if(hours > total) {
       checkBox = '⚐';
-      //checkBox = '⚑';
     } else if(hours < total) {
-      // checkBox = '🗷';
       checkBox = '✖';
-      // checkBox = '☒';
     } else {
-      // checkBox = '🗹';
       checkBox = '✔';
-      // checkBox = '☑';
     }
     return checkBox;
   }
@@ -254,6 +297,16 @@ export class HomePage {
       let tmpBx = '☒';
       this.chkBxBool = false;
     }
+  }
+
+  showHelp(event:any) {
+    // this.alert.showPopover("home_app_help_text", {}, event);
+    let params = { cssClass: 'popover-template', showBackdrop: true, enableBackdropDismiss: true, ev: event };
+    let pup = this.popoverCtrl.create('Popover', {contents: 'home_app_help_text'}, params);
+    pup.onDidDismiss(data => {
+      Log.l("HomePage.showHelp(): Got back:\n", data);
+    });
+    pup.present();
   }
 
   presentUserModal() {

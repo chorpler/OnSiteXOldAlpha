@@ -127,7 +127,8 @@ export class TechSettingsPage implements OnInit {
       }
       else {
         console.log('Mode = ' + this.mode );
-        this.tabs.goHome();
+        // this.tabs.goHome();
+        this.tabs.goToPage('OnSiteHome');
       }
 
     }).catch((err) => {

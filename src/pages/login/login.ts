@@ -36,6 +36,9 @@ export class Login implements OnInit {
   private formPass      : any                            ;
   private submitAttempt : boolean = false                ;
   public mode           : string = "modal"               ;
+  public static PREFS   : any = new PREFS()              ;
+  public prefs          : any = Login.PREFS              ;
+
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
@@ -96,7 +99,7 @@ export class Login implements OnInit {
         let udoc = res;
         udoc.updated = true;
         udoc._id = this.localURL;
-        return this.db.addLocalDoc(PREFS.DB.reports, udoc);
+        return this.db.addLocalDoc('reports', udoc);
       }).then((res) => {
         Log.l("loginAttempt(): Finished validating and saving user info.")
         let creds = { user: this.username, pass: this.password };
@@ -110,9 +113,7 @@ export class Login implements OnInit {
           this.viewCtrl.dismiss(creds);
         } else {
           this.tabs.setTabDisable(false);
-          this.tabs.goHome();
-          // this.tabs.setTabDisable(false);
-          // this.navCtrl.setRoot('OnSiteHome');
+          this.tabs.goToPage('OnSiteHome');
         }
       }).catch((err) => {
         Log.l("loginAttempt(): Error validating and saving user info.");

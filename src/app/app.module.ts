@@ -1,7 +1,7 @@
 import 'intl';
 import 'intl/locale-data/jsonp/en';
 import { BrowserModule                                           } from '@angular/platform-browser'            ;
-import { Http,HttpModule                                         } from '@angular/http'                        ;
+import { HttpModule,Http                                         } from '@angular/http'                        ;
 import { ErrorHandler , NgModule                                 } from '@angular/core'                        ;
 import { IonicApp, IonicErrorHandler, IonicModule, NavController } from 'ionic-angular'                        ;
 import { IonicPageModule                                         } from 'ionic-angular'                        ;
@@ -34,12 +34,10 @@ import { PouchDBService                                          } from '../prov
 import { StorageService                                          } from '../providers/storage-service'         ;
 import { TranslateModule, TranslateLoader                        } from '@ngx-translate/core'                  ;
 import { TranslateHttpLoader                                     } from '@ngx-translate/http-loader'           ;
+import { CustomTranslateLoaderModule                             } from '../config/customTranslateLoader.module';
+import { createTranslateLoader                                   } from '../config/customTranslateLoader'      ;
 import { TabsComponent                                           } from '../components/tabs/tabs'              ;
-
-
-export function createTranslateLoader(http: Http) {
-  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
-}
+import { PipesModule                                             } from '../pipes/pipes.module'                ;
 
 @NgModule({
   declarations   : [
@@ -61,10 +59,12 @@ export function createTranslateLoader(http: Http) {
                         loader: {
                           provide: TranslateLoader,
                           useFactory: (createTranslateLoader),
+                          // useFactory: createTranslateLoader,
                           deps: [Http]
                         }
                       }),
                       MultiPickerModule,
+                      PipesModule
                    ],
 
   providers      : [

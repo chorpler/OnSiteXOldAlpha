@@ -7,6 +7,8 @@ import { Log                    } from '../../config/config.functions'  ;
 import { TimeSrvc               } from '../../providers/time-parse-srvc';
 import { DBSrvcs                } from '../../providers/db-srvcs'       ;
 import { PREFS               } from '../../config/config.strings'   ;
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateService } from '@ngx-translate/core';
 import { TabsComponent } from '../../components/tabs/tabs';
 
@@ -31,6 +33,7 @@ export class DeveloperPage implements OnInit {
   prefs        : any     = PREFS;
   useSpanish   : boolean = false;
   spanishDefault : boolean = false;
+  unicodeChars : string = "";
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
@@ -104,9 +107,21 @@ export class DeveloperPage implements OnInit {
 
   toggleLanguage() {
     if(this.useSpanish) {
+      Log.l("toggleLanguage(): Switching to Español...");
       this.translate.use('es');
     } else {
+      Log.l("toggleLanguage(): Switching to English...");
       this.translate.use('en');
+    }
+  }
+
+  getSomeCharacters() {
+    let temp1 = `&#x2714;&check;&cross;&#x2716;&check;&#x1F5F4;&#x1F5F9;&#x1F5F8;&#x1F5F6;&#x1F5F5;&#x2705;&#x1F5F9;`;
+    let temp2 = `✔✓✗✖✓🗴🗹🗸🗶🗵✅🗹`;
+    if(this.unicodeChars === '' || this.unicodeChars === temp2) {
+      this.unicodeChars = temp1;
+    } else {
+      this.unicodeChars = temp2;
     }
   }
 }

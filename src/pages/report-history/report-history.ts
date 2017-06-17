@@ -1,54 +1,89 @@
-import { Component, OnInit                                      } from '@angular/core'                 ;
+import { Component, OnInit, ChangeDetectionStrategy, NgZone     } from '@angular/core'                 ;
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular'                 ;
 import { DBSrvcs                                                } from '../../providers/db-srvcs'      ;
 import { AuthSrvcs                                              } from '../../providers/auth-srvcs'    ;
 import { SrvrSrvcs                                              } from '../../providers/srvr-srvcs'    ;
 import { UserData                                               } from '../../providers/user-data'     ;
 import { AlertService                                           } from '../../providers/alerts'        ;
-import { Log, CONSOLE                                           } from '../../config/config.functions' ;
+import { Log, isMoment                                          } from '../../config/config.functions' ;
 import { WorkOrder                                              } from '../../domain/workorder'        ;
 import { Shift                                                  } from '../../domain/shift'            ;
 import { PREFS                                                  } from '../../config/config.strings'   ;
 import { TranslateService                                       } from '@ngx-translate/core'           ;
 import { TabsComponent                                          } from '../../components/tabs/tabs'    ;
+import { OrderBy                                                } from '../../pipes/pipes'             ;
 import moment from 'moment';
 
 
 @IonicPage({ name    : 'ReportHistory'                                           })
-@Component({ selector: 'page-report-history', templateUrl: 'report-history.html' })
-
-
+@Component({ selector: 'page-report-history',
+templateUrl: 'report-history.html',
+// changeDetection: ChangeDetectionStrategy.OnPush })
+})
 export class ReportHistory implements OnInit {
   public title: string = 'Reports';
-
-  public pageReady    : boolean                              = false                                    ;
+  public pageReady    : boolean          = false                                                        ;
   public selectedItem : any                                                                             ;
   public items        : Array<{title: string, note: string}> = new Array<{title:string, note:string}>() ;
-  public reports      : Array<WorkOrder> = []                                                           ;
-  public data         : any              = []                                                           ;
+  public reports      : Array<WorkOrder>                                                                ;
+  public shifts       : Array<Shift>                                                                    ;
+  public filtReports  : any                                                                             ;
+  public filterKeys   : Array<string>                                                                   ;
+  public data         : any                                                                             ;
   public loading      : any                                                                             ;
-  public moment       : any;
   public static PREFS : any              = new PREFS();
   constructor( public navCtrl: NavController      , public navParams  : NavParams         ,
                public db : DBSrvcs                , public alert      : AlertService      ,
                private auth: AuthSrvcs            , public loadingCtrl: LoadingController ,
                public server: SrvrSrvcs           , public ud         : UserData          ,
-               public translate: TranslateService , public tabs       : TabsComponent     ) {
-    this.moment = moment;
+               public translate: TranslateService , public tabs       : TabsComponent     ,
+               public zone: NgZone) {
     window["reporthistory"] = this;
   }
 
   ngOnInit() {
+    Log.l("ReportHistory: ngOnInit called...");
+  }
+
+  ionViewDidEnter() {
+    Log.l("ReportHistory: ionViewDidEnter called...");
     Log.l("ReportHistory: pulling reports...");
-    this.reports = this.ud.getWorkOrderList();
-    this.pageReady = true;
-    let u = this.ud.getUsername();
     this.alert.showSpinner("Retrieving reports...");
+    this.shifts = this.ud.getPeriodShifts();
+    this.filterKeys = [];
+    for(let shift of this.shifts) {
+      let date = shift.getStartTime().format("YYYY-MM-DD");
+      this.filterKeys.push(date);
+    }
+    // this.reports = this.ud.getWorkOrderList();
+    // this.pageReady = true;
+    let u = this.ud.getUsername();
+    let sortReports = function(a,b) {
+      let startA = a['time_start'];
+      let startB = b['time_start'];
+      if (isMoment(a) && isMoment(b)) {
+        let val = moment(a).isBefore(moment(b)) ? -1 : moment(a).isAfter(moment(b)) ? 1 : 0;
+        return val;
+      } else {
+        return 0;
+      }
+    }
     this.server.getReportsForTech(u).then((res) => {
       Log.l("ReportHistory: Got report list:\n", res);
-      this.reports = res;
+      let unsortedReports = res;
+      this.reports = unsortedReports.sort(sortReports);
+      this.shifts = this.ud.getPeriodShifts();
+      this.filtReports = {};
+      for(let shift of this.shifts) {
+        let date = shift.getStartTime().format("YYYY-MM-DD");
+        this.filterKeys.push(date);
+        let serial = shift.getShiftSerial();
+        let oneReportSet = this.ud.getWorkOrdersForShift(serial);
+        this.filtReports[date] = oneReportSet;
+      }
+      Log.l("ReportHistory: created date-sorted report list:\n", this.filtReports);
       this.alert.hideSpinner();
-      this.pageReady = true;
+      this.zone.run(() => { this.pageReady = true; });
     }).catch((err) => {
       Log.l("ReportHistory: Error getting report list.");
       Log.e(err);
@@ -58,9 +93,6 @@ export class ReportHistory implements OnInit {
   }
 
   itemTapped(event, item) {
-    // this.navCtrl.setRoot('Report Edit', { item: item });
-    // this.navCtrl.setRoot('WorkOrder', { mode: 'Edit', workOrder: item });
-    // this.navCtrl.push('WorkOrder', {mode: 'Edit', workOrder: item})
     this.tabs.goToPage('WorkOrder', {mode: 'Edit', workOrder: item})
   }
 

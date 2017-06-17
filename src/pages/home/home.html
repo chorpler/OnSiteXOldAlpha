@@ -10,16 +10,24 @@
       <button ion-button color="light" icon-only (click)="tabs.terminateApp()">
         <ion-icon class="header-close-button" name="close"></ion-icon>
       </button>
+      <button ion-button color="light" icon-only (click)="showHelp($event)">
+        <ion-icon class="header-help-button" name="help-circle"></ion-icon>
+      </button>
     </ion-buttons>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
+  <h5 class="home-welcome">{{'user' | translate}}: {{ud.getTechName()}}</h5>
   <h5> {{"home_hours_submitted_for_payroll" | translate}} </h5>
   <div *ngIf="dataReady">
-    <p *ngFor="let shift of shifts; let i=index" [ngClass]="getShiftColor(i)">
-      <span class="shft-num-icon">{{numChars[shift.shift_number]}}</span> {{hoursTotalList[i]}} {{"home_hours_of" | translate}} {{techProfile.shiftLength}} {{"home_hours_submitted_for_shift" | translate}}
-      <span class="chk-box-icon" [class.hrsCompleted]="getShiftStatus(i)">{{getCheckbox(i)}}</span>
+    <p *ngFor="let shift of shifts; let i=index" [ngClass]="getShiftStatus(i)">
+      <span class="shft-num-icon">{{numChars[shift.shift_number]}}</span>
+      <!-- <span class="shft-num-icon">{{numChars[shift.shift_number]}}</span> -->
+      <span class="shift-text">{{hoursTotalList[i]}} {{"home_hours_of" | translate}} {{techProfile.shiftLength}} {{"home_hours_submitted_for_shift" | translate}}</span>
+      <!-- <span class="chk-box-icon" [class.hrsCompleted]="getShiftStatus(i)">{{getCheckbox(i)}}</span> -->
+      <!-- <span class="chk-box-icon" [class.hrsCompleted]="getShiftStatus(i)"><img class="checkbox-svg-icon" [src]="getCheckboxSVG(i)" /></span> -->
+      <span class="chk-box-icon" [ngClass]="getShiftStatus(i)" [innerHTML]="getCheckboxSVG(i) | safe: 'html'"></span>
     </p>
   </div>
   <h6> {{"home_hours_submitted_for_payroll_period" | translate}}: {{ payrollPeriodHours }} </h6>

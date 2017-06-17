@@ -21,5 +21,13 @@
   "password": "Password",
   "username_error": "Please enter a valid username",
   "password_error": "Please enter a valid password",
-  "sign_in": "Sign In"
+  "sign_in": "Sign In",
+  "work_order": "Work Order",
+  "unit": "Unit",
+  "notes": "Notes",
+  "report_label_wo_number": "WO#",
+  "report_label_unit_number": "Unit",
+  "report_label_notes": "Notes",
+  "no_reports_for_date": "No reports for this date",
+  "user": "User"
 }

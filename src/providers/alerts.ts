@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
-import { IonicPage, NavController, NavParams, LoadingController, AlertController } from 'ionic-angular';                     ;
-import { Log, CONSOLE                                            } from '../config/config.functions'           ;
+import { NavParams, LoadingController, PopoverController, ModalController, AlertController } from 'ionic-angular';
+import { Log                                                     } from '../config/config.functions'           ;
 import 'rxjs/add/operator/map';
 
 /*
@@ -15,15 +15,20 @@ export class AlertService {
 
   public loading :any;
   public alert   :any;
+  public popover :any;
   public static ALERTS:Array<any> = [];
   public static LOADINGS:Array<any> = [];
+  public static POPOVERS:Array<any> = [];
   public alerts:any;
   public loadings:any;
+  public popovers:any;
+  public popoverData:any = null;
 
-  constructor(public http: Http, public loadingCtrl: LoadingController, public alertCtrl:AlertController) {
+  constructor(public http: Http, public loadingCtrl: LoadingController, public popoverCtrl:PopoverController, public modalCtrl:ModalController, public alertCtrl:AlertController) {
     Log.l('Hello AlertService Provider');
     this.alerts = AlertService.ALERTS;
     this.loadings = AlertService.LOADINGS;
+    this.popovers = AlertService.POPOVERS;
   }
 
   showSpinner(text: string) {
@@ -101,4 +106,43 @@ export class AlertService {
     });
   }
 
+  showPopover(contents:any, data:any, event?:any) {
+    let _event = null;
+    let params = {cssClass: 'popover-template', showBackdrop: true, enableBackdropDismiss: true};
+    if(event) {
+      _event = event;
+      params['ev'] = _event;
+    }
+    this.popoverData = {};
+    // if(data !== undefined && data !== null && typeof data === 'object') {
+    //   this.popoverData = data;
+    // } else if(data !== undefined && data !== null) {
+    //   params['ev'] = data;
+    // }
+    this.popoverData = data || {};
+    this.popoverData.contents = contents;
+
+    Log.l("AlertService.showPopover(): About to create popover with popoverData and params:\n", this.popoverData);
+    Log.l(params);
+
+    this.popover = this.popoverCtrl.create('Popover', this.popoverData, params);
+
+    this.popovers.push(this.popover);
+    this.popover.present().catch(() => { });
+    // let nav = this.app.getActiveNav();
+
+  }
+
+  hidePopover() {
+    setTimeout(() => {
+      let popover = this.popovers.pop();
+      popover.dismiss().catch((reason: any) => {
+        Log.l('AlertService: popover.dismiss() error:\n', reason);
+        for(let i in this.popovers) {
+          this.loadings.pop().dismiss();
+        }
+      });
+    });
+  }
 }
+

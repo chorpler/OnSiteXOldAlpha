@@ -1,6 +1,6 @@
 {
   "home_title": "Casa de OnSite",
-  "report_history_title": "Historial del Informe",
+  "report_history_title": "Informes de Trabajo",
   "settings_title": "Ajustes de Aplicacion",
   "login_title": "Autenticar",
   "shift_select_title": "Elegir cambio",
@@ -21,6 +21,14 @@
   "password": "Contraseña",
   "username_error": "Ingrese un nombre de usuario válido",
   "password_error": "Ingrese una contraseña válida",
-  "sign_in": "Registrarse"
+  "sign_in": "Registrarse",
+  "work_order": "Orden de trabajo",
+  "unit": "unidad",
+  "notes": "notas",
+  "report_label_wo_number": "OT#",
+  "report_label_unit_number": "Unidad",
+  "report_label_notes": "Notas",
+  "no_reports_for_date": "No hay informes para esta fecha",
+  "user": "Usuario"
 }
 

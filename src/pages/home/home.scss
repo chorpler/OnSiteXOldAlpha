@@ -37,20 +37,41 @@ page-home {
     color: grey !important;
     // background: transparent !important;
   }
-  p{
+  p {
     font-size: 14px;
-    .hrsCompleted {
-      color: green;
-    }
     span.shft-num-icon {
       font-size: 30px;
     }
     span.chk-box-icon {
-      columns: darkred;
+      // color: darkred;
       font-size: 20px;
+
+      svg {
+        width: 20px;
+        height: 15px;
+      }
+    }
+    img {
+      fill: currentColor;
+    }
+    svg {
+      fill: currentColor;
     }
   }
   .header-close-button {
     color: black !important;
   }
+  .hoursUnknown {
+    color: blue;
+  }
+  .hoursComplete {
+    color: green;
+  }
+  .hoursUnder {
+    color: darkred;
+  }
+  .hoursOver {
+    color: red;
+  }
+
 }

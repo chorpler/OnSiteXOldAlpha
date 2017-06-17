@@ -43,6 +43,15 @@ export class UserData {
   	return p.is('ios') ? 'ios' : p.is('android') ? 'android' : (p.is('windows') && p.is('mobile')) ? 'winphone' : 'nonphone';
   }
 
+  getTechName() {
+    let tp = UserData.techProfile;
+    if(tp) {
+      return `${tp.avatarName} (${tp.firstName} ${tp.lastName})`;
+    } else {
+      return '(unknown)';
+    }
+  }
+
   getShift():Shift {
     return UserData.shift;
   }
