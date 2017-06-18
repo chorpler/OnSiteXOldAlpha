@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
-import { NavParams, LoadingController, PopoverController, ModalController, AlertController } from 'ionic-angular';
+import { NavParams, LoadingController, PopoverController, ModalController, AlertController, ToastController } from 'ionic-angular';
 import { Log                                                     } from '../config/config.functions'           ;
 import 'rxjs/add/operator/map';
 
@@ -13,22 +13,26 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class AlertService {
 
-  public loading :any;
-  public alert   :any;
-  public popover :any;
-  public static ALERTS:Array<any> = [];
-  public static LOADINGS:Array<any> = [];
-  public static POPOVERS:Array<any> = [];
-  public alerts:any;
-  public loadings:any;
-  public popovers:any;
-  public popoverData:any = null;
+  public loading         :any               ;
+  public alert           :any               ;
+  public popover         :any               ;
+  public toast           :any               ;
+  public static ALERTS   :Array<any> = []   ;
+  public static LOADINGS :Array<any> = []   ;
+  public static POPOVERS :Array<any> = []   ;
+  public static TOASTS   :Array<any> = []   ;
+  public alerts          :any               ;
+  public loadings        :any               ;
+  public popovers        :any               ;
+  public toasts          :any               ;
+  public popoverData     :any        = null ;
 
-  constructor(public http: Http, public loadingCtrl: LoadingController, public popoverCtrl:PopoverController, public modalCtrl:ModalController, public alertCtrl:AlertController) {
+  constructor(public http: Http, public loadingCtrl: LoadingController, public popoverCtrl:PopoverController, public modalCtrl:ModalController, public alertCtrl:AlertController, public toastCtrl:ToastController) {
     Log.l('Hello AlertService Provider');
     this.alerts = AlertService.ALERTS;
     this.loadings = AlertService.LOADINGS;
     this.popovers = AlertService.POPOVERS;
+    this.toasts = AlertService.TOASTS;
   }
 
   showSpinner(text: string) {
@@ -144,5 +148,29 @@ export class AlertService {
       });
     });
   }
+
+  showToast(msg: string, ms?:number) {
+    let duration = 3000;
+    if(ms) {
+      duration = ms;
+    }
+    this.toast = this.toast.create({
+      message: msg,
+      duration: duration
+    });
+    this.toasts.push(this.toast);
+    this.toast.present();
+  }
+
+  hideToast() {
+    let toast = this.toasts.pop();
+    toast.dismiss().catch((reason:any) => {
+      Log.l("AlertService: toast.dismiss() error:\n", reason);
+      for(let i in this.toasts) {
+        this.toasts.pop().dismiss();
+      }
+    })
+  }
+
 }
 

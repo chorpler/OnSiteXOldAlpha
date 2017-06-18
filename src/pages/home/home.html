@@ -1,17 +1,17 @@
 <ion-header>
   <ion-navbar hideBackButton="true">
-    <button class="startSingleButton" ion-button icon-only menuToggle>
+     <button class="startSingleButton" ion-button icon-only menuToggle>
       <ion-icon class="startSingleIcon" name="ion-home"></ion-icon>
     </button>
     <ion-title>
       {{"home_title" | translate}}
     </ion-title>
-    <ion-buttons right>
-      <button ion-button color="light" icon-only (click)="tabs.terminateApp()">
-        <ion-icon class="header-close-button" name="close"></ion-icon>
-      </button>
+     <ion-buttons right>
       <button ion-button color="light" icon-only (click)="showHelp($event)">
         <ion-icon class="header-help-button" name="help-circle"></ion-icon>
+      </button>
+      <button ion-button color="light" icon-only (click)="tabs.terminateApp()">
+        <ion-icon class="header-close-button" name="close"></ion-icon>
       </button>
     </ion-buttons>
   </ion-navbar>
@@ -32,7 +32,6 @@
   </div>
   <h6> {{"home_hours_submitted_for_payroll_period" | translate}}: {{ payrollPeriodHours }} </h6>
   <h6> {{"home_payroll_hours_submitted" | translate}} : {{ payrollPeriodBonusHours }} </h6>
-  <div class="help_text" [innerHTML]="'home_app_help_text' | translate"></div>
 </ion-content>
 <onsite-tabs></onsite-tabs>
 

@@ -10,12 +10,14 @@ import { PouchDBService                         } from '../providers/pouchdb-ser
 import { DBSrvcs                                } from '../providers/db-srvcs'             ;
 import { SrvrSrvcs                              } from '../providers/srvr-srvcs'           ;
 import { AuthSrvcs                              } from '../providers/auth-srvcs'           ;
+import { AlertService                           } from '../providers/alerts'               ;
 import { NetworkStatus                          } from '../providers/network-status'       ;
 import { GeolocService                          } from '../providers/geoloc-service'       ;
 import { Log, CONSOLE                           } from '../config/config.functions'        ;
 import { DOMTimeStamp, Coordinates, Position    } from '../config/geoloc'                  ;
 import { LocalNotifications                     } from '@ionic-native/local-notifications' ;
 import * as moment                                from 'moment'                            ;
+import { HomePage                               } from '../pages/home/home'                ;
 import { TabsComponent                          } from '../components/tabs/tabs'           ;
 import { PREFS                                  } from '../config/config.strings'          ;
 import { TranslateService } from '@ngx-translate/core';
@@ -26,12 +28,12 @@ import { TranslateService } from '@ngx-translate/core';
 export class OnSiteApp {
   @ViewChild(Nav) nav: Nav;
 
-  title       : string  = 'OnSiteHome';
-  rootPage    : any                   ;
-  pouchOptions: any     = {          };
-  bkBtnPrsd2nd: boolean = false       ;
-  static PREFS: any     = new PREFS()       ;
-  prefs       : any     = OnSiteApp.PREFS;
+  title                    : string  = 'OnSiteHome'    ;
+  rootPage                 : any                       ;
+  pouchOptions             : any     = {          }    ;
+  backButtonPressedAlready : boolean = false           ;
+  static PREFS             : any     = new PREFS()     ;
+  prefs                    : any     = OnSiteApp.PREFS ;
 
   private network: any;
 
@@ -51,8 +53,10 @@ export class OnSiteApp {
                 public events      : Events            ,
                 public tabs        : TabsComponent     ,
                 public app         : App               ,
-                public translate   : TranslateService) {
-
+                public translate   : TranslateService  ,
+                public alert       : AlertService      ,
+                // public homepage    : HomePage          ,
+  ) {
     window['appcomp'] = this;
     window['moment'] = moment;
     this.initializeApp();
@@ -63,15 +67,15 @@ export class OnSiteApp {
 
     this.platform.ready().then((res) => {
       this.platform.registerBackButtonAction(() => {
-        if (this.bkBtnPrsd2nd) { this.platform.exitApp(); }
-        else {
-          this.showToast("Press back again to exit");
-          this.bkBtnPrsd2nd = true;
-          setTimeout(() => { this.bkBtnPrsd2nd = false; }, 2000)
+        if (this.backButtonPressedAlready) {
+          this.platform.exitApp();
+        } else {
+          this.alert.showToast("Press back again to exit", 2000);
+          this.backButtonPressedAlready = true;
+          setTimeout(() => { this.backButtonPressedAlready = false; }, 2000)
         }
       });
       Log.l("Platform Ready was fired.\n", res);
-      // this.translate.addLangs(['en', 'es']);
       this.translate.setDefaultLang('en');
       this.statusBar.styleDefault();
       this.splashScreen.hide();
@@ -88,17 +92,49 @@ export class OnSiteApp {
       window[ 'c1'     ] = CONSOLE.c1;
 
       this.checkPreferences().then(() => {
-        Log.l("OnSite: Done messing with preferences, now checking login...");
-        return this.checkLogin();
-      }).then((res) => {
-        Log.l("initializeApp(): User passed login check. Should be fine!");
-        this.events.publish('startup:finished', this.ud.getLoginStatus());
-        this.rootPage = 'OnSiteHome';
+        Log.l("OnSite.initializeApp(): Done messing with preferences, now checking login...");
+        this.checkLogin().then(res => {
+          Log.l("OnSite.initializeApp(): User passed login check. Should be fine.");
+          // this.finishStartup().then(() => {
+          //   Log.l("Done with finishStartup.");
+            this.rootPage = 'OnSiteHome';
+          }).then(() => {
+            Log.l("OnSite.initializeApp(): Publishing startup event!");
+            this.events.publish('startup:finished', true);
+            var callingClass = this;
+            setTimeout(() => {
+              Log.l("OnSite.initializeApp(): Publishing startup event after timeout!");
+              callingClass.events.publish('startup:finished', true);
+            }, 500);
+          }).catch(err => {
+            Log.l("OnSite.initializeApp(): Error with login or with publishing startup:finished event!");
+            Log.e(err);
+            // this.rootPage = 'Login';
+          });
+        // }).catch(err => {
+        //   Log.l("OnSite.initializeApp(): User failed login check. Sending to login.");
+        //   this.rootPage = 'Login';
+        // });
       }).catch((err) => {
-        Log.l("initializeApp(): User failed login check. Sending to login.");
+        Log.l("OnSite.initializeApp(): Preferences check failed. Sending to login.");
         this.rootPage = 'Login';
       });
     });
+  }
+
+  finishStartup() {
+    return new Promise((resolve,reject) => {
+      try {
+        Log.l("finishStartup(): Now attempting to publish startup:finished event and set home page...");
+        this.events.publish('startup:finished', HomePage);
+        resolve(true);
+      } catch(err) {
+        Log.l("finishStartup(): Error publishing startup:finished event, and/or seting root page!");
+        Log.e(err);
+        reject(false);
+      }
+    });
+
   }
 
   showToast(text: string) {

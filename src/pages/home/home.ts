@@ -38,13 +38,6 @@ export class HomePage {
   userLoggedIn : boolean                          ;
   title        : string        = 'OnSite Home'    ;
   numChars     : Array<string> = STRINGS.NUMCHARS ;
-  shftOne      : string                           ;
-  shftTwo      : string                           ;
-  shftThree    : string                           ;
-  shftFour     : string                           ;
-  shftFive     : string                           ;
-  shftSix      : string                           ;
-  shftSeven    : string                           ;
   chkBxBool    : boolean                          ;
   chkBx        : string                           ;
   static PREFS : any = new PREFS()                ;
@@ -52,10 +45,14 @@ export class HomePage {
   shftHrs      : number;
   hrsSubmitted : number;
   dataReady    : boolean = false;
+  static EVENTS: Events;
+  // startupHandler : any;
   public techProfile:any;
   public techWorkOrders:Array<WorkOrder>;
   public shiftWorkOrders:Array<WorkOrder>;
   public static pageLoadedPreviously:boolean = false;
+  public static homePageStatus:any = {startupFinished: false};
+  public homePageStatus:any = HomePage.homePageStatus;
   public payrollWorkOrders:Array<WorkOrder>;
   public hoursTotalList:Array<any> = [];
   public shifts:Array<Shift> = [];
@@ -84,45 +81,70 @@ export class HomePage {
     </svg>`
   ];
 
-  constructor( public http: Http,
-    public navCtrl: NavController,
-               public modalCtrl: ModalController,
-               public viewCtrl : ViewController ,
-               public popoverCtrl: PopoverController,
-               public authService: AuthSrvcs,
-               public navParams: NavParams,
-               public server: SrvrSrvcs,
-               public ud: UserData,
-               public db: DBSrvcs,
-               public events: Events,
-               public tabs: TabsComponent,
-               public alert: AlertService,
-               public zone: NgZone,
-               public translate:TranslateService )
+  constructor(public http: Http,
+              public navCtrl: NavController,
+              public modalCtrl: ModalController,
+              public viewCtrl : ViewController ,
+              public popoverCtrl: PopoverController,
+              public authService: AuthSrvcs,
+              public navParams: NavParams,
+              public server: SrvrSrvcs,
+              public ud: UserData,
+              public db: DBSrvcs,
+              public events: Events,
+              public tabs: TabsComponent,
+              public alert: AlertService,
+              public zone: NgZone,
+              public translate:TranslateService )
   {
     window["onsitehome"] = this;
-    Log.l("Hi, I'm the HomePage class! And I personally am a logger. In half I pee feces.");
+    Log.l("HomePage: Hi, I'm the HomePage class constructor! And I personally am a logger. In half, I pee feces. (I'm also Yoda.)");
+    HomePage.EVENTS = events;
+    var caller = this;
+    var startupHandler = function (homepage: any) {
+      Log.l("HomePage.startupHandler(): startup:finished event detected. Target is:\n", homepage);
+      Log.l("HomePage.startupHandler(): now unsubscribing from startup:finished event...");
+      HomePage.EVENTS.unsubscribe('startup:finished', startupHandler);
+      Log.l("HomePage.startupHandler(): now executing runEveryTime() function...");
+      HomePage.homePageStatus.startupFinished = true;
+      caller.runEveryTime();
+    };
+    if(HomePage.homePageStatus.startupFinished === false) {
+      this.events.subscribe('startup:finished', startupHandler);
+    }
   }
 
   ionViewDidEnter() {
     Log.l("HomePage: ionViewDidEnter() called. First wait to make sure app is finished loading.");
-    this.dataReady = false;
-    this.tabs.highlightTab(0);
-    // this.events.subscribe('pageload:finished', (loggedIn) => {
-    //   Log.l("HomePage: pageload:finished event detected. Login status: ", loggedIn);
-    //   this.events.unsubscribe('pageload:finished', () => {
-    //     Log.l("HomePage: no longer receiving pageload:finished events.");
-    //   });
+    var caller = this;
+    // var startupHandler = function(homepage:any) {
+    //   Log.l("HomePage.startupHandler(): startup:finished event detected. Target is:\n", homepage);
+    //   Log.l("HomePage.startupHandler(): now unsubscribing from startup:finished event...");
+    //   HomePage.EVENTS.unsubscribe('startup:finished', startupHandler);
+    //   Log.l("HomePage.startupHandler(): now executing runEveryTime() function...");
+    //   HomePage.homePageStatus.startupFinished = true;
+    //   caller.runEveryTime();
+    // };
+    if(this.homePageStatus.startupFinished) {
+      Log.l("HomePage.ionViewDidEnter(): startup already finished, just continuing with runEveryTime()...");
+      this.tabs.highlightTab(0);
       this.runEveryTime();
-    // });
+    }
+    // else {
+    //   Log.l("HomePage.ionViewDidEnter(): startup not finished, subscribing to startup:finished event to wait.");
+    //   this.events.subscribe('startup:finished', startupHandler);
+    // }
   }
 
   ionViewDidLoad() {
-    Log.l("HomePage: ionViewDidLoad() called. FIRST, waiting for app to finish loading.");
+    Log.l("HomePage: ionViewDidLoad() called... not doing anything right now.");
+    this.dataReady = false;
+    // this.events.subscribe('startup:finished', this.startupHandler);
   }
 
   runEveryTime() {
     if (this.ud.getLoginStatus() === false) {
+      Log.l("HomePage.ionViewDidEnter(): User not logged in, showing login modal.");
       this.presentLoginModal();
     // } else if (!this.ud.woArrayInitialized()) {
     } else {
@@ -161,6 +183,28 @@ export class HomePage {
     } else {
       Log.l("HomePage: user not authorized in ionViewDidLoad(). Guess ionViewDidEnter() can present a login modal.");
     }
+  }
+
+  public static async waitForStartupEvent() {
+    try {
+      let val = await this.checkStartupStatus();
+    } catch(err) {
+      Log.l("waitForStartupEvent(): Error while awaiting event!");
+      Log.e(err);
+    }
+    // return new Promise((resolve,reject) => {
+    //   if(this.homePageStatus.startupFinished) {
+    //     resolve(true);
+    //   }
+    // });
+  }
+
+  static checkStartupStatus() {
+
+  }
+
+  checkStartupStatus() {
+    return HomePage.checkStartupStatus();
   }
 
   fetchTechWorkorders():Promise<Array<any>> {

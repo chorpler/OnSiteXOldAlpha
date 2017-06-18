@@ -18,7 +18,6 @@ import { PipesModule } from '../../pipes/pipes.module';
       loader: {
         provide: TranslateLoader,
         useFactory: (createTranslateLoader),
-        // useFactory: createTranslateLoader,
         deps: [Http]
       }
     }),

@@ -16,6 +16,8 @@ export class UserData {
   public static _favorites: string[] = [];
   public static HAS_LOGGED_IN = 'hasLoggedIn';
   public static HAS_SEEN_TUTORIAL = 'hasSeenTutorial';
+  public static BOOT_STATUS:any = {finished: false};
+  public BOOT_STATUS:any = UserData.BOOT_STATUS;
   public static shift: Shift;
   public static PREFS:any = new PREFS();
   public prefs:any = UserData.PREFS;
@@ -32,6 +34,22 @@ export class UserData {
   constructor(public events: Events, public storage: Storage, public platform: Platform) {
     window["onsiteuserdata"] = this;
     window["UserData"] = UserData;
+   }
+
+   public static startupFinished() {
+     UserData.BOOT_STATUS.finished = true;
+     return UserData.BOOT_STATUS.finished;
+   }
+   public startupFinished() {
+     return UserData.startupFinished();
+   }
+
+   public static waitForStartup() {
+     return new Promise((resolve,reject) => {
+      if(UserData.BOOT_STATUS.finished) {
+        resolve(true);
+      }
+     });
    }
 
   getPlatforms() {
