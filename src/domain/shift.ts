@@ -19,7 +19,7 @@ export class Shift {
   public XL:any;
   public shift_serial:any;
   public shift_hours:any;
-  
+
   constructor(site_name?, shift_week?, shift_time?, start_time?, shift_length?) {
     if(arguments.length == 1 && typeof arguments[0] == 'object') {
       this.readFromDoc(arguments[0]);
@@ -46,7 +46,7 @@ export class Shift {
       this.getShiftSerial();
     }
   }
-// 
+//
   public readFromDoc(doc) {
     for(let prop in doc) {
       this[prop] = doc[prop];
@@ -228,13 +228,16 @@ export class Shift {
     return this.colors.blue;
   }
 
-  toString() {
-    // { { selectedShift.start_time.format("MMM DD") } } (Payroll week #{ { selectedShift.getShiftWeekID() } })
+  toString(translate?:any) {
     let strOut:string = null;
     let start:string = moment(this.start_time).format("MMM DD");
     let weekID = this.getShiftWeekID();
     let weekStart = moment(this.shift_week).format("MMM DD");
-    strOut = `${start} (Payroll week ${weekStart})`;
+    let payrollWeek = "Payroll week";
+    if(translate) {
+      payrollWeek = translate.instant('payroll_week');
+    }
+    strOut = `${start} (${payrollWeek} ${weekStart})`;
     Log.l('Shift.toString() should output:\n', strOut);
     return strOut;
   }

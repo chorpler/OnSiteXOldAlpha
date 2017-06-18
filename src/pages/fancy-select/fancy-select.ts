@@ -46,6 +46,8 @@ export class FancySelectPage implements OnInit {
        this.options = this.selectData.options;
     }
     if(this.navParams.get('title') !== undefined) { this.title = this.navParams.get('title') }
+    let title = this.translate.instant('select_shift');
+    this.title = title;
     window['fancyselect'] = this;
   }
 

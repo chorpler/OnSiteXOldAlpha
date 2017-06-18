@@ -114,7 +114,12 @@ export class WorkOrderPage implements OnInit {
   ngOnInit() {
     if (this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
     if(this.navParams.get('workOrder') !== undefined) { this.workOrder = this.navParams.get('workOrder'); }
-    this.title = `${this.mode} Work Order`;
+    // this.title = `${this.mode} Work Report`;
+    let mode = this.mode.toLowerCase();
+    let titleStrings = this.translate.instant([mode, 'report']);
+    let titleAdjective = titleStrings[mode];
+    let titleNoun      = titleStrings['report'];
+    this.title = `${titleAdjective} ${titleNoun}`;
 
     this.chooseHours = [
       {"name": "Hours", "options": [] },
@@ -277,7 +282,7 @@ export class WorkOrderPage implements OnInit {
         }
       }
     }
-    this.selectedShiftText = this.selectedShift.toString();
+    this.selectedShiftText = this.selectedShift.toString(this.translate);
   }
 
   public showFancySelect() {
@@ -295,7 +300,7 @@ export class WorkOrderPage implements OnInit {
       Log.l("WorkOrderPage: Returned from fancy select, got back:\n", data);
       if(data != null) {
         this.selectedShift = data;
-        this.selectedShiftText = this.selectedShift.toString();
+        this.selectedShiftText = this.selectedShift.toString(this.translate);
         this.workOrderForm.controls['selected_shift'].setValue(this.selectedShift);
       }
     });

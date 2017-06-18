@@ -3,7 +3,6 @@ import { IonicPageModule } from 'ionic-angular';
 import { Settings } from './settings';
 import { TranslateModule } from '@ngx-translate/core';
 import { TabsComponentModule } from '../../components/tabs/tabs.module';
-import { AppVersion          } from '@ionic-native/app-version'            ;
 
 
 @NgModule({
@@ -14,7 +13,6 @@ import { AppVersion          } from '@ionic-native/app-version'            ;
     IonicPageModule.forChild(Settings),
     TranslateModule.forChild(),
     TabsComponentModule,
-    AppVersion,
   ],
   exports: [
     Settings,
