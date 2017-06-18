@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "915660787055",
+    "firebase_url": "https://sesa-onsite.firebaseio.com",
+    "project_id": "sesa-onsite",
+    "storage_bucket": "sesa-onsite.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:915660787055:android:bc6a6e52c13731b8",
+        "android_client_info": {
+          "package_name": "com.sesaonsite.onsitex"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "915660787055-29c4t7nqqfii380d65bsjn887ijqia8g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCp2U78H0ZdoB6x82wRw3TutLDNiHhj2tc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

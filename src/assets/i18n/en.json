@@ -29,5 +29,8 @@
   "report_label_unit_number": "Unit",
   "report_label_notes": "Notes",
   "no_reports_for_date": "No reports for this date",
-  "user": "User"
+  "user": "User",
+  "logout": "Logout",
+  "confirm_logout_title": "Confirm Logout",
+  "confirm_logout_message": "Logout is only necessary if another user needs to log into your device. If you want to close the app and terminate all processes, click the \"X\" in the top right corner of the screen."
 }

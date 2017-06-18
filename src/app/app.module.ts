@@ -26,6 +26,7 @@ import { Network                                                 } from '@ionic-
 import { Push, PushObject, PushOptions                           } from '@ionic-native/push'                   ;
 import { LocalNotifications                                      } from '@ionic-native/local-notifications'    ;
 import { UniqueDeviceID                                          } from '@ionic-native/unique-device-id'       ;
+import { AppVersion                                              } from '@ionic-native/app-version'            ;
 import { Log                                                     } from '../config/config.functions'           ;
 import { AlertService                                            } from '../providers/alerts'                  ;
 import { GeolocService                                           } from '../providers/geoloc-service'          ;
@@ -95,6 +96,7 @@ import { PipesModule                                             } from '../pipe
                       PouchDBService,
                       StorageService,
                       TabsComponent,
+                      AppVersion,
                     ]
 })
 

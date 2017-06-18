@@ -5,11 +5,11 @@
         <ion-icon name="home"></ion-icon>
       </button>
     </ion-buttons>
-     <ion-title> {{title}} </ion-title>
+     <ion-title> {{'settings_title' | translate}} </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <button ion-button color="secondary" class="logout-button"  (click)="confirmLogout()"> Logout </button>
+  <button ion-button color="secondary" class="logout-button"  (click)="confirmLogout()">{{'logout' | translate}}</button>
 </ion-content>
 <onsite-tabs></onsite-tabs>

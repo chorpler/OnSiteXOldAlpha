@@ -29,6 +29,9 @@
   "report_label_unit_number": "Unidad",
   "report_label_notes": "Notas",
   "no_reports_for_date": "No hay informes para esta fecha",
-  "user": "Usuario"
+  "user": "Usuario",
+  "logout": "Cerrar Sesión",
+  "confirm_logout_title": "Confirmar Cerrar Sesión",
+  "confirm_logout_message": "El cierre de sesión sólo es necesario si otro usuario necesita iniciar sesión en el dispositivo. Si desea cerrar la aplicación y finalizar todos los procesos, haga clic en el \"X\" en la esquina superior derecha de la pantalla."
 }
 
