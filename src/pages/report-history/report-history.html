@@ -8,23 +8,36 @@
   <div class="report-history-container" *ngIf="pageReady">
     <ion-list class="reportList">
       <ion-item-group class="report-history-group-date" *ngFor="let shift of shifts; let i=index">
-        <ion-item-divider color="light">{{shift.getStartTime().format("ddd, MMM D")}}</ion-item-divider>
+        <ion-item-divider color="light">
+          <ion-icon class="shft-num-icon">{{numChars[shift.shift_number]}}&nbsp;&nbsp;</ion-icon>
+          &nbsp;&nbsp;{{shift.getStartTime().format("ddd, MMM D")}}&nbsp;&nbsp;
+          <ion-note> shift hrs var </ion-note> <!-- {{hoursTotalList[i]}} -->
+          <button ion-button icon-only item-end>
+          <ion-icon name='document' color="primary"></ion-icon>
+          </button>
+        </ion-item-divider>
         <div class="report-history-reports-subcontainer" *ngIf="filtReports[filterKeys[i]].length">
           <ion-item-sliding class="report-history-list-item-sliding" *ngFor="let report of filtReports[filterKeys[i]]">
             <ion-item class="report-history-list-item" (click)="itemTapped($event, report)">
-                <div class="report-history-report-item">
-                  <span class="report-history-report-item-header">{{'report_label_wo_number' | translate}}:</span>
-                  <span class="report-history-report-item-data">{{report.work_order_number}}</span>
+              <div class="report-history-report-item">
+                <span class="report-history-report-item-header">{{'hours' | translate}}&nbsp;&nbsp;</span>
+                <span class="report-history-report-item-data">{{report.work_order_number}}</span>
+              </div>
+              <div class="report-history-report-item">
+                <span class="report-history-report-item-header">{{'report_label_wo_number' | translate}}&nbsp;&nbsp;</span>
+                <span class="report-history-report-item-data">{{report.work_order_number}}</span>
+              </div>
+              <div class="report-history-report-item">
+                <span class="report-history-report-item-header">{{'report_label_unit_number' | translate}}&nbsp;&nbsp;</span>
+                <span class="report-history-report-item-data">{{report.unit_number}}</span>
+              </div>
+              <div class="report-history-report-notes-item">
+                <span class="report-history-report-item-header">{{'report_label_notes' | translate}}&nbsp;&nbsp;</span>
+                <div class="report-history-notes-data">
+                  <p>{{report.notes}}</p>
                 </div>
-                <div class="report-history-report-item">
-                  <span class="report-history-report-item-header">{{'report_label_unit_number' | translate}}:</span>
-                  <span class="report-history-report-item-data">{{report.unit_number}}</span>
-                </div>
-                <div class="report-history-report-notes-item">
-                  <span class="report-history-report-item-header">{{'report_label_notes' | translate}}:</span>
-                  <div class="report-history-notes-data"><p>{{report.notes}}</p></div>
-                </div>
-             </ion-item>
+              </div>
+            </ion-item>
             <ion-item-options side="right">
               <button ion-button color="danger" (click)="deleteWorkOrder($event, report)">
                 <ion-icon name="trash"></ion-icon>

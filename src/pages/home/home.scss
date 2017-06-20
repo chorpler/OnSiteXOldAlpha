@@ -37,18 +37,24 @@ page-home {
     color: grey !important;
     // background: transparent !important;
   }
-  p {
+  p, ion-item {
     font-size: 14px;
-    span.shft-num-icon {
+    ion-icon.shft-num-icon {
       font-size: 30px;
+      margin-right: 10px;
     }
-    span.chk-box-icon {
+    span.chk-box-icon,
+    ion-icon.chk-box-icon {
       // color: darkred;
       font-size: 20px;
 
       svg {
         width: 20px;
-        height: 15px;
+        height: 20px;
+        margin-bottom: 0;
+        margin-left: 10px;
+        margin-right: 10px;
+        margin-top: 8px;
       }
     }
     img {
@@ -57,6 +63,9 @@ page-home {
     svg {
       fill: currentColor;
     }
+  }
+  span.normal-txt {
+    color: black;
   }
   .header-close-button {
     color: black !important;
