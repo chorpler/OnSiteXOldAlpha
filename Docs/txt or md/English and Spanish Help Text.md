@@ -1,4 +1,4 @@
-### English
+# English
 <p>Shifts are numbered 1 through 7: Wednesday = Shift 1, Tuesday = Shift 2 etc.</p>
 
 <p>Every payroll period has 7 shifts. If you do not work a shift, that shift still exists and you will have \"0\" hours for that shift.</p>
@@ -17,7 +17,8 @@
 
 <p>Too few hours do not trigger a flag; too many hours will trigger a flag for your submitted hours. It is your responsibility to make sure you document all hours worked. The hours you see on this screen will be the hours you are paid unless the hours are flagged.</p>
 
-### Spanish
+
+# Spanish
 <p>Los turnos se numeran de 1 a 7: Miércoles = Turno 1, Martes = Turno 2, etc.</p>
 
 <p>Cada período de nómina tiene 7 turnos. Si usted no trabaja un turno, ese turno todavía existe y usted tendrá "0" horas para ese cambio.</p>
