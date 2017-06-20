@@ -11,6 +11,7 @@ import { UserData                                                               
 import { Log                                                                     } from '../../config/config.functions'  ;
 import { TabsComponent                                                           } from '../../components/tabs/tabs'     ;
 import { TranslateService } from '@ngx-translate/core';
+import { Preferences } from '../../providers/preferences';
 import { PREFS } from '../../config/config.strings';
 /**
  * Generated class for the Login page.
@@ -36,8 +37,8 @@ export class Login implements OnInit {
   private formPass      : any                            ;
   private submitAttempt : boolean = false                ;
   public mode           : string = "modal"               ;
-  public static PREFS   : any = new PREFS()              ;
-  public prefs          : any = Login.PREFS              ;
+  // public static PREFS   : any = new Preferences()        ;
+  // public prefs          : any = Login.PREFS              ;
 
 
   constructor(public navCtrl: NavController,
@@ -51,7 +52,8 @@ export class Login implements OnInit {
     public ud: UserData,
     public events: Events,
     public tabs: TabsComponent,
-    public translate: TranslateService
+    public translate: TranslateService,
+    public prefs: Preferences,
   ) {
     window['loginscreen'] = this;
   }
@@ -86,8 +88,9 @@ export class Login implements OnInit {
     let tmpUserData = this.LoginForm.value;
     this.username = tmpUserData.formUser;
     this.password = tmpUserData.formPass;
+    let lang = this.translate.instant('spinner_logging_in');
     if(NetworkStatus.isConnected()) {
-      this.alert.showSpinner('Logging in...');
+      this.alert.showSpinner(lang['spinner_logging_in']);
       Log.l("Login: Now attempting login:");
       this.auth.setUser(this.username);
       this.auth.setPassword(this.password);
@@ -99,9 +102,13 @@ export class Login implements OnInit {
         let udoc = res;
         udoc.updated = true;
         udoc._id = this.localURL;
-        return this.db.addLocalDoc('reports', udoc);
+        return this.db.addLocalDoc(this.prefs.DB.reports, udoc);
       }).then((res) => {
-        Log.l("loginAttempt(): Finished validating and saving user info.")
+        Log.l("loginAttempt(): Finished validating and saving user info, now downloading SESA config data.");
+        return this.db.getAllConfigData();
+      }).then(res => {
+        Log.l("loginAtttempt(): Got SESA config data.");
+        this.ud.setSesaConfig(res);
         let creds = { user: this.username, pass: this.password };
         this.ud.storeCredentials(creds);
         this.ud.setLoginStatus(true);
@@ -123,7 +130,8 @@ export class Login implements OnInit {
       });
     } else {
       this.alert.hideSpinner();
-      this.alert.showAlert('OFFLINE', "There is no Internet connection. Can't log in right now.");
+      let loginAlert = this.translate.instant(['offline_alert_title', 'offline_alert_message']);
+      this.alert.showAlert(loginAlert['offline_alert_title'], loginAlert['offline_alert_message']);
     }
   }
 }

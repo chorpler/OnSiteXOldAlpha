@@ -6,9 +6,11 @@ import { NativeStorage      } from 'ionic-native'               ;
 import 'rxjs/add/operator/map'                                  ;
 import { PouchDBService    } from './pouchdb-service'           ;
 import { AuthSrvcs         } from './auth-srvcs'                ;
+import { AlertService      } from './alerts'                    ;
 import { SrvrSrvcs         } from './srvr-srvcs'                ;
 import { UserData          } from './user-data'                 ;
 import { PREFS             } from '../config/config.strings'    ;
+import { Preferences       } from './preferences'               ;
 
 export const noDD = "_\uffff";
 export const noDesign = { include_docs: true, startkey: noDD };
@@ -30,21 +32,12 @@ export class DBSrvcs {
   public static rdb           : any = new Map()                                    ;
   public static ldbs          : any                                                ;
   public static rdbs          : any                                                ;
-  public static PREFS         : any = new PREFS()                                  ;
-  public prefs                : any = DBSrvcs.PREFS                                ;
+  // public static PREFS         : any = new Preferences()                            ;
+  // public prefs                : any = DBSrvcs.PREFS                                ;
 
-  /**
-   * @param {Http}
-   * @param {NgZone}
-   */
-  constructor(public http: Http, public zone: NgZone, private storage: Storage, private auth: AuthSrvcs, private srvr: SrvrSrvcs, public ud:UserData) {
-    // this.PouchDB = require("pouchdb");
+  constructor(public http: Http, public zone: NgZone, private storage: Storage, private auth: AuthSrvcs, private server: SrvrSrvcs, public ud:UserData, public prefs:Preferences) {
     DBSrvcs.StaticPouchDB = PouchDBService.PouchInit();
     this.PouchDB = DBSrvcs.StaticPouchDB;
-    // this.PouchDB.plugin(pdbAuth);
-    // this.PouchDB.plugin(pdbUpsert);
-    // this.PouchDB.plugin(require('pouchdb-upsert'));
-    // this.PouchDB.plugin(require('pouchdb-authentication'));
 
     window["dbserv"] = this;
     window["sdb"] = DBSrvcs;
@@ -58,12 +51,7 @@ export class DBSrvcs {
       retry: true,
       continuous: false
     };
-
-    // this.db.sync(this.remote, options);
   }
-
-  // -------------- DBSrvcs METHODS------------------------
-
 
   /**
    * Returns a copy of the PouchDB method, which can be used as normal.
@@ -111,11 +99,10 @@ export class DBSrvcs {
 
   syncToServer(dbname: string) {
     Log.l(`syncToServer(): About to attempt replication of '${dbname}'->remote`);
-    var ev1 = function(a) { Log.l(a.status); Log.l(a);};
-    var db1 = DBSrvcs.addDB(dbname);
-    var db2 = DBSrvcs.addRDB(dbname);
-    // var done = DBSrvcs.StaticPouchDB.replicate(db1, db2, DBSrvcs.repopts);
-    var done = db1.replicate.to(db2, this.prefs.SERVER.repopts)
+    let ev1 = function(a) { Log.l(a.status); Log.l(a);};
+    let db1 = DBSrvcs.addDB(dbname);
+    let db2 = DBSrvcs.addRDB(dbname);
+    let done = db1.replicate.to(db2, this.prefs.SERVER.repopts)
     .on('change'   , info => ev1)
     .on('active'   , info => ev1)
     .on('paused'   , info => ev1)
@@ -130,10 +117,10 @@ export class DBSrvcs {
 
   syncFromServer(dbname: string) {
     Log.l(`syncFromServer(): About to attempt replication of remote->'${dbname}'`);
-    var ev2 = function(b) { Log.l(b.status); Log.l(b);};
-    var db1 = DBSrvcs.addRDB(dbname);
-    var db2 = DBSrvcs.addDB(dbname);
-    var done = db1.replicate.to(db2, this.prefs.SERVER.repopts)
+    let ev2 = function(b) { Log.l(b.status); Log.l(b);};
+    let db1 = DBSrvcs.addRDB(dbname);
+    let db2 = DBSrvcs.addDB(dbname);
+    let done = db1.replicate.to(db2, this.prefs.SERVER.repopts)
     .on('change'   , info => ev2)
     .on('active'   , info => ev2)
     .on('paused'   , info => ev2)
@@ -148,9 +135,9 @@ export class DBSrvcs {
 
   syncSquaredToServer(dbname: string) {
     Log.l(`syncSquaredToServer(): About to attempt replication of '${dbname}'->remote`);
-    var ev2 = function(b) { Log.l(b.status); Log.l(b);};
-    var db1 = DBSrvcs.addDB(dbname);
-    var db2 = DBSrvcs.addRDB(dbname);
+    let ev2 = function(b) { Log.l(b.status); Log.l(b);};
+    let db1 = DBSrvcs.addDB(dbname);
+    let db2 = DBSrvcs.addRDB(dbname);
     // var done = DBSrvcs.StaticPouchDB.replicate(db1, db2, DBSrvcs.repopts);
     return new Promise((resolve, reject) => {
       db1.replicate.to(db2, this.prefs.SERVER.repopts).then((res) => {
@@ -167,9 +154,9 @@ export class DBSrvcs {
 
   syncSquaredFromServer(dbname: string) {
     Log.l(`syncSquaredFromServer(): About to attempt replication of remote->'${dbname}'`);
-    var ev2 = function(b) { Log.l(b.status); Log.l(b);};
-    var db1 = DBSrvcs.addRDB(dbname);
-    var db2 = DBSrvcs.addDB(dbname);
+    let ev2 = function(b) { Log.l(b.status); Log.l(b);};
+    let db1 = DBSrvcs.addRDB(dbname);
+    let db2 = DBSrvcs.addDB(dbname);
     return new Promise((resolve, reject) => {
       db2.replicate.to(db1, this.prefs.SERVER.repopts).then((res) => {
         Log.l(`syncSquaredFromServer(): Successfully replicated remote->'${dbname}'`);
@@ -181,19 +168,6 @@ export class DBSrvcs {
         reject(err);
       });
     });
-  }
-
-  /**
-   * Returns an object for accessing the specified PouchDB database
-   * @method getDB
-   * @param  {string} dbName Name of the desired database
-   */
-  getLocalDB(dbName: string) {
-    return this.PouchDB(dbName);
-  }
-
-  getRemoteDB(dbURL: string) {
-    return this.PouchDB(dbURL)
   }
 
   addDoc(dbname:string, doc) {
@@ -214,19 +188,6 @@ export class DBSrvcs {
       });
     });
   }
-
-  updateReport(doc) {
-    Log.l(`updateReport(): About to put doc ${doc._id}`);
-    let db1 = this.addDB(this.prefs.DB.reports);
-    return db1.put(doc).then((res) => {
-      Log.l("updateReport(): Successfully added document.");
-      Log.l(res);
-    }).catch((err) => {
-      Log.l("updateReport(): Failed while trying to add document (after 404 error in get)");
-      console.error(err);
-    });
-  }
-
 
   getDoc(dbname:string, docID) {
     return new Promise((resolve, reject) => {
@@ -363,7 +324,7 @@ export class DBSrvcs {
         Log.l("saveTechProfile(): now attempting save...");
         return this.addLocalDoc('reports', newProfileDoc);
       }).then((res) => {
-        rdb1 = this.srvr.addRDB('sesa-employees');
+        rdb1 = this.server.addRDB('sesa-employees');
         let name = this.ud.getUsername();
         uid = `org.couchdb.user:${name}`;
         Log.l(`saveTechProfile(): Now fetching remote copy with id '${uid}'...`);
@@ -400,6 +361,64 @@ export class DBSrvcs {
         Log.e(err);
         reject(err);
       });
+    });
+  }
+
+  public getAllConfigData() {
+    Log.l("getAllConfigData(): Retrieving clients, locations, locIDs, loc2nd's, shiftRotations, and shiftTimes...");
+    let rdb1 = this.addRDB(this.prefs.DB.config);
+    return new Promise((resolve, reject) => {
+      rdb1.allDocs({ keys: ['client', 'location', 'locid', 'loc2nd', 'rotation', 'shift', 'shiftlength', 'shiftstarttime'], include_docs: true }).then((records) => {
+        Log.l("getAllConfigData(): Retrieved documents:\n", records);
+        let results = { client: [], location: [], locid: [], loc2nd: [], rotation: [], shift: [], shiftlength: [], shiftstarttime: [] };
+        for (let record of records.rows) {
+          // let record = records[i];
+          let doc = record.doc;
+          let type = record.id;
+          let types = record.id + "s";
+          if (doc) {
+            Log.l("getAllConfigData(): Found doc, looking for type '%s'", types);
+            Log.l(doc);
+            if(doc[types]) {
+              for(let result of doc[types]) {
+                results[type].push(result);
+              }
+            } else {
+              for(let result of doc.list) {
+                results[type].push(result);
+              }
+            }
+          }
+        }
+        Log.l("getAllConfigData(): Final config data retrieved is:\n", results);
+        resolve(results);
+      }).catch((err) => {
+        Log.l("getAllConfig(): Error getting all config docs!");
+        Log.e(err);
+        // resolve([]);
+        reject(err);
+      });
+    });
+  }
+
+  getConfigData() {
+    let db1 = PouchDBService.addDB(this.prefs.DB.config);
+    let clients = null, locations = null, locids = null, loc2nds = null, rotations = null, shiftTimes = null;
+    db1.get('client').then(res => {
+      clients = res;
+      return db1.get('locations');
+    }).then(res => {
+      locations = res;
+    }).then(res => {
+
+    }).then(res => {
+
+    }).then(res => {
+
+    }).catch(err => {
+      Log.l("getConfigData(): Error retrieving clients, locations, locids, loc2nds, rotations, or shiftTimes!");
+      Log.e(err);
+
     });
   }
 

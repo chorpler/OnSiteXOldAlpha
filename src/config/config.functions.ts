@@ -28,15 +28,25 @@ var _emptyFunc = function() {};
 // var t1 = function(res) { console.log("Success!"); console.log(res); window["res1"] = res;};
 // var c1 = function(err) { console.log("Failure!"); console.log(err); window["err1"] = err;};
 
-export var isMoment = function(val) { return (moment.isMoment(val) && moment(val).isValid()) ; }
-
+export var isMoment = function(val:any) { return (moment.isMoment(val) && moment(val).isValid()) ; }
+export var sizeOf = function(val:any) {
+  let size = 0;
+  if(val === null || val === undefined) {
+    size = 0;
+  } else if(Array.isArray(val) || typeof val === 'string') {
+    size = val.length;
+  } else if(typeof val === 'object') {
+    size = Object.keys(val).length;
+  }
+  return size;
+}
 
 export var CONSOLE = {
     t1: function(res) { console.log("Success"); console.log(res); window["res1"] = res; return res;},
     c1: function(err) { console.log("Failure"); console.log(err); window["err1"] = err; return err;}
 }
 /* Use this to get all current functions from console */
-/* 
+/*
 var doit = function () { var out = [], nonfn = []; for (let i in console) { if (typeof console[i] == 'function') { out.push(i); } else { nonfn.push(i); } } console.log("console functions, then non-functions:"); console.log(out); console.log(nonfn); var vals = { 'functions': out, 'nonfunctions': nonfn }; window['res1'] = vals; return vals; }
 */
 /*
@@ -61,11 +71,11 @@ var doit = function () {
 export var Log = {
         /* All console functions as of 2017-06-11, in Chrome Canary sixty-something */
   cons: ["debug", "error", "info", "log", "warn", "dir", "dirxml", "table", "trace", "group", "groupCollapsed", "groupEnd", "clear", "count", "assert", "markTimeline", "profile", "profileEnd", "timeline", "timelineEnd", "time", "timeEnd", "timeStamp"],
-  
+
   /* What we will abbreviate each one to */
   newCons: ["d", "e", "i", "l", "w", "dir", "dxml", "t", "tr", "g", "gc", "ge", "c", "cnt", "a", "mt", "p", "pe", "tl", "tle", "ti", "tie", "ts"],
   /* l, d, e, i, w, t are already done */
-  /* 
+  /*
   get d() { return console.debug.bind(console) },
   get e() { return console.error.bind(console) },
   get i() { return console.info.bind(console) },

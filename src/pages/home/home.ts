@@ -14,7 +14,8 @@ import { Shift } from '../../domain/shift';
 import { Employee } from '../../domain/employee';
 import moment from 'moment';
 import { TabsComponent } from '../../components/tabs/tabs';
-import { PREFS, STRINGS } from '../../config/config.strings';
+import { STRINGS } from '../../config/config.strings';
+import { Preferences } from '../../providers/preferences';
 import { TranslateService } from '@ngx-translate/core';
 import { Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -40,7 +41,7 @@ export class HomePage {
   numChars     : Array<string> = STRINGS.NUMCHARS ;
   chkBxBool    : boolean                          ;
   chkBx        : string                           ;
-  static PREFS : any = new PREFS()                ;
+  static PREFS : any = new Preferences()          ;
   PREFS        : any = HomePage.PREFS             ;
   shftHrs      : number;
   hrsSubmitted : number;
@@ -150,9 +151,10 @@ export class HomePage {
     } else {
       Log.l("HomePage: ionViewDidEnter() says work order array not initialized, fetching work orders.");
       this.tabs.highlightPageTab('OnSiteHome');
-      this.alert.showSpinner("Fetching work orders...");
+      let lang = this.translate.instant('spinner_fetching_reports');
+      this.alert.showSpinner(lang['spinner_fetching_reports']);
       this.fetchTechWorkorders().then((res) => {
-        Log.l("HomePage: ionViewDidEnter() fetched work orders, maybe:\n", res);
+        Log.l("HomePage: ionViewDidEnter() fetched work reports, maybe:\n", res);
         this.ud.setWorkOrderList(res);
         this.ud.createShifts();
         this.techProfile = this.ud.getTechProfile();
@@ -164,7 +166,8 @@ export class HomePage {
         Log.l("HomePage: ionViewDidEnter() got error while fetching tech work orders.");
         Log.e(err);
         this.alert.hideSpinner();
-        this.alert.showAlert("ERROR", "Could not retrieve reports. Please try again later.");
+        let lang = this.translate.instant(['error', 'alert_retrieve_reports_error'])
+        this.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
       });
     }
   }

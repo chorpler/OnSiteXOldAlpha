@@ -24,7 +24,7 @@
     <p *ngFor="let shift of shifts; let i=index" [ngClass]="getShiftStatus(i)">
       <span class="shft-num-icon">{{numChars[shift.shift_number]}}</span>
       <!-- <span class="shft-num-icon">{{numChars[shift.shift_number]}}</span> -->
-      <span class="shift-text">{{hoursTotalList[i]}} {{"home_hours_of" | translate}} {{techProfile.shiftLength}} {{"home_hours_submitted_for_shift" | translate}}</span>
+      <span class="shift-text">{{hoursTotalList[i]}} {{"of" | translate}} {{techProfile.shiftLength}} {{"home_hours_submitted_for_shift" | translate}}</span>
       <!-- <span class="chk-box-icon" [class.hrsCompleted]="getShiftStatus(i)">{{getCheckbox(i)}}</span> -->
       <!-- <span class="chk-box-icon" [class.hrsCompleted]="getShiftStatus(i)"><img class="checkbox-svg-icon" [src]="getCheckboxSVG(i)" /></span> -->
       <span class="chk-box-icon" [ngClass]="getShiftStatus(i)" [innerHTML]="getCheckboxSVG(i) | safe: 'html'"></span>

@@ -5,7 +5,9 @@ import { PouchDBService } from '../providers/pouchdb-service' ;
 import { Log          }     from '../config/config.functions' ;
 import { WorkOrder } from '../domain/workorder'               ;
 import { UserData } from '../providers/user-data'             ;
-import { PREFS     } from '../config/config.strings'          ;
+import { Preferences } from '../providers/preferences'        ;
+// import { StorageService } from '../providers/storage-service'    ;
+// import { PREFS     } from '../config/config.strings'          ;
 
 
 export const noDD     = "_\uffff";
@@ -27,6 +29,9 @@ export class SrvrSrvcs {
   public static ldb           : any    = new Map()                                              ;
 	public static StaticPouchDB : any                                                             ;
   public static userInfo      : any    = {u: '', p: '' }                                        ;
+  // public static prefs         : any    = new Preferences(new StorageService())                  ;
+  public static prefs         : any    = new Preferences()                                      ;
+  public prefs                : any    = SrvrSrvcs.prefs                                        ;
 
   constructor(public http: Http, public ud:UserData) {
     Log.l("Hello SrvrSrvcs provider");
@@ -38,7 +43,6 @@ export class SrvrSrvcs {
     // Log.l("SrvrSrvcs: StaticPouchDB is:\n",SrvrSrvcs.StaticPouchDB);
   }
 
-
   static getAuthHeaders(user: string, pass: string) {
     let authToken = 'Basic ' + window.btoa(user + ':' + pass);
     let ajaxOpts = { headers: { Authorization: authToken } };
@@ -46,18 +50,24 @@ export class SrvrSrvcs {
   }
 
   static getBaseURL() {
-    if(PREFS.SERVER.port != '') {
-      return `${PREFS.SERVER.protocol}://${PREFS.SERVER.server}:${PREFS.SERVER.port}`;
+    let port = this.prefs.SERVER.port;
+    let server = this.prefs.SERVER.server;
+    let protocol = this.prefs.SERVER.protocol;
+    if(port !== '' && port !== undefined && port !== null) {
+      return `${protocol}://${server}:${port}`;
     } else {
-      return `${PREFS.SERVER.protocol}://${PREFS.SERVER.server}`;
+      return `${protocol}://${server}`;
     }
   }
 
   static getInsecureLoginBaseURL(user:string, pass:string) {
-    if(PREFS.SERVER.port != '') {
-      return `${PREFS.SERVER.protocol}://${user}:${pass}@${PREFS.SERVER.server}:${PREFS.SERVER.port}`;
+    let port = this.prefs.SERVER.port;
+    let server = this.prefs.SERVER.server;
+    let protocol = this.prefs.SERVER.protocol;
+    if (port !== '' && port !== undefined && port !== null) {
+      return `${protocol}://${user}:${pass}@${server}:${port}`;
     } else {
-      return `${PREFS.SERVER.protocol}://${user}:${pass}@${PREFS.SERVER.server}`;
+      return `${protocol}://${user}:${pass}@${server}`;
     }
   }
 
@@ -85,7 +95,8 @@ export class SrvrSrvcs {
   }
 
   loginToServer(user:string, pass:string, dbname?:string, auto?:boolean) {
-  	return new Promise((resolve,reject) => {
+  	let adapter = this.prefs.SERVER.protocol;
+    return new Promise((resolve,reject) => {
       let dbURL = '_session';
   		if(dbname) {
   			dbURL = dbname;
@@ -93,7 +104,7 @@ export class SrvrSrvcs {
       let url = SrvrSrvcs.getBaseURL() + '/' + dbURL;
 			let authToken = 'Basic ' + window.btoa(user + ':' + pass);
 			let ajaxOpts = { headers: { Authorization: authToken } };
-			let opts = {adapter: PREFS.SERVER.protocol, skipSetup: true, ajax: {withCredentials: true, ajaxOpts, auth: {username: user, password: pass}}};
+			let opts = {adapter: adapter, skipSetup: true, ajax: {withCredentials: true, ajaxOpts, auth: {username: user, password: pass}}};
 			let rdb1 = this.addRDB(dbURL);
       let tprofile = null;
       Log.l(`loginToServer(): About to login with u '${user}', p '${pass}', dburl '${dbURL}'.`);
@@ -109,7 +120,7 @@ export class SrvrSrvcs {
 					SrvrSrvcs.userInfo = {u: user, p: pass};
           this.ud.storeCredentials(user, pass);
           // this.ud.setLoginStatus(true);
-          let rdb2 = this.addRDB(PREFS.DB.employees);
+          let rdb2 = this.addRDB(this.prefs.DB.employees);
           if(auto === undefined || auto === false) {
             let uid = `org.couchdb.user:${user}`;
             rdb2.get(uid).then((res) => {
@@ -147,7 +158,7 @@ export class SrvrSrvcs {
   }
 
   getTechProfile() {
-    let db1 = SrvrSrvcs.addDB(PREFS.DB.reports);
+    let db1 = SrvrSrvcs.addDB(this.prefs.DB.reports);
     return new Promise((resolve,reject) => {
       db1.get('_local/techProfile').then((res) => {
         Log.l(`getTechProfile(): Success! Result:\n`, res);
@@ -161,7 +172,7 @@ export class SrvrSrvcs {
   }
 
   getUserData(user) {
-    let rdb1 = SrvrSrvcs.addRDB(PREFS.DB.reports);
+    let rdb1 = SrvrSrvcs.addRDB(this.prefs.DB.reports);
 		return rdb1.getUser(user);
   }
 
@@ -182,7 +193,7 @@ export class SrvrSrvcs {
       return rdb1;
     } else {
       Log.l(`DB '${dbname}' does not already exist, storing and returning...`);
-      rdb1 = PouchDBService.StaticPouchDB(url, PREFS.SERVER.ropts);
+      rdb1 = PouchDBService.StaticPouchDB(url, this.prefs.SERVER.ropts);
       db1.set(dbname, rdb1);
       return rdb1;
     }
@@ -202,7 +213,7 @@ export class SrvrSrvcs {
       return ldb1;
     } else {
       // Log.l(`DB '${dbname}' does not already exist, storing and returning...`);
-      ldb1 = PouchDBService.StaticPouchDB(dbname, PREFS.SERVER.opts);
+      ldb1 = PouchDBService.StaticPouchDB(dbname, this.prefs.SERVER.opts);
       db1.set(dbname, ldb1);
       return ldb1;
     }
@@ -266,10 +277,10 @@ export class SrvrSrvcs {
       // let c = this.ud.getCredentials();
       // Log.l("getReportsForTech(): Got credentials:\n", c);
       let woArray = new Array<WorkOrder>();
-      Log.l("getReportsForTech(): Using database: ", PREFS.DB.reports);
-      this.loginToServer(u, p, PREFS.DB.login).then((res) => {
+      Log.l("getReportsForTech(): Using database: ", this.prefs.DB.reports);
+      this.loginToServer(u, p, this.prefs.DB.login).then((res) => {
         if (res) {
-          let rpdb = this.addRDB(PREFS.DB.reports);
+          let rpdb = this.addRDB(this.prefs.DB.reports);
           // let username = tech.username;
           let query = {selector: {username: {$eq: tech}}};
           // query.selector.username['$eq'] = username;
@@ -305,9 +316,9 @@ export class SrvrSrvcs {
     return new Promise((resolve,reject) => {
       let u = this.ud.getUsername();
       let p = this.ud.getPassword();
-      this.loginToServer(u, p, PREFS.DB.login).then((res) => {
+      this.loginToServer(u, p, this.prefs.DB.login).then((res) => {
       	if(res) {
-      		let rpdb = this.addRDB(PREFS.DB.reports);
+      		let rpdb = this.addRDB(this.prefs.DB.reports);
       		rpdb.allDocs({include_docs: true}).then((result) => {
 		        let data = [];
 						let docs = result.rows.map((row) => {
@@ -352,7 +363,7 @@ export class SrvrSrvcs {
     var db2 = SrvrSrvcs.rdb.get(dbname);
     // var done = DBSrvcs.StaticPouchDB.replicate(db1, db2, DBSrvcs.repopts);
     return new Promise((resolve, reject) => {
-      db1.replicate.to(db2, PREFS.SERVER.repopts).then((res) => {
+      db1.replicate.to(db2, this.prefs.SERVER.repopts).then((res) => {
         Log.l(`syncSquaredToServer(): Successfully replicated '${dbname}'->remote!`);
         Log.l(res);
         resolve(res);
@@ -371,7 +382,7 @@ export class SrvrSrvcs {
     var db2 = pdb;
     // var done = DBSrvcs.StaticPouchDB.replicate(db1, db2, DBSrvcs.repopts);
     return new Promise((resolve, reject) => {
-      db2.replicate.to(db1, PREFS.SERVER.repopts).then((res) => {
+      db2.replicate.to(db1, this.prefs.SERVER.repopts).then((res) => {
         Log.l(`syncSquaredFromServer(): Successfully replicated remote->'${dbname}'`);
         Log.l(res);
         resolve(res);

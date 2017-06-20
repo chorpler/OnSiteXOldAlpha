@@ -5,6 +5,7 @@ import { ViewController                               } from 'ionic-angular'    
 import { CLIENT, LOCATION, LOCID, SHIFTLENGTH         } from '../../config/config.constants.settings' ;
 import { SHIFT, SHIFTSTARTTIME, SHIFTROTATION, LOC2ND } from '../../config/config.constants.settings' ;
 import { REPORTHEADER, REPORTMETA                     } from '../../config/report.object'             ;
+import { Log, sizeOf, isMoment                        } from '../../config/config.functions'          ;
 import { DBSrvcs                                      } from '../../providers/db-srvcs'               ;
 import { ReportBuildSrvc                              } from '../../providers/report-build-srvc'      ;
 import { Login                                        } from '../login/login'                         ;
@@ -29,6 +30,7 @@ export class TechSettingsPage implements OnInit {
   selShiftStartTime : number[  ] = SHIFTSTARTTIME   ;
   selShiftRotation  : string[  ] = SHIFTROTATION    ;
   selLoc2nd         : string[  ] = LOC2ND           ;
+  sesaConfig        : any        = {}               ;
   techSettings      : FormGroup                     ;
   firstName         : string                        ;
   lastName          : string                        ;
@@ -40,6 +42,7 @@ export class TechSettingsPage implements OnInit {
   shift             : string                        ;
   shiftLength       : string                        ;
   shiftStartTime    : string                        ;
+  shiftRotation     : string                        ;
   title             : string    =  'User'           ;
   reportHeader      : REPORTHEADER                  ;
   rprtDate          : Date                          ;
@@ -64,22 +67,24 @@ export class TechSettingsPage implements OnInit {
   ngOnInit() {
     if ( this.navParams.get('mode') !== undefined ) {
      this.mode = this.navParams.get('mode');
-    } else { this.mode = 'page'; }
+    } else {
+      this.mode = 'page';
+    }
     this.rprtDate = new Date;
-    console.log("Settings: Now trying to get tech profile...");
+    Log.l("Settings: Now trying to get tech profile...");
     this.db.getTechProfile().then((res) => {
-      console.log("Settings: Got tech profile, now initFormData()...");
+      Log.l("Settings: Got tech profile, now initFormData()...");
       this.techProfile = res;
       this.ud.setTechProfile(res);
       return this.initFormData();
     }).then((res2) => {
-      console.log("Settings: initFormData() done, now initializeForm()...");
+      Log.l("Settings: initFormData() done, now initializeForm()...");
       return this.initializeForm();
     }).then((res3) => {
-      console.log("Settings screen initialized successfully.");
+      Log.l("Settings screen initialized successfully.");
     }).catch((err) => {
-      console.log("Error while initializing Settings screen!");
-      console.error(err);
+      Log.l("Error while initializing Settings screen!");
+      Log.e(err);
     });
   }
 
@@ -99,41 +104,80 @@ export class TechSettingsPage implements OnInit {
   }
 
   initFormData() {
+    let sesaConfig = this.ud.getSesaConfig();
+    if (sizeOf(sesaConfig) > 0) {
+      let keys = ['client', 'location', 'locid', 'loc2nd', 'shift', 'shiftlength', 'shiftstarttime'];
+      let keys2 = ['selClient', 'selLocation', 'selLocID', 'selLoc2nd', 'selShift', 'selShiftLength', 'selShiftStartTime'];
+      let keys3 = ['client', 'location', 'locID', 'loc2nd', 'shift', 'shiftLength', 'shiftStartTime'];
+      for (let i in keys) {
+        let sesaVar = keys[i];
+        let selVar = keys2[i];
+        let techVar = keys3[i];
+        this[techVar] = this.selectMatch(this.techProfile[techVar], sesaConfig[sesaVar]);
+        this[selVar] = sesaConfig[sesaVar];
+        // this[] = sesaConfig[keys[i]];
+      }
+    }
     this.lastName       = this.techProfile.lastName       ;
     this.firstName      = this.techProfile.firstName      ;
-    this.client         = this.techProfile.client         ;
-    this.location       = this.techProfile.location       ;
-    this.locID          = this.techProfile.locID          ;
-    this.loc2nd         = this.techProfile.loc2nd         ;
-    this.shift          = this.techProfile.shift          ;
-    this.shiftLength    = this.techProfile.shiftLength    ;
-    this.shiftStartTime = this.techProfile.shiftStartTime ;
+    // let keys = ['client' ,'location' ,'locID' ,'loc2nd' ,'shift' ,'shiftLength' ,'shiftStartTime'];
+    // for(let i in keys) {
+    //   let sesaVar = keys [i];
+    //   let selVar  = keys2[i];
+    //   let techVar = keys3[i];
+    //   this[techVar] = this.selectMatch(this.techProfile[techVar], sesaConfig[sesaVar]);
+    //   this[selVar]  = sesaConfig[sesaVar];
+    // }
+    // this.client         = this.techProfile.client         ;
+    // this.location       = this.techProfile.location       ;
+    // this.locID          = this.techProfile.locID          ;
+    // this.loc2nd         = this.techProfile.loc2nd         ;
+    // this.shift          = this.techProfile.shift          ;
+    // this.shiftLength    = this.techProfile.shiftLength    ;
+    // this.shiftStartTime = this.techProfile.shiftStartTime ;
+  }
+
+  selectMatch(key:string, values:Array<any>) {
+    // Log.l("selectMatch(): Finding matchinb object for '%s' in array...", key);
+    Log.l(values);
+    let matchKey = String(key).toUpperCase();
+    for(let value of values) {
+      let nameKey = String(value.name).toUpperCase();
+      let fullNameKey = String(value.fullName).toUpperCase();
+      if(nameKey === matchKey || fullNameKey === matchKey) {
+        return value;
+      }
+    }
+    return null;
   }
 
   onSubmit() {
-    this.reportMeta = this.techSettings.value;
-    this.reportMeta.technician = this.reportMeta.lastName + ', ' + this.reportMeta.firstName;
-    this.reportMeta.updated = true;
-
-    console.log("onSubmit(): Now attempting to save tech profile:");
-
+    // let prof = this.techSettings.value;
+    let rprt = this.techSettings.value;
+    rprt.updated        = true;
+    rprt.technician     = rprt.lastName + ', ' + rprt.firstName;
+    rprt.client         = rprt.client.fullName.toUpperCase();
+    rprt.location       = rprt.location.fullName.toUpperCase();
+    rprt.locID          = rprt.locID.name.toUpperCase();
+    rprt.loc2nd         = rprt.loc2nd.name.toUpperCase();
+    rprt.shift          = rprt.shift.name;
+    rprt.shiftLength    = Number(rprt.shiftLength.name);
+    rprt.shiftStartTime = Number(rprt.shiftStartTime.name);
+    this.reportMeta = rprt;
+    Log.l("onSubmit(): Now attempting to save tech profile:");
     this.db.saveTechProfile(this.reportMeta).then((res) => {
-
-      console.log("onSubmit(): Saved techProfile successfully.");
-
+      Log.l("onSubmit(): Saved techProfile successfully.");
       if ( this.mode === 'modal' ) {
-        console.log('Mode = ' + this.mode );
+        Log.l('Mode = ' + this.mode );
         this.viewCtrl.dismiss();
       }
       else {
-        console.log('Mode = ' + this.mode );
-        // this.tabs.goHome();
+        Log.l('Mode = ' + this.mode );
         this.tabs.goToPage('OnSiteHome');
       }
-
     }).catch((err) => {
-      console.log("onSubmit(): Error saving techProfile!");
-      console.error(err);
+      Log.l("onSubmit(): Error saving techProfile!");
+      Log.e(err);
     });
   }
 }

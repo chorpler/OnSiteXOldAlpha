@@ -19,7 +19,8 @@ import { LocalNotifications                     } from '@ionic-native/local-noti
 import * as moment                                from 'moment'                            ;
 import { HomePage                               } from '../pages/home/home'                ;
 import { TabsComponent                          } from '../components/tabs/tabs'           ;
-import { PREFS                                  } from '../config/config.strings'          ;
+// import { PREFS                                  } from '../config/config.strings'          ;
+import { Preferences                            } from '../providers/preferences'          ;
 import { TranslateService } from '@ngx-translate/core';
 
 
@@ -28,12 +29,12 @@ import { TranslateService } from '@ngx-translate/core';
 export class OnSiteApp {
   @ViewChild(Nav) nav: Nav;
 
-  title                    : string  = 'OnSiteHome'    ;
-  rootPage                 : any                       ;
-  pouchOptions             : any     = {          }    ;
-  backButtonPressedAlready : boolean = false           ;
-  static PREFS             : any     = new PREFS()     ;
-  prefs                    : any     = OnSiteApp.PREFS ;
+  title                    : string  = 'OnSiteHome'      ;
+  rootPage                 : any                         ;
+  pouchOptions             : any     = {          }      ;
+  backButtonPressedAlready : boolean = false             ;
+  static PREFS             : any     = new Preferences() ;
+  prefs                    : any     = OnSiteApp.PREFS   ;
 
   private network: any;
 
@@ -93,12 +94,16 @@ export class OnSiteApp {
 
       this.checkPreferences().then(() => {
         Log.l("OnSite.initializeApp(): Done messing with preferences, now checking login...");
+        let language = this.prefs.USER.language;
+        if(language !== 'en') {
+          this.translate.use(language);
+        }
         this.checkLogin().then(res => {
           Log.l("OnSite.initializeApp(): User passed login check. Should be fine.");
           // this.finishStartup().then(() => {
           //   Log.l("Done with finishStartup.");
             this.rootPage = 'OnSiteHome';
-          }).then(() => {
+          // }).then(() => {
             Log.l("OnSite.initializeApp(): Publishing startup event!");
             this.events.publish('startup:finished', true);
             var callingClass = this;
@@ -178,8 +183,12 @@ export class OnSiteApp {
         // this.ud.storeCredentials(u, p);
         return this.server.loginToServer(u, p, '_session');
       }).then((res) => {
-        Log.l("checkLogin(): Successfully logged in!");
+        Log.l("checkLogin(): Successfully logged in! Now retrieving config...");
+        return this.db.getAllConfigData();
+      }).then(res => {
         // this.ud.setLoginStatus(true);
+        Log.l("checkLogin(): Successfully retrieved config data...");
+        this.ud.setSesaConfig(res);
         resolve(res);
       }).catch((err) => {
         Log.l("checkLogin(): Error checking for saved credentials. User not authenticated properly!");

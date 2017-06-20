@@ -6,6 +6,7 @@ import { DBSrvcs                } from './db-srvcs'                 ;
 import { Shift                  } from '../domain/shift'            ;
 import { WorkOrder              } from '../domain/workorder'        ;
 import { Log, isMoment          } from '../config/config.functions' ;
+import { Preferences            } from './preferences'              ;
 import { PREFS, STRINGS         } from '../config/config.strings'   ;
 import moment from 'moment';
 
@@ -19,8 +20,8 @@ export class UserData {
   public static BOOT_STATUS:any = {finished: false};
   public BOOT_STATUS:any = UserData.BOOT_STATUS;
   public static shift: Shift;
-  public static PREFS:any = new PREFS();
-  public prefs:any = UserData.PREFS;
+  // public static PREFS:any = new Preferences();
+  // public prefs:any = UserData.PREFS;
   public static workOrderList: Array<WorkOrder> = [];
   public static current_shift_hours: any;
   public static circled_numbers:Array<string>;
@@ -29,11 +30,29 @@ export class UserData {
   public static shifts:Array<Shift> = [];
   public static techProfile:any;
   public static userLoggedIn:boolean = false;
+  public static sesaConfig:any = {};
+  public sesaConfig:any = UserData.sesaConfig;
   private static loginData:any = null;
 
-  constructor(public events: Events, public storage: Storage, public platform: Platform) {
+  constructor(public events: Events, public storage: Storage, public platform: Platform, public prefs: Preferences) {
     window["onsiteuserdata"] = this;
     window["UserData"] = UserData;
+   }
+
+   public static getSesaConfig() {
+     return UserData.sesaConfig;
+   }
+   public getSesaConfig() {
+     return UserData.getSesaConfig();
+   }
+   public static setSesaConfig(config:any) {
+     for(let key of Object.keys(config)) {
+       UserData.sesaConfig[key] = config[key];
+     }
+     return UserData.sesaConfig;
+   }
+   public setSesaConfig(config:any) {
+    return UserData.setSesaConfig(config);
    }
 
    public static startupFinished() {

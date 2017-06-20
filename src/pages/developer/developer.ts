@@ -6,11 +6,12 @@ import { AlertService           } from '../../providers/alerts'         ;
 import { Log                    } from '../../config/config.functions'  ;
 import { TimeSrvc               } from '../../providers/time-parse-srvc';
 import { DBSrvcs                } from '../../providers/db-srvcs'       ;
-import { PREFS               } from '../../config/config.strings'   ;
+// import { PREFS               } from '../../config/config.strings'   ;
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateService } from '@ngx-translate/core';
 import { TabsComponent } from '../../components/tabs/tabs';
+import { Preferences } from '../../providers/preferences';
 
 /**
  * Generated class for the DeveloperPage page.
@@ -30,7 +31,7 @@ export class DeveloperPage implements OnInit {
   geolocToggle : boolean = this.GeolocStatus;
   onSiteTimeStamp: number;
   testDatabases: boolean = false;
-  prefs        : any     = PREFS;
+  // prefs        : any     = PREFS;
   useSpanish   : boolean = false;
   spanishDefault : boolean = false;
   unicodeChars : string = "";
@@ -42,7 +43,8 @@ export class DeveloperPage implements OnInit {
               public alert: AlertService,
               public timeSrvc: TimeSrvc,
               public translate: TranslateService,
-              public tabs: TabsComponent )
+              public tabs: TabsComponent,
+              public prefs:Preferences )
   {
     this.spanishDefault = this.translate.currentLang === 'es' ? true : false;
     this.useSpanish = this.spanishDefault;
@@ -57,19 +59,19 @@ export class DeveloperPage implements OnInit {
 
   ngOnInit() {
     Log.l("Developer Settings page loaded.");
-    this.testDatabases = PREFS.DB.reports === 'test-reports' ? true : false;
+    this.testDatabases = this.prefs.DB.reports === 'test-reports' ? true : false;
     this.GeolocStatus  = this.geoloc.isEnabled();
   }
 
   checkTestDatabase() {
     if(this.testDatabases) {
       Log.l("checkTestDatabases(): Now setting databases to test mode.")
-      PREFS.setDB('reports', 'test-reports');
+      this.prefs.setDB('reports', 'test-reports');
     } else {
       Log.l("checkTestDatabases(): Now setting databases to normal mode.");
-      PREFS.setDB('reports', 'reports');
+      this.prefs.setDB('reports', 'reports');
     }
-    Log.l("checkTestDatabases(): PREFS are now:\n", PREFS.getPrefs());
+    Log.l("checkTestDatabases(): PREFS are now:\n", this.prefs.getPrefs());
   }
 
   toggleBackgroundGeolocation() {
@@ -95,11 +97,11 @@ export class DeveloperPage implements OnInit {
   }
 
   updatePreferences() {
-    this.db.savePreferences(PREFS.getPrefs()).then((res) => {
-      Log.l("checkTestDatabases(): Saved preferences successfully.");
+    this.db.savePreferences(this.prefs.getPrefs()).then((res) => {
+      Log.l("updatePreferences(): Saved preferences successfully.");
       this.alert.showAlert("SUCCESS", "Preferences saved!");
     }).catch((err) => {
-      Log.l("checkTestDatabases(): Error saving preferences.");
+      Log.l("updatePreferences(): Error saving preferences.");
       Log.e(err);
       this.alert.showAlert("ERROR", "Error saving preferences!");
     });

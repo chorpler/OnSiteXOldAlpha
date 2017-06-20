@@ -8,6 +8,7 @@ import * as pdbUpsert from 'pouchdb-upsert';
 import * as pdbAllDBs from 'pouchdb-all-dbs';
 import { Log } from '../config/config.functions';
 import { PREFS } from '../config/config.strings';
+import { Preferences } from './preferences';
 
 @Injectable()
 export class PouchDBService {

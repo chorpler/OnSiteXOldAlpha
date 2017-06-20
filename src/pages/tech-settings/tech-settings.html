@@ -11,57 +11,57 @@
   <form [formGroup]="techSettings" (ngSubmit)="onSubmit()">
     <ion-list>
       <ion-item>
-        <ion-label floating>FIRST NAME:</ion-label>
+        <ion-label floating>{{'tech_settings_first_name' | translate}}</ion-label>
         <ion-input type='text' formControlName='firstName'>{{firstName}} </ion-input>
       </ion-item>
       <ion-item>
-        <ion-label floating>LAST NAME:</ion-label>
+        <ion-label floating>{{'tech_settings_last_name' | translate}}</ion-label>
         <ion-input type='text' formControlName='lastName'>{{lastName}} </ion-input>
       </ion-item>
       <ion-item>
-        <ion-label floating>CLIENT:</ion-label>
+        <ion-label floating>{{'tech_settings_client' | translate}}</ion-label>
         <ion-select formControlName='client'>
-          <ion-option *ngFor='let client of selClient' [value]='client'> {{client}} </ion-option>
+          <ion-option *ngFor='let client of selClient' [value]='client'> {{client.fullName.toUpperCase()}} </ion-option>
         </ion-select>
       </ion-item>
       <ion-item>
-        <ion-label floating>LOCATION:</ion-label>
+        <ion-label floating>{{'tech_settings_location' | translate}}</ion-label>
         <ion-select formControlName='location'>
-          <ion-option *ngFor='let location of selLocation' [value]='location'> {{location}} </ion-option>
+          <ion-option *ngFor='let location of selLocation' [value]='location'> {{location.fullName.toUpperCase()}} </ion-option>
         </ion-select>
       </ion-item>
       <ion-item>
-        <ion-label floating>LOCID:</ion-label>
+        <ion-label floating>{{'tech_settings_location_id' | translate}}</ion-label>
         <ion-select formControlName='locID'>
-          <ion-option *ngFor='let locID of selLocID' [value]='locID'> {{locID}} </ion-option>
+          <ion-option *ngFor='let locID of selLocID' [value]='locID'> {{locID.fullName.toUpperCase()}} </ion-option>
         </ion-select>
       </ion-item>
       <ion-item>
-        <ion-label floating>LOC2ND:</ion-label>
+        <ion-label floating>{{'tech_settings_auxiliary_location' | translate}}</ion-label>
         <ion-select formControlName='loc2nd'>
-          <ion-option *ngFor='let loc2nd of selLoc2nd' [value]='loc2nd'> {{loc2nd}} </ion-option>
+          <ion-option *ngFor='let loc2nd of selLoc2nd' [value]='loc2nd'> {{loc2nd.fullName.toUpperCase()}} </ion-option>
         </ion-select>
       </ion-item>
       <ion-item>
-        <ion-label floating>SHIFT:</ion-label>
+        <ion-label floating>{{'tech_settings_shift' | translate}}</ion-label>
         <ion-select formControlName='shift'>
-          <ion-option *ngFor='let shift of selShift' [value]='shift'> {{shift}} </ion-option>
+          <ion-option *ngFor='let shift of selShift' [value]='shift'> {{shift.fullName.toUpperCase()}} </ion-option>
         </ion-select>
       </ion-item>
       <ion-item>
-        <ion-label floating>SHIFT LENGTH:</ion-label>
+        <ion-label floating>{{'tech_settings_shift_length' | translate}}</ion-label>
         <ion-select formControlName='shiftLength'>
-          <ion-option *ngFor='let shiftLength of selShiftLength' [value]='shiftLength'> {{shiftLength}} </ion-option>
+          <ion-option *ngFor='let shiftLength of selShiftLength' [value]='shiftLength'> {{shiftLength.fullName.toUpperCase()}} </ion-option>
         </ion-select>
       </ion-item>
       <ion-item>
-        <ion-label floating>SHIFT START TIME:</ion-label>
+        <ion-label floating>{{'tech_settings_shift_start_time' | translate}}</ion-label>
         <ion-select formControlName='shiftStartTime'>
-          <ion-option *ngFor='let shiftStartTime of selShiftStartTime' [value]='shiftStartTime'> {{shiftStartTime}} </ion-option>
+          <ion-option *ngFor='let shiftStartTime of selShiftStartTime' [value]='shiftStartTime'> {{shiftStartTime.fullName.toUpperCase()}} </ion-option>
         </ion-select>
       </ion-item>
     </ion-list>
-    <button type="submit" ion-button block color="favorite">Update {{title}} </button>
+    <button type="submit" ion-button block color="favorite">{{'update_user' | translate}}</button>
   </form>
 </ion-content>
 <onsite-tabs></onsite-tabs>
