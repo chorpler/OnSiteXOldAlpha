@@ -20,18 +20,29 @@
 <ion-content padding>
   <h5 class="home-welcome">{{'user' | translate}}: {{ud.getTechName()}}</h5>
   <h5> {{"home_hours_submitted_for_payroll" | translate}} </h5>
-  <div *ngIf="dataReady">
-    <p *ngFor="let shift of shifts; let i=index" [ngClass]="getShiftStatus(i)">
-      <span class="shft-num-icon">{{numChars[shift.shift_number]}}</span>
-      <!-- <span class="shft-num-icon">{{numChars[shift.shift_number]}}</span> -->
-      <span class="shift-text">{{hoursTotalList[i]}} {{"of" | translate}} {{techProfile.shiftLength}} {{"home_hours_submitted_for_shift" | translate}}</span>
-      <!-- <span class="chk-box-icon" [class.hrsCompleted]="getShiftStatus(i)">{{getCheckbox(i)}}</span> -->
-      <!-- <span class="chk-box-icon" [class.hrsCompleted]="getShiftStatus(i)"><img class="checkbox-svg-icon" [src]="getCheckboxSVG(i)" /></span> -->
-      <span class="chk-box-icon" [ngClass]="getShiftStatus(i)" [innerHTML]="getCheckboxSVG(i) | safe: 'html'"></span>
-    </p>
-  </div>
+
+   <ion-list no-border *ngIf="dataReady">
+    <ion-item *ngFor="let shift of shifts; let i=index" [ngClass]="getShiftStatus(i)">
+      <ion-icon class="shft-num-icon">{{numChars[shift.shift_number]}}</ion-icon>
+      <span class="shift-text">{{hoursTotalList[i]}}&nbsp; {{"of" | translate}} &nbsp;{{techProfile.shiftLength}} &nbsp; {{"hours" | translate}} </span>
+      <ion-icon item-end class="chk-box-icon" [ngClass]="getShiftStatus(i)" [innerHTML]="getCheckboxSVG(i) | safe: 'html'"></ion-icon >
+    </ion-item>
+  </ion-list>
+
   <h6> {{"home_hours_submitted_for_payroll_period" | translate}}: {{ payrollPeriodHours }} </h6>
   <h6> {{"home_payroll_hours_submitted" | translate}} : {{ payrollPeriodBonusHours }} </h6>
 </ion-content>
 <onsite-tabs></onsite-tabs>
 
+  <!-- <div *ngIf="dataReady">
+    <p *ngFor="let shift of shifts; let i=index" [ngClass]="getShiftStatus(i)">
+      <span class="shft-num-icon">{{numChars[shift.shift_number]}}</span>
+      <span class="shift-text">{{hoursTotalList[i]}} {{"of" | translate}} {{techProfile.shiftLength}} {{"home_hours_submitted_for_shift" | translate}}</span>
+      <span class="chk-box-icon" [ngClass]="getShiftStatus(i)" [innerHTML]="getCheckboxSVG(i) | safe: 'html'"></span>
+    </p>
+  </div> -->
+
+      <!-- <span class="shft-num-icon">{{numChars[shift.shift_number]}}</span> -->
+      <!-- <span class="chk-box-icon" [class.hrsCompleted]="getShiftStatus(i)">{{getCheckbox(i)}}</span> -->
+      <!-- <span class="chk-box-icon" [class.hrsCompleted]="getShiftStatus(i)"><img class="checkbox-svg-icon" [src]="getCheckboxSVG(i)" /></span> -->
+<!-- {{"home_hours_submitted_for_shift" | translate}} -->
