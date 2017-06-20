@@ -163,5 +163,9 @@ export class ReportHistory implements OnInit {
     });
   }
 
+  addNewReportForShift(shift:Shift) {
+    this.alert.showAlert("Sorry", "This is in progress.");
+  }
+
 
 }

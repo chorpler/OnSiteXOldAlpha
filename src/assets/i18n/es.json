@@ -85,6 +85,7 @@
   "spinner_retrieving_reports": "Obtener Informes...",
   "spinner_deleting_report": "Eliminar informe...",
   "error_deleting_report_message": "Error al eliminar el informe. Por favor, inténtelo de nuevo más tarde.",
-  "error_server_connect_message": "No se pudo conectar al servidor. Por favor, inténtelo de nuevo más tarde."
+  "error_server_connect_message": "No se pudo conectar al servidor. Por favor, inténtelo de nuevo más tarde.",
+  "hours_header": "Horas"
 }
 
