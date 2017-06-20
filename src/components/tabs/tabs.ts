@@ -33,15 +33,16 @@ export class TabsComponent implements OnInit {
     { name: 'ReportHistory' , fullName: 'Report History'     , icon: 'folder'   , active: false } ,
     { name: 'User'          , fullName: 'User'               , icon: 'contact'  , active: false } ,
     { name: 'Settings'      , fullName: 'Settings'           , icon: 'settings' , active: false } ,
-    { name: 'DevPage'       , fullName: 'Developer Settings' , icon: 'options'  , active: false } ,
   ];
   tabInfo:any = TabsComponent.tabInfo;
+  static developerTab: any = { name: 'DevPage', fullName: 'Developer Settings', icon: 'options', active: false };
+  developerTab:any = TabsComponent.developerTab;
   static tab:any = {
     'OnSiteHome': {}
   };
   onSitePage: any;
   userLoggedIn: boolean;
-  userIsDeveloper:boolean;
+  userIsDeveloper:boolean = false;
   enumPages:any;
   enumPagesDef:any;
 
@@ -52,6 +53,19 @@ export class TabsComponent implements OnInit {
     window['onSiteTabs'] = this;
     this.enumPages = Pages.OnSiteHome;
     this.enumPagesDef = Pages;
+  }
+
+  ngOnInit() {
+    window['onSiteTabs'] = this;
+    // if( this.onSitePage === 'Login') { TabsComponent.allTabs.disabled = true; }
+    if (this.onSitePage === 'Login') { this.setTabDisable(true); }
+    if(this.isDeveloper()) {
+      if(this.tabInfo[this.tabInfo.length - 1].name !== 'DevPage') {
+        this.tabInfo.push(this.developerTab);
+      }
+    } else if(this.tabInfo[this.tabInfo.length - 1].name === 'DevPage') {
+      this.tabInfo.pop();
+    }
   }
 
   getActiveNav() {
@@ -157,7 +171,7 @@ export class TabsComponent implements OnInit {
   isDeveloper() {
     // if( this.auth.getUser() === 'Chorpler' || this.auth.getUser() === 'Hachero' || this.auth.getUser() === 'mike' ) {
     let un = this.ud.getUsername();
-    if( un === 'Chorpler' || un === 'Hachero' || un === 'mike' ) {
+    if( un === 'Chorpler' || un === 'Hachero' || un === 'mike' || un === 'admin' ) {
       this.userIsDeveloper = true;
       return true;
     } else {
@@ -168,9 +182,4 @@ export class TabsComponent implements OnInit {
 
   terminateApp() { this.platform.exitApp(); }
 
-  ngOnInit() {
-    window['onSiteTabs'] = this;
-    // if( this.onSitePage === 'Login') { TabsComponent.allTabs.disabled = true; }
-    if (this.onSitePage === 'Login') { this.setTabDisable(true); }
-  }
 }
