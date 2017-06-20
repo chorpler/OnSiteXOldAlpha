@@ -13,6 +13,7 @@ import { TranslateService                                       } from '@ngx-tra
 import { TabsComponent                                          } from '../../components/tabs/tabs'    ;
 import { OrderBy                                                } from '../../pipes/pipes'             ;
 import moment from 'moment';
+import { STRINGS                                                } from '../../config/config.strings'   ;
 
 
 @IonicPage({ name    : 'ReportHistory'                                           })
@@ -31,6 +32,7 @@ export class ReportHistory implements OnInit {
   public filterKeys   : Array<string>                                                                   ;
   public data         : any                                                                             ;
   public loading      : any                                                                             ;
+  numChars     : Array<string> = STRINGS.NUMCHARS ;
   public static PREFS : any              = new PREFS();
   constructor( public navCtrl: NavController      , public navParams  : NavParams         ,
                public db : DBSrvcs                , public alert      : AlertService      ,
