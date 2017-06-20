@@ -44,12 +44,12 @@
   "save": "Guardar",
   "submit_report": "Enviar Reporte",
   "save_report": "Guardar Reporte",
-  "shift_date": "Fecha de cambio",
+  "shift_date": "Fecha",
   "shift": "Cambio",
   "hours": "horas",
   "of": "de",
   "repair_time": "Tiempo de reparación",
-  "unit_number": "Unidad numérica",
+  "unit_number": "Unidad",
   "work_order_number": "Número de orden de trabajo",
   "job_notes": "Notas de trabajo",
   "report_submit_error": "Error al enviar el informe. Vuelve a intentarlo.",
@@ -79,6 +79,9 @@
   "send_comment_title": "Lo Siento",
   "send_comment_message": "Esta función aún no está activa.",
   "user_settings": "Ajustes de Usuario",
-  "language": "Idioma"
+  "language": "Idioma",
+  "confirm_exit_title": "Salir de la aplicación",
+  "confirm_exit_message": "¿Seguro que quieres salir de la aplicación?",
+  "spinner_retrieving_reports": "Obtener Informes..."
 }
 

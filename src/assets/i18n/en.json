@@ -79,5 +79,8 @@
   "send_comment_title": "Sorry",
   "send_comment_message": "This function is not active yet.",
   "user_settings": "User Settings",
-  "language": "Language"
+  "language": "Language",
+  "confirm_exit_title": "Exit App",
+  "confirm_exit_message": "Are you sure you want to exit the app?",
+  "spinner_retrieving_reports": "Fetching Reports..."
 }

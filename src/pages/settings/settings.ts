@@ -52,6 +52,10 @@ export class Settings implements OnInit {
         break;
       }
     }
+    if(this.language === null) {
+      this.translate.use('en');
+      this.language = this.languages[0];
+    }
     this.version.getAppName().then(res => {
       this.appName = res;
       return this.version.getVersionNumber();

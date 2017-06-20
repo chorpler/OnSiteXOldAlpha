@@ -4,7 +4,8 @@ import { App, Platform     } from 'ionic-angular';
 import { NgZone            } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { UserData } from '../../providers/user-data';
-
+import { AlertService } from '../../providers/alerts';
+import { Log          } from '../../config/config.functions';
 
 enum Pages {
   'OnSiteHome'    = 0,
@@ -46,9 +47,7 @@ export class TabsComponent implements OnInit {
   enumPages:any;
   enumPagesDef:any;
 
-  constructor( public app: App, public platform: Platform, public zone: NgZone, public translate: TranslateService, public ud:UserData ) {
-    // TabsComponent.nav = this.app.getActiveNav();
-    // this.nav = TabsComponent.nav;
+  constructor( public app: App, public platform: Platform, public zone: NgZone, public translate: TranslateService, public ud:UserData, public alert:AlertService) {
     this.getActiveNav();
     window['onSiteTabs'] = this;
     this.enumPages = Pages.OnSiteHome;
@@ -57,7 +56,6 @@ export class TabsComponent implements OnInit {
 
   ngOnInit() {
     window['onSiteTabs'] = this;
-    // if( this.onSitePage === 'Login') { TabsComponent.allTabs.disabled = true; }
     if (this.onSitePage === 'Login') { this.setTabDisable(true); }
     if(this.isDeveloper()) {
       if(this.tabInfo[this.tabInfo.length - 1].name !== 'DevPage') {
@@ -84,17 +82,6 @@ export class TabsComponent implements OnInit {
     console.log(`Tabs: entering page '${pagename}'`);
 
     this.highlightPageTab(pagename);
-    // let len = tabs.length;
-    // let index = -1;
-    // let i = 0;
-    // for(let tab of tabs) {
-    //   if(tab.name === pagename) {
-    //     tab.active = true;
-    //   } else {
-    //     tab.active = false;
-    //     i++;
-    //   }
-    // }
     console.log(`Tabs: found page ${pagename} at index ${Pages[pagename]}...`);
     this.getActiveNav();
     if(params) {
@@ -169,7 +156,6 @@ export class TabsComponent implements OnInit {
   }
 
   isDeveloper() {
-    // if( this.auth.getUser() === 'Chorpler' || this.auth.getUser() === 'Hachero' || this.auth.getUser() === 'mike' ) {
     let un = this.ud.getUsername();
     if( un === 'Chorpler' || un === 'Hachero' || un === 'mike' || un === 'admin' ) {
       this.userIsDeveloper = true;
@@ -180,6 +166,15 @@ export class TabsComponent implements OnInit {
     }
   }
 
-  terminateApp() { this.platform.exitApp(); }
-
+  terminateApp() {
+    let lang = this.translate.instant(['confirm_exit_title', 'confirm_exit_message']);
+    this.alert.showConfirm(lang['confirm_exit_title'], lang['confirm_exit_message']).then(res => {
+      if(res) {
+       Log.l("terminateApp(): User confirmed, exiting app.");
+       this.platform.exitApp();
+      }
+    }).catch(err => {
+      Log.l("terminateApp(): Error attempting to exit app.");
+    });
+  }
 }

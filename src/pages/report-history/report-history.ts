@@ -48,7 +48,8 @@ export class ReportHistory implements OnInit {
   ionViewDidEnter() {
     Log.l("ReportHistory: ionViewDidEnter called...");
     Log.l("ReportHistory: pulling reports...");
-    this.alert.showSpinner("Retrieving reports...");
+    let lang = this.translate.instant('spinner_retrieving_reports');
+    this.alert.showSpinner(lang['spinner_retrieving_reports']);
     this.shifts = this.ud.getPeriodShifts();
     this.filterKeys = [];
     for(let shift of this.shifts) {
