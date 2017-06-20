@@ -469,9 +469,10 @@ export class WorkOrderPage implements OnInit {
 
   deleteWorkOrder(event, item) {
     Log.l("deleteWorkOrder() clicked ...");
-    this.alert.showConfirm('CONFIRM', 'Delete this work report?').then((res) => {
+    let lang = this.translate.instant(['confirm', 'delete_report', 'spinner_deleting_report', 'error', 'error_deleting_report_message']);
+    this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
       if(res) {
-        this.alert.showSpinner('Deleting work report...');
+        this.alert.showSpinner(lang['spinner_deleting_report']);
         Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
         let wo = this.workOrder.clone();
         let woList = this.ud.getWorkOrderList();
@@ -491,7 +492,7 @@ export class WorkOrderPage implements OnInit {
           this.alert.hideSpinner();
           Log.l("deleteWorkOrder(): Error!");
           Log.e(err);
-          this.alert.showAlert('ERROR', 'Error deleting work report. Please try again later.');
+          this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
         });
       } else {
         Log.l("User canceled deletion.");
@@ -500,7 +501,7 @@ export class WorkOrderPage implements OnInit {
       this.alert.hideSpinner();
       Log.l("deleteWorkOrder(): Error!");
       Log.e(err);
-      this.alert.showAlert('ERROR', 'Error deleting work report. Please try again later.');
+      this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
     });
   }
 

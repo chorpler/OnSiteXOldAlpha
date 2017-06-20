@@ -8,7 +8,7 @@ import { AlertService                                           } from '../../pr
 import { Log, isMoment                                          } from '../../config/config.functions' ;
 import { WorkOrder                                              } from '../../domain/workorder'        ;
 import { Shift                                                  } from '../../domain/shift'            ;
-import { PREFS                                                  } from '../../config/config.strings'   ;
+import { Preferences                                            } from '../../providers/preferences'   ;
 import { TranslateService                                       } from '@ngx-translate/core'           ;
 import { TabsComponent                                          } from '../../components/tabs/tabs'    ;
 import { OrderBy                                                } from '../../pipes/pipes'             ;
@@ -31,7 +31,8 @@ export class ReportHistory implements OnInit {
   public filterKeys   : Array<string>                                                                   ;
   public data         : any                                                                             ;
   public loading      : any                                                                             ;
-  public static PREFS : any              = new PREFS();
+  public static PREFS : any              = new Preferences()                                            ;
+  public prefs        : any              = ReportHistory.PREFS;
   constructor( public navCtrl: NavController      , public navParams  : NavParams         ,
                public db : DBSrvcs                , public alert      : AlertService      ,
                private auth: AuthSrvcs            , public loadingCtrl: LoadingController ,
@@ -48,7 +49,7 @@ export class ReportHistory implements OnInit {
   ionViewDidEnter() {
     Log.l("ReportHistory: ionViewDidEnter called...");
     Log.l("ReportHistory: pulling reports...");
-    let lang = this.translate.instant('spinner_retrieving_reports');
+    let lang = this.translate.instant(['spinner_retrieving_reports', 'error', 'error_server_connect_message']);
     this.alert.showSpinner(lang['spinner_retrieving_reports']);
     this.shifts = this.ud.getPeriodShifts();
     this.filterKeys = [];
@@ -89,7 +90,7 @@ export class ReportHistory implements OnInit {
       Log.l("ReportHistory: Error getting report list.");
       Log.e(err);
       this.alert.hideSpinner();
-      this.alert.showAlert("ERROR", "Could not connect to server. Please try again later.");
+      this.alert.showAlert(lang['error'], lang['error_server_connect_message']);
     });
   }
 
@@ -97,25 +98,68 @@ export class ReportHistory implements OnInit {
     this.tabs.goToPage('WorkOrder', {mode: 'Edit', workOrder: item})
   }
 
+  // deleteWorkOrder(event, item) {
+  //   Log.l("deleteWorkOrder() clicked ...");
+  //   let lang = this.translate.instant(['confirm', 'delete_report', 'spinner_deleting_report', 'error', 'error_deleting_report_message']);
+  //   this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
+  //     if(res) {
+  //       Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
+  //       let i = this.reports.indexOf(item);
+  //       this.server.deleteDoc(PREFS.DB.reports, item).then((res) => {
+  //         Log.l("deleteWorkOrder(): Success:\n", res);
+  //         this.reports.splice(i, 1);
+  //       }).catch((err) => {
+  //         Log.l("deleteWorkOrder(): Error!");
+  //         Log.e(err);
+  //       });
+  //     } else {
+  //       Log.l("User canceled deletion.");
+  //     }
+  //   }).catch((err) => {
+  //     Log.l("deleteWorkOrder(): Error!");
+  //     Log.e(err);
+  //   });
+  // }
+
   deleteWorkOrder(event, item) {
     Log.l("deleteWorkOrder() clicked ...");
-    this.alert.showConfirm('CONFIRM', 'Delete this work order?').then((res) => {
-      if(res) {
+    let lang = this.translate.instant(['confirm', 'delete_report', 'spinner_deleting_report', 'error', 'error_deleting_report_message']);
+    this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
+      if (res) {
+        this.alert.showSpinner(lang['spinner_deleting_report']);
         Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
-        let i = this.reports.indexOf(item);
-        this.server.deleteDoc(PREFS.DB.reports, item).then((res) => {
+        let wo = item.clone();
+        // let woList = this.ud.getWorkOrderList();
+        let woList = this.reports;
+        let i = woList.indexOf(item);
+        this.server.deleteDoc(this.prefs.DB.reports, wo).then((res) => {
           Log.l("deleteWorkOrder(): Success:\n", res);
-          this.reports.splice(i, 1);
+          // this.items.splice(i, 1);
+          woList.splice(i, 1);
+          // if (this.mode === 'Add') {
+          //   this.alert.hideSpinner();
+          //   this.tabs.goToPage('OnSiteHome');
+          // } else {
+          //   this.alert.hideSpinner();
+          //   this.tabs.goToPage('ReportHistory');
+          // }
+          this.alert.hideSpinner();
         }).catch((err) => {
+          this.alert.hideSpinner();
           Log.l("deleteWorkOrder(): Error!");
           Log.e(err);
+          this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
         });
       } else {
         Log.l("User canceled deletion.");
       }
     }).catch((err) => {
+      this.alert.hideSpinner();
       Log.l("deleteWorkOrder(): Error!");
       Log.e(err);
+      this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
     });
   }
+
+
 }
