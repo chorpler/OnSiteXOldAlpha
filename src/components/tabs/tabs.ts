@@ -9,7 +9,7 @@ import { Log          } from '../../config/config.functions';
 
 enum Pages {
   'OnSiteHome'    = 0,
-  'WorkOrder'     = 1,
+  'Report'        = 1,
   'ReportHistory' = 2,
   'User'          = 3,
   'Settings'      = 4,
@@ -30,7 +30,7 @@ export class TabsComponent implements OnInit {
   allTabs:any = TabsComponent.allTabs;
   static tabInfo:any = [
     { name: 'OnSiteHome'    , fullName: 'OnSite Home'        , icon: 'home'     , active: false } ,
-    { name: 'WorkOrder'     , fullName: 'Work Order'         , icon: 'document' , active: false } ,
+    { name: 'Report'        , fullName: 'Report'             , icon: 'document' , active: false } ,
     { name: 'ReportHistory' , fullName: 'Report History'     , icon: 'folder'   , active: false } ,
     { name: 'User'          , fullName: 'User'               , icon: 'contact'  , active: false } ,
     { name: 'Settings'      , fullName: 'Settings'           , icon: 'settings' , active: false } ,
@@ -79,10 +79,10 @@ export class TabsComponent implements OnInit {
     } else {
       pagename = page;
     }
-    console.log(`Tabs: entering page '${pagename}'`);
+    Log.l(`Tabs: entering page '${pagename}'`);
 
     this.highlightPageTab(pagename);
-    console.log(`Tabs: found page ${pagename} at index ${Pages[pagename]}...`);
+    Log.l(`Tabs: found page ${pagename} at index ${Pages[pagename]}...`);
     this.getActiveNav();
     if(params) {
       this.nav.setRoot(pagename, params);
@@ -118,8 +118,8 @@ export class TabsComponent implements OnInit {
   }
 
   goReport(params?:any) {
-    console.log('entering page: WorkOrder' );
-    this.goToPage('WorkOrder');
+    console.log('entering page: Report' );
+    this.goToPage('Report');
   }
 
   goHistory() {

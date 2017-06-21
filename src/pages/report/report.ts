@@ -18,20 +18,21 @@ import moment from 'moment';
 import { sprintf } from 'sprintf-js';
 import { MultiPickerModule } from 'ion-multi-picker';
 import { FancySelectComponent } from '../../components/fancy-select/fancy-select';
-import { PREFS, STRINGS                     } from '../../config/config.strings'          ;
+import { STRINGS } from '../../config/config.strings';
+import { Preferences } from '../../providers/preferences';
 import { TabsComponent } from '../../components/tabs/tabs';
 import { TranslateService } from '@ngx-translate/core';
 
-@IonicPage({ name: 'WorkOrder' })
+@IonicPage({ name: 'Report' })
 @Component({
-  selector: 'page-work-order',
-  templateUrl: 'work-order.html'
+  selector: 'page-report',
+  templateUrl: 'report.html'
 })
 
-export class WorkOrderPage implements OnInit {
+export class ReportPage implements OnInit {
   title: string = 'Work Report';
-  static PREFS:any = new PREFS();
-  prefs:any = WorkOrderPage.PREFS;
+  static PREFS: any = new Preferences();
+  prefs: any = ReportPage.PREFS;
 
   setDate: Date = new Date();
   year: number = this.setDate.getFullYear();
@@ -42,7 +43,7 @@ export class WorkOrderPage implements OnInit {
   repairHrs: any;
   profile: any = {};
   tmpReportData: any;
-  techProfile:any;
+  techProfile: any;
   docID: string;
   idDate: string;
   idTime: string;
@@ -52,11 +53,12 @@ export class WorkOrderPage implements OnInit {
   shiftsStart: any;
   shifter: any;
   repairTime: any;
-  public thisWorkOrderContribution:number = 0;
-  public shiftTotalHours:any = 0;
-  public payrollPeriodHours:any = 0;
-  public currentRepairHours:number = 0;
-  public shiftHoursColor:string = "black";
+  public thisWorkOrderContribution: number = 0;
+  public shiftTotalHours: any = 0;
+  public payrollPeriodHours: any = 0;
+  public currentRepairHours: number = 0;
+  public shiftHoursColor: string = "black";
+  public shiftToUse:Shift = null;
 
   rprtDate: any;
   timeStarts: any;
@@ -65,7 +67,7 @@ export class WorkOrderPage implements OnInit {
   timeEnds: any;
   syncError: boolean = false;
   chooseHours: any;
-  chooseMins : any;
+  chooseMins: any;
   loading: any = {};
   _startDate: any;
   _startTime: any;
@@ -75,19 +77,19 @@ export class WorkOrderPage implements OnInit {
   _selected_shift: any;
   _notes: any;
 
-  public userdata:any;
-  public shiftDateOptions:any;
+  public userdata: any;
+  public shiftDateOptions: any;
 
   controlValueAccessor: any;
   public dataReady: boolean = false;
 
-  public techWorkOrders:Array<WorkOrder> = [];
+  public techWorkOrders: Array<WorkOrder> = [];
 
-  public shiftDateInputDisabled:boolean = true;
-  public shiftDateInput2Disabled:boolean = false;
-  public selectedShiftText:string = "";
-  public workOrderList:any;
-  public filteredWOList:any;
+  public shiftDateInputDisabled: boolean = true;
+  public shiftDateInput2Disabled: boolean = false;
+  public selectedShiftText: string = "";
+  public workOrderList: any;
+  public filteredWOList: any;
 
   constructor(
     public navCtrl: NavController,
@@ -99,57 +101,59 @@ export class WorkOrderPage implements OnInit {
     public loadingCtrl: LoadingController,
     public alert: AlertService,
     public modal: ModalController,
-    public zone:NgZone,
-    public tabs:TabsComponent,
-    public ud:UserData,
-    public translate:TranslateService)
-  {
+    public zone: NgZone,
+    public tabs: TabsComponent,
+    public ud: UserData,
+    public translate: TranslateService) {
     this.shifter = Shift;
     this.userdata = UserData;
     window["workorder"] = this;
   }
 
-  ionViewDidLoad() { console.log('ionViewDidLoad WorkOrder'); }
+  ionViewDidLoad() { console.log('ionViewDidLoad ReportPage'); }
 
   ngOnInit() {
     if (this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
-    if(this.navParams.get('workOrder') !== undefined) { this.workOrder = this.navParams.get('workOrder'); }
-    // this.title = `${this.mode} Work Report`;
+    if (this.navParams.get('workOrder') !== undefined) { this.workOrder = this.navParams.get('workOrder'); }
+    if (this.navParams.get('shift') !== undefined) { this.shiftToUse = this.navParams.get('shift'); }
+    if(this.shiftToUse !== null) {
+
+    }
     let mode = this.mode.toLowerCase();
     let titleStrings = this.translate.instant([mode, 'report']);
     let titleAdjective = titleStrings[mode];
-    let titleNoun      = titleStrings['report'];
+    let titleNoun = titleStrings['report'];
     this.title = `${titleAdjective} ${titleNoun}`;
 
     this.chooseHours = [
-      {"name": "Hours", "options": [] },
-      {"name": "Minutes", "options": [] }
+      { "name": "Hours", "options": [] },
+      { "name": "Minutes", "options": [] }
     ]
 
-    for(let i = 0; i < 100; i++) {
+    for (let i = 0; i < 100; i++) {
       let j = sprintf("%02d", i);
-      let o1 = {'text': j, 'value': j};
+      let o1 = { 'text': j, 'value': j };
       this.chooseHours[0].options.push(o1);
     }
-    let o1 = {'text': '00', 'value': '00'};
-    this.chooseHours[1].options.push({'text': '00', 'value': '00'});
-    this.chooseHours[1].options.push({'text': '30', 'value': '30'});
+    let o1 = { 'text': '00', 'value': '00' };
+    this.chooseHours[1].options.push({ 'text': '00', 'value': '00' });
+    this.chooseHours[1].options.push({ 'text': '30', 'value': '30' });
 
     this.shifts = [];
     this.db.getTechProfile().then((res) => {
-      Log.l(`WorkOrderPage: Success getting tech profile! Result:\n`, res);
+      Log.l(`ReportPage: Success getting tech profile! Result:\n`, res);
       this.techProfile = res;
-      if(this.mode === 'Add') {
+      if (this.mode === 'Add') {
         this.workOrder = new WorkOrder();
       }
       this.setupShifts();
       this.setupWorkOrderList();
       this.updateActiveShiftWorkOrders(this.selectedShift);
-      if(this.mode === 'Add') {
+      if (this.mode === 'Add') {
         let startTime = moment(this.selectedShift.start_time);
         let addTime = this.selectedShift.getShiftHours();
         let newStartTime = moment(startTime).add(addTime, 'hours');
-        Log.l("WorkOrderPage: Now setting work order start time. Start Time = %s, adding %f hours, gives:\n", startTime.format(), addTime, newStartTime);
+        Log.l("ReportPage: Now setting work order start time. Start Time = %s, adding %f hours, gives:\n", startTime.format(), addTime, newStartTime);
         this.workOrder.setStartTime(newStartTime);
       }
       this.thisWorkOrderContribution = this.workOrder.repair_hours || 0;
@@ -164,18 +168,18 @@ export class WorkOrderPage implements OnInit {
         let notes = value.notes;
         let unit = value.uNum;
         let woNum = value.woNum;
-        let fields = [['notes', 'notes'], ['wONum','work_order_number'],['uNum', 'unit_number']];
+        let fields = [['notes', 'notes'], ['wONum', 'work_order_number'], ['uNum', 'unit_number']];
         let len = fields.length;
-        for(let i = 0; i < len; i++) {
+        for (let i = 0; i < len; i++) {
           let key1 = fields[i][0];
           let key2 = fields[i][1];
-          if(value[key1] !== null && value[key1] !== undefined) {
+          if (value[key1] !== null && value[key1] !== undefined) {
             this.workOrder[key2] = value[key1];
           }
         }
         Log.l("workOrderForm: overall valueChanges, ended up with work order:\n", this.workOrder);
       });
-      this._repairHours.valueChanges.subscribe((hours:any) => {
+      this._repairHours.valueChanges.subscribe((hours: any) => {
         Log.l("workOrderForm: valueChanges fired for repair_hours: ", hours);
         let dur1 = hours.split(":");
         let hrs = Number(dur1[0]);
@@ -183,13 +187,13 @@ export class WorkOrderPage implements OnInit {
         let iDur = hrs + (min / 60);
         this.currentRepairHours = iDur;
         this.workOrder.setRepairHours(iDur);
-        if(this.selectedShift !== undefined && this.selectedShift !== null) {
+        if (this.selectedShift !== undefined && this.selectedShift !== null) {
           this.shiftHoursColor = this.getShiftHoursStatus(this.selectedShift);
         } else {
           this.shiftHoursColor = this.getShiftHoursStatus(this.shifts[0]);
         }
       })
-      this._selected_shift.valueChanges.subscribe((shift:any) => {
+      this._selected_shift.valueChanges.subscribe((shift: any) => {
         Log.l("workOrderForm: valueChanges fired for selected_shift:\n", shift);
         let ss = shift;
         this.updateActiveShiftWorkOrders(shift);
@@ -202,7 +206,7 @@ export class WorkOrderPage implements OnInit {
       });
       this.dataReady = true;
     }).catch((err) => {
-      Log.l(`WorkOrderPage: Error getting tech profile!`);
+      Log.l(`ReportPage: Error getting tech profile!`);
       Log.e(err);
     });
   }
@@ -210,7 +214,7 @@ export class WorkOrderPage implements OnInit {
   private initializeForm() {
     let wo = this.workOrder;
     let ts, rprtDate;
-    if(this.mode == 'Add') {
+    if (this.mode == 'Add') {
       rprtDate = moment(this.selectedShift.getStartTime());
       ts = moment().format();
     } else {
@@ -230,7 +234,7 @@ export class WorkOrderPage implements OnInit {
     });
   }
 
-  public updateActiveShiftWorkOrders(shift:Shift) {
+  public updateActiveShiftWorkOrders(shift: Shift) {
     let ss = shift;
     this.getTotalHoursForShift(ss);
     let shift_time = moment(ss.start_time);
@@ -247,7 +251,7 @@ export class WorkOrderPage implements OnInit {
 
   public setupWorkOrderList() {
     let tmpWOL = new Array<WorkOrder>();
-    if(this.ud.woArrayInitialized) {
+    if (this.ud.woArrayInitialized) {
       tmpWOL = this.ud.getWorkOrderList();
     }
     this.workOrderList = tmpWOL;
@@ -270,12 +274,16 @@ export class WorkOrderPage implements OnInit {
       thisShift.getExcelDates();
       this.shifts.push(thisShift);
     }
-    if(this.mode === 'Add') {
-      this.selectedShift = this.shifts[0];
+    if (this.mode === 'Add') {
+      if(this.shiftToUse !== null) {
+        this.selectedShift = this.shiftToUse;
+      } else {
+        this.selectedShift = this.shifts[0];
+      }
     } else {
       let woShiftSerial = this.workOrder.shift_serial;
-      for(let shift of this.shifts) {
-        if(shift.getShiftSerial() === woShiftSerial) {
+      for (let shift of this.shifts) {
+        if (shift.getShiftSerial() === woShiftSerial) {
           this.selectedShift = shift;
           Log.l("EditWorkOrder: setting active shift to:\n", shift);
           break;
@@ -288,17 +296,17 @@ export class WorkOrderPage implements OnInit {
   public showFancySelect() {
     Log.l("showFancySelect(): Called!");
     let options = [];
-    let selectData = {options: options};
-    for(let shift of this.shifts) {
-      let option = {shift: shift};
+    let selectData = { options: options };
+    for (let shift of this.shifts) {
+      let option = { shift: shift };
       options.push(option);
     }
     selectData.options = options;
     Log.l("showFancySelect(): About to create modal, selectData is:\n", selectData);
-    let fancySelectModal = this.modal.create('Fancy Select', { title: "Select Shift", selectData: selectData}, { cssClass: 'fancy-select-modal'});
+    let fancySelectModal = this.modal.create('Fancy Select', { title: "Select Shift", selectData: selectData }, { cssClass: 'fancy-select-modal' });
     fancySelectModal.onDidDismiss(data => {
-      Log.l("WorkOrderPage: Returned from fancy select, got back:\n", data);
-      if(data != null) {
+      Log.l("ReportPage: Returned from fancy select, got back:\n", data);
+      if (data != null) {
         this.selectedShift = data;
         this.selectedShiftText = this.selectedShift.toString(this.translate);
         this.workOrderForm.controls['selected_shift'].setValue(this.selectedShift);
@@ -307,9 +315,9 @@ export class WorkOrderPage implements OnInit {
     fancySelectModal.present();
   }
 
-  getTotalHoursForShift(shift:Shift) {
+  getTotalHoursForShift(shift: Shift) {
     let ss = shift;
-    if (ss === undefined || ss === null ) {
+    if (ss === undefined || ss === null) {
       Log.l("getTotalHoursForShift(): no selected shift somehow.");
     } else {
       let shiftID = shift.getShiftSerial();
@@ -319,7 +327,7 @@ export class WorkOrderPage implements OnInit {
       this.filteredWOList = filteredList;
       Log.l("getTotalHoursForShift(): Ended up with filtered work order list:\n", filteredList);
       let totalHours = 0;
-      for(let wo of filteredList) {
+      for (let wo of filteredList) {
         totalHours += Number(wo['repair_hours']);
       }
       ss.shift_hours = totalHours;
@@ -335,15 +343,15 @@ export class WorkOrderPage implements OnInit {
     return shift.getShiftColor();
   }
 
-  getShiftHoursStatus(shift:Shift) {
+  getShiftHoursStatus(shift: Shift) {
     let ss = shift;
-    if(ss !== undefined && ss !== null) {
+    if (ss !== undefined && ss !== null) {
       let subtotal = Number(ss.getShiftHours());
       let newhours = Number(this.workOrder.getRepairHours());
       let target = Number(this.techProfile.shiftLength);
       let total = subtotal + newhours;
       Log.l(`getShiftHoursStatus(): total = ${total}, target = ${target}.`);
-      if(total === target) {
+      if (total === target) {
         return 'green';
       } else {
         return 'red';
@@ -375,7 +383,7 @@ export class WorkOrderPage implements OnInit {
     let workOrderData = this.workOrderForm.getRawValue();
     this.alert.showSpinner("Saving report...");
     let tempWO = this.createReport();
-    if(this.mode === 'Add') {
+    if (this.mode === 'Add') {
       this.db.addDoc(this.prefs.DB.reports, tempWO).then((res) => {
         Log.l("processWO(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
         return this.db.syncSquaredToServer(this.prefs.DB.reports);
@@ -411,9 +419,9 @@ export class WorkOrderPage implements OnInit {
   }
 
   cancel() {
-    Log.l("WorkOrderPage: User canceled work order.");
+    Log.l("ReportPage: User canceled work order.");
     // setTimeout(() => { this.tabs.goHome() });
-    if(this.mode === 'Add') {
+    if (this.mode === 'Add') {
       this.tabs.goToPage('OnSiteHome');
     } else {
       this.tabs.goToPage('ReportHistory');
@@ -421,7 +429,7 @@ export class WorkOrderPage implements OnInit {
   }
 
   createReport() {
-    Log.l("WorkOrderPage: createReport(): Now creating report...");
+    Log.l("ReportPage: createReport(): Now creating report...");
     let partialReport = this.workOrderForm.getRawValue();
     let ts = moment(partialReport.timeStamp);
     let wo = this.workOrder;
@@ -433,36 +441,36 @@ export class WorkOrderPage implements OnInit {
     // this.calcEndTime(workOrderData);
     console.log("processWO() has initial partialReport:");
     console.log(partialReport);
-    let newReport:any = {};
+    let newReport: any = {};
     let newID = this.genReportID();
-    if(this.mode !== 'Add') {
+    if (this.mode !== 'Add') {
       newID = wo._id;
     }
-    if(this.mode === 'Edit') {
+    if (this.mode === 'Edit') {
       newReport._rev = wo._rev;
     }
-    newReport._id            = newID                             ;
-    newReport.timeStarts     = wo.time_start.format()            ;
-    newReport.timeEnds       = wo.time_end.format()              ;
-    newReport.repairHrs      = wo.repair_hours                   ;
-    newReport.shiftSerial    = wo.shift_serial                   ;
-    newReport.payrollPeriod  = wo.payroll_period                 ;
-    newReport.uNum           = partialReport.uNum                ;
-    newReport.wONum          = partialReport.wONum               ;
-    newReport.notes          = partialReport.notes               ;
-    newReport.rprtDate       = partialReport.rprtDate            ;
-    newReport.timeStamp      = partialReport.timeStamp           ;
-    newReport.lastName       = this.techProfile.lastName         ;
-    newReport.firstName      = this.techProfile.firstName        ;
-    newReport.client         = this.techProfile.client           ;
-    newReport.location       = this.techProfile.location         ;
-    newReport.locID          = this.techProfile.locID            ;
-    newReport.loc2nd         = this.techProfile.loc2nd           ;
-    newReport.shift          = this.techProfile.shift            ;
-    newReport.shiftLength    = this.techProfile.shiftLength      ;
-    newReport.shiftStartTime = this.techProfile.shiftStartTime   ;
-    newReport.technician     = this.techProfile.technician       ;
-    newReport.username       = this.techProfile.avatarName       ;
+    newReport._id = newID;
+    newReport.timeStarts = wo.time_start.format();
+    newReport.timeEnds = wo.time_end.format();
+    newReport.repairHrs = wo.repair_hours;
+    newReport.shiftSerial = wo.shift_serial;
+    newReport.payrollPeriod = wo.payroll_period;
+    newReport.uNum = partialReport.uNum;
+    newReport.wONum = partialReport.wONum;
+    newReport.notes = partialReport.notes;
+    newReport.rprtDate = partialReport.rprtDate;
+    newReport.timeStamp = partialReport.timeStamp;
+    newReport.lastName = this.techProfile.lastName;
+    newReport.firstName = this.techProfile.firstName;
+    newReport.client = this.techProfile.client;
+    newReport.location = this.techProfile.location;
+    newReport.locID = this.techProfile.locID;
+    newReport.loc2nd = this.techProfile.loc2nd;
+    newReport.shift = this.techProfile.shift;
+    newReport.shiftLength = this.techProfile.shiftLength;
+    newReport.shiftStartTime = this.techProfile.shiftStartTime;
+    newReport.technician = this.techProfile.technician;
+    newReport.username = this.techProfile.avatarName;
     this.workOrderReport = newReport;
     return newReport;
   }
@@ -471,7 +479,7 @@ export class WorkOrderPage implements OnInit {
     Log.l("deleteWorkOrder() clicked ...");
     let lang = this.translate.instant(['confirm', 'delete_report', 'spinner_deleting_report', 'error', 'error_deleting_report_message']);
     this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
-      if(res) {
+      if (res) {
         this.alert.showSpinner(lang['spinner_deleting_report']);
         Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
         let wo = this.workOrder.clone();
@@ -481,7 +489,7 @@ export class WorkOrderPage implements OnInit {
           Log.l("deleteWorkOrder(): Success:\n", res);
           // this.items.splice(i, 1);
           woList.splice(i, 1);
-          if(this.mode === 'Add') {
+          if (this.mode === 'Add') {
             this.alert.hideSpinner();
             this.tabs.goToPage('OnSiteHome');
           } else {

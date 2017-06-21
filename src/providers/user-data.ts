@@ -314,4 +314,9 @@ export class UserData {
     return UserData.techProfile;
   }
 
+  playSoundClip() {
+    let audio = new Audio('/assets/audio/nospoilers.wav');
+    audio.play();
+  }
+
 }

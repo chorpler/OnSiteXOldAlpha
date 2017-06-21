@@ -64,5 +64,9 @@ module.exports = {
   copyImages: {
     src: ['{{SRC}}/assets/images/**/*'],
     dest: '{{WWW}}/assets/images'
+  },
+  copyAudio: {
+    src: ['{{SRC}}/assets/audio/**/*'],
+    dest: '{{WWW}}/assets/audio'
   }
 }

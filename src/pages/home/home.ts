@@ -361,4 +361,19 @@ export class HomePage {
     TechSettings.present();
   }
 
+  showShiftReports(shift:Shift) {
+    if(this.ud.getWorkOrdersForShift(shift.getShiftSerial()).length > 0) {
+      this.tabs.goToPage('ReportHistory', {mode: 'Shift', shift: shift});
+    } else {
+      this.tabs.goToPage('Report', {mode: 'Add', shift: shift});
+    }
+  }
+
+  possibleSound(index:number) {
+    let status = this.getShiftStatus(index);
+    if(status === 'hoursOver') {
+      this.ud.playSoundClip();
+    }
+  }
+
 }

@@ -1,0 +1,66 @@
+<!--
+  Generated template for the Report page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar>
+    <!-- <ion-title>{{'report_title' | translate}}</ion-title> -->
+    <ion-title>{{title}}</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="deleteWorkOrder(workOrder)" *ngIf="mode=='Edit'">
+        <ion-icon class="work-order-delete-button" name="ios-trash-outline"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <div class="data-elements" *ngIf="dataReady">
+    <div class="work-order-payroll-hours-header">
+      <span class="shift-hours-header" [ngClass]="shiftHoursColor" *ngIf="workOrderForm && workOrderForm.value && workOrderForm.value.selected_shift">
+        <span class="shift-label">{{'shift' | translate}}</span> #<span class="shift-number">{{selectedShift.updateShiftNumber()}}</span>
+      <span class="shift-label">{{'hours' | translate}}</span>:
+      <!--<span class="shift-hours">{{workOrderForm.value.selected_shift.getShiftHours()+currentRepairHours}}</span>-->
+      <span class="shift-hours" *ngIf="mode==='Add'">{{selectedShift.getShiftHours()+currentRepairHours}}</span>
+      <span class="shift-hours" *ngIf="mode==='Edit'">{{selectedShift.getShiftHours()+currentRepairHours-thisWorkOrderContribution}}</span>
+      <span class="shift-label">{{'of' | translate}}</span>
+      <span class="shift-hours">{{techProfile.shiftLength}}</span>
+      </span>
+    </div>
+    <form [formGroup]="workOrderForm" (ngSubmit)="onSubmit()" *ngIf="dataReady">
+      <ion-list padding>
+        <ion-item (click)="showFancySelect()" class="item item-button ion-item-button-like">
+          <ion-label>{{'shift_date' | translate}}</ion-label>
+          <ion-input #shiftDateResults [disabled]="shiftDateInputDisabled" class="shift-date-select-results" [value]="selectedShiftText"></ion-input>
+          <ion-icon item-right class="shift-date-select-icon" name="arrow-dropdown"></ion-icon>
+        </ion-item>
+        <ion-item>
+          <ion-label>{{'repair_time' | translate}}</ion-label>
+          <ion-multi-picker class="repair-hours-picker" item-content [multiPickerColumns]="chooseHours" [separator]="':'" formControlName='repair_time'></ion-multi-picker>
+          <ion-icon item-right class="shift-repair-time-icon" name="arrow-dropdown"></ion-icon>
+        </ion-item>
+        <ion-item>
+          <ion-label floating>{{'unit_number' | translate}}</ion-label>
+          <ion-input type='text' formControlName='uNum'></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label floating>{{'work_order_number' | translate}}</ion-label>
+          <ion-input type='text' formControlName='wONum'></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label floating>{{'job_notes' | translate}}</ion-label>
+          <ion-textarea formControlName='notes'></ion-textarea>
+        </ion-item>
+        <ion-item *ngIf="syncError" class="alert danger">
+          <div>{{'report_submit_error' | translate}}</div>
+        </ion-item>
+      </ion-list>
+      <button type="submit" ion-button block color="favorite" *ngIf="mode==='Add'">{{'submit_report' | translate}}</button>
+      <button type="submit" ion-button block color="favorite" *ngIf="mode==='Edit'">{{'save_report' | translate}}</button>
+      <button type="button" ion-button block color="light" (click)="cancel()">{{'cancel' | translate}}</button>
+    </form>
+  </div>
+</ion-content>
+<onsite-tabs></onsite-tabs>

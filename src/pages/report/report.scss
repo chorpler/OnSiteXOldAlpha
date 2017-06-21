@@ -1,0 +1,67 @@
+ion-content {
+  .scroll-content {
+    overflow-y: auto;
+  }
+}
+
+page-report {
+  // .hdrDate {
+  //   font-size: 11px;
+  //   text-align: right;
+  // }
+  .date {
+    color: blue;
+  }
+  .time {
+    color: darkblue;
+  }
+  .fancy-select-caller-button {
+    border: 1px solid black;
+    width: 100%;
+  }
+  .ion-item-button-like {
+    :hover {
+      background-color: rgba(0, 0, 128, 0.02);
+    }
+    :active {
+      background-color: rgba(0, 0, 255, 0.3);
+    }
+  }
+  .work-order-payroll-hours-header {
+    font-size: 16px;
+    // font-size: 11px;
+    text-align: right;
+  }
+  .shift-hours-header {
+    font-weight: bold;
+  }
+  .shift-label {
+    font-weight: normal;
+  }
+  .shift-number {
+    font-weight: normal;
+  }
+  .shift-hours {
+    font-weight: bold;
+  }
+  .shift-date-select-results {
+    text-align: left;
+    // width: 80%;
+    display: inline-block;
+    input {
+      text-align: right;
+      opacity: 1 !important;
+      // width: 80%;
+    }
+  }
+  .shift-date-select-icon {
+    // border: 1px solid black;
+  }
+  .work-order-delete-button {
+    color: black;
+  }
+  .bar-button-md ion-icon, .bar-button-md[icon-only] ion-icon {
+    color: grey !important;
+    // background: transparent !important;
+  }
+}

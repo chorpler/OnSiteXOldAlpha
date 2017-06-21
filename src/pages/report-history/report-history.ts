@@ -35,12 +35,13 @@ export class ReportHistory implements OnInit {
   public static PREFS : any              = new Preferences()                                            ;
   public prefs        : any              = ReportHistory.PREFS;
   numChars     : Array<string> = STRINGS.NUMCHARS ;
-  constructor( public navCtrl: NavController      , public navParams  : NavParams         ,
-               public db : DBSrvcs                , public alert      : AlertService      ,
-               private auth: AuthSrvcs            , public loadingCtrl: LoadingController ,
-               public server: SrvrSrvcs           , public ud         : UserData          ,
+  constructor( public navCtrl  : NavController    , public navParams  : NavParams         ,
+               public db       : DBSrvcs          , public alert      : AlertService      ,
+               private auth    : AuthSrvcs        , public loadingCtrl: LoadingController ,
+               public server   : SrvrSrvcs        , public ud         : UserData          ,
                public translate: TranslateService , public tabs       : TabsComponent     ,
-               public zone: NgZone) {
+               public zone     : NgZone,
+  ) {
     window["reporthistory"] = this;
   }
 
@@ -99,29 +100,6 @@ export class ReportHistory implements OnInit {
   itemTapped(event, item) {
     this.tabs.goToPage('WorkOrder', {mode: 'Edit', workOrder: item})
   }
-
-  // deleteWorkOrder(event, item) {
-  //   Log.l("deleteWorkOrder() clicked ...");
-  //   let lang = this.translate.instant(['confirm', 'delete_report', 'spinner_deleting_report', 'error', 'error_deleting_report_message']);
-  //   this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
-  //     if(res) {
-  //       Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
-  //       let i = this.reports.indexOf(item);
-  //       this.server.deleteDoc(PREFS.DB.reports, item).then((res) => {
-  //         Log.l("deleteWorkOrder(): Success:\n", res);
-  //         this.reports.splice(i, 1);
-  //       }).catch((err) => {
-  //         Log.l("deleteWorkOrder(): Error!");
-  //         Log.e(err);
-  //       });
-  //     } else {
-  //       Log.l("User canceled deletion.");
-  //     }
-  //   }).catch((err) => {
-  //     Log.l("deleteWorkOrder(): Error!");
-  //     Log.e(err);
-  //   });
-  // }
 
   deleteWorkOrder(event, item) {
     Log.l("deleteWorkOrder() clicked ...");
