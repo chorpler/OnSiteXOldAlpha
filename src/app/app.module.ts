@@ -27,7 +27,6 @@ import { Push, PushObject, PushOptions                           } from '@ionic-
 import { LocalNotifications                                      } from '@ionic-native/local-notifications'      ;
 import { UniqueDeviceID                                          } from '@ionic-native/unique-device-id'         ;
 import { AppVersion                                              } from '@ionic-native/app-version'              ;
-import { Log                                                     } from '../config/config.functions'             ;
 import { AlertService                                            } from '../providers/alerts'                    ;
 import { GeolocService                                           } from '../providers/geoloc-service'            ;
 import { MultiPickerModule                                       } from 'ion-multi-picker'                       ;
@@ -61,7 +60,6 @@ import { Preferences                                             } from '../prov
                         loader: {
                           provide: TranslateLoader,
                           useFactory: (createTranslateLoader),
-                          // useFactory: createTranslateLoader,
                           deps: [Http]
                         }
                       }),

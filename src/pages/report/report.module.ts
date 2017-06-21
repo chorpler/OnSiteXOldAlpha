@@ -1,10 +1,12 @@
-import { NgModule }          from '@angular/core';
-import { IonicPageModule }   from 'ionic-angular';
-import { ReportPage }        from './report';
-import { MultiPickerModule } from 'ion-multi-picker';
-import { TranslateModule } from '@ngx-translate/core';
-import { TabsComponentModule } from '../../components/tabs/tabs.module'
-
+import { Http                             } from '@angular/http';
+import { NgModule                         } from '@angular/core';
+import { IonicPageModule                  } from 'ionic-angular';
+import { ReportPage                       } from './report';
+import { MultiPickerModule                } from 'ion-multi-picker';
+import { TabsComponentModule              } from '../../components/tabs/tabs.module'
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader              } from '@ngx-translate/http-loader';
+import { createTranslateLoader            } from '../../config/customTranslateLoader';
 
 @NgModule({
   declarations: [
@@ -12,7 +14,13 @@ import { TabsComponentModule } from '../../components/tabs/tabs.module'
   ],
   imports: [
     IonicPageModule.forChild(ReportPage),
-    TranslateModule.forChild(),
+    TranslateModule.forChild({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: (createTranslateLoader),
+        deps: [Http]
+      }
+    }),
     MultiPickerModule,
     TabsComponentModule,
   ],
