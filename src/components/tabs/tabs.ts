@@ -79,14 +79,16 @@ export class TabsComponent implements OnInit {
     } else {
       pagename = page;
     }
-    Log.l(`Tabs: entering page '${pagename}'`);
+    Log.l(`Tabs: entering page '${pagename}'. First highlighting tab.`);
 
     this.highlightPageTab(pagename);
-    Log.l(`Tabs: found page ${pagename} at index ${Pages[pagename]}...`);
+    Log.l(`Tabs: found page ${pagename} at index ${Pages[pagename]}, getting NavController...`);
     this.getActiveNav();
     if(params) {
+      Log.l(`Tabs: found params, so now calling setRoot(${pagename}, ${params})...`);
       this.nav.setRoot(pagename, params);
     } else {
+      Log.l(`Tabs: no params, so now calling setRoot(${pagename})...`);
       this.nav.setRoot(pagename);
     }
   }

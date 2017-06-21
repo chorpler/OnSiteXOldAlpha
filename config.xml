@@ -116,4 +116,7 @@
     <plugin name="de.appplant.cordova.plugin.local-notification" spec="^0.8.5" />
     <plugin name="ionic-plugin-keyboard" spec="^2.2.1" />
     <plugin name="cordova-plugin-app-version" spec="^0.1.9" />
+    <plugin name="phonegap-plugin-push" spec="^1.10.5">
+        <variable name="SENDER_ID" value="915660787055" />
+    </plugin>
 </widget>

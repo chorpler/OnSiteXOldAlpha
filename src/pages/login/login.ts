@@ -36,7 +36,7 @@ export class Login implements OnInit {
   private formUser      : any                            ;
   private formPass      : any                            ;
   private submitAttempt : boolean = false                ;
-  public mode           : string = "modal"               ;
+  public mode           : string = "page"                ;
   // public static PREFS   : any = new Preferences()        ;
   // public prefs          : any = Login.PREFS              ;
 

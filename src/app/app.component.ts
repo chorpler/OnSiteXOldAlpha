@@ -114,7 +114,7 @@ export class OnSiteApp {
           }).catch(err => {
             Log.l("OnSite.initializeApp(): Error with login or with publishing startup:finished event!");
             Log.e(err);
-            // this.rootPage = 'Login';
+            this.rootPage = 'Login';
           });
         // }).catch(err => {
         //   Log.l("OnSite.initializeApp(): User failed login check. Sending to login.");

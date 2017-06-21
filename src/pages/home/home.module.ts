@@ -21,9 +21,9 @@ import { PipesModule } from '../../pipes/pipes.module';
         deps: [Http]
       }
     }),
-  ],
-  entryComponents: [
-    HomePage
+  // ],
+  // entryComponents: [
+  //   HomePage
   ],
   exports: [
     HomePage,
