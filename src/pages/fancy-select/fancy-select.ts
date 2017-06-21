@@ -1,14 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
-// import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IonicPage, NavController, NavParams, LoadingController, PopoverController, ViewController } from 'ionic-angular';
 import * as moment from 'moment';
 import 'rxjs/add/operator/debounceTime';
 import { DBSrvcs } from '../../providers/db-srvcs';
 import { AuthSrvcs } from '../../providers/auth-srvcs';
 import { TimeSrvc } from '../../providers/time-parse-srvc';
-import { ReportBuildSrvc } from '../../providers/report-build-srvc';
-import { AlertService } from '../../providers/alerts';
+// import { ReportBuildSrvc } from '../../providers/report-build-srvc';
+// import { AlertService } from '../../providers/alerts';
 import { Log } from '../../config/config.functions';
 import { Shift } from '../../domain/shift';
 import { WorkOrder } from '../../domain/workorder';
@@ -18,7 +17,8 @@ import { sprintf } from 'sprintf-js';
 // import { SafePipe } from '../../pipes/safe';
 import { FancySelectComponent } from '../../components/fancy-select/fancy-select';
 import { TranslateService } from '@ngx-translate/core';
-import { PREFS, STRINGS } from '../../config/config.strings';
+import { Preferences } from '../../providers/preferences';
+import { STRINGS } from '../../config/config.strings';
 
 
 /**

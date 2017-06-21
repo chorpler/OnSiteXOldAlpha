@@ -38,7 +38,8 @@
         </ion-item>
         <ion-item>
           <ion-label>{{'repair_time' | translate}}</ion-label>
-          <ion-multi-picker class="repair-hours-picker" item-content [multiPickerColumns]="chooseHours" [separator]="':'" formControlName='repair_time'></ion-multi-picker>
+             <ion-multi-picker class="repair-hours-picker" item-content [separator]="':'" [multiPickerColumns]="chooseHours" formControlName='repair_time'></ion-multi-picker>
+           <!-- <ion-input formControlName='repair_time'></ion-input> -->
           <ion-icon item-right class="shift-repair-time-icon" name="arrow-dropdown"></ion-icon>
         </ion-item>
         <ion-item>

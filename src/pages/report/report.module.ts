@@ -1,32 +1,25 @@
-import { Http                             } from '@angular/http';
-import { NgModule                         } from '@angular/core';
-import { IonicPageModule                  } from 'ionic-angular';
-import { ReportPage                       } from './report';
-import { MultiPickerModule                } from 'ion-multi-picker';
-import { TabsComponentModule              } from '../../components/tabs/tabs.module'
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { TranslateHttpLoader              } from '@ngx-translate/http-loader';
-import { createTranslateLoader            } from '../../config/customTranslateLoader';
+import { NgModule            } from '@angular/core';
+import { IonicPageModule     } from 'ionic-angular';
+import { ReportPage          } from './report';
+import { MultiPickerModule   } from 'ion-multi-picker';
+import { TranslateModule     } from '@ngx-translate/core';
+import { TabsComponentModule } from '../../components/tabs/tabs.module';
+// import { PipesModule         } from '../../pipes/pipes.module';
 
 @NgModule({
   declarations: [
-    ReportPage
+    ReportPage,
   ],
   imports: [
     IonicPageModule.forChild(ReportPage),
-    TranslateModule.forChild({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: (createTranslateLoader),
-        deps: [Http]
-      }
-    }),
-    MultiPickerModule,
+    TranslateModule.forChild(),
     TabsComponentModule,
+    MultiPickerModule,
+    // PipesModule,
   ],
   exports: [
     ReportPage,
     TabsComponentModule,
   ]
 })
-export class ReportModule { }
+export class ReportPageModule {}
