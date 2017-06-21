@@ -1,6 +1,7 @@
 import 'intl'                                                                                                    ;
 import 'intl/locale-data/jsonp/en'                                                                               ;
 import { BrowserModule                                           } from '@angular/platform-browser'              ;
+import { BrowserAnimationsModule                                 } from '@angular/platform-browser/animations'   ;
 import { HttpModule,Http                                         } from '@angular/http'                          ;
 import { ErrorHandler, NgModule                                  } from '@angular/core'                          ;
 import { IonicApp, IonicErrorHandler, IonicModule, NavController } from 'ionic-angular'                          ;
@@ -50,6 +51,7 @@ import { Preferences                                             } from '../prov
 
   imports        : [
                       BrowserModule,
+                      BrowserAnimationsModule,
                       IonicModule.forRoot(OnSiteApp),
                       IonicStorageModule.forRoot({
                         name: '__onsitestorage',
@@ -63,7 +65,7 @@ import { Preferences                                             } from '../prov
                           deps: [Http]
                         }
                       }),
-                      // MultiPickerModule,
+                      MultiPickerModule,
                       PipesModule
                    ],
 

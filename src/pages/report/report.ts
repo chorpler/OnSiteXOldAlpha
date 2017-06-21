@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, NgZone } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+// import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IonicPage, NavController, NavParams, LoadingController, PopoverController, ModalController } from 'ionic-angular';
 import 'rxjs/add/operator/debounceTime';
 import { DBSrvcs } from '../../providers/db-srvcs';
@@ -16,8 +16,8 @@ import { Status } from '../../providers/status';
 import { UserData } from '../../providers/user-data';
 import moment from 'moment';
 import { sprintf } from 'sprintf-js';
-import { MultiPickerModule } from 'ion-multi-picker';
-import { FancySelectComponent } from '../../components/fancy-select/fancy-select';
+// import { MultiPickerModule } from 'ion-multi-picker';
+// import { FancySelectComponent } from '../../components/fancy-select/fancy-select';
 import { STRINGS } from '../../config/config.strings';
 import { Preferences } from '../../providers/preferences';
 import { TabsComponent } from '../../components/tabs/tabs';
@@ -80,7 +80,7 @@ export class ReportPage implements OnInit {
   public userdata: any;
   public shiftDateOptions: any;
 
-  controlValueAccessor: any;
+  // controlValueAccessor: any;
   public dataReady: boolean = false;
 
   public techWorkOrders: Array<WorkOrder> = [];

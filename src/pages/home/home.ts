@@ -46,6 +46,7 @@ export class HomePage {
   shftHrs      : number;
   hrsSubmitted : number;
   dataReady    : boolean = false;
+  spinnerText  : string  = "";
   static EVENTS: Events;
   // startupHandler : any;
   public techProfile:any;
@@ -151,24 +152,45 @@ export class HomePage {
     } else {
       Log.l("HomePage: ionViewDidEnter() says work order array not initialized, fetching work orders.");
       this.tabs.highlightPageTab('OnSiteHome');
-      let lang = this.translate.instant('spinner_fetching_reports');
-      this.alert.showSpinner(lang['spinner_fetching_reports']);
-      this.fetchTechWorkorders().then((res) => {
-        Log.l("HomePage: ionViewDidEnter() fetched work reports, maybe:\n", res);
-        this.ud.setWorkOrderList(res);
-        this.ud.createShifts();
-        this.techProfile = this.ud.getTechProfile();
-        this.shifts = this.ud.getPeriodShifts();
-        this.countHoursForShifts();
-        this.alert.hideSpinner();
-        this.dataReady = true;
-      }).catch((err) => {
-        Log.l("HomePage: ionViewDidEnter() got error while fetching tech work orders.");
-        Log.e(err);
-        this.alert.hideSpinner();
-        let lang = this.translate.instant(['error', 'alert_retrieve_reports_error'])
-        this.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
+      var caller = this;
+      this.translate.get('spinner_fetching_reports').subscribe((result) => {
+        caller.spinnerText = result;
+        caller.alert.showSpinner(caller.spinnerText);
+        caller.fetchTechWorkorders().then((res) => {
+          Log.l("HomePage: ionViewDidEnter() fetched work reports, maybe:\n", res);
+          caller.ud.setWorkOrderList(res);
+          caller.ud.createShifts();
+          caller.techProfile = caller.ud.getTechProfile();
+          caller.shifts = caller.ud.getPeriodShifts();
+          caller.countHoursForShifts();
+          caller.alert.hideSpinner();
+          caller.dataReady = true;
+        }).catch((err) => {
+          Log.l("HomePage: ionViewDidEnter() got error while fetching tech work orders.");
+          Log.e(err);
+          caller.alert.hideSpinner();
+          let lang = caller.translate.instant(['error', 'alert_retrieve_reports_error'])
+          caller.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
+        });
       });
+      // let lang = this.translate.instant('spinner_fetching_reports');
+      // this.alert.showSpinner(this.spinnerText);
+      // this.fetchTechWorkorders().then((res) => {
+      //   Log.l("HomePage: ionViewDidEnter() fetched work reports, maybe:\n", res);
+      //   this.ud.setWorkOrderList(res);
+      //   this.ud.createShifts();
+      //   this.techProfile = this.ud.getTechProfile();
+      //   this.shifts = this.ud.getPeriodShifts();
+      //   this.countHoursForShifts();
+      //   this.alert.hideSpinner();
+      //   this.dataReady = true;
+      // }).catch((err) => {
+      //   Log.l("HomePage: ionViewDidEnter() got error while fetching tech work orders.");
+      //   Log.e(err);
+      //   this.alert.hideSpinner();
+      //   let lang = this.translate.instant(['error', 'alert_retrieve_reports_error'])
+      //   this.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
+      // });
     }
   }
 
