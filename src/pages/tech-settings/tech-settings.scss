@@ -2,7 +2,13 @@ page-tech-settings {
   .toolbar-title {
     text-align: center;
   }
-  .xtra-top-padding{
-    margin-top: 40px;
+  // .xtra-top-padding{
+  //   margin-top: 40px;
+  // }
+  div.scroll-content {
+    height: 80%;
+    padding-bottom: 200px;
+    margin-bottom: 300px;
   }
+
 }
