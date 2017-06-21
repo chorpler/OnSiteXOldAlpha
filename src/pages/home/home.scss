@@ -82,7 +82,7 @@ page-home {
   .hoursOver {
     color: red;
   }
-  .ion-item-button-like {
+  ion-list>ion-item.ion-item-button-like {
     cursor: pointer;
     // :hover {
     //   background-color: rgb(0, 0, 128);
@@ -98,20 +98,20 @@ page-home {
     }
   }
 
-  .ion-item-button-like .label {
-    cursor: pointer;
-    :hover {
-      // background-color: rgb(0, 0, 128);
-    }
-    :active {
-      // background-color: rgb(0, 0, 255);
-    }
+  // .ion-item-button-like .label {
+    // cursor: pointer;
+    // :hover {
+      // background-color: unset;
+    // }
+    // :active {
+      // background-color: unset;
+    // }
     // :hover {
     //   background-color: rgba(0, 0, 128, 0.02);
     // }
     // :active {
     //   background-color: rgba(0, 0, 255, 0.3);
     // }
-  }
+  // }
 
 }

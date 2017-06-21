@@ -34,6 +34,7 @@ export class ReportHistory implements OnInit {
   public loading      : any                                                                             ;
   public static PREFS : any              = new Preferences()                                            ;
   public prefs        : any              = ReportHistory.PREFS;
+  public shiftToUse   : Shift            = null;
   numChars     : Array<string> = STRINGS.NUMCHARS ;
   constructor( public navCtrl  : NavController    , public navParams  : NavParams         ,
                public db       : DBSrvcs          , public alert      : AlertService      ,
@@ -52,9 +53,16 @@ export class ReportHistory implements OnInit {
   ionViewDidEnter() {
     Log.l("ReportHistory: ionViewDidEnter called...");
     Log.l("ReportHistory: pulling reports...");
+    if(this.navParams.get('shift') !== undefined) { this.shiftToUse = this.navParams.get('shift');}
     let lang = this.translate.instant(['spinner_retrieving_reports', 'error', 'error_server_connect_message']);
     this.alert.showSpinner(lang['spinner_retrieving_reports']);
-    this.shifts = this.ud.getPeriodShifts();
+    if(this.shiftToUse !== null) {
+      Log.l("ReportHistory: Showing only shift:\n", this.shiftToUse);
+      this.shifts = [this.shiftToUse];
+    } else {
+      Log.l("ReportHistory: Showing all shifts.");
+      this.shifts = this.ud.getPeriodShifts();
+    }
     this.filterKeys = [];
     for(let shift of this.shifts) {
       let date = shift.getStartTime().format("YYYY-MM-DD");
@@ -77,7 +85,13 @@ export class ReportHistory implements OnInit {
       Log.l("ReportHistory: Got report list:\n", res);
       let unsortedReports = res;
       this.reports = unsortedReports.sort(sortReports);
-      this.shifts = this.ud.getPeriodShifts();
+      if (this.shiftToUse !== null) {
+        Log.l("ReportHistory: Showing only shift:\n", this.shiftToUse);
+        this.shifts = [this.shiftToUse];
+      } else {
+        Log.l("ReportHistory: Showing all shifts.");
+        this.shifts = this.ud.getPeriodShifts();
+      }
       this.filtReports = {};
       for(let shift of this.shifts) {
         let date = shift.getStartTime().format("YYYY-MM-DD");
@@ -142,7 +156,8 @@ export class ReportHistory implements OnInit {
   }
 
   addNewReportForShift(shift:Shift) {
-    this.alert.showAlert("Sorry", "This is in progress.");
+    // this.alert.showAlert("Sorry", "This is in progress.");
+    this.tabs.goToPage('Report', {mode: 'Add', shift: shift});
   }
 
 
