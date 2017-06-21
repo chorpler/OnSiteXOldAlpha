@@ -140,7 +140,7 @@
         "de.appplant.cordova.plugin.local-notification": "^0.8.5",
         "desktop": "^0.0.0",
         "intl": "^1.2.5",
-        "ion-multi-picker": "^2.0.3",
+        "ion-multi-picker": "file:custom\\ion-multi-picker-2.0.4.tgz",
         "ionic": "^3.4.0",
         "ionic-angular": "^3.4.2",
         "ionic-plugin-keyboard": "^2.2.1",

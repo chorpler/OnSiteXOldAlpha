@@ -126,8 +126,8 @@ export class ReportPage implements OnInit {
     this.title = `${titleAdjective} ${titleNoun}`;
 
     this.chooseHours = [
-      { "name": "Hours", "options": [] },
-      { "name": "Minutes", "options": [] }
+      { "name": "Hours", "options": [], "header": "H", "headerWidth": "20px", "columnWidth": "72px"},
+      { "name": "Minutes", "options": [], "header": "M", "headerWidth": "20px", "columnWidth": "72px" }
     ]
 
     for (let i = 0; i < 100; i++) {

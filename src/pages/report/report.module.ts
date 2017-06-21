@@ -14,6 +14,7 @@ import { TabsComponentModule } from '../../components/tabs/tabs.module';
     IonicPageModule.forChild(ReportPage),
     TranslateModule.forChild(),
     TabsComponentModule,
+    MultiPickerModule,
     // PipesModule,
   ],
   exports: [

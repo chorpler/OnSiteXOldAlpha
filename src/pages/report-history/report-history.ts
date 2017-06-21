@@ -112,7 +112,7 @@ export class ReportHistory implements OnInit {
   }
 
   itemTapped(event, item) {
-    this.tabs.goToPage('WorkOrder', {mode: 'Edit', workOrder: item})
+    this.tabs.goToPage('Report', {mode: 'Edit', workOrder: item})
   }
 
   deleteWorkOrder(event, item) {
