@@ -29,4 +29,4 @@ import { createTranslateLoader            } from '../../config/customTranslateLo
     TabsComponentModule,
   ]
 })
-export class WorkOrderModule { }
+export class ReportPageModule { }
