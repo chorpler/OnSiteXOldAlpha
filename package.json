@@ -150,13 +150,14 @@
         "moment-round": "^1.0.1",
         "moment-timer": "^1.1.5",
         "object-keys": "^1.0.11",
+        "phonegap-plugin-push": "^1.10.5",
         "pouchdb": "^6.2.0",
         "pouchdb-all-dbs": "^1.0.2",
         "pouchdb-authentication": "^0.5.5",
         "pouchdb-collections": "^6.2.0",
         "pouchdb-find": "^6.2.0",
         "pouchdb-md5": "^6.2.0",
-        "pouchdb-seamless-auth": "^1.0.4",
+        "pouchdb-seamless-auth": "^2.0.1",
         "pouchdb-upsert": "^2.2.0",
         "pouchdb-utils": "^6.2.0",
         "reflect-metadata": "^0.1.10",
@@ -203,7 +204,10 @@
             "de.appplant.cordova.plugin.local-notification": {},
             "cordova-plugin-uniquedeviceid": {},
             "cordova-android-support-gradle-release": {},
-            "cordova-plugin-app-version": {}
+            "cordova-plugin-app-version": {},
+            "phonegap-plugin-push": {
+                "SENDER_ID": "915660787055"
+            }
         },
         "platforms": [
             "android",
