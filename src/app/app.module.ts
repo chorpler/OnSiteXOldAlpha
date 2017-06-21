@@ -2,7 +2,7 @@ import 'intl'                                                                   
 import 'intl/locale-data/jsonp/en'                                                                               ;
 import { BrowserModule                                           } from '@angular/platform-browser'              ;
 import { HttpModule,Http                                         } from '@angular/http'                          ;
-import { ErrorHandler , NgModule                                 } from '@angular/core'                          ;
+import { ErrorHandler, NgModule                                  } from '@angular/core'                          ;
 import { IonicApp, IonicErrorHandler, IonicModule, NavController } from 'ionic-angular'                          ;
 import { IonicPageModule                                         } from 'ionic-angular'                          ;
 import { LoadingController, AlertController                      } from 'ionic-angular'                          ;
@@ -19,9 +19,9 @@ import { ReportBuildSrvc                                         } from '../prov
 import { UserData                                                } from '../providers/user-data'                 ;
 import { SrvrSrvcs                                               } from '../providers/srvr-srvcs'                ;
 import { NetworkStatus                                           } from '../providers/network-status'            ;
-import { Geofence                                                } from '@ionic-native/geofence'                 ;
-import { BackgroundGeolocation, BackgroundGeolocationConfig      } from '@ionic-native/background-geolocation'   ;
-import { BackgroundGeolocationResponse                           } from '@ionic-native/background-geolocation'   ;
+// import { Geofence                                                } from '@ionic-native/geofence'                 ;
+// import { BackgroundGeolocation, BackgroundGeolocationConfig      } from '@ionic-native/background-geolocation'   ;
+// import { BackgroundGeolocationResponse                           } from '@ionic-native/background-geolocation'   ;
 import { Network                                                 } from '@ionic-native/network'                  ;
 import { Push, PushObject, PushOptions                           } from '@ionic-native/push'                     ;
 import { LocalNotifications                                      } from '@ionic-native/local-notifications'      ;
@@ -50,12 +50,12 @@ import { Preferences                                             } from '../prov
 
   imports        : [
                       BrowserModule,
-                      HttpModule,
+                      IonicModule.forRoot(OnSiteApp),
                       IonicStorageModule.forRoot({
                         name: '__onsitestorage',
                         driverOrder: ['localstorage']
                       }),
-                      IonicModule.forRoot(OnSiteApp),
+                      HttpModule,
                       TranslateModule.forRoot({
                         loader: {
                           provide: TranslateLoader,
@@ -63,7 +63,7 @@ import { Preferences                                             } from '../prov
                           deps: [Http]
                         }
                       }),
-                      MultiPickerModule,
+                      // MultiPickerModule,
                       PipesModule
                    ],
 
@@ -86,8 +86,8 @@ import { Preferences                                             } from '../prov
                       UserData,
                       SrvrSrvcs,
                       NetworkStatus,
-                      Geofence,
-                      BackgroundGeolocation,
+                      // Geofence,
+                      // BackgroundGeolocation,
                       Network,
                       Push,
                       LocalNotifications,
