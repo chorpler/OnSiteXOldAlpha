@@ -1,4 +1,23 @@
 page-home {
+  ion-content > div.scroll-content {
+    padding-top: 3px !important;
+  }
+  p.home-welcome {
+    text-align: right;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  p.home-date {
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: right;
+    font-style: italic;
+    color: #488aff;
+    font-size: 11px;
+    line-height: 11px;
+    height: 15px;
+    padding: 2px;
+  }
   .logged-in {
     margin-top: 50px;
   }
@@ -8,7 +27,12 @@ page-home {
   .logout-button {
     // margin-top: 100px;
   }
-
+  ion-card.shift-summary {
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+    background-color: rgba(250,250,245, 0.65);
+  }
   ion-title {
     color: red !important;
   }

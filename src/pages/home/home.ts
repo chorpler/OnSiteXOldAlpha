@@ -1,25 +1,25 @@
-import { Component, OnInit, NgZone              } from '@angular/core';
-import { Http                                   } from '@angular/http';
-import { Platform, IonicPage, NavParams, Events } from 'ionic-angular';
-import { NavController, ToastController         } from 'ionic-angular';
-import { ModalController,ViewController,PopoverController } from 'ionic-angular';
-import { Log } from '../../config/config.functions';
-import { DBSrvcs } from '../../providers/db-srvcs' ;
-import { AuthSrvcs } from '../../providers/auth-srvcs' ;
-import { SrvrSrvcs } from '../../providers/srvr-srvcs';
-import { AlertService } from '../../providers/alerts' ;
-import { UserData } from '../../providers/user-data';
-import { WorkOrder } from '../../domain/workorder';
-import { Shift } from '../../domain/shift';
-import { Employee } from '../../domain/employee';
-import moment from 'moment';
-import { TabsComponent } from '../../components/tabs/tabs';
-import { STRINGS } from '../../config/config.strings';
-import { Preferences } from '../../providers/preferences';
-import { TranslateService } from '@ngx-translate/core';
-import { Pipe, PipeTransform } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import { SafePipe } from '../../pipes/safe';
+import { Component, OnInit, NgZone                        } from '@angular/core'                 ;
+import { Http                                             } from '@angular/http'                 ;
+import { Platform, IonicPage, NavParams, Events           } from 'ionic-angular'                 ;
+import { NavController, ToastController                   } from 'ionic-angular'                 ;
+import { ModalController,ViewController,PopoverController } from 'ionic-angular'                 ;
+import { Log                                              } from '../../config/config.functions' ;
+import { DBSrvcs                                          } from '../../providers/db-srvcs'      ;
+import { AuthSrvcs                                        } from '../../providers/auth-srvcs'    ;
+import { SrvrSrvcs                                        } from '../../providers/srvr-srvcs'    ;
+import { AlertService                                     } from '../../providers/alerts'        ;
+import { UserData                                         } from '../../providers/user-data'     ;
+import { WorkOrder                                        } from '../../domain/workorder'        ;
+import { Shift                                            } from '../../domain/shift'            ;
+import { Employee                                         } from '../../domain/employee'         ;
+import moment from 'moment'                                                                      ;
+import { TabsComponent                                    } from '../../components/tabs/tabs'    ;
+import { STRINGS                                          } from '../../config/config.strings'   ;
+import { Preferences                                      } from '../../providers/preferences'   ;
+import { TranslateService                                 } from '@ngx-translate/core'           ;
+import { Pipe, PipeTransform                              } from '@angular/core'                 ;
+import { DomSanitizer                                     } from '@angular/platform-browser'     ;
+import { SafePipe                                         } from '../../pipes/safe'              ;
 
 enum Icons {
   'box-check-no'   = 0,
@@ -28,41 +28,44 @@ enum Icons {
   'flag-checkered' = 3,
 }
 
-@IonicPage({name: 'OnSiteHome'})
+@IonicPage({
+  name: 'OnSiteHome'
+})
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html',
 })
 export class HomePage {
-  loginData    : any           = null             ;
-  username     : string        = "unknown"        ;
-  userLoggedIn : boolean                          ;
-  title        : string        = 'OnSite Home'    ;
-  numChars     : Array<string> = STRINGS.NUMCHARS ;
-  chkBxBool    : boolean                          ;
-  chkBx        : string                           ;
-  static PREFS : any = new Preferences()          ;
-  PREFS        : any = HomePage.PREFS             ;
-  shftHrs      : number;
-  hrsSubmitted : number;
-  dataReady    : boolean = false;
-  spinnerText  : string  = "";
-  static EVENTS: Events;
-  // startupHandler : any;
-  public techProfile:any;
-  public techWorkOrders:Array<WorkOrder>;
-  public shiftWorkOrders:Array<WorkOrder>;
-  public static pageLoadedPreviously:boolean = false;
-  public static homePageStatus:any = {startupFinished: false};
-  public homePageStatus:any = HomePage.homePageStatus;
-  public payrollWorkOrders:Array<WorkOrder>;
-  public hoursTotalList:Array<any> = [];
-  public shifts:Array<Shift> = [];
-  public payrollPeriodHoursTotal:number = 0;
-  public payrollPeriodHours:number = 0;
-  public payrollPeriodBonusHours:number = 0;
-  public databases = this.PREFS.DB;
-  public checkboxes:any = [
+  moment                      : any           = moment                   ;
+  todayLongDate               : any           = moment()                 ;
+  loginData                   : any           = null                     ;
+  username                    : string        = "unknown"                ;
+  userLoggedIn                : boolean                                  ;
+  title                       : string        = 'OnSite Home'            ;
+  numChars                    : Array<string> = STRINGS.NUMCHARS         ;
+  chkBxBool                   : boolean                                  ;
+  chkBx                       : string                                   ;
+  static PREFS                : any           = new Preferences()        ;
+  PREFS                       : any           = HomePage.PREFS           ;
+  shftHrs                     : number                                   ;
+  hrsSubmitted                : number                                   ;
+  dataReady                   : boolean       = false                    ;
+  spinnerText                 : string        = ""                       ;
+  static EVENTS               : Events                                   ;
+  techProfile                 : any                                      ;
+  techWorkOrders              : Array<WorkOrder>                         ;
+  shiftWorkOrders             : Array<WorkOrder>                         ;
+  static pageLoadedPreviously : boolean       = false                    ;
+  static homePageStatus       : any           = {startupFinished: false} ;
+  homePageStatus              : any           = HomePage.homePageStatus  ;
+  payrollWorkOrders           : Array<WorkOrder>                         ;
+  hoursTotalList              : Array<any>    = []                       ;
+  shifts                      : Array<Shift>  = []                       ;
+  payrollPeriodHoursTotal     : number        = 0                        ;
+  payrollPeriodHours          : number        = 0                        ;
+  payrollPeriodBonusHours     : number        = 0                        ;
+  databases                                   = this.PREFS.DB            ;
+  checkboxes                  : any           = [
     '../../assets/images/box-check-yes.svg',
     '../../assets/images/box-check-no.svg',
     '../../assets/images/flag-blank.svg',
@@ -83,21 +86,21 @@ export class HomePage {
     </svg>`
   ];
 
-  constructor(public http: Http,
-              public navCtrl: NavController,
-              public modalCtrl: ModalController,
-              public viewCtrl : ViewController ,
-              public popoverCtrl: PopoverController,
-              public authService: AuthSrvcs,
-              public navParams: NavParams,
-              public server: SrvrSrvcs,
-              public ud: UserData,
-              public db: DBSrvcs,
-              public events: Events,
-              public tabs: TabsComponent,
-              public alert: AlertService,
-              public zone: NgZone,
-              public translate:TranslateService )
+  constructor(public http        : Http,
+              public navCtrl     : NavController,
+              public modalCtrl   : ModalController,
+              public viewCtrl    : ViewController ,
+              public popoverCtrl : PopoverController,
+              public authService : AuthSrvcs,
+              public navParams   : NavParams,
+              public server      : SrvrSrvcs,
+              public ud          : UserData,
+              public db          : DBSrvcs,
+              public events      : Events,
+              public tabs        : TabsComponent,
+              public alert       : AlertService,
+              public zone        : NgZone,
+              public translate   : TranslateService )
   {
     window["onsitehome"] = this;
     Log.l("HomePage: Hi, I'm the HomePage class constructor! And I personally am a logger. In half, I pee feces. (I'm also Yoda.)");
@@ -119,36 +122,22 @@ export class HomePage {
   ionViewDidEnter() {
     Log.l("HomePage: ionViewDidEnter() called. First wait to make sure app is finished loading.");
     var caller = this;
-    // var startupHandler = function(homepage:any) {
-    //   Log.l("HomePage.startupHandler(): startup:finished event detected. Target is:\n", homepage);
-    //   Log.l("HomePage.startupHandler(): now unsubscribing from startup:finished event...");
-    //   HomePage.EVENTS.unsubscribe('startup:finished', startupHandler);
-    //   Log.l("HomePage.startupHandler(): now executing runEveryTime() function...");
-    //   HomePage.homePageStatus.startupFinished = true;
-    //   caller.runEveryTime();
-    // };
     if(this.homePageStatus.startupFinished) {
       Log.l("HomePage.ionViewDidEnter(): startup already finished, just continuing with runEveryTime()...");
       this.tabs.highlightTab(0);
       this.runEveryTime();
     }
-    // else {
-    //   Log.l("HomePage.ionViewDidEnter(): startup not finished, subscribing to startup:finished event to wait.");
-    //   this.events.subscribe('startup:finished', startupHandler);
-    // }
   }
 
   ionViewDidLoad() {
     Log.l("HomePage: ionViewDidLoad() called... not doing anything right now.");
     this.dataReady = false;
-    // this.events.subscribe('startup:finished', this.startupHandler);
   }
 
   runEveryTime() {
     if (this.ud.getLoginStatus() === false) {
       Log.l("HomePage.ionViewDidEnter(): User not logged in, showing login modal.");
       this.presentLoginModal();
-    // } else if (!this.ud.woArrayInitialized()) {
     } else {
       Log.l("HomePage: ionViewDidEnter() says work order array not initialized, fetching work orders.");
       this.tabs.highlightPageTab('OnSiteHome');
@@ -173,24 +162,6 @@ export class HomePage {
           caller.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
         });
       });
-      // let lang = this.translate.instant('spinner_fetching_reports');
-      // this.alert.showSpinner(this.spinnerText);
-      // this.fetchTechWorkorders().then((res) => {
-      //   Log.l("HomePage: ionViewDidEnter() fetched work reports, maybe:\n", res);
-      //   this.ud.setWorkOrderList(res);
-      //   this.ud.createShifts();
-      //   this.techProfile = this.ud.getTechProfile();
-      //   this.shifts = this.ud.getPeriodShifts();
-      //   this.countHoursForShifts();
-      //   this.alert.hideSpinner();
-      //   this.dataReady = true;
-      // }).catch((err) => {
-      //   Log.l("HomePage: ionViewDidEnter() got error while fetching tech work orders.");
-      //   Log.e(err);
-      //   this.alert.hideSpinner();
-      //   let lang = this.translate.instant(['error', 'alert_retrieve_reports_error'])
-      //   this.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
-      // });
     }
   }
 
@@ -217,11 +188,6 @@ export class HomePage {
       Log.l("waitForStartupEvent(): Error while awaiting event!");
       Log.e(err);
     }
-    // return new Promise((resolve,reject) => {
-    //   if(this.homePageStatus.startupFinished) {
-    //     resolve(true);
-    //   }
-    // });
   }
 
   static checkStartupStatus() {
@@ -296,8 +262,6 @@ export class HomePage {
     let loginPage = this.modalCtrl.create('Login', {user: '', pass: ''}, { enableBackdropDismiss: false, cssClass: 'login-modal'});
     loginPage.onDidDismiss(data => {
       Log.l("Got back:\n", data);
-      // this.loginData = data;
-      // if( this.isLoggedIn() ) {
       this.userLoggedIn = this.ud.getLoginStatus();
       if( this.userLoggedIn ) {
         console.log("Login Modal succeeded, now opening user modal.");
@@ -311,8 +275,6 @@ export class HomePage {
   getShiftStatus(idx:number) {
     let hours = this.hoursTotalList[idx];
     let total = this.techProfile.shiftLength;
-    // return (hours === total);
-    // let retVal = "hoursUnknown";
     let retVal = (hours > total) ? "hoursOver" : (hours < total) ? "hoursUnder" : (hours === total) ? "hoursComplete" : "hoursUnknown";
     return retVal;
   }
@@ -330,12 +292,10 @@ export class HomePage {
       checkBox = chks[Icons["box-check-yes"]];
     }
     return checkBox;
-
   }
 
   getCheckbox(idx:number) {
     let checkBox = '?';
-    // let status = this.getShiftStatus(idx);
     let hours = this.hoursTotalList[idx];
     let total = this.techProfile.shiftLength;
 
@@ -369,7 +329,6 @@ export class HomePage {
   }
 
   showHelp(event:any) {
-    // this.alert.showPopover("home_app_help_text", {}, event);
     let params = { cssClass: 'popover-template', showBackdrop: true, enableBackdropDismiss: true, ev: event };
     let pup = this.popoverCtrl.create('Popover', {contents: 'home_app_help_text'}, params);
     pup.onDidDismiss(data => {

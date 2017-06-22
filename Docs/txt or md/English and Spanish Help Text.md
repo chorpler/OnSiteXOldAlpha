@@ -38,10 +38,9 @@ It is your responsibility to make sure you document all hours worked. The hours
 you see on this screen will be the hours you are paid unless the hours are
 flagged.
 
-[./media/image1.PNG](./media/image1.PNG)
-----------------------------------------
 
 Spanish
+=======
 
 Los turnos se numeran de 1 a 7: Miércoles = Turno 1, Martes = Turno 2, etc.
 
@@ -67,8 +66,8 @@ los horas de nómina que se muestran aquí NO SON CONFIRMADAS.
 Si usted cometió un error y envió demasiadas horas, entonces no espere ver todas
 esas horas en su cheque de pago.
 
-Si ha sometado menos horas, es su responsabilidad corregirlas enviando los
-reportes de trabajo apropiados. No se le pagará por horas no sometidas (los
+Si ha sometido menos horas, es su responsabilidad corregirlas enviando los
+reportes de trabajo apropiados. No se le pagará por horas no sometidas (las
 horas no reportadas).
 
 Menos horas no activan una bandera.
@@ -76,5 +75,5 @@ Menos horas no activan una bandera.
 Demasiadas horas activarán un bandera roja de error.
 
 Es su responsabilidad asegurarse de documentar todas las horas trabajadas. Las
-horas que ve en esta pantalla serán las horas que le pagen a menos que las horas
+horas que ve en esta pantalla serán las horas que le pagen a menos las horas que
 estén marcadas como una excepción (con una bandera roja).
