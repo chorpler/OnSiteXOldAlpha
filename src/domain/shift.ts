@@ -1,5 +1,7 @@
-import * as moment from 'moment';
+
+import { WorkOrder } from './workorder';
 import { Log, isMoment } from '../config/config.functions';
+import * as moment from 'moment';
 import { sprintf } from 'sprintf-js';
 
 const XL = moment([1900, 0, 1]);
@@ -19,6 +21,7 @@ export class Shift {
   public XL:any;
   public shift_serial:any;
   public shift_hours:any;
+  public shift_reports:Array<WorkOrder> = [];
 
   constructor(site_name?, shift_week?, shift_time?, start_time?, shift_length?) {
     if(arguments.length == 1 && typeof arguments[0] == 'object') {
@@ -191,7 +194,22 @@ export class Shift {
     this.shift_hours = hours;
   }
 
-  public getShiftColor() {
+  getShiftLength() {
+    return this.shift_length;
+  }
+
+  setShiftLength(hours:number) {
+    this.shift_length = hours;
+    return this.shift_length;
+  }
+
+  getShiftStatus() {
+    let hours = this.getNormalHours();
+    let total = this.getShiftLength();
+    return (hours > total) ? "hoursOver" : (hours < total) ? "hoursUnder" : (hours === total) ? "hoursComplete" : "hoursUnknown";
+  }
+
+  getShiftColor() {
     let now = moment();
     this.getExcelDates();
     let colorClass="";
@@ -226,6 +244,51 @@ export class Shift {
   isBlue() {
     // this.getShiftColor();
     return this.colors.blue;
+  }
+
+  setShiftWorkOrders(work_orders:Array<WorkOrder>) {
+    this.shift_reports = work_orders;
+    return this.shift_reports;
+  }
+
+  addShiftWorkOrder(report:WorkOrder) {
+    this.shift_reports.push(report);
+    return this.shift_reports;
+  }
+
+  getTotalShiftHours() {
+    let total = 0;
+    for(let report of this.shift_reports) {
+      total += report.getRepairHours();
+    }
+    return total;
+  }
+
+  getTotalPayrollHoursForShift() {
+    let shiftTotal = 0, bonusHours = 0, countsForBonusHours = 0;
+    for (let report of this.shift_reports) {
+      let subtotal = report.getRepairHours();
+      shiftTotal += subtotal;
+      if (report.client !== "SESA") {
+        countsForBonusHours += subtotal;
+      }
+    }
+    if (countsForBonusHours >= 8 && countsForBonusHours <= 11) {
+      bonusHours = 3;
+    } else if (countsForBonusHours > 11) {
+      bonusHours = 3 + (countsForBonusHours - 11);
+    }
+    shiftTotal += bonusHours;
+    Log.l("getTotalPayrollHoursForShift(): For shift %s, %d reports, %f hours, %f hours eligible, so bonus hours = %f.\nShift total: %f hours.", this.getShiftSerial(), this.shift_reports.length, shiftTotal, countsForBonusHours, bonusHours, shiftTotal);
+    return shiftTotal;
+  }
+
+  getNormalHours() {
+    return this.getTotalShiftHours();
+  }
+
+  getPayrollHours() {
+    return this.getTotalPayrollHoursForShift();
   }
 
   toString(translate?:any) {

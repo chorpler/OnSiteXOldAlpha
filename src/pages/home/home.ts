@@ -11,7 +11,7 @@ import { AlertService                                     } from '../../provider
 import { UserData                                         } from '../../providers/user-data'     ;
 import { WorkOrder                                        } from '../../domain/workorder'        ;
 import { Shift                                            } from '../../domain/shift'            ;
-import { PayrollPeriod                                    } from '../../domain/payroll-peiod'    ;
+import { PayrollPeriod                                    } from '../../domain/payroll-period'   ;
 import { Employee                                         } from '../../domain/employee'         ;
 import * as moment from 'moment'                                                                 ;
 import { TabsComponent                                    } from '../../components/tabs/tabs'    ;
@@ -38,7 +38,7 @@ enum Icons {
 })
 export class HomePage {
   moment                      : any           = moment                   ;
-  todayLongDate               : any           = moment()                 ;
+  today                       : any           = moment()                 ;
   loginData                   : any           = null                     ;
   username                    : string        = "unknown"                ;
   userLoggedIn                : boolean                                  ;
@@ -63,6 +63,7 @@ export class HomePage {
   hoursTotalList              : Array<any>    = []                       ;
   shifts                      : Array<Shift>  = []                       ;
   payrollPeriods              : Array<PayrollPeriod> = []                ;
+  period                      : PayrollPeriod = null                     ;
   payrollPeriodHoursTotal     : number        = 0                        ;
   payrollPeriodHours          : number        = 0                        ;
   payrollPeriodBonusHours     : number        = 0                        ;
@@ -150,7 +151,7 @@ export class HomePage {
         caller.fetchTechWorkorders().then((res) => {
           Log.l("HomePage: ionViewDidEnter() fetched work reports, maybe:\n", res);
           caller.ud.setWorkOrderList(res);
-          caller.ud.createShifts();
+          // caller.ud.createShifts();
           caller.techProfile = caller.ud.getTechProfile();
           caller.shifts = caller.ud.getPeriodShifts();
           caller.countHoursForShifts();
@@ -206,19 +207,29 @@ export class HomePage {
       this.server.getReportsForTech(techid).then((res) => {
         Log.l(`HomePage: getReportsForTech(${techid}): Success! Result:\n`, res);
         this.ud.setWorkOrderList(res);
-        this.techWorkOrders = this.ud.getWorkOrderList();
-
-        let now = moment();
-        let payrollPeriod = this.ud.getPayrollPeriodForDate(now);
-        this.payrollWorkOrders = this.ud.getWorkOrdersForPayrollPeriod(payrollPeriod);
-        Log.l(`HomePage: filteredWorkOrders(${payrollPeriod}) returned:\n`, this.payrollWorkOrders);
-        if(this.shifts && this.shifts.length) {
-          this.hoursTotalList = [];
-          for(let shift of this.shifts) {
-            let total = this.ud.getTotalHoursForShift(shift.getShiftSerial());
-            this.hoursTotalList.push(total);
+        this.techWorkOrders    = this.ud.getWorkOrderList();
+        let tech               = this.ud.getTechProfile();
+        let now                = moment();
+        let payrollPeriod      = this.ud.getPayrollPeriodForDate(now);
+        this.payrollPeriods    = this.ud.createPayrollPeriods(tech);
+        for(let period of this.payrollPeriods) {
+          for(let shift of period.shifts) {
+            let reports = this.ud.getWorkOrdersForShift(shift);
+            shift.setShiftWorkOrders(reports);
           }
         }
+        this.period            = this.payrollPeriods[0];
+        Log.l("fetchTechWorkOrders(): Got payroll periods and all work orders:\n", this.payrollPeriods);
+        Log.l(this.techWorkOrders);
+        // this.payrollWorkOrders = this.ud.getWorkOrdersForPayrollPeriod(payrollPeriod);
+        // Log.l(`HomePage: filteredWorkOrders(${payrollPeriod}) returned:\n`, this.payrollWorkOrders);
+        // if(this.period.shifts && this.period.shifts.length) {
+        //   this.hoursTotalList = [];
+        //   for(let shift of this.period.shifts) {
+        //     let total = this.ud.getTotalHoursForShift(shift.getShiftSerial());
+        //     this.hoursTotalList.push(total);
+        //   }
+        // }
         resolve(res);
       }).catch((err) => {
         Log.l(`HomePage: getReportsForTech(${techid}): Error!`);
@@ -281,11 +292,11 @@ export class HomePage {
     return retVal;
   }
 
-  getCheckboxSVG(idx:number) {
+  getCheckboxSVG(shift:Shift) {
     let checkBox = '?';
     let chks = this.checkboxSVG;
-    let hours = this.hoursTotalList[idx];
-    let total = this.techProfile.shiftLength;
+    let hours = shift.getNormalHours();
+    let total = shift.getShiftLength();
     if (hours > total) {
       checkBox = chks[Icons["flag-checkered"]];
     } else if (hours < total) {
@@ -295,6 +306,21 @@ export class HomePage {
     }
     return checkBox;
   }
+
+  // getCheckboxSVG(idx:number) {
+  //   let checkBox = '?';
+  //   let chks = this.checkboxSVG;
+  //   let hours = this.hoursTotalList[idx];
+  //   let total = this.techProfile.shiftLength;
+  //   if (hours > total) {
+  //     checkBox = chks[Icons["flag-checkered"]];
+  //   } else if (hours < total) {
+  //     checkBox = chks[Icons["box-check-no"]];
+  //   } else {
+  //     checkBox = chks[Icons["box-check-yes"]];
+  //   }
+  //   return checkBox;
+  // }
 
   getCheckbox(idx:number) {
     let checkBox = '?';
@@ -357,6 +383,10 @@ export class HomePage {
     if(status === 'hoursOver') {
       this.ud.playSoundClip();
     }
+  }
+
+  changedPayrollPeriod(period:PayrollPeriod) {
+    Log.l("changedPayrollPeriod(): Payroll period changed to:\n", period);
   }
 
 }

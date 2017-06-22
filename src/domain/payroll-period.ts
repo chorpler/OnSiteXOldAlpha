@@ -1,4 +1,5 @@
 import { Shift } from './shift';
+import { Employee } from './employee';
 import { Log, isMoment } from '../config/config.functions';
 import * as moment from 'moment';
 
@@ -9,15 +10,21 @@ export class PayrollPeriod {
   public end_date:any;
   public serial_number:number;
   public shifts:Array<Shift> = [];
+  public shift_hours_list:Array<number> = [];
+  public shift_payroll_hours_list:Array<number> = [];
   public total_hours:number = 0;
+  public payroll_hours:number = 0;
 
+  constructor(start_date?: moment.Moment | string | number, end_date?: moment.Moment | string | number, serial_number?:number, shifts?:Array<Shift>, total_hours?:number, payroll_hours?:number) {
+    this.start_date               = start_date    || null;
+    this.end_date                 = end_date      || null;
+    this.serial_number            = serial_number || null;
+    this.shifts                   = shifts        || []  ;
+    this.total_hours              = total_hours   || 0   ;
+    this.payroll_hours            = payroll_hours || 0   ;
+    this.shift_hours_list         = []                   ;
+    this.shift_payroll_hours_list = []                   ;
 
-  constructor(start_date?: moment.Moment | string | number, end_date?: moment.Moment | string | number, serial_number?:number, shifts?:Array<Shift>, total_hours?:number) {
-    this.start_date    = start_date    || null;
-    this.end_date      = end_date      || null;
-    this.serial_number = serial_number || null;
-    this.shifts        = shifts        || null;
-    this.total_hours   = total_hours   || null;
   }
 
   readFromDoc(doc:any) {
@@ -75,6 +82,11 @@ export class PayrollPeriod {
   }
 
   getNormalHours() {
+    let total = 0;
+    for(let shift of this.shifts) {
+      total += shift.getNormalHours();
+    }
+    this.total_hours = total;
     return this.total_hours;
   }
 
@@ -90,7 +102,12 @@ export class PayrollPeriod {
    * @memberof PayrollPeriod
    */
   getPayrollHours() {
-    return this.total_hours;
+    let total = 0;
+    for(let shift of this.shifts) {
+      total += shift.getPayrollHours();
+    }
+    this.payroll_hours = total;
+    return this.payroll_hours;
   }
 
   static getPayrollPeriodDateForShiftDate(date:moment.Moment | Date | string) {
@@ -111,6 +128,62 @@ export class PayrollPeriod {
       periodStart = moment(day).subtract(1, 'weeks').isoWeekday(scheduleStartsOnDay).startOf('day');
     }
     return periodStart;
+  }
+
+  getPayrollPeriodDescription() {
+    let start = moment(this.start_date).format("MMM D");
+    let end   = moment(this.end_date).format("MMM D");
+    let output = `${start} - ${end}`;
+    return output;
+  }
+
+  createPayrollPeriodShiftsForTech(tech:Employee) {
+    let day = moment(this.end_date).startOf('day');
+    let today = moment().startOf('day');
+    let tp = tech;
+    if (tp !== undefined && tp !== null) {
+      let shifts  = [];
+      for (let i = 0; i < 7; i++) {
+        let tmpDay = moment(day).subtract(i, 'days');
+        if(tmpDay.isAfter(today)) {
+          continue;
+        } else {
+          let shift_day = tmpDay.startOf('day');
+          let tmpStart = tp.shiftStartTime;
+          let shift_start_time = moment(shift_day).add(tmpStart, 'hours');
+          let client = tp.client || "SITENAME";
+          let type = tp.shift;
+          let length = tp.shiftLength;
+          let thisShift = new Shift(client, null, type, shift_start_time, length);
+          thisShift.updateShiftWeek();
+          thisShift.updateShiftNumber();
+          thisShift.getExcelDates();
+          shifts.push(thisShift);
+          Log.l(`createPayrollPeriodShiftsForTech(): Now adding day ${i}: ${moment(shift_day).format()} `);
+        }
+      }
+      this.shifts = shifts;
+    } else {
+      Log.e("createPayrollPeriodShiftsForTech(): Failed, needs Employee as argument and got:\n", tech);
+    }
+  }
+
+  getHoursList() {
+    this.shift_hours_list = [];
+    for(let shift of this.shifts) {
+      let hours = shift.getNormalHours();
+      this.shift_hours_list.push(hours);
+    }
+    return this.shift_hours_list;
+  }
+
+  getPayrollHoursList() {
+    this.shift_payroll_hours_list = [];
+    for(let shift of this.shifts) {
+      let hours = shift.getPayrollHours();
+      this.shift_payroll_hours_list.push(hours);
+    }
+    return this.shift_payroll_hours_list;
   }
 
 }

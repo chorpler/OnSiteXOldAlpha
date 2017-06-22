@@ -87,5 +87,7 @@
   "spinner_deleting_report": "Deleting report...",
   "error_deleting_report_message": "Error deleting report. Please try again later.",
   "error_server_connect_message": "Could not connect to server. Please try again later.",
-  "hours_header": "Hours"
+  "hours_header": "Hours",
+  "payroll_period": "Payroll Period",
+  "pay_period": "Pay Period"
 }

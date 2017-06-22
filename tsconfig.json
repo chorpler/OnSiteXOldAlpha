@@ -15,7 +15,7 @@
   },
   "include": [
     "src/**/*.ts",
-    "node_modules/moment/moment.d.ts",
+    "node_modules/moment/moment.d.ts"
   ],
   "exclude": [
     "node_modules",

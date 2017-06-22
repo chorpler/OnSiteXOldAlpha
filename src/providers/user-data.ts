@@ -6,6 +6,7 @@ import { DBSrvcs                } from './db-srvcs'                 ;
 import { Shift                  } from '../domain/shift'            ;
 import { PayrollPeriod          } from '../domain/payroll-period'   ;
 import { WorkOrder              } from '../domain/workorder'        ;
+import { Employee               } from '../domain/employee'         ;
 import { Log, isMoment          } from '../config/config.functions' ;
 import { Preferences            } from './preferences'              ;
 import { PREFS, STRINGS         } from '../config/config.strings'   ;
@@ -108,11 +109,17 @@ export class UserData {
     UserData.techWOArrayInitialized = true;
   }
 
-  getWorkOrdersForShift(serial:string):Array<WorkOrder> {
+  getWorkOrdersForShift(shift:Shift | string):Array<WorkOrder> {
     let result = [];
-    for(let wo of UserData.workOrderList) {
-      if(wo.shift_serial === serial) {
-        result.push(wo);
+    let shift_serial = shift instanceof Shift ? shift.getShiftSerial() : shift;
+    for(let report of UserData.workOrderList) {
+      let serial = report.shift_serial;
+      if(serial === undefined || serial === null) {
+        /* TODO(2017-06-22): add code to extrapolate shift from report_date in report */
+      } else {
+        if(serial === shift_serial) {
+          result.push(report);
+        }
       }
     }
     return result;
@@ -121,7 +128,9 @@ export class UserData {
   getWorkOrdersForPayrollPeriod(period:any):Array<any> {
     let result = [];
     let key = 0;
-    if(isMoment(period)) {
+    if(period instanceof PayrollPeriod) {
+      key = period.getPayrollSerial();
+    } else if(isMoment(period)) {
       key = moment(period).diff(XL, 'days') + 2;
     } else {
       key = Number(period);
@@ -278,12 +287,14 @@ export class UserData {
     }
   }
 
-  createPayrollPeriods() {
+  createPayrollPeriods(tech:Employee):Array<PayrollPeriod> {
     let now = moment().startOf('day');
+    UserData.payrollPeriods = [];
     for(let i = 0; i < 2; i++) {
       let start = PayrollPeriod.getPayrollPeriodDateForShiftDate(moment(now).subtract(i, 'weeks'));
       let pp = new PayrollPeriod();
       pp.setStartDate(start);
+      pp.createPayrollPeriodShiftsForTech(tech);
       UserData.payrollPeriods.push(pp);
     }
     return UserData.payrollPeriods;
