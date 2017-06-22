@@ -54,7 +54,7 @@
   "work_order_number": "Número de orden de trabajo",
   "job_notes": "Notas de trabajo",
   "report_submit_error": "Error al enviar el informe. Vuelve a intentarlo.",
-  "payroll_week": "Semana",
+  "payroll_week": "Semana de",
   "select_shift": "Elija el Cambio",
   "security_too_low_title": "Seguridad Demasiado Baja",
   "security_too_low_message": "Para guardar la información de inicio de sesión, la pantalla de bloqueo de su dispositivo debe protegerse con un patrón de desplazamiento, un PIN o una contraseña. Si no habilita esto, su inicio de sesión no se almacenará de forma segura y es posible que tenga que iniciar sesión con más frecuencia. ¿Quieres ir a la configuración para activar la seguridad de la pantalla bloqueada?",

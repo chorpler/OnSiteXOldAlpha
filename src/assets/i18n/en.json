@@ -54,7 +54,7 @@
   "work_order_number": "Work Order No.",
   "job_notes": "Job Notes",
   "report_submit_error": "Error submitting report. Please try again.",
-  "payroll_week": "Payroll week",
+  "payroll_week": "Week of",
   "select_shift": "Select Shift",
   "security_too_low_title": "Security Too Low",
   "security_too_low_message": "To save your login information, your device's lock screen must be secured with a swipe pattern, a PIN, or a password. If you do not enable this, your login will not be securely stored and you may have to log in more often. Would you like to go to settings to turn on lock-screen security?",
