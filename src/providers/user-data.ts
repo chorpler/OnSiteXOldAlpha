@@ -4,11 +4,12 @@ import { Storage                } from '@ionic/storage'             ;
 import { NativeStorage          } from 'ionic-native'               ;
 import { DBSrvcs                } from './db-srvcs'                 ;
 import { Shift                  } from '../domain/shift'            ;
+import { PayrollPeriod          } from '../domain/payroll-period'   ;
 import { WorkOrder              } from '../domain/workorder'        ;
 import { Log, isMoment          } from '../config/config.functions' ;
 import { Preferences            } from './preferences'              ;
 import { PREFS, STRINGS         } from '../config/config.strings'   ;
-import moment from 'moment';
+import * as moment from 'moment';
 
 const XL = moment([1900, 0, 1]);
 
@@ -28,6 +29,7 @@ export class UserData {
   public static circled_numbers_chars: Array<string> = STRINGS.NUMCHARS;
   public static techWOArrayInitialized:boolean = false;
   public static shifts:Array<Shift> = [];
+  public static payrollPeriods:Array<PayrollPeriod> = [];
   public static techProfile:any;
   public static userLoggedIn:boolean = false;
   public static sesaConfig:any = {};
@@ -274,6 +276,17 @@ export class UserData {
       Log.l("getPayrollPeriodForDate(): Need moment, got:\n", date);
       return -1;
     }
+  }
+
+  createPayrollPeriods() {
+    let now = moment().startOf('day');
+    for(let i = 0; i < 2; i++) {
+      let start = PayrollPeriod.getPayrollPeriodDateForShiftDate(moment(now).subtract(i, 'weeks'));
+      let pp = new PayrollPeriod();
+      pp.setStartDate(start);
+      UserData.payrollPeriods.push(pp);
+    }
+    return UserData.payrollPeriods;
   }
 
   createShifts() {

@@ -11,8 +11,9 @@ import { AlertService                                     } from '../../provider
 import { UserData                                         } from '../../providers/user-data'     ;
 import { WorkOrder                                        } from '../../domain/workorder'        ;
 import { Shift                                            } from '../../domain/shift'            ;
+import { PayrollPeriod                                    } from '../../domain/payroll-peiod'    ;
 import { Employee                                         } from '../../domain/employee'         ;
-import moment from 'moment'                                                                      ;
+import * as moment from 'moment'                                                                 ;
 import { TabsComponent                                    } from '../../components/tabs/tabs'    ;
 import { STRINGS                                          } from '../../config/config.strings'   ;
 import { Preferences                                      } from '../../providers/preferences'   ;
@@ -61,6 +62,7 @@ export class HomePage {
   payrollWorkOrders           : Array<WorkOrder>                         ;
   hoursTotalList              : Array<any>    = []                       ;
   shifts                      : Array<Shift>  = []                       ;
+  payrollPeriods              : Array<PayrollPeriod> = []                ;
   payrollPeriodHoursTotal     : number        = 0                        ;
   payrollPeriodHours          : number        = 0                        ;
   payrollPeriodBonusHours     : number        = 0                        ;

@@ -1,4 +1,4 @@
-import moment from 'moment';
+import * as moment from 'moment';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { Http } from '@angular/http';

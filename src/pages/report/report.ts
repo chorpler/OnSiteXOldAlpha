@@ -14,7 +14,7 @@ import { Shift } from '../../domain/shift';
 import { WorkOrder } from '../../domain/workorder';
 import { Status } from '../../providers/status';
 import { UserData } from '../../providers/user-data';
-import moment from 'moment';
+import * as moment from 'moment';
 import { sprintf } from 'sprintf-js';
 // import { MultiPickerModule } from 'ion-multi-picker';
 // import { FancySelectComponent } from '../../components/fancy-select/fancy-select';

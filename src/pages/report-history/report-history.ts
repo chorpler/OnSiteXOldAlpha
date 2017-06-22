@@ -12,7 +12,7 @@ import { Preferences                                            } from '../../pr
 import { TranslateService                                       } from '@ngx-translate/core'           ;
 import { TabsComponent                                          } from '../../components/tabs/tabs'    ;
 import { OrderBy                                                } from '../../pipes/pipes'             ;
-import moment from 'moment';
+import * as moment from 'moment';
 import { STRINGS                                                } from '../../config/config.strings'   ;
 
 
