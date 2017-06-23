@@ -19,14 +19,14 @@
 <ion-content padding>
   <div class="data-elements" *ngIf="dataReady">
     <div class="work-order-payroll-hours-header">
-      <span class="shift-hours-header" [ngClass]="shiftHoursColor" *ngIf="workOrderForm && workOrderForm.value && workOrderForm.value.selected_shift">
+      <span class="shift-hours-header" [ngClass]="getShiftHoursStatus(selectedShift)" *ngIf="workOrderForm && workOrderForm.value && workOrderForm.value.selected_shift">
         <span class="shift-label">{{'shift' | translate}}</span> #<span class="shift-number">{{selectedShift.updateShiftNumber()}}</span>
-      <span class="shift-label">{{'hours' | translate}}</span>:
-      <!--<span class="shift-hours">{{workOrderForm.value.selected_shift.getShiftHours()+currentRepairHours}}</span>-->
-      <span class="shift-hours" *ngIf="mode==='Add'">{{shiftSavedHours+currentRepairHours}}</span>
-      <span class="shift-hours" *ngIf="mode==='Edit'">{{shiftSavedHours+currentRepairHours-thisWorkOrderContribution}}</span>
-      <span class="shift-label">{{'of' | translate}}</span>
-      <span class="shift-hours">{{techProfile.shiftLength}}</span>
+        <span class="shift-label">{{'hours' | translate}}</span>:
+        <!--<span class="shift-hours">{{workOrderForm.value.selected_shift.getShiftHours()+currentRepairHours}}</span>-->
+        <span class="shift-hours" *ngIf="mode==='Add'">{{shiftSavedHours+currentRepairHours}}</span>
+        <span class="shift-hours" *ngIf="mode==='Edit'">{{shiftSavedHours+currentRepairHours-thisWorkOrderContribution}}</span>
+        <span class="shift-label">{{'of' | translate}}</span>
+        <span class="shift-hours">{{techProfile.shiftLength}}</span>
       </span>
     </div>
     <form [formGroup]="workOrderForm" (ngSubmit)="onSubmit()" *ngIf="dataReady">

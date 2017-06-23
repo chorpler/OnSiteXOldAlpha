@@ -1,13 +1,10 @@
 <ion-header>
-
   <ion-navbar>
     <ion-title> {{'tech_settings_title' | translate}} </ion-title>
   </ion-navbar>
-
 </ion-header>
 
-
-<ion-content padding class="xtra-top-padding" *ngIf="techSettingsReady">
+<ion-content padding *ngIf="techSettingsReady" class="xtra-top-padding">
   <form [formGroup]="techSettings" (ngSubmit)="onSubmit()">
     <ion-list>
       <ion-item>
