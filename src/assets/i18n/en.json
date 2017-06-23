@@ -89,5 +89,6 @@
   "error_server_connect_message": "Could not connect to server. Please try again later.",
   "hours_header": "Hours",
   "payroll_period": "Payroll Period",
-  "pay_period": "Pay Period"
+  "pay_period": "Pay Period",
+  "messages_title": "Messages from Tino"
 }

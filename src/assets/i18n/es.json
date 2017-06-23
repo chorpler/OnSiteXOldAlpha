@@ -89,6 +89,7 @@
   "error_server_connect_message": "No se pudo conectar al servidor. Por favor, inténtelo de nuevo más tarde.",
   "hours_header": "Horas",
   "payroll_period": "Período de Nómina",
-  "pay_period": "Período de Pago"
+  "pay_period": "Período de Pago",
+  "messages_title": "Mensajes de Tino"
 }
 

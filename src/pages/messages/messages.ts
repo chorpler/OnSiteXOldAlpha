@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
+import { TranslateService } from '@ngx-translate/core' ;
+import { STRINGS } from '../../config/config.strings'   ;
+import { Pipe, PipeTransform } from '@angular/core' ;
 
 
 @IonicPage({
@@ -12,6 +14,8 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 
 export class MessagesPage {
+
+  title: string = "Messages from Tino";
 
   constructor(public navCtrl: NavController, public navParams: NavParams) {
   }
