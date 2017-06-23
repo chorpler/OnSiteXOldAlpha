@@ -13,7 +13,7 @@ import 'rxjs/add/operator/map';
 @Injectable()
 export class Preferences {
   public static DB: any = {
-    'reports': 'reports',
+    'reports': 'reports_ver101100',
     'employees': 'sesa-employees',
     'config': 'sesa-config',
     'jobsites': 'sesa-jobsites',
