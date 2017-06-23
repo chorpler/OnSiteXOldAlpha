@@ -134,6 +134,6 @@ export class DeveloperPage implements OnInit {
 
   cancel() {
     this.audio.play('dropit');
-    this.tabs.goTopage('OnSiteHome');
+    this.tabs.goToPage('OnSiteHome');
   }
 }
