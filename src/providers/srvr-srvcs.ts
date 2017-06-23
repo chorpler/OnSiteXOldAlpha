@@ -5,6 +5,7 @@ import { PouchDBService } from '../providers/pouchdb-service' ;
 import { Log          }     from '../config/config.functions' ;
 import { WorkOrder } from '../domain/workorder'               ;
 import { UserData } from '../providers/user-data'             ;
+import { Message } from '../domain/message'                   ;
 import { Preferences } from '../providers/preferences'        ;
 // import { StorageService } from '../providers/storage-service'    ;
 // import { PREFS     } from '../config/config.strings'          ;
@@ -389,6 +390,30 @@ export class SrvrSrvcs {
       }).catch((err) => {
         Log.l(`syncSquaredFromServer(): Failure replicating remote->'${dbname}'`);
         Log.l(err);
+        reject(err);
+      });
+    });
+  }
+
+  fetchNewMessages():Promise<Array<Message>> {
+    Log.l('fetchNewMessages(): Getting messages...');
+    return new Promise((resolve, reject) => {
+      let rdb1 = this.addRDB(this.prefs.DB.messages);
+      rdb1.allDocs({include_docs: true}).then(res => {
+        Log.l("fetchNewMessages(): Got results from server:\n", res);
+        let out = new Array<Message>();
+        for(let row of res.rows) {
+          if(row.doc) {
+            let msg = new Message();
+            msg.readFromDoc(row.doc);
+            out.push(msg);
+          }
+        }
+        Log.l("fetchNewMessages(): Final messages array is:\n", out);
+        resolve(out);
+      }).catch(err => {
+        Log.l("fetchNewMessages(): Error retrieving messages from server.");
+        Log.e(err);
         reject(err);
       });
     });

@@ -1,13 +1,42 @@
 <ion-header>
-
   <ion-navbar>
     <ion-title> {{'messages_title' | translate}} </ion-title>
   </ion-navbar>
-
 </ion-header>
 
 
-<ion-content padding>
-
+<ion-content class="body-with-header-and-tabs" padding *ngIf="pageReady && messages && !messages.length">
+  <ion-item>
+    <div class="messages-no-message">{{'messages_no_messages' | translate}}</div>
+  </ion-item>
+</ion-content>
+<ion-content padding class="body-with-header-and-tabs" *ngIf="pageReady && messages && messages.length">
+  <ion-card-header class="messages-card-header">
+    <ion-item class="messages-card-header-label-item">
+      <ion-label class="messages-card-header-label-text">{{'message_date' | translate}}</ion-label>
+    </ion-item>
+    <ion-item class="messages-card-header-select-item">
+      <ion-select class="messages-card-header-select" [(ngModel)]="message" (ionChange)="changedMessage(message)">
+        <ion-option *ngFor="let message of messages" [value]="message">{{message.getMessageDateString()}}</ion-option>
+      </ion-select>
+    </ion-item>
+  </ion-card-header>
+  <ion-card>
+    <ion-list no-border>
+      <ion-item class="message-header-item message-sender">
+        <h4 class="message-label">{{'message_from' | translate}}</h4>
+        <p class="message-item-text">{{message.getMessageSender()}}</p>
+      </ion-item>
+      <ion-item class="message-header-item message-subject">
+        <h4 class="message-label">{{'message_subject' | translate}}</h4>
+        <p class="message-item-text">{{message.getMessageSubject()}}</p>
+      </ion-item>
+      <ion-item class="message-body">
+        <!-- <ion-label>{{'message_subject' | translate}}</ion-label> -->
+        <p class="message-item-body" [innerHTML]="message.getMessageBody()"></p>
+      </ion-item>
+      <button ion-item color="primary" class="message-done-button"  (click)="closeMessages()">{{'message_done' | translate}}</button>
+    </ion-list>
+  </ion-card>
 </ion-content>
 <onsite-tabs></onsite-tabs>

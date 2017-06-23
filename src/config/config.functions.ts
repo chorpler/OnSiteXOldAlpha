@@ -41,6 +41,30 @@ export var sizeOf = function(val:any) {
   return size;
 }
 
+export const XLDay0 = moment([1900, 0, 1]).startOf('day');
+
+export const date2xl = function(date:moment.Moment | Date | string):number {
+  let d = null;
+  if(typeof date === 'string') {
+    d = moment(date, 'YYYY-MM-DD');
+  } else {
+    d = moment(date);
+  }
+  let mDate  = moment(date).startOf('day');
+  let xlDate = mDate.diff(XLDay0, 'days', true) + 2;
+  return xlDate;
+}
+
+export const xl2date = function(xlDate:number):moment.Moment {
+  let date = moment(XLDay0).add(xlDate - 2, 'days').startOf('day');
+  return date;
+}
+
+export const xl2datetime = function(xlDate:number):moment.Moment {
+  let datetime = moment(XLDay0).add(xlDate - 2, 'days');
+  return datetime;
+}
+
 export var CONSOLE = {
     t1: function(res) { console.log("Success"); console.log(res); window["res1"] = res; return res;},
     c1: function(err) { console.log("Failure"); console.log(err); window["err1"] = err; return err;}

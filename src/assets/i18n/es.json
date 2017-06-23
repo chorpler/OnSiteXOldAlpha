@@ -92,6 +92,11 @@
   "hours_header": "Horas",
   "payroll_period": "Período de Nómina",
   "pay_period": "Período de Pago",
-  "messages_title": "Mensajes de Tino"
+  "messages_title": "Mensajes de Tino",
+  "message_date": "Fecha",
+  "message_from": "Remitente",
+  "message_subject": "Tema",
+  "message_done": "Hecho",
+  "messages_no_messages": "No hay mensajes disponibles"
 }
 

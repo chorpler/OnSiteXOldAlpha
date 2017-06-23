@@ -43,7 +43,7 @@ import { PipesModule                                             } from '../pipe
 import { Preferences                                             } from '../providers/preferences'               ;
 import { SmartAudio                                              } from '../providers/smart-audio'               ;
 import { NativeAudio                                             } from '@ionic-native/native-audio'             ;
-import { MessageService                                          } from '../providers/messages'                  ;
+import { MessageService                                          } from '../providers/message-service'           ;
 
 @NgModule({
   declarations   : [

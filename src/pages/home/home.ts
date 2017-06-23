@@ -318,6 +318,7 @@ export class HomePage {
   }
 
   showHelp(event:any) {
+    this.audio.play('help');
     let params = { cssClass: 'popover-template', showBackdrop: true, enableBackdropDismiss: true, ev: event };
     let pup = this.popoverCtrl.create('Popover', {contents: 'home_app_help_text'}, params);
     pup.onDidDismiss(data => {

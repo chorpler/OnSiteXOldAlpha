@@ -92,5 +92,10 @@
   "hours_header": "Hours",
   "payroll_period": "Payroll Period",
   "pay_period": "Pay Period",
-  "messages_title": "Messages from Tino"
+  "messages_title": "Messages from Tino",
+  "message_date": "Date",
+  "message_from": "Sender",
+  "message_subject": "Subject",
+  "message_done": "Done",
+  "messages_no_messages": "No messages available"
 }

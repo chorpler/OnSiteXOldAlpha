@@ -19,6 +19,7 @@ export class Preferences {
     'jobsites': 'sesa-jobsites',
     'scheduling': 'sesa-scheduling',
     'technicians': 'sesa-technicians',
+    'messages': 'sesa-messages',
     'login': '_session'
   };
   public static SERVER: any = {
