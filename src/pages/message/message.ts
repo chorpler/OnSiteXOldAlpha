@@ -9,6 +9,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { SafePipe } from '../../pipes/safe';
 import { Message } from '../../domain/message';
+import { AlertService } from '../../providers/alerts';
 import { MessageService } from '../../providers/message-service';
 import { Log, isMoment, date2xl, xl2date, xl2datetime } from '../../config/config.functions';
 import * as moment from 'moment';
@@ -28,7 +29,7 @@ export class MessagePage implements OnInit {
   public message:Message = null;
   public pageReady:boolean = false;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public db:DBSrvcs, public server:SrvrSrvcs, public msg:MessageService, public tabs:TabsComponent, public viewCtrl: ViewController) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public db:DBSrvcs, public server:SrvrSrvcs, public msg:MessageService, public tabs:TabsComponent, public viewCtrl: ViewController, public alert:AlertService) {
     window["onsitemessages"] = this;
     if(this.navParams.get('message') !== undefined) { this.message = this.navParams.get('message');}
   }
@@ -56,15 +57,20 @@ export class MessagePage implements OnInit {
 
   closeMessage() {
     Log.l("closeMessage(): User clicked close message.");
-    this.tabs.decrementMessageBadge();
-    this.message.setMessageRead();
-    this.server.saveReadMessage(this.message).then(res => {
-      Log.l("closeMessage(): Saved read message status.");
+    if(!this.message.read) {
+      this.tabs.decrementMessageBadge();
+      this.message.setMessageRead();
+      this.server.saveReadMessage(this.message).then(res => {
+        Log.l("closeMessage(): Saved read message status.");
+        this.viewCtrl.dismiss();
+      }).catch(err => {
+        Log.l("closeMessage(): Error saving message as read!");
+        Log.e(err);
+        this.viewCtrl.dismiss();
+      });
+    } else {
       this.viewCtrl.dismiss();
-    }).catch(err => {
-      Log.l("closeMessage(): Error saving message as read!");
-      Log.e(err);
-    });
+    }
     // this.tabs.goToPage('Message List');
   }
 

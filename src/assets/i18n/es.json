@@ -36,7 +36,7 @@
   "user": "Usuario",
   "logout": "Cerrar Sesión",
   "confirm_logout_title": "Confirmar Cerrar Sesión",
-  "confirm_logout_message": "El cierre de sesión sólo es necesario si otro usuario necesita iniciar sesión en el dispositivo. Si desea cerrar la aplicación y finalizar todos los procesos, haga clic en el \"X\" en la esquina superior derecha de la pantalla.",
+  "confirm_logout_message": "El cierre de sesión sólo es necesario si otro usuario necesita iniciar sesión en el dispositivo.",
   "app_info": "Información de la Aplicación",
   "version": "Versión",
   "app_functions": "Funciones",

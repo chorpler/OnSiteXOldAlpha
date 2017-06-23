@@ -36,7 +36,7 @@
   "user": "User",
   "logout": "Logout",
   "confirm_logout_title": "Confirm Logout",
-  "confirm_logout_message": "Logout is only necessary if another user needs to log into your device. If you want to close the app and terminate all processes, click the  \"X\" in the top right corner of the screen.",
+  "confirm_logout_message": "Logout is only necessary if another user needs to log into your device.",
   "app_info": "App Information",
   "version": "Version",
   "app_functions": "App Functions",
