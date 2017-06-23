@@ -40,8 +40,9 @@ export class MessageService {
         }
         messages.sort(_orderBy);
         Log.l("getMessages(): Sorted array is:\n", messages);
+        MessageService.messageInfo.new_messages = 0;
         for(let message of messages) {
-          if(!message.read) {
+          if(message['read'] === undefined || message['read'] === false) {
             MessageService.messageInfo.new_messages++;
           }
         }
