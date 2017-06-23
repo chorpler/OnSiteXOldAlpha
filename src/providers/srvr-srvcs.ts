@@ -469,7 +469,12 @@ export class SrvrSrvcs {
       let db1 = this.addDB(dbname);
       let out = message.serialize();
       Log.l("saveReadMessage(): Now attempting to save serialized message:\n", out);
-      db1.put(out).then(res => {
+      db1.upsert(message._id, (doc) => {
+        if(!doc.read) {
+          doc.read = true;
+        }
+        return doc;
+      }).then(res => {
         Log.l("saveReadMessage(): Successfully saved message, result:\n", res);
         resolve(res);
       }).catch(err => {
