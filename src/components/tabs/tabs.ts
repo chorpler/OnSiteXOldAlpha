@@ -177,8 +177,9 @@ export class TabsComponent implements OnInit {
 
   setMessageBadge(count:number) {
     this.tabInfo[Pages['Message List']].badgeCount = count;
-    if(count == 0) {
+    if(count <= 0) {
       this.tabInfo[Pages['Message List']].hideBadge = true;
+      count = 0;
     } else {
       this.tabInfo[Pages['Message List']].hideBadge = false;
     }
@@ -191,7 +192,8 @@ export class TabsComponent implements OnInit {
   decrementMessageBadge() {
     this.tabInfo[Pages['Message List']].badgeCount--;
     let count = this.tabInfo[Pages['Message List']].badgeCount;
-    if (count == 0) {
+    if (count <= 0) {
+      count = 0;
       this.tabInfo[Pages['Message List']].hideBadge = true;
     } else {
       this.tabInfo[Pages['Message List']].hideBadge = false;
@@ -201,7 +203,7 @@ export class TabsComponent implements OnInit {
   incrementMessageBadge() {
     this.tabInfo[Pages['Message List']].badgeCount++
     let count = this.tabInfo[Pages['Message List']].badgeCount;
-    if (count == 0) {
+    if (count <= 0) {
       this.tabInfo[Pages['Message List']].hideBadge = true;
     } else {
       this.tabInfo[Pages['Message List']].hideBadge = false;
