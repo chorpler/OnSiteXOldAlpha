@@ -35,7 +35,7 @@
     <ion-list no-border>
       <ion-item class="ion-item-button-like"  *ngFor="let shift of period.shifts; let i=index" (click)="showShiftReports(shift)">
         <ion-icon class="shft-num-icon">{{numChars[shift.shift_number]}}</ion-icon>
-        <span class="shift-text">{{shift.getNormalHours()}}&nbsp;/&nbsp;{{shift.getShiftLength()}} &nbsp;{{"hours" | translate}} &nbsp;&nbsp;</span>
+        <span class="shift-text">{{shift.getNormalHours()}}&nbsp;/&nbsp;{{shift.getShiftLength()}} &nbsp;Hrs. &nbsp;&nbsp;</span>
         <span class="normal-txt">{{shift.getStartTime().format("ddd, MMM D")}}</span>
         <ion-icon item-end class="chk-box-icon" [ngClass]="shift.getShiftStatus()" [innerHTML]="getCheckboxSVG(shift) | safe: 'html'" (click)="possibleSound(shift)"></ion-icon>
       </ion-item>
