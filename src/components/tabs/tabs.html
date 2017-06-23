@@ -2,7 +2,11 @@
   <ion-toolbar>
     <div id="onsite-nav">
       <button ion-button icon-only [disabled]="allTabs.disabled" (click)="goToPage(tab.name)" *ngFor="let tab of tabInfo; let i=index">
-        <ion-icon [class.hlght]="tab.active" id="tab{{i+1}}" [name]="tab.icon"></ion-icon>
+        <ion-icon [class.hlght]="tab.active" id="tab{{i+1}}" [name]="tab.icon">
+          <div class="badge-container" >
+            <div class="msg-badge" [class.hide]='false' >2</div>
+          </div>
+        </ion-icon>
       </button>
     </div>
   </ion-toolbar>
