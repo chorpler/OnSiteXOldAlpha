@@ -216,6 +216,7 @@ export class OnSiteApp {
     this.audio.preload('deletereport', 'assets/audio/nospoilers2.mp3');
     this.audio.preload('help', 'assets/audio/nospoilers3.mp3');
     this.audio.preload('dropit', 'assets/audio/nospoilers4.mp3');
+    this.audio.preload('sorry', 'assets/audio/nospoilers5.mp3');
     // this.audio.preload('overtime', 'assets/audio/nospoilers.wav');
     // this.audio.preload('deletereport', 'assets/audio/nospoilers2.wav');
   }

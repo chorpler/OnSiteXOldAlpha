@@ -122,6 +122,7 @@ export class DeveloperPage implements OnInit {
   }
 
   getSomeCharacters() {
+    this.audio.play('sorry');
     let temp1 = `&#x2714;&check;&cross;&#x2716;&check;&#x1F5F4;&#x1F5F9;&#x1F5F8;&#x1F5F6;&#x1F5F5;&#x2705;&#x1F5F9;`;
     let temp2 = `✔✓✗✖✓🗴🗹🗸🗶🗵✅🗹`;
     if(this.unicodeChars === '' || this.unicodeChars === temp2) {
