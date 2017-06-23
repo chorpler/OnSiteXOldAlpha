@@ -21,7 +21,6 @@
   <p class="home-welcome">{{ud.getTechName()}}</p>
   <p class="home-date">{{today.format('dddd MMM DD YYYY')}} </p>
   <ion-card class="shift-summary" *ngIf="dataReady">
-    <!-- <ion-card-header> {{"home_hours_submitted_for_payroll" | translate}} </ion-card-header> -->
     <ion-card-header class="home-card-header-payroll-period">
       <ion-item class="home-card-header-payroll-period-label-item">
         <ion-label class="home-card-header-payroll-period-label-label">{{'payroll_period' | translate}}</ion-label>
@@ -42,7 +41,6 @@
       <ion-list-header>
         {{'pay_period' | translate}} :
         <ion-note item-end>
-          <!-- {{period.shifts[0].shift_week.format("MMM DD")}} - {{moment(period.shifts[0].shift_week).add(6,'days').format("MMM DD")}} -->
           {{period.getPayrollPeriodDescription()}}
         </ion-note>
       </ion-list-header>
@@ -60,38 +58,6 @@
       </ion-list-header>
     </ion-list>
   </ion-card>
-  <!-- <ion-card class="shift-summary">
-  <ion-card-header> {{"home_hours_submitted_for_payroll" | translate}} </ion-card-header>
-  <ion-list no-border *ngIf="dataReady">
-  <ion-item class="ion-item-button-like" [ngClass]="getShiftStatus(i)" *ngFor="let shift of shifts; let i=index" (click)="showShiftReports(shift)">
-  <ion-icon class="shft-num-icon">{{numChars[shift.shift_number]}}</ion-icon>
-  <span class="shift-text">{{hoursTotalList[i]}}&nbsp;/&nbsp;{{techProfile.shiftLength}} &nbsp;{{"hours" | translate}} &nbsp;&nbsp;
-  </span>
-  <span class="normal-txt">
-  {{shift.getStartTime().format("ddd, MMM D")}}
-  </span>
-  <ion-icon item-end class="chk-box-icon" [ngClass]="getShiftStatus(i)" [innerHTML]="getCheckboxSVG(i) | safe: 'html'" (click)="possibleSound(i)"></ion-icon>
-  </ion-item>
-  <ion-list-header>
-  Pay Period :
-  <ion-note item-end>
-  {{shifts[0].shift_week.format("MMM DD")}} - {{moment(shifts[0].shift_week).add(6,'days').format("MMM DD")}}
-  </ion-note>
-  </ion-list-header>
-  <ion-list-header>
-  {{"home_hours_submitted_for_payroll_period" | translate}}:
-  <ion-note item-end>
-  {{ payrollPeriodHours }}
-  </ion-note>
-  </ion-list-header>
-  <ion-list-header>
-  {{"home_payroll_hours_submitted" | translate}} :
-  <ion-note item-end>
-  {{ payrollPeriodBonusHours }}
-  </ion-note>
-  </ion-list-header>
-  </ion-list>
-  </ion-card> -->
 
 </ion-content>
 <onsite-tabs></onsite-tabs>
