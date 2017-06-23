@@ -395,25 +395,65 @@ export class SrvrSrvcs {
 
   fetchNewMessages():Promise<Array<Message>> {
     Log.l('fetchNewMessages(): Getting messages...');
+    let out = new Array<Message>();
+    let remote = new Array<Message>();
+    let local = new Array<Message>();
     return new Promise((resolve, reject) => {
       let dbname = this.prefs.DB.messages;
       let db1 = this.addDB(dbname);
       let rdb1 = this.addRDB(dbname);
-      this.syncFromServer(dbname).then(res => {
-        Log.l("fetchNewMessages(): Successfully synchronized messages from server. Now looking for new messages.");
-        return db1.allDocs({include_docs: true});
-      }).then(res => {
+      rdb1.allDocs({include_docs:true}).then(res => {
+      // this.syncFromServer(dbname).then(res => {
+        // Log.l("fetchNewMessages(): Successfully synchronized messages from server. Now looking for new messages.");
+        // return rdb1.allDocs({include_docs: true});
+        Log.l("fetchNewMessages(): Successfully retrieved all messages from the server.");
+
+      // }).then(res => {
         Log.l("fetchNewMessages(): Got results:\n", res);
-        let out = new Array<Message>();
+        remote = new Array<Message>();
         for(let row of res.rows) {
           let doc = row.doc;
           if(doc) {
             let msg = new Message();
             msg.readFromDoc(row.doc);
-            out.push(msg);
+            remote.push(msg);
           }
         }
-        Log.l("fetchNewMessages(): Final messages array is:\n", out);
+        Log.l("fetchNewMessages(): Final remote messages array is:\n", remote);
+        Log.l("fetchNewMessages(): Now getting local messages...");
+        return db1.allDocs({include_docs:true});
+      }).then(res => {
+        Log.l("fetchNewMessages(): Done getting local messages:\n", res);
+        for(let row of res.rows) {
+          let doc = row.doc;
+          if(doc) {
+            let msg = new Message();
+            msg.readFromDoc(row.doc);
+            local.push(msg);
+          }
+        }
+        Log.l("fetchNewMessages(): Final output of local messages is:\n", local);
+        let j = -1;
+        let msg = null, lmsg = null;
+        for(msg of remote) {
+          let i = 0, match = -1;
+          j++;
+          for(lmsg of local) {
+            Log.l(`fetchNewMessages():Index ${j}.${i} remote '${msg._id}' to local '${lmsg._id}'...`);
+            if(msg._id === lmsg._id && lmsg.read == true) {
+              Log.l(`fetchNewMessages(): ======> Match at index ${j}.${i}!`);
+              match = i;
+            }
+            i++;
+          }
+          if(match === -1) {
+            out.push(msg);
+            continue;
+          } else {
+            out.push(local[match]);
+          }
+        }
+        Log.l("fetchNewMessages(): Final output of new messages is:\n", out);
         resolve(out);
       }).catch(err => {
         Log.l("fetchNewMessages(): Error retrieving messages from server.");
