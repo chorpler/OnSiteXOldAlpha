@@ -17,7 +17,8 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<div #fixed ion-fixed></div>
+<ion-content padding [ngStyle]="{'margin-top': fixedHeight}">
   <p class="home-welcome">{{ud.getTechName()}}</p>
   <p class="home-date">{{today.format('dddd MMM DD YYYY')}} </p>
   <ion-card class="shift-summary" *ngIf="dataReady">
@@ -53,6 +54,5 @@
       </ion-list-header>
     </ion-list>
   </ion-card>
-
 </ion-content>
 <onsite-tabs></onsite-tabs>

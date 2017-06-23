@@ -117,12 +117,13 @@ export class ReportPage implements OnInit {
   ionViewDidLoad() { console.log('ionViewDidLoad ReportPage'); }
 
   ngOnInit() {
+    Log.l("Report.ngOnInit(): navParams are:\n", this.navParams);
     if (this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
     if (this.navParams.get('workOrder') !== undefined) { this.workOrder = this.navParams.get('workOrder'); }
     if (this.navParams.get('shift') !== undefined) { this.shiftToUse = this.navParams.get('shift'); }
     if (this.navParams.get('payroll_period') !== undefined) { this.period = this.navParams.get('payroll_period'); }
     if(this.shiftToUse !== null) {
-
+      this.selectedShift = this.shiftToUse;
     }
     let mode = this.mode.toLowerCase();
     let titleStrings = this.translate.instant([mode, 'report']);
@@ -152,8 +153,8 @@ export class ReportPage implements OnInit {
         this.workOrder = new WorkOrder();
       }
       this.setupShifts();
-      this.setupWorkOrderList();
-      this.updateActiveShiftWorkOrders(this.selectedShift);
+      // this.setupWorkOrderList();
+      // this.updateActiveShiftWorkOrders(this.selectedShift);
       if (this.mode === 'Add') {
         let startTime = moment(this.selectedShift.start_time);
         let addTime = this.selectedShift.getShiftHours();
@@ -246,7 +247,7 @@ export class ReportPage implements OnInit {
 
   public updateActiveShiftWorkOrders(shift: Shift) {
     let ss = shift;
-    this.getTotalHoursForShift(ss);
+    // this.getTotalHoursForShift(ss);
     let shift_time = moment(ss.start_time);
     let shift_serial = ss.getShiftSerial();
     let payroll_period = ss.getPayrollPeriod();
@@ -286,6 +287,9 @@ export class ReportPage implements OnInit {
     // }
 
     this.payrollPeriods = this.ud.getPayrollPeriods();
+    // if(this.period && this.shiftToUse) {
+
+    // } else
     if(this.period) {
       for(let pp of this.payrollPeriods) {
         if(this.period === pp) {
@@ -312,7 +316,7 @@ export class ReportPage implements OnInit {
         }
       }
     }
-    this.selectedShiftText = this.selectedShift.toString(this.translate);
+    // this.selectedShiftText = this.selectedShift.toString(this.translate);
   }
 
   public showFancySelect() {
@@ -370,15 +374,19 @@ export class ReportPage implements OnInit {
   getShiftHoursStatus(shift: Shift) {
     let ss = shift;
     if (ss !== undefined && ss !== null) {
-      let subtotal = Number(ss.getShiftHours());
-      let newhours = Number(this.workOrder.getRepairHours());
+      let total = this.shiftSavedHours + this.currentRepairHours - this.thisWorkOrderContribution;
+
+      // let subtotal = Number(ss.getNormalHours());
+      // let newhours = Number(this.workOrder.getRepairHours());
       let target = Number(this.techProfile.shiftLength);
-      let total = subtotal + newhours;
+      // let total = subtotal + newhours;
       Log.l(`getShiftHoursStatus(): total = ${total}, target = ${target}.`);
-      if (total === target) {
-        return 'green';
-      } else {
+      if (total < target) {
+        return 'darkred';
+      } else if(total > target) {
         return 'red';
+      } else {
+        return 'green';
       }
     } else {
       return 'black'

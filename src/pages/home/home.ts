@@ -1,3 +1,4 @@
+// import { Component, OnInit, NgZone, ViewChild, ElementRef } from '@angular/core'                 ;
 import { Component, OnInit, NgZone                        } from '@angular/core'                 ;
 import { Http                                             } from '@angular/http'                 ;
 import { Platform, IonicPage, NavParams, Events           } from 'ionic-angular'                 ;
@@ -38,6 +39,8 @@ enum Icons {
   templateUrl: 'home.html',
 })
 export class HomePage {
+  // @ViewChild('fixed') mapElement: ElementRef;
+  fixedHeight                 : any           = "0px"                    ;
   moment                      : any           = moment                   ;
   today                       : any           = moment()                 ;
   loginData                   : any           = null                     ;
@@ -148,6 +151,7 @@ export class HomePage {
     } else {
       Log.l("HomePage: ionViewDidEnter() says work order array not initialized, fetching work orders.");
       this.tabs.highlightPageTab('OnSiteHome');
+      // this.fixedHeight = this.mapElement.nativeElement.offsetHeight;
       var caller = this;
       this.translate.get('spinner_fetching_reports').subscribe((result) => {
         caller.spinnerText = result;

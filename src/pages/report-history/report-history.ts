@@ -160,7 +160,21 @@ export class ReportHistory implements OnInit {
   }
 
   itemTapped(event, item) {
-    this.tabs.goToPage('Report', {mode: 'Edit', workOrder: item})
+    let shiftToSend = null;
+    for(let shift of this.shifts) {
+      let reports = shift.getShiftReports();
+      for(let report of reports) {
+        if(item === report) {
+          shiftToSend = shift;
+        }
+      }
+    }
+    this.tabs.goToPage('Report', {mode: 'Edit', workOrder: item, shift: shiftToSend, payroll_period: this.period});
+    // if(this.shiftToUse) {
+    //   this.tabs.goToPage('Report', {mode: 'Edit', workOrder: item, shift: this.shifttoUse, period: this.period});
+    // } else {
+    //   this.tabs.goToPage('Report', {mode: 'Edit', workOrder: item});
+    // }
   }
 
   deleteWorkOrder(event, item) {

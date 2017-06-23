@@ -1,3 +1,4 @@
+// import { Component, OnInit, ViewChild, ElementRef     } from '@angular/core'                          ;
 import { Component, OnInit                            } from '@angular/core'                          ;
 import { FormGroup, FormControl, Validators           } from "@angular/forms"                         ;
 import { IonicPage, NavController, NavParams          } from 'ionic-angular'                          ;
@@ -20,6 +21,8 @@ import { TabsComponent                                } from '../../components/t
 })
 
 export class TechSettingsPage implements OnInit {
+  // @ViewChild('ionheader') mapElement: ElementRef;
+  fixedHeight       : any        = "0px"            ;
   techProfile       : any        = {}               ;
   techProfileDB     : any        = {}               ;
   selClient         : string[  ] = CLIENT           ;
@@ -65,20 +68,21 @@ export class TechSettingsPage implements OnInit {
   }
 
   ngOnInit() {
+    // this.fixedHeight = this.mapElement.nativeElement.fixed;
     if ( this.navParams.get('mode') !== undefined ) {
      this.mode = this.navParams.get('mode');
     } else {
       this.mode = 'page';
     }
     this.rprtDate = new Date;
-    Log.l("Settings: Now trying to get tech profile...");
+    Log.l("User: Now trying to get tech profile...");
     this.db.getTechProfile().then((res) => {
-      Log.l("Settings: Got tech profile, now initFormData()...");
+      Log.l("User: Got tech profile, now initFormData()...");
       this.techProfile = res;
       this.ud.setTechProfile(res);
       return this.initFormData();
     }).then((res2) => {
-      Log.l("Settings: initFormData() done, now initializeForm()...");
+      Log.l("User: initFormData() done, now initializeForm()...");
       return this.initializeForm();
     }).then((res3) => {
       Log.l("Settings screen initialized successfully.");
@@ -86,6 +90,11 @@ export class TechSettingsPage implements OnInit {
       Log.l("Error while initializing Settings screen!");
       Log.e(err);
     });
+  }
+
+  ionViewDidEnter() {
+    // this.fixedHeight = this.mapElement.nativeElement.offsetHeight;
+
   }
 
   private initializeForm() {
