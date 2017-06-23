@@ -12,8 +12,8 @@
           <ion-icon class="shft-num-icon">{{numChars[shift.shift_number]}}&nbsp;&nbsp;</ion-icon>
           &nbsp;&nbsp;{{shift.getStartTime().format("ddd, MMM D")}}&nbsp;&nbsp;
           <ion-note>{{shift.getNormalHours()}} Hrs</ion-note>
-          <button ion-button icon-only item-end (click)="addNewReportForShift(shift)">
-          <ion-icon name='ios-document-outline' color="primary"></ion-icon>
+          <button class="ionic-button-icon-outline" ion-button icon-only item-end (click)="addNewReportForShift(shift)">
+          <ion-icon class="ionic-icon-outline" name='ios-document-outline' color="primary"></ion-icon>
           </button>
         </ion-item-divider>
         <div class="report-history-reports-subcontainer" *ngIf="filtReports[filterKeys[i]].length">

@@ -41,6 +41,8 @@ import { createTranslateLoader                                   } from '../conf
 import { TabsComponent                                           } from '../components/tabs/tabs'                ;
 import { PipesModule                                             } from '../pipes/pipes.module'                  ;
 import { Preferences                                             } from '../providers/preferences'               ;
+import { SmartAudio                                              } from '../providers/smart-audio'               ;
+import { NativeAudio                                             } from '@ionic-native/native-audio'             ;
 
 @NgModule({
   declarations   : [
@@ -100,6 +102,8 @@ import { Preferences                                             } from '../prov
                       TabsComponent,
                       AppVersion,
                       Preferences,
+                      SmartAudio,
+                      NativeAudio
                     ]
 })
 

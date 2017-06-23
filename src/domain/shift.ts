@@ -187,7 +187,7 @@ export class Shift {
   }
 
   getShiftHours() {
-    return this.shift_hours;
+    return this.getNormalHours();
   }
 
   setShiftHours(hours:number) {

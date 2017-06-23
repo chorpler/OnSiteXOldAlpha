@@ -12,8 +12,12 @@
 
 <ion-content padding *ngIf="selectDataReady">
   <div class="full-screen-modal">
+    <div class="fancy-select-period-title">{{'pay_period' | translate}}</div>
+    <ion-select [(ngModel)]="period" (ngModelChange)="updateSelectedPeriod(period)" class="fancy-select-period">
+      <ion-option *ngFor="let period of periods" [value]="period">{{period.getPayrollPeriodDescription()}}</ion-option>
+    </ion-select>
     <ion-list class="fancy-select">
-      <button ion-item class="fancy-select-item" (click)="selectOption(i)" *ngFor="let shift of shifts; let i=index">
+      <button ion-item class="fancy-select-item" (click)="selectOption(shift)" *ngFor="let shift of period.shifts; let i=index">
       <div class="one-ion-option" [ngClass]="shift.getShiftColor()">
         <div class="shift-svg-number">{{circled_numbers[shift.shift_number]}}</div>
         <div class="shift-text">{{shift.start_time.format("ddd DD")}} ({{'payroll_week' | translate}} {{shift.shift_week.format("MMM DD")}})</div>

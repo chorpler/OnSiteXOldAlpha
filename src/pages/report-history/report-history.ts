@@ -15,6 +15,7 @@ import { TabsComponent                                          } from '../../co
 import { OrderBy                                                } from '../../pipes/pipes'             ;
 import * as moment from 'moment';
 import { STRINGS                                                } from '../../config/config.strings'   ;
+import { SmartAudio                                             } from '../../providers/smart-audio'   ;
 
 
 @IonicPage({ name    : 'ReportHistory'                                           })
@@ -44,7 +45,7 @@ export class ReportHistory implements OnInit {
                private auth    : AuthSrvcs        , public loadingCtrl: LoadingController ,
                public server   : SrvrSrvcs        , public ud         : UserData          ,
                public translate: TranslateService , public tabs       : TabsComponent     ,
-               public zone     : NgZone,
+               public zone     : NgZone           , public audio      : SmartAudio        ,
   ) {
     window["onsitereporthistory"] = this;
   }
@@ -155,19 +156,22 @@ export class ReportHistory implements OnInit {
   deleteWorkOrder(event, item) {
     Log.l("deleteWorkOrder() clicked ...");
     let lang = this.translate.instant(['confirm', 'delete_report', 'spinner_deleting_report', 'error', 'error_deleting_report_message']);
-    this.ud.playSoundClip(1);
+    // this.ud.playSoundClip(1);
+    this.audio.play('deletereport');
     this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
       if (res) {
         this.alert.showSpinner(lang['spinner_deleting_report']);
         Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
-        let wo = item.clone();
+        let wo:WorkOrder = item.clone();
         // let woList = this.ud.getWorkOrderList();
-        let woList = this.reports;
-        let i = woList.indexOf(item);
+        let reportDate = wo.report_date;
         this.server.deleteDoc(this.prefs.DB.reports, wo).then((res) => {
           Log.l("deleteWorkOrder(): Success:\n", res);
           // this.items.splice(i, 1);
-          woList.splice(i, 1);
+          let i = this.reports.indexOf(item);
+          this.reports.splice(i, 1);
+          i = this.filtReports[reportDate].indexOf(item);
+          this.filtReports[reportDate].splice(i, 1);
           // if (this.mode === 'Add') {
           //   this.alert.hideSpinner();
           //   this.tabs.goToPage('OnSiteHome');

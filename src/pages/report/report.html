@@ -23,8 +23,8 @@
         <span class="shift-label">{{'shift' | translate}}</span> #<span class="shift-number">{{selectedShift.updateShiftNumber()}}</span>
       <span class="shift-label">{{'hours' | translate}}</span>:
       <!--<span class="shift-hours">{{workOrderForm.value.selected_shift.getShiftHours()+currentRepairHours}}</span>-->
-      <span class="shift-hours" *ngIf="mode==='Add'">{{selectedShift.getShiftHours()+currentRepairHours}}</span>
-      <span class="shift-hours" *ngIf="mode==='Edit'">{{selectedShift.getShiftHours()+currentRepairHours-thisWorkOrderContribution}}</span>
+      <span class="shift-hours" *ngIf="mode==='Add'">{{shiftSavedHours+currentRepairHours}}</span>
+      <span class="shift-hours" *ngIf="mode==='Edit'">{{shiftSavedHours+currentRepairHours-thisWorkOrderContribution}}</span>
       <span class="shift-label">{{'of' | translate}}</span>
       <span class="shift-hours">{{techProfile.shiftLength}}</span>
       </span>

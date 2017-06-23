@@ -21,6 +21,7 @@ import { TranslateService                                 } from '@ngx-translate
 import { Pipe, PipeTransform                              } from '@angular/core'                 ;
 import { DomSanitizer                                     } from '@angular/platform-browser'     ;
 import { SafePipe                                         } from '../../pipes/safe'              ;
+import { SmartAudio                                       } from '../../providers/smart-audio'   ;
 
 enum Icons {
   'box-check-no'   = 0,
@@ -105,7 +106,8 @@ export class HomePage {
               public tabs        : TabsComponent,
               public alert       : AlertService,
               public zone        : NgZone,
-              public translate   : TranslateService )
+              public translate   : TranslateService,
+              public audio       : SmartAudio )
   {
     window["onsitehome"] = this;
     Log.l("HomePage: Hi, I'm the HomePage class constructor! And I personally am a logger. In half, I pee feces. (I'm also Yoda.)");
@@ -340,7 +342,7 @@ export class HomePage {
   possibleSound(shift:Shift) {
     let status = shift.getShiftStatus();
     if(status === 'hoursOver') {
-      this.ud.playSoundClip(0);
+      this.audio.play('overtime');
     }
   }
 

@@ -62,6 +62,7 @@ export class ReportPage implements OnInit {
   public currentRepairHours: number = 0;
   public shiftHoursColor: string = "black";
   public shiftToUse:Shift = null;
+  public shiftSavedHours:number = 0;
 
   rprtDate: any;
   timeStarts: any;
@@ -159,8 +160,10 @@ export class ReportPage implements OnInit {
         let newStartTime = moment(startTime).add(addTime, 'hours');
         Log.l("ReportPage: Now setting work order start time. Start Time = %s, adding %f hours, gives:\n", startTime.format(), addTime, newStartTime);
         this.workOrder.setStartTime(newStartTime);
+      } else {
+
       }
-      this.thisWorkOrderContribution = this.workOrder.repair_hours || 0;
+      this.thisWorkOrderContribution = this.workOrder.getRepairHours() || 0;
       this.initializeForm();
 
       this._endTime = this.workOrderForm.controls.endTime;
@@ -190,6 +193,8 @@ export class ReportPage implements OnInit {
         let min = Number(dur1[1]);
         let iDur = hrs + (min / 60);
         this.currentRepairHours = iDur;
+        let total = this.selectedShift.getNormalHours() + this.currentRepairHours - this.thisWorkOrderContribution;
+        Log.l("ReportForm: currentRepairHours changed to %s:%s, value %f, so total is now %f", hrs, min, iDur, total);
         this.workOrder.setRepairHours(iDur);
         if (this.selectedShift !== undefined && this.selectedShift !== null) {
           this.shiftHoursColor = this.getShiftHoursStatus(this.selectedShift);
@@ -208,6 +213,7 @@ export class ReportPage implements OnInit {
 
         this.workOrderForm.controls.rprtDate.setValue(rprtDate.format("YYYY-MM-DD"));
       });
+      this.shiftSavedHours = this.selectedShift.getNormalHours();
       this.dataReady = true;
     }).catch((err) => {
       Log.l(`ReportPage: Error getting tech profile!`);
@@ -319,7 +325,7 @@ export class ReportPage implements OnInit {
     // }
     // selectData.options = options;
     // Log.l("showFancySelect(): About to create modal, selectData is:\n", selectData);
-    let fancySelectModal = this.modal.create('Fancy Select', { title: "Select Shift", shifts: this.period.shifts }, { cssClass: 'fancy-select-modal' });
+    let fancySelectModal = this.modal.create('Fancy Select', { title: "Select Shift", shifts: this.period.shifts, periods: this.payrollPeriods }, { cssClass: 'fancy-select-modal' });
     fancySelectModal.onDidDismiss(data => {
       Log.l("ReportPage: Returned from fancy select, got back:\n", data);
       if (data !== null) {

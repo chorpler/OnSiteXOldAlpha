@@ -21,8 +21,8 @@ import { HomePage                               } from '../pages/home/home'     
 import { TabsComponent                          } from '../components/tabs/tabs'           ;
 // import { PREFS                                  } from '../config/config.strings'          ;
 import { Preferences                            } from '../providers/preferences'          ;
-import { TranslateService } from '@ngx-translate/core';
-
+import { TranslateService                       } from '@ngx-translate/core'               ;
+import { SmartAudio                             } from '../providers/smart-audio'          ;
 
 @Component({ templateUrl: 'app.html' })
 
@@ -56,9 +56,10 @@ export class OnSiteApp {
                 public app         : App               ,
                 public translate   : TranslateService  ,
                 public alert       : AlertService      ,
+                public audio       : SmartAudio        ,
                 // public homepage    : HomePage          ,
   ) {
-    window['appcomp'] = this;
+    window['onsiteapp'] = this;
     window['moment'] = moment;
     this.initializeApp();
   }
@@ -91,6 +92,8 @@ export class OnSiteApp {
       window[ 'Log'    ] = Log;
       window[ 't1'     ] = CONSOLE.t1;
       window[ 'c1'     ] = CONSOLE.c1;
+
+      this.preloadAudioFiles();
 
       this.checkPreferences().then(() => {
         Log.l("OnSite.initializeApp(): Done messing with preferences, now checking login...");
@@ -196,6 +199,13 @@ export class OnSiteApp {
         reject(err);
       });
     });
+  }
+
+  preloadAudioFiles() {
+    this.audio.preload('overtime', 'assets/audio/nospoilers.mp3');
+    this.audio.preload('deletereport', 'assets/audio/nospoilers2.mp3');
+    // this.audio.preload('overtime', 'assets/audio/nospoilers.wav');
+    // this.audio.preload('deletereport', 'assets/audio/nospoilers2.wav');
   }
 
 }

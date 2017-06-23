@@ -58,14 +58,10 @@ page-report-history {
      :hover {}
      :active {}
   }
-  ion-item-divider button.ion-button.icon-only,
-  span.button-inner,
-  .button-ios,
-  .button-md,
-  .button-wp {
-    background-color: transparent !important;
-    background: none;
-    box-shadow: none;
+  .ionic-button-icon-outline {
+      background-color: transparent !important;
+      background: none !important;
+      box-shadow: none;
   }
   ion-icon.shft-num-icon {
     font-size: 25px;
