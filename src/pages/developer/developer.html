@@ -21,9 +21,12 @@
       <ion-label>Background Geolocation</ion-label>
       <ion-toggle checked="GeolocStatus" [(ngModel)]="geolocToggle" (ionChange)="toggleBackgroundGeolocation()"></ion-toggle>
     </ion-item>
-    <ion-item>
-      <ion-label>Test Databases</ion-label>
-      <ion-toggle checked="testDatabases" [(ngModel)]="testDatabases" (ionChange)="checkTestDatabase()"></ion-toggle>
+  </ion-item-group>
+  <ion-item-group>
+    <ion-item-divider color="light">Database Names</ion-item-divider>
+    <ion-item *ngFor="let dbname of databaseNames">
+      <ion-label floating>{{dbname}}</ion-label>
+      <ion-input [(ngModel)]="prefs.DB[dbname]"></ion-input>
     </ion-item>
     <ion-item-group>
       <ion-item-divider color="light">Server Parameters</ion-item-divider>

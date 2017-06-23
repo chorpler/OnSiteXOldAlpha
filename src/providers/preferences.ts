@@ -151,7 +151,7 @@ export class Preferences {
 
   reinitializePrefs() {
     Preferences.DB = {
-      'reports': 'reports',
+      'reports': 'reports_ver101100',
       'employees': 'sesa-employees',
       'config': 'sesa-config',
       'jobsites': 'sesa-jobsites',

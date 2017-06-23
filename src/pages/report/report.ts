@@ -154,7 +154,7 @@ export class ReportPage implements OnInit {
       }
       this.setupShifts();
       // this.setupWorkOrderList();
-      // this.updateActiveShiftWorkOrders(this.selectedShift);
+      this.updateActiveShiftWorkOrders(this.selectedShift);
       if (this.mode === 'Add') {
         let startTime = moment(this.selectedShift.start_time);
         let addTime = this.selectedShift.getShiftHours();

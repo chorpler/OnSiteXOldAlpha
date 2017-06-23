@@ -31,6 +31,7 @@ export class DeveloperPage implements OnInit {
   geolocToggle : boolean = this.GeolocStatus;
   onSiteTimeStamp: number;
   testDatabases: boolean = false;
+  databaseNames: Array<string> = [];
   // prefs        : any     = PREFS;
   useSpanish   : boolean = false;
   spanishDefault : boolean = false;
@@ -61,6 +62,7 @@ export class DeveloperPage implements OnInit {
     Log.l("Developer Settings page loaded.");
     this.testDatabases = this.prefs.DB.reports === 'test-reports' ? true : false;
     this.GeolocStatus  = this.geoloc.isEnabled();
+    this.databaseNames = Object.keys(this.prefs.DB);
   }
 
   checkTestDatabase() {
