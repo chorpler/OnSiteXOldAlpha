@@ -7,6 +7,7 @@ import { Log                    } from '../../config/config.functions'  ;
 import { TimeSrvc               } from '../../providers/time-parse-srvc';
 import { DBSrvcs                } from '../../providers/db-srvcs'       ;
 // import { PREFS               } from '../../config/config.strings'   ;
+import { SmartAudio             } from '../../providers/smart-audio'    ;
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateService } from '@ngx-translate/core';
@@ -37,16 +38,17 @@ export class DeveloperPage implements OnInit {
   spanishDefault : boolean = false;
   unicodeChars : string = "";
 
-  constructor(public navCtrl: NavController,
-              public navParams: NavParams,
-              public geoloc: GeolocService,
-              public db: DBSrvcs,
-              public alert: AlertService,
-              public timeSrvc: TimeSrvc,
-              public translate: TranslateService,
-              public tabs: TabsComponent,
-              public prefs:Preferences )
-  {
+  constructor(public navCtrl   : NavController    ,
+              public navParams : NavParams        ,
+              public geoloc    : GeolocService    ,
+              public db        : DBSrvcs          ,
+              public audio     : SmartAudio       ,
+              public alert     : AlertService     ,
+              public timeSrvc  : TimeSrvc         ,
+              public translate : TranslateService ,
+              public tabs      : TabsComponent    ,
+              public prefs     : Preferences      ,
+  ) {
     this.spanishDefault = this.translate.currentLang === 'es' ? true : false;
     this.useSpanish = this.spanishDefault;
     window['onsitedev'] = this;
@@ -128,5 +130,10 @@ export class DeveloperPage implements OnInit {
     } else {
       this.unicodeChars = temp2;
     }
+  }
+
+  cancel() {
+    this.audio.play('dropit');
+    this.tabs.goTopage('OnSiteHome');
   }
 }
