@@ -217,21 +217,12 @@ export class HomePage {
         for(let period of this.payrollPeriods) {
           for(let shift of period.shifts) {
             let reports = this.ud.getWorkOrdersForShift(shift);
-            shift.setShiftWorkOrders(reports);
+            shift.setShiftReports(reports);
           }
         }
         this.period            = this.payrollPeriods[0];
         Log.l("fetchTechWorkOrders(): Got payroll periods and all work orders:\n", this.payrollPeriods);
         Log.l(this.techWorkOrders);
-        // this.payrollWorkOrders = this.ud.getWorkOrdersForPayrollPeriod(payrollPeriod);
-        // Log.l(`HomePage: filteredWorkOrders(${payrollPeriod}) returned:\n`, this.payrollWorkOrders);
-        // if(this.period.shifts && this.period.shifts.length) {
-        //   this.hoursTotalList = [];
-        //   for(let shift of this.period.shifts) {
-        //     let total = this.ud.getTotalHoursForShift(shift.getShiftSerial());
-        //     this.hoursTotalList.push(total);
-        //   }
-        // }
         resolve(res);
       }).catch((err) => {
         Log.l(`HomePage: getReportsForTech(${techid}): Error!`);
@@ -309,21 +300,6 @@ export class HomePage {
     return checkBox;
   }
 
-  // getCheckboxSVG(idx:number) {
-  //   let checkBox = '?';
-  //   let chks = this.checkboxSVG;
-  //   let hours = this.hoursTotalList[idx];
-  //   let total = this.techProfile.shiftLength;
-  //   if (hours > total) {
-  //     checkBox = chks[Icons["flag-checkered"]];
-  //   } else if (hours < total) {
-  //     checkBox = chks[Icons["box-check-no"]];
-  //   } else {
-  //     checkBox = chks[Icons["box-check-yes"]];
-  //   }
-  //   return checkBox;
-  // }
-
   getCheckbox(idx:number) {
     let checkBox = '?';
     let hours = this.hoursTotalList[idx];
@@ -337,25 +313,6 @@ export class HomePage {
       checkBox = '✔';
     }
     return checkBox;
-  }
-
-  getShiftColor(idx:number) {
-    let status = this.getShiftStatus(idx);
-    if(status) {
-      return 'green';
-    } else {
-      return 'red';
-    }
-  }
-
-  chkHrs(i) {
-    if(this.shftHrs === this.hrsSubmitted ) {
-      this.chkBx = '☑';
-      this.chkBxBool = true;
-    } else {
-      let tmpBx = '☒';
-      this.chkBxBool = false;
-    }
   }
 
   showHelp(event:any) {
@@ -383,7 +340,7 @@ export class HomePage {
   possibleSound(shift:Shift) {
     let status = shift.getShiftStatus();
     if(status === 'hoursOver') {
-      this.ud.playSoundClip();
+      this.ud.playSoundClip(0);
     }
   }
 

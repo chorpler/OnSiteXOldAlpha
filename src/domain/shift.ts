@@ -246,13 +246,17 @@ export class Shift {
     return this.colors.blue;
   }
 
-  setShiftWorkOrders(work_orders:Array<WorkOrder>) {
-    this.shift_reports = work_orders;
+  setShiftReports(reports:Array<WorkOrder>) {
+    this.shift_reports = reports;
     return this.shift_reports;
   }
 
-  addShiftWorkOrder(report:WorkOrder) {
+  addShiftReport(report:WorkOrder) {
     this.shift_reports.push(report);
+    return this.shift_reports;
+  }
+
+  getShiftReports() {
     return this.shift_reports;
   }
 

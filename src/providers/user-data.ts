@@ -343,8 +343,13 @@ export class UserData {
     return UserData.techProfile;
   }
 
-  playSoundClip() {
-    let audio = new Audio('/assets/audio/nospoilers.wav');
+  playSoundClip(index?:number) {
+    let i = index ? index : 0;
+    let prefix = '/assets/audio/';
+    let audioclips = ['nospoilers.wav', 'nospoilers2.wav'];
+    let fullurl = prefix + audioclips[i];
+    Log.l("playSoundClip(): Attempting to play sound file '%s' ...", fullurl);
+    let audio = new Audio(fullurl);
     audio.play();
   }
 

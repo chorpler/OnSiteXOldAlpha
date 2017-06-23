@@ -8,6 +8,7 @@ import { AlertService                                           } from '../../pr
 import { Log, isMoment                                          } from '../../config/config.functions' ;
 import { WorkOrder                                              } from '../../domain/workorder'        ;
 import { Shift                                                  } from '../../domain/shift'            ;
+import { PayrollPeriod                                          } from '../../domain/payroll-period'   ;
 import { Preferences                                            } from '../../providers/preferences'   ;
 import { TranslateService                                       } from '@ngx-translate/core'           ;
 import { TabsComponent                                          } from '../../components/tabs/tabs'    ;
@@ -26,9 +27,11 @@ export class ReportHistory implements OnInit {
   public pageReady    : boolean          = false                                                        ;
   public selectedItem : any                                                                             ;
   public items        : Array<{title: string, note: string}> = new Array<{title:string, note:string}>() ;
-  public reports      : Array<WorkOrder>                                                                ;
-  public shifts       : Array<Shift>                                                                    ;
-  public filtReports  : any                                                                             ;
+  public reports      : Array<WorkOrder> = []                                                           ;
+  public shifts       : Array<Shift> = []                                                               ;
+  public periods      : Array<PayrollPeriod> = []                                                       ;
+  public period       : PayrollPeriod = null                                                            ;
+  public filtReports  : any = {}                                                                        ;
   public filterKeys   : Array<string>                                                                   ;
   public data         : any                                                                             ;
   public loading      : any                                                                             ;
@@ -43,7 +46,7 @@ export class ReportHistory implements OnInit {
                public translate: TranslateService , public tabs       : TabsComponent     ,
                public zone     : NgZone,
   ) {
-    window["reporthistory"] = this;
+    window["onsitereporthistory"] = this;
   }
 
   ngOnInit() {
@@ -53,21 +56,37 @@ export class ReportHistory implements OnInit {
   ionViewDidEnter() {
     Log.l("ReportHistory: ionViewDidEnter called...");
     Log.l("ReportHistory: pulling reports...");
+    window["onsitereporthistory"] = this;
     if(this.navParams.get('shift') !== undefined) { this.shiftToUse = this.navParams.get('shift');}
+    if (this.navParams.get('payroll_period') !== undefined) { this.period = this.navParams.get('payroll_period');}
+    this.periods = this.ud.getPayrollPeriods();
     let lang = this.translate.instant(['spinner_retrieving_reports', 'error', 'error_server_connect_message']);
     this.alert.showSpinner(lang['spinner_retrieving_reports']);
+    // this.
     if(this.shiftToUse !== null) {
       Log.l("ReportHistory: Showing only shift:\n", this.shiftToUse);
       this.shifts = [this.shiftToUse];
     } else {
       Log.l("ReportHistory: Showing all shifts.");
-      this.shifts = this.ud.getPeriodShifts();
+      this.periods = this.ud.getPayrollPeriods();
+      this.period = this.periods[0];
+      this.shifts = [];
+      Log.l("ReportHistory: Got payroll periods:\n", this.periods);
+      for(let period of this.periods) {
+        let periodShifts = period.getPayrollShifts();
+        for(let shift of periodShifts) {
+          this.shifts.push(shift);
+        }
+        // let shifts = this.shifts;
+        // let shifts = [...this.shifts, ...periodShifts];
+        // this.shifts = shifts;
+      }
+      Log.l("ReportHistory: Ended up with all shifts:\n", this.shifts);
     }
-    this.filterKeys = [];
-    for(let shift of this.shifts) {
-      let date = shift.getStartTime().format("YYYY-MM-DD");
-      this.filterKeys.push(date);
-    }
+    // for(let shift of this.shifts) {
+    //   let date = shift.getStartTime().format("YYYY-MM-DD");
+    //   this.filterKeys.push(date);
+    // }
     // this.reports = this.ud.getWorkOrderList();
     // this.pageReady = true;
     let u = this.ud.getUsername();
@@ -81,34 +100,52 @@ export class ReportHistory implements OnInit {
         return 0;
       }
     }
-    this.server.getReportsForTech(u).then((res) => {
-      Log.l("ReportHistory: Got report list:\n", res);
-      let unsortedReports = res;
-      this.reports = unsortedReports.sort(sortReports);
-      if (this.shiftToUse !== null) {
-        Log.l("ReportHistory: Showing only shift:\n", this.shiftToUse);
-        this.shifts = [this.shiftToUse];
-      } else {
-        Log.l("ReportHistory: Showing all shifts.");
-        this.shifts = this.ud.getPeriodShifts();
-      }
-      this.filtReports = {};
-      for(let shift of this.shifts) {
-        let date = shift.getStartTime().format("YYYY-MM-DD");
-        this.filterKeys.push(date);
-        let serial = shift.getShiftSerial();
-        let oneReportSet = this.ud.getWorkOrdersForShift(serial);
-        this.filtReports[date] = oneReportSet;
-      }
-      Log.l("ReportHistory: created date-sorted report list:\n", this.filtReports);
-      this.alert.hideSpinner();
-      this.zone.run(() => { this.pageReady = true; });
-    }).catch((err) => {
-      Log.l("ReportHistory: Error getting report list.");
-      Log.e(err);
-      this.alert.hideSpinner();
-      this.alert.showAlert(lang['error'], lang['error_server_connect_message']);
-    });
+    let unsortedReports = this.ud.getWorkOrderList();
+    this.reports = unsortedReports.sort(sortReports);
+    this.filtReports = {};
+    this.filterKeys = [];
+    for(let shift of this.shifts) {
+      let date = shift.getStartTime().format("YYYY-MM-DD");
+      this.filterKeys.push(date);
+      let serial = shift.getShiftSerial();
+      // let oneReportSet = this.ud.getWorkOrdersForShift(serial);
+      let oneReportSet = shift.getShiftReports()
+      this.filtReports[date] = oneReportSet;
+    }
+    Log.l("ReportHistory: created date-sorted report list:\n", this.filtReports);
+    this.alert.hideSpinner();
+    // this.zone.run(() => { this.pageReady = true; });
+    this.pageReady = true;
+
+    // this.server.getReportsForTech(u).then((res) => {
+    //   Log.l("ReportHistory: Got report list:\n", res);
+    //   let unsortedReports = res;
+    //   this.reports = unsortedReports.sort(sortReports);
+    //   if (this.shiftToUse !== null) {
+    //     Log.l("ReportHistory: Showing only shift:\n", this.shiftToUse);
+    //     this.shifts = [this.shiftToUse];
+    //   } else {
+    //     Log.l("ReportHistory: Showing all shifts.");
+    //     this.shifts = this.ud.getPeriodShifts();
+    //   }
+    //   this.filtReports = {};
+    //   for(let shift of this.shifts) {
+    //     let date = shift.getStartTime().format("YYYY-MM-DD");
+    //     this.filterKeys.push(date);
+    //     let serial = shift.getShiftSerial();
+    //     let oneReportSet = this.ud.getWorkOrdersForShift(serial);
+    //     this.filtReports[date] = oneReportSet;
+    //   }
+    //   Log.l("ReportHistory: created date-sorted report list:\n", this.filtReports);
+    //   this.alert.hideSpinner();
+    //   // this.zone.run(() => { this.pageReady = true; });
+    //   this.pageReady = true;
+    // }).catch((err) => {
+    //   Log.l("ReportHistory: Error getting report list.");
+    //   Log.e(err);
+    //   this.alert.hideSpinner();
+    //   this.alert.showAlert(lang['error'], lang['error_server_connect_message']);
+    // });
   }
 
   itemTapped(event, item) {
@@ -118,6 +155,7 @@ export class ReportHistory implements OnInit {
   deleteWorkOrder(event, item) {
     Log.l("deleteWorkOrder() clicked ...");
     let lang = this.translate.instant(['confirm', 'delete_report', 'spinner_deleting_report', 'error', 'error_deleting_report_message']);
+    this.ud.playSoundClip(1);
     this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
       if (res) {
         this.alert.showSpinner(lang['spinner_deleting_report']);

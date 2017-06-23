@@ -48,7 +48,9 @@ export class ReportPage implements OnInit {
   docID: string;
   idDate: string;
   idTime: string;
+  payrollPeriods: Array<PayrollPeriod>;
   shifts: Array<Shift>;
+  period: PayrollPeriod;
   selectedShift: Shift;
   currentDay: any;
   shiftsStart: any;
@@ -117,6 +119,7 @@ export class ReportPage implements OnInit {
     if (this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
     if (this.navParams.get('workOrder') !== undefined) { this.workOrder = this.navParams.get('workOrder'); }
     if (this.navParams.get('shift') !== undefined) { this.shiftToUse = this.navParams.get('shift'); }
+    if (this.navParams.get('payroll_period') !== undefined) { this.period = this.navParams.get('payroll_period'); }
     if(this.shiftToUse !== null) {
 
     }
@@ -275,6 +278,18 @@ export class ReportPage implements OnInit {
     //   thisShift.getExcelDates();
     //   this.shifts.push(thisShift);
     // }
+
+    this.payrollPeriods = this.ud.getPayrollPeriods();
+    if(this.period) {
+      for(let pp of this.payrollPeriods) {
+        if(this.period === pp) {
+          this.shifts = pp.getPayrollShifts();
+        }
+      }
+    } else {
+      this.period = this.payrollPeriods[0];
+      this.shifts = this.period.getPayrollShifts();
+    }
     if (this.mode === 'Add') {
       if(this.shiftToUse !== null) {
         this.selectedShift = this.shiftToUse;
@@ -297,17 +312,17 @@ export class ReportPage implements OnInit {
   public showFancySelect() {
     Log.l("showFancySelect(): Called!");
     let options = [];
-    let selectData = { options: options };
-    for (let shift of this.shifts) {
-      let option = { shift: shift };
-      options.push(option);
-    }
-    selectData.options = options;
-    Log.l("showFancySelect(): About to create modal, selectData is:\n", selectData);
-    let fancySelectModal = this.modal.create('Fancy Select', { title: "Select Shift", selectData: selectData }, { cssClass: 'fancy-select-modal' });
+    // let selectData = { options: options };
+    // for (let shift of this.period.shifts) {
+    //   let option = { shift: shift };
+    //   options.push(option);
+    // }
+    // selectData.options = options;
+    // Log.l("showFancySelect(): About to create modal, selectData is:\n", selectData);
+    let fancySelectModal = this.modal.create('Fancy Select', { title: "Select Shift", shifts: this.period.shifts }, { cssClass: 'fancy-select-modal' });
     fancySelectModal.onDidDismiss(data => {
       Log.l("ReportPage: Returned from fancy select, got back:\n", data);
-      if (data != null) {
+      if (data !== null) {
         this.selectedShift = data;
         this.selectedShiftText = this.selectedShift.toString(this.translate);
         this.workOrderForm.controls['selected_shift'].setValue(this.selectedShift);
@@ -318,22 +333,24 @@ export class ReportPage implements OnInit {
 
   getTotalHoursForShift(shift: Shift) {
     let ss = shift;
-    if (ss === undefined || ss === null) {
-      Log.l("getTotalHoursForShift(): no selected shift somehow.");
-    } else {
-      let shiftID = shift.getShiftSerial();
-      this.workOrder.shift_serial = shiftID;
-      Log.l("getTotalHoursForShift(): set work order shift_serial to:\n", shiftID);
-      let filteredList = this.ud.getWorkOrdersForShift(shiftID);
-      this.filteredWOList = filteredList;
-      Log.l("getTotalHoursForShift(): Ended up with filtered work order list:\n", filteredList);
-      let totalHours = 0;
-      for (let wo of filteredList) {
-        totalHours += Number(wo['repair_hours']);
-      }
-      ss.shift_hours = totalHours;
-      Log.l(`getTotalHoursForShift(): Total hours for shift '${shiftID}' are ${totalHours}.`);
-    }
+    let savedHours = ss.getNormalHours();
+    return savedHours;
+    // if (ss === undefined || ss === null) {
+    //   Log.l("getTotalHoursForShift(): no selected shift somehow.");
+    // } else {
+    //   let shiftID = shift.getShiftSerial();
+    //   this.workOrder.shift_serial = shiftID;
+    //   Log.l("getTotalHoursForShift(): set work order shift_serial to:\n", shiftID);
+    //   let filteredList = this.ud.getWorkOrdersForShift(shiftID);
+    //   this.filteredWOList = filteredList;
+    //   Log.l("getTotalHoursForShift(): Ended up with filtered work order list:\n", filteredList);
+    //   let totalHours = 0;
+    //   for (let wo of filteredList) {
+    //     totalHours += Number(wo['repair_hours']);
+    //   }
+    //   ss.shift_hours = totalHours;
+    //   Log.l(`getTotalHoursForShift(): Total hours for shift '${shiftID}' are ${totalHours}.`);
+    // }
 
   }
 

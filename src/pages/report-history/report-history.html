@@ -11,7 +11,7 @@
         <ion-item-divider color="light">
           <ion-icon class="shft-num-icon">{{numChars[shift.shift_number]}}&nbsp;&nbsp;</ion-icon>
           &nbsp;&nbsp;{{shift.getStartTime().format("ddd, MMM D")}}&nbsp;&nbsp;
-          <ion-note>{{ud.getTotalHoursForShift(shift.getShiftSerial())}}</ion-note>
+          <ion-note>{{shift.getNormalHours()}}</ion-note>
           <button ion-button icon-only item-end (click)="addNewReportForShift(shift)">
           <ion-icon name='document' color="primary"></ion-icon>
           </button>

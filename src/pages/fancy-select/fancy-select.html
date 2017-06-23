@@ -10,13 +10,13 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content padding *ngIf="selectDataReady">
   <div class="full-screen-modal">
     <ion-list class="fancy-select">
-      <button ion-item class="fancy-select-item" (click)="selectOption(i)" *ngFor="let option of options; let i=index">
-      <div class="one-ion-option" [ngClass]="option.shift.getShiftColor()">
-        <div class="shift-svg-number">{{circled_numbers[option.shift.shift_number]}}</div>
-        <div class="shift-text">{{option.shift.start_time.format("ddd DD")}} ({{'payroll_week' | translate}} {{option.shift.shift_week.format("MMM DD")}})</div>
+      <button ion-item class="fancy-select-item" (click)="selectOption(i)" *ngFor="let shift of shifts; let i=index">
+      <div class="one-ion-option" [ngClass]="shift.getShiftColor()">
+        <div class="shift-svg-number">{{circled_numbers[shift.shift_number]}}</div>
+        <div class="shift-text">{{shift.start_time.format("ddd DD")}} ({{'payroll_week' | translate}} {{shift.shift_week.format("MMM DD")}})</div>
       </div>
     </button>
     </ion-list>
