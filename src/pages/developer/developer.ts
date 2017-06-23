@@ -27,7 +27,7 @@ import { Preferences } from '../../providers/preferences';
 export class DeveloperPage implements OnInit {
 
   title        : string  = 'Developers';
-  GeolocStatus : boolean = true;
+  GeolocStatus : boolean = false;
   geolocToggle : boolean = this.GeolocStatus;
   onSiteTimeStamp: number;
   testDatabases: boolean = false;
@@ -61,7 +61,8 @@ export class DeveloperPage implements OnInit {
   ngOnInit() {
     Log.l("Developer Settings page loaded.");
     this.testDatabases = this.prefs.DB.reports === 'test-reports' ? true : false;
-    this.GeolocStatus  = this.geoloc.isEnabled();
+    // this.GeolocStatus  = this.geoloc.isEnabled();
+    this.GeolocStatus  = false;
     this.databaseNames = Object.keys(this.prefs.DB);
   }
 
