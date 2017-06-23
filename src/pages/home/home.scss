@@ -1,3 +1,11 @@
+  body>ion-app>ion-popover>div>div.popover-content>div>page-popover-template>ion-content>div.scroll-content {
+    height: 300vh;
+  }
+
+  body>ion-app>ion-popover>div>div.popover-content>div>page-popover-template>ion-content>div.scroll-content>button {
+    margin-bottom: 1500px;
+  }
+
 page-home {
   ion-content > div.scroll-content {
     padding-top: 3px !important;
@@ -149,11 +157,12 @@ page-home {
     max-width: 90%;
   }
 
-  ion-popover page-popover-template .scroll-content {
-    height: 300vh;
-    button {
-      margin-bottom: 1500px;
-    }
-  }
+
+  // ion-popover page-popover-template .scroll-content {
+  //   height: 300vh;
+  //   button {
+  //     margin-bottom: 1500px;
+  //   }
+  // }
 
 }
