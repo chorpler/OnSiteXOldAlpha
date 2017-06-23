@@ -4,24 +4,6 @@
       <button ion-button icon-only [disabled]="allTabs.disabled" (click)="goToPage(tab.name)" *ngFor="let tab of tabInfo; let i=index">
         <ion-icon [class.hlght]="tab.active" id="tab{{i+1}}" [name]="tab.icon"></ion-icon>
       </button>
-      <!-- <button ion-button icon-only [disabled]="tabDisabled" (click)="goHome()">
-        <ion-icon [class.hlght]="tabClass[0]" id="tab1" name="home"></ion-icon>
-      </button>
-      <button ion-button icon-only [disabled]="tabDisabled" (click)="goReport()">
-        <ion-icon [class.hlght]="tabClass[1]" id="tab2" name="document"></ion-icon>
-      </button>
-      <button ion-button icon-only [disabled]="tabDisabled" (click)="goHistory()">
-        <ion-icon [class.hlght]="tabClass[2]" id="tab3" name="folder"></ion-icon>
-      </button>
-      <button ion-button icon-only [disabled]="tabDisabled" (click)="goUser()">
-        <ion-icon [class.hlght]="tabClass[3]" id="tab4" name="contact"></ion-icon>
-      </button>
-      <button ion-button icon-only [disabled]="tabDisabled" (click)="goSettings()">
-        <ion-icon [class.hlght]="tabClass[4]" id="tab5" name="settings"></ion-icon>
-      </button>
-      <button ion-button icon-only [disabled]="tabDisabled" *ngIf="isDeveloper()" (click)="goDev()">
-        <ion-icon [class.hlght]="tabClass[5]" id="tab6" name="options"></ion-icon>
-      </button> -->
     </div>
   </ion-toolbar>
 </ion-footer>

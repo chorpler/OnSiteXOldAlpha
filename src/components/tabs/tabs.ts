@@ -12,8 +12,9 @@ enum Pages {
   'Report'        = 1,
   'ReportHistory' = 2,
   'User'          = 3,
-  'Settings'      = 4,
-  'DevPage'       = 5,
+  'Messages'      = 4,
+  'Settings'      = 5,
+  'DevPage'       = 6,
 }
 
 @Component({
@@ -29,11 +30,12 @@ export class TabsComponent implements OnInit {
   static allTabs:any = {'disabled': false};
   allTabs:any = TabsComponent.allTabs;
   static tabInfo:any = [
-    { name: 'OnSiteHome'    , fullName: 'OnSite Home'        , icon: 'home'     , active: false } ,
-    { name: 'Report'        , fullName: 'Report'             , icon: 'document' , active: false } ,
-    { name: 'ReportHistory' , fullName: 'Report History'     , icon: 'folder'   , active: false } ,
-    { name: 'User'          , fullName: 'User'               , icon: 'contact'  , active: false } ,
-    { name: 'Settings'      , fullName: 'Settings'           , icon: 'settings' , active: false } ,
+    { name: 'OnSiteHome'    , fullName: 'OnSite Home'        , icon: 'ios-home-outline'     , active: false } ,
+    { name: 'Report'        , fullName: 'Report'             , icon: 'ios-document-outline' , active: false } ,
+    { name: 'ReportHistory' , fullName: 'Report History'     , icon: 'ios-folder-outline'   , active: false } ,
+    { name: 'User'          , fullName: 'User'               , icon: 'ios-contact-outline'  , active: false } ,
+    { name: 'Messages'      , fullName: 'Messages'           , icon: 'ios-text-outline'     , active: false } ,
+    { name: 'Settings'      , fullName: 'Settings'           , icon: 'ios-settings-outline' , active: false } ,
   ];
   tabInfo:any = TabsComponent.tabInfo;
   static developerTab: any = { name: 'DevPage', fullName: 'Developer Settings', icon: 'options', active: false };
@@ -137,6 +139,11 @@ export class TabsComponent implements OnInit {
   goSettings() {
     console.log('entering page: Settings' );
     this.goToPage('Settings');
+  }
+
+  goMsgs() {
+    console.log('entering page: Messages' );
+    this.goToPage('Messages');
   }
 
   goDev() {
