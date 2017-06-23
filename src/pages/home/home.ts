@@ -64,10 +64,12 @@ export class HomePage {
   shifts                      : Array<Shift>  = []                       ;
   payrollPeriods              : Array<PayrollPeriod> = []                ;
   period                      : PayrollPeriod = null                     ;
+  payrollPeriodCount          : number        = 2                        ;
   payrollPeriodHoursTotal     : number        = 0                        ;
   payrollPeriodHours          : number        = 0                        ;
   payrollPeriodBonusHours     : number        = 0                        ;
   databases                                   = this.PREFS.DB            ;
+
   checkboxes                  : any           = [
     '../../assets/images/box-check-yes.svg',
     '../../assets/images/box-check-no.svg',
@@ -168,21 +170,21 @@ export class HomePage {
     }
   }
 
-  runWhenReady() {
-    Log.l("HomePage: app finished loading. Now, checking user login status.");
-    if (this.ud.getLoginStatus()) {
-      Log.l("HomePage: user logged in, fetching work orders.");
-      this.fetchTechWorkorders().then((res) => {
-        Log.l("HomePage: fetched work orders, maybe:\n", res);
-        this.ud.createShifts();
-        this.shifts = this.ud.getPeriodShifts();
-        HomePage.pageLoadedPreviously = true;
-        this.events.publish('pageload:finished', this.ud.getLoginStatus());
-      });
-    } else {
-      Log.l("HomePage: user not authorized in ionViewDidLoad(). Guess ionViewDidEnter() can present a login modal.");
-    }
-  }
+  // runWhenReady() {
+  //   Log.l("HomePage: app finished loading. Now, checking user login status.");
+  //   if (this.ud.getLoginStatus()) {
+  //     Log.l("HomePage: user logged in, fetching work orders.");
+  //     this.fetchTechWorkorders().then((res) => {
+  //       Log.l("HomePage: fetched work orders, maybe:\n", res);
+  //       this.ud.createShifts();
+  //       this.shifts = this.ud.getPeriodShifts();
+  //       HomePage.pageLoadedPreviously = true;
+  //       this.events.publish('pageload:finished', this.ud.getLoginStatus());
+  //     });
+  //   } else {
+  //     Log.l("HomePage: user not authorized in ionViewDidLoad(). Guess ionViewDidEnter() can present a login modal.");
+  //   }
+  // }
 
   public static async waitForStartupEvent() {
     try {
@@ -211,7 +213,7 @@ export class HomePage {
         let tech               = this.ud.getTechProfile();
         let now                = moment();
         let payrollPeriod      = this.ud.getPayrollPeriodForDate(now);
-        this.payrollPeriods    = this.ud.createPayrollPeriods(tech);
+        this.payrollPeriods    = this.ud.createPayrollPeriods(tech, this.payrollPeriodCount);
         for(let period of this.payrollPeriods) {
           for(let shift of period.shifts) {
             let reports = this.ud.getWorkOrdersForShift(shift);
@@ -372,14 +374,14 @@ export class HomePage {
 
   showShiftReports(shift:Shift) {
     if(this.ud.getWorkOrdersForShift(shift.getShiftSerial()).length > 0) {
-      this.tabs.goToPage('ReportHistory', {mode: 'Shift', shift: shift});
+      this.tabs.goToPage('ReportHistory', {mode: 'Shift', shift: shift, payroll_period: this.period});
     } else {
-      this.tabs.goToPage('Report', {mode: 'Add', shift: shift});
+      this.tabs.goToPage('Report', {mode: 'Add', shift: shift, payroll_period: this.period});
     }
   }
 
-  possibleSound(index:number) {
-    let status = this.getShiftStatus(index);
+  possibleSound(shift:Shift) {
+    let status = shift.getShiftStatus();
     if(status === 'hoursOver') {
       this.ud.playSoundClip();
     }
