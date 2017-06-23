@@ -42,7 +42,8 @@ export class Preferences {
   };
   public static USER: any = {
     language: 'en',
-    shifts: 8
+    shifts: 7,
+    payroll_periods: 2
   }
   public DB: any = Preferences.DB;
   public SERVER: any = Preferences.SERVER;
@@ -180,7 +181,8 @@ export class Preferences {
 
     Preferences.USER = {
       language: 'en',
-      shifts: 8
+      shifts: 7,
+      payroll_periods: 2
     }
   }
 

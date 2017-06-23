@@ -287,16 +287,21 @@ export class UserData {
     }
   }
 
-  createPayrollPeriods(tech:Employee):Array<PayrollPeriod> {
+  createPayrollPeriods(tech:Employee, count?:number):Array<PayrollPeriod> {
     let now = moment().startOf('day');
     UserData.payrollPeriods = [];
-    for(let i = 0; i < 2; i++) {
+    let periodCount = count || 2;
+    for(let i = 0; i < periodCount; i++) {
       let start = PayrollPeriod.getPayrollPeriodDateForShiftDate(moment(now).subtract(i, 'weeks'));
       let pp = new PayrollPeriod();
       pp.setStartDate(start);
       pp.createPayrollPeriodShiftsForTech(tech);
       UserData.payrollPeriods.push(pp);
     }
+    return UserData.payrollPeriods;
+  }
+
+  getPayrollPeriods() {
     return UserData.payrollPeriods;
   }
 

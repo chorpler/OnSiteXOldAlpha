@@ -10,6 +10,7 @@ import { TimeSrvc } from '../../providers/time-parse-srvc';
 import { ReportBuildSrvc } from '../../providers/report-build-srvc';
 import { AlertService } from '../../providers/alerts';
 import { Log } from '../../config/config.functions';
+import { PayrollPeriod } from '../../domain/payroll-period';
 import { Shift } from '../../domain/shift';
 import { WorkOrder } from '../../domain/workorder';
 import { Status } from '../../providers/status';
@@ -260,20 +261,20 @@ export class ReportPage implements OnInit {
 
   setupShifts() {
     let endDay = 2;
-    let now = moment();
-    for (let i = 0; i < STRINGS.NUMBER_OF_SHIFTS; i++) {
-      let tmpDay = moment(now).subtract(i, 'days');
-      let shift_day = tmpDay.startOf('day');
-      let tmpStart = this.techProfile.shiftStartTime;
-      let shift_start_time = moment(shift_day).add(tmpStart, 'hours');
-      let shift_length = this.techProfile.shiftLength;
-      let client = this.techProfile.client || "SITENAME";
-      let thisShift = new Shift(client, null, 'AM', shift_start_time, 8);
-      thisShift.updateShiftWeek();
-      thisShift.updateShiftNumber();
-      thisShift.getExcelDates();
-      this.shifts.push(thisShift);
-    }
+    // let now = moment();
+    // for (let i = 0; i < STRINGS.NUMBER_OF_SHIFTS; i++) {
+    //   let tmpDay = moment(now).subtract(i, 'days');
+    //   let shift_day = tmpDay.startOf('day');
+    //   let tmpStart = this.techProfile.shiftStartTime;
+    //   let shift_start_time = moment(shift_day).add(tmpStart, 'hours');
+    //   let shift_length = this.techProfile.shiftLength;
+    //   let client = this.techProfile.client || "SITENAME";
+    //   let thisShift = new Shift(client, null, 'AM', shift_start_time, 8);
+    //   thisShift.updateShiftWeek();
+    //   thisShift.updateShiftNumber();
+    //   thisShift.getExcelDates();
+    //   this.shifts.push(thisShift);
+    // }
     if (this.mode === 'Add') {
       if(this.shiftToUse !== null) {
         this.selectedShift = this.shiftToUse;
