@@ -1,5 +1,5 @@
 {
-  "home_title": "OnSite Home",
+  "home_title": "OnSiteX",
   "report_title": "Work Report",
   "report_history_title": "Report History",
   "settings_title": "App Settings",
@@ -17,7 +17,7 @@
   "delete": "Delete",
   "date": "Date",
   "reports": "reports",
-  "unit": "Unit #",
+  "unit": "Unit No.",
   "username_or_password_error" : "Username or password incorrect!",
   "username": "Username",
   "password": "Password",
