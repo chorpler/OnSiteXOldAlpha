@@ -460,9 +460,7 @@ export class ReportPage implements OnInit {
     Log.l("createReport(): timestamp moment is now:\n", ts);
     let XLDate = moment([1900, 0, 1]);
     let xlStamp = ts.diff(XLDate, 'days', true) + 2;
-    // workOrderData.timeStamp = moment(workOrderData.timeStamp).format;
     partialReport.timeStamp = xlStamp;
-    // this.calcEndTime(workOrderData);
     console.log("processWO() has initial partialReport:");
     console.log(partialReport);
     let newReport: any = {};
@@ -507,18 +505,18 @@ export class ReportPage implements OnInit {
         this.alert.showSpinner(lang['spinner_deleting_report']);
         Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
         let wo = this.workOrder.clone();
-        let woList = this.ud.getWorkOrderList();
-        let i = woList.indexOf(this.workOrder);
+        let reports = this.ud.getWorkOrderList();
+        let i = reports.indexOf(this.workOrder);
         this.server.deleteDoc(this.prefs.DB.reports, wo).then((res) => {
           Log.l("deleteWorkOrder(): Success:\n", res);
-          // this.items.splice(i, 1);
-          woList.splice(i, 1);
+          Log.l("Going to delete work order %d in the list.", i);
+          reports.splice(i, 1);
           if (this.mode === 'Add') {
             this.alert.hideSpinner();
             this.tabs.goToPage('OnSiteHome');
           } else {
             this.alert.hideSpinner();
-            this.tabs.goToPage('ReportHistory');
+            this.tabs.goToPage('ReportHistory', {report_deleted: this.workOrder});
           }
         }).catch((err) => {
           this.alert.hideSpinner();

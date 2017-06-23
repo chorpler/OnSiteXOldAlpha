@@ -87,6 +87,8 @@
   "spinner_deleting_report": "Eliminar informe...",
   "error_deleting_report_message": "Error al eliminar el informe. Por favor, inténtelo de nuevo más tarde.",
   "error_server_connect_message": "No se pudo conectar al servidor. Por favor, inténtelo de nuevo más tarde.",
+  "error_fetching_reports_title": "Error de Conexión",
+  "error_fetching_reports_message": "No se pudo conectar al servidor para recuperar informes. Por favor, inténtelo de nuevo más tarde.",
   "hours_header": "Horas",
   "payroll_period": "Período de Nómina",
   "pay_period": "Período de Pago",

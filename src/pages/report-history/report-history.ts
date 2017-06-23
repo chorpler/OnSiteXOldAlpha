@@ -56,8 +56,11 @@ export class ReportHistory implements OnInit {
 
   ionViewDidEnter() {
     Log.l("ReportHistory: ionViewDidEnter called...");
-    Log.l("ReportHistory: pulling reports...");
     window["onsitereporthistory"] = this;
+    this.pageReady = false;
+    this.reports = [];
+    this.filterKeys = [];
+    this.filtReports = {};
     if(this.navParams.get('shift') !== undefined) { this.shiftToUse = this.navParams.get('shift');}
     if (this.navParams.get('payroll_period') !== undefined) { this.period = this.navParams.get('payroll_period');}
     this.periods = this.ud.getPayrollPeriods();
@@ -101,23 +104,30 @@ export class ReportHistory implements OnInit {
         return 0;
       }
     }
-    let unsortedReports = this.ud.getWorkOrderList();
-    this.reports = unsortedReports.sort(sortReports);
-    this.filtReports = {};
-    this.filterKeys = [];
-    for(let shift of this.shifts) {
-      let date = shift.getStartTime().format("YYYY-MM-DD");
-      this.filterKeys.push(date);
-      let serial = shift.getShiftSerial();
-      // let oneReportSet = this.ud.getWorkOrdersForShift(serial);
-      let oneReportSet = shift.getShiftReports()
-      this.filtReports[date] = oneReportSet;
-    }
-    Log.l("ReportHistory: created date-sorted report list:\n", this.filtReports);
-    this.alert.hideSpinner();
-    // this.zone.run(() => { this.pageReady = true; });
-    this.pageReady = true;
-
+    Log.l("ReportHistory: pulling reports...");
+    this.server.getReportsForTech(u).then((res) => {
+      let unsortedReports = res;
+      this.ud.setWorkOrderList(res);
+      this.reports = unsortedReports.sort(sortReports);
+      this.filtReports = {};
+      this.filterKeys = [];
+      for(let shift of this.shifts) {
+        let date = shift.getStartTime().format("YYYY-MM-DD");
+        this.filterKeys.push(date);
+        let serial = shift.getShiftSerial();
+        // let oneReportSet = this.ud.getWorkOrdersForShift(serial);
+        let oneReportSet = shift.getShiftReports()
+        this.filtReports[date] = oneReportSet;
+      }
+      Log.l("ReportHistory: created date-sorted report list:\n", this.filtReports);
+      this.alert.hideSpinner();
+      this.pageReady = true;
+    }).catch(err => {
+      Log.l("ReportHistory: Error fetching reports!");
+      Log.e(err);
+      let lang = ['error_fetching_reports_title', 'error_fetching_reports_message'];
+      this.alert.showAlert(lang['error_fetching_reports_title'], lang['error_fetching_reports_message']);
+    });
     // this.server.getReportsForTech(u).then((res) => {
     //   Log.l("ReportHistory: Got report list:\n", res);
     //   let unsortedReports = res;
@@ -156,14 +166,12 @@ export class ReportHistory implements OnInit {
   deleteWorkOrder(event, item) {
     Log.l("deleteWorkOrder() clicked ...");
     let lang = this.translate.instant(['confirm', 'delete_report', 'spinner_deleting_report', 'error', 'error_deleting_report_message']);
-    // this.ud.playSoundClip(1);
     this.audio.play('deletereport');
     this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
       if (res) {
         this.alert.showSpinner(lang['spinner_deleting_report']);
         Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
         let wo:WorkOrder = item.clone();
-        // let woList = this.ud.getWorkOrderList();
         let reportDate = wo.report_date;
         this.server.deleteDoc(this.prefs.DB.reports, wo).then((res) => {
           Log.l("deleteWorkOrder(): Success:\n", res);
@@ -172,13 +180,6 @@ export class ReportHistory implements OnInit {
           this.reports.splice(i, 1);
           i = this.filtReports[reportDate].indexOf(item);
           this.filtReports[reportDate].splice(i, 1);
-          // if (this.mode === 'Add') {
-          //   this.alert.hideSpinner();
-          //   this.tabs.goToPage('OnSiteHome');
-          // } else {
-          //   this.alert.hideSpinner();
-          //   this.tabs.goToPage('ReportHistory');
-          // }
           this.alert.hideSpinner();
         }).catch((err) => {
           this.alert.hideSpinner();
