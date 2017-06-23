@@ -12,7 +12,7 @@ enum Pages {
   'Report'        = 1,
   'ReportHistory' = 2,
   'User'          = 3,
-  'Messages'      = 4,
+  'Message List'  = 4,
   'Settings'      = 5,
   'DevPage'       = 6,
 }
@@ -25,20 +25,20 @@ export class TabsComponent implements OnInit {
 
   static nav:any;
   nav:any = TabsComponent.nav;
-  static tabClass: Array<boolean> = [ false, false, false, false, false, false ];
+  static tabClass: Array<boolean> = [ false, false, false, false, false, false, false ];
   tabClass:Array<boolean> = TabsComponent.tabClass;
   static allTabs:any = {'disabled': false};
   allTabs:any = TabsComponent.allTabs;
   static tabInfo:any = [
-    { name: 'OnSiteHome'    , fullName: 'OnSite Home'        , icon: 'ios-home-outline'     , active: false } ,
-    { name: 'Report'        , fullName: 'Report'             , icon: 'ios-document-outline' , active: false } ,
-    { name: 'ReportHistory' , fullName: 'Report History'     , icon: 'ios-folder-outline'   , active: false } ,
-    { name: 'User'          , fullName: 'User'               , icon: 'ios-contact-outline'  , active: false } ,
-    { name: 'Messages'      , fullName: 'Messages'           , icon: 'ios-text-outline'     , active: false } ,
-    { name: 'Settings'      , fullName: 'Settings'           , icon: 'ios-settings-outline' , active: false } ,
+    { name: 'OnSiteHome'    , fullName: 'OnSite Home'        , icon: 'ios-home-outline'     , active: false, hideBadge: true , badgeCount: 0 } ,
+    { name: 'Report'        , fullName: 'Report'             , icon: 'ios-document-outline' , active: false, hideBadge: true , badgeCount: 0 } ,
+    { name: 'ReportHistory' , fullName: 'Report History'     , icon: 'ios-folder-outline'   , active: false, hideBadge: true , badgeCount: 0 } ,
+    { name: 'User'          , fullName: 'User'               , icon: 'ios-contact-outline'  , active: false, hideBadge: true , badgeCount: 0 } ,
+    { name: 'Message List'  , fullName: 'Messages'           , icon: 'ios-text-outline'     , active: false, hideBadge: false, badgeCount: 0 } ,
+    { name: 'Settings'      , fullName: 'Settings'           , icon: 'ios-settings-outline' , active: false, hideBadge: true , badgeCount: 0 } ,
   ];
   tabInfo:any = TabsComponent.tabInfo;
-  static developerTab: any = { name: 'DevPage', fullName: 'Developer Settings', icon: 'options', active: false };
+  static developerTab: any = { name: 'DevPage', fullName: 'Developer Settings', icon: 'options', active: false, hideBadge: true, badgeCount: 0 };
   developerTab:any = TabsComponent.developerTab;
   static tab:any = {
     'OnSiteHome': {}
@@ -51,7 +51,7 @@ export class TabsComponent implements OnInit {
 
   constructor( public app: App, public platform: Platform, public zone: NgZone, public translate: TranslateService, public ud:UserData, public alert:AlertService) {
     this.getActiveNav();
-    window['onSiteTabs'] = this;
+    window['onsitetabs'] = this;
     this.enumPages = Pages.OnSiteHome;
     this.enumPagesDef = Pages;
   }
@@ -172,6 +172,39 @@ export class TabsComponent implements OnInit {
     } else {
       this.userIsDeveloper = false;
       return false;
+    }
+  }
+
+  setMessageBadge(count:number) {
+    this.tabInfo[Pages['Message List']].badgeCount = count;
+    if(count == 0) {
+      this.tabInfo[Pages['Message List']].hideBadge = true;
+    } else {
+      this.tabInfo[Pages['Message List']].hideBadge = false;
+    }
+  }
+
+  getMessageBadge() {
+    return this.tabInfo[Pages['Message List']].badgeCount;
+  }
+
+  decrementMessageBadge() {
+    this.tabInfo[Pages['Message List']].badgeCount--;
+    let count = this.tabInfo[Pages['Message List']].badgeCount;
+    if (count == 0) {
+      this.tabInfo[Pages['Message List']].hideBadge = true;
+    } else {
+      this.tabInfo[Pages['Message List']].hideBadge = false;
+    }
+  }
+
+  incrementMessageBadge() {
+    this.tabInfo[Pages['Message List']].badgeCount++
+    let count = this.tabInfo[Pages['Message List']].badgeCount;
+    if (count == 0) {
+      this.tabInfo[Pages['Message List']].hideBadge = true;
+    } else {
+      this.tabInfo[Pages['Message List']].hideBadge = false;
     }
   }
 

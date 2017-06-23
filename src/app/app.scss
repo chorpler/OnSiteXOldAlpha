@@ -74,3 +74,12 @@ ion-content div.scroll-content{
 .alert-message {
   overflow-y: auto;
 }
+.ion-item-button-like {
+  cursor: pointer;
+  :hover {
+    background-color: rgba(0, 0, 128, 0.02);
+  }
+  :active {
+    background-color: rgba(0, 0, 255, 0.3);
+  }
+}

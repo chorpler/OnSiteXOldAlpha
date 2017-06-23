@@ -4,7 +4,7 @@
       <button ion-button icon-only [disabled]="allTabs.disabled" (click)="goToPage(tab.name)" *ngFor="let tab of tabInfo; let i=index">
         <ion-icon [class.hlght]="tab.active" id="tab{{i+1}}" [name]="tab.icon">
           <div class="badge-container" >
-            <div class="msg-badge" [class.hide]='false' >2</div>
+            <div class="msg-badge" [class.hide]='tab.hideBadge'>{{tab.badgeCount}}</div>
           </div>
         </ion-icon>
       </button>

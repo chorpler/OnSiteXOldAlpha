@@ -18,8 +18,8 @@ import { DOMTimeStamp, Coordinates, Position    } from '../config/geoloc'       
 import { LocalNotifications                     } from '@ionic-native/local-notifications' ;
 import * as moment                                from 'moment'                            ;
 import { HomePage                               } from '../pages/home/home'                ;
+import { MessageService                         } from '../providers/message-service'      ;
 import { TabsComponent                          } from '../components/tabs/tabs'           ;
-// import { PREFS                                  } from '../config/config.strings'          ;
 import { Preferences                            } from '../providers/preferences'          ;
 import { TranslateService                       } from '@ngx-translate/core'               ;
 import { SmartAudio                             } from '../providers/smart-audio'          ;
@@ -57,6 +57,7 @@ export class OnSiteApp {
                 public translate   : TranslateService  ,
                 public alert       : AlertService      ,
                 public audio       : SmartAudio        ,
+                public msgService  : MessageService    ,
                 // public homepage    : HomePage          ,
   ) {
     window['onsiteapp'] = this;
@@ -101,25 +102,30 @@ export class OnSiteApp {
         if(language !== 'en') {
           this.translate.use(language);
         }
+        var callingClass = this;
         this.checkLogin().then(res => {
           Log.l("OnSite.initializeApp(): User passed login check. Should be fine.");
           // this.finishStartup().then(() => {
           //   Log.l("Done with finishStartup.");
-            this.rootPage = 'OnSiteHome';
+          this.rootPage = 'OnSiteHome';
           // }).then(() => {
-            Log.l("OnSite.initializeApp(): Publishing startup event!");
-            this.events.publish('startup:finished', true);
-            var callingClass = this;
-            setTimeout(() => {
-              Log.l("OnSite.initializeApp(): Publishing startup event after timeout!");
-              callingClass.events.publish('startup:finished', true);
-            }, 500);
-          }).catch(err => {
-            Log.l("OnSite.initializeApp(): Error with login or with publishing startup:finished event!");
-            Log.e(err);
-            this.rootPage = 'Login';
-          });
-        // }).catch(err => {
+          Log.l("OnSite.initializeApp(): Publishing startup event!");
+          this.events.publish('startup:finished', true);
+          return this.msgService.getMessages();
+        }).then(res => {
+          Log.l("OnSite.initializeApp(): Got new messages.");
+          let badges = this.msgService.getNewMessageCount();
+          this.tabs.setMessageBadge(badges);
+          setTimeout(() => {
+            Log.l("OnSite.initializeApp(): Publishing startup event after timeout!");
+            callingClass.events.publish('startup:finished', true);
+          }, 500);
+        }).catch(err => {
+          Log.l("OnSite.initializeApp(): Error with login or with publishing startup:finished event!");
+          Log.e(err);
+          this.rootPage = 'Login';
+        });
+      // }).catch(err => {
         //   Log.l("OnSite.initializeApp(): User failed login check. Sending to login.");
         //   this.rootPage = 'Login';
         // });
@@ -199,6 +205,10 @@ export class OnSiteApp {
         reject(err);
       });
     });
+  }
+
+  checkMessages() {
+
   }
 
   preloadAudioFiles() {

@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title> {{'messages_title' | translate}} </ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content class="body-with-header-and-tabs" padding *ngIf="pageReady && messages && !messages.length">
+  <ion-item>
+    <div class="messages-no-message">{{'messages_no_messages' | translate}}</div>
+  </ion-item>
+</ion-content>
+<ion-content padding class="body-with-header-and-tabs" *ngIf="pageReady && messages && messages.length">
+    <ion-list no-border>
+      <ion-item class="message-list-item ion-item-button-like" *ngFor="let message of messages; let i=index" (click)="showMessage(message)">
+        <ion-label class="message-list-label" [ngClass]="{'highlight': !message.read}">{{message.getMessageDateString()}}</ion-label>
+      </ion-item>
+    </ion-list>
+ </ion-content>
+<onsite-tabs></onsite-tabs>

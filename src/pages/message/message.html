@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title> {{'messages_title' | translate}} </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding class="body-with-header-and-tabs">
+  <ion-card>
+    <ion-list no-border>
+      <ion-item class="message-header-item message-sender">
+        <h4 class="message-label">{{'message_from' | translate}}</h4>
+        <p class="message-item-text">{{message.getMessageSender()}}</p>
+      </ion-item>
+      <ion-item class="message-header-item message-subject">
+        <h4 class="message-label">{{'message_subject' | translate}}</h4>
+        <p class="message-item-text">{{message.getMessageSubject()}}</p>
+      </ion-item>
+      <ion-item class="message-body">
+        <p class="message-item-body" [innerHTML]="message.getMessageBody()"></p>
+      </ion-item>
+      <button ion-item color="primary" class="message-done-button"  (click)="closeMessage()">{{'message_done' | translate}}</button>
+    </ion-list>
+  </ion-card>
+</ion-content>
+<onsite-tabs></onsite-tabs>

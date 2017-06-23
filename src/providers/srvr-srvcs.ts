@@ -182,7 +182,7 @@ export class SrvrSrvcs {
   }
 
   public static addRDB(dbname: string) {
-    let db1 = SrvrSrvcs.rdb;
+    let db1 = PouchDBService.rdb;
     let url = SrvrSrvcs.getRemoteDatabaseURL(dbname);
     Log.l(`addRDB(): Now fetching remote DB '${dbname}' at '${url}' ...`);
     let rdb1 = null;
@@ -201,11 +201,11 @@ export class SrvrSrvcs {
   }
 
   public addDB(dbname:string) {
-    return SrvrSrvcs.addDB(dbname);
+    return PouchDBService.addDB(dbname);
   }
 
   public static addDB(dbname: string) {
-    let db1 = SrvrSrvcs.ldb;
+    let db1 = PouchDBService.pdb;
     // Log.l(`Server.addDB(): Now checking local db '${dbname}' ...`);
     let ldb1 = null;
     if (db1.has(dbname)) {
@@ -358,37 +358,35 @@ export class SrvrSrvcs {
   }
 
   syncToServer(dbname: string, pdb: any) {
-    Log.l(`syncSquaredToServer(): About to attempt replication of '${dbname}'->remote`);
+    Log.l(`syncToServer(): About to attempt replication of '${dbname}'->remote`);
     var ev2 = function(b) { Log.l(b.status); Log.l(b);};
-    var db1 = pdb;
-    var db2 = SrvrSrvcs.rdb.get(dbname);
-    // var done = DBSrvcs.StaticPouchDB.replicate(db1, db2, DBSrvcs.repopts);
+    var db1 = this.addDB(dbname);
+    var db2 = this.addRDB(dbname);
     return new Promise((resolve, reject) => {
       db1.replicate.to(db2, this.prefs.SERVER.repopts).then((res) => {
-        Log.l(`syncSquaredToServer(): Successfully replicated '${dbname}'->remote!`);
+        Log.l(`syncToServer(): Successfully replicated '${dbname}'->remote!`);
         Log.l(res);
         resolve(res);
       }).catch((err) => {
-        Log.l(`syncSquaredToServer(): Failure replicating '${dbname}'->remote!`);
+        Log.l(`syncToServer(): Failure replicating '${dbname}'->remote!`);
         Log.l(err);
         reject(err);
       });
     });
   }
 
-  syncFromServer(dbname: string, pdb: any) {
-    Log.l(`syncSquaredFromServer(): About to attempt replication of remote->'${dbname}'`);
+  syncFromServer(dbname: string) {
+    Log.l(`syncFromServer(): About to attempt replication of remote->'${dbname}'`);
     var ev2 = function(b) { Log.l(b.status); Log.l(b);};
-    var db1 = SrvrSrvcs.rdb.get(dbname);
-    var db2 = pdb;
-    // var done = DBSrvcs.StaticPouchDB.replicate(db1, db2, DBSrvcs.repopts);
+    var db1 = this.addDB(dbname);
+    var db2 = this.addRDB(dbname);
     return new Promise((resolve, reject) => {
       db2.replicate.to(db1, this.prefs.SERVER.repopts).then((res) => {
-        Log.l(`syncSquaredFromServer(): Successfully replicated remote->'${dbname}'`);
+        Log.l(`syncFromServer(): Successfully replicated remote->'${dbname}'`);
         Log.l(res);
         resolve(res);
       }).catch((err) => {
-        Log.l(`syncSquaredFromServer(): Failure replicating remote->'${dbname}'`);
+        Log.l(`syncFromServer(): Failure replicating remote->'${dbname}'`);
         Log.l(err);
         reject(err);
       });
@@ -398,12 +396,18 @@ export class SrvrSrvcs {
   fetchNewMessages():Promise<Array<Message>> {
     Log.l('fetchNewMessages(): Getting messages...');
     return new Promise((resolve, reject) => {
-      let rdb1 = this.addRDB(this.prefs.DB.messages);
-      rdb1.allDocs({include_docs: true}).then(res => {
-        Log.l("fetchNewMessages(): Got results from server:\n", res);
+      let dbname = this.prefs.DB.messages;
+      let db1 = this.addDB(dbname);
+      let rdb1 = this.addRDB(dbname);
+      this.syncFromServer(dbname).then(res => {
+        Log.l("fetchNewMessages(): Successfully synchronized messages from server. Now looking for new messages.");
+        return db1.allDocs({include_docs: true});
+      }).then(res => {
+        Log.l("fetchNewMessages(): Got results:\n", res);
         let out = new Array<Message>();
         for(let row of res.rows) {
-          if(row.doc) {
+          let doc = row.doc;
+          if(doc) {
             let msg = new Message();
             msg.readFromDoc(row.doc);
             out.push(msg);
@@ -419,8 +423,21 @@ export class SrvrSrvcs {
     });
   }
 
-
-
-
+  saveReadMessage(message:Message) {
+    return new Promise((resolve, reject) => {
+      let dbname = this.prefs.DB.messages;
+      let db1 = this.addDB(dbname);
+      let out = message.serialize();
+      Log.l("saveReadMessage(): Now attempting to save serialized message:\n", out);
+      db1.put(out).then(res => {
+        Log.l("saveReadMessage(): Successfully saved message, result:\n", res);
+        resolve(res);
+      }).catch(err => {
+        Log.l("saveReadMessage(): Error saving message:\n", message);
+        Log.e(err);
+        reject(err);
+      });
+    });
+  }
 
 }

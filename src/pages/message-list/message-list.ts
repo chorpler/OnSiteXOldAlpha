@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular';
 import { TabsComponent } from '../../components/tabs/tabs';
 import { TranslateService } from '@ngx-translate/core';
 import { DBSrvcs } from '../../providers/db-srvcs';
@@ -14,39 +14,54 @@ import { Log, isMoment, date2xl, xl2date, xl2datetime } from '../../config/confi
 import * as moment from 'moment';
 
 @IonicPage({
-  name: 'Messages'
+  name: 'Message List'
 })
 @Component({
-  selector: 'page-messages',
-  templateUrl: 'messages.html',
+  selector: 'page-message-list',
+  templateUrl: 'message-list.html',
 })
 
-export class MessagesPage implements OnInit {
+export class MessageListPage implements OnInit {
 
   title: string = "Messages from Tino";
   public messages:Array<Message> = [];
   public message:Message = null;
+  public msgModal:any = null;
   public pageReady:boolean = false;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public db:DBSrvcs, public server:SrvrSrvcs, public msg:MessageService, public tabs:TabsComponent) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public db:DBSrvcs, public server:SrvrSrvcs, public msg:MessageService, public tabs:TabsComponent, public modalCtrl:ModalController) {
     window["onsitemessages"] = this;
   }
 
   ionViewDidLoad() {
-    Log.l('ionViewDidLoad MessagesPage');
+    Log.l('ionViewDidLoad MessageListPage');
     this.server.fetchNewMessages().then(res => {
-      Log.l("MessagesPage: got new message:\n", res);
+      Log.l("MessageListPage: got new messages:\n", res);
       this.messages = res;
-      this.message = this.messages[0];
+      this.messages.sort((a,b) => {
+        let timeA = moment(a.date);
+        let timeB = moment(b.date);
+        return timeA.isAfter(timeB) ? -1 : timeA.isBefore(timeB) ? 1 : 0;
+      });
+      // this.message = this.messages[0];
+      Log.l("MessageListPage.ionViewDidLoad(): Final messages array is:\n", this.messages);
       this.pageReady = true;
     }).catch(err => {
-      Log.l("MessagesPage: Error fetching messages from server.");
+      Log.l("MessageListPage: Error fetching messages from server.");
       Log.e(err);
     });
   }
 
   ngOnInit() {
-    Log.l("MessagesPage: ngOnInit() fired");
+    Log.l("MessageListPage: ngOnInit() fired");
+  }
+
+  showMessage(message:Message) {
+    this.msgModal = this.modalCtrl.create('Message', {message: message}, {cssClass: 'message-modal'});
+    this.msgModal.onDidDismiss((data) => {
+      Log.l("showMessage(): Message modal dismissed. Any data back? Let's see:\n", data);
+    });
+    this.msgModal.present();
   }
 
   changedMessage(message:Message) {

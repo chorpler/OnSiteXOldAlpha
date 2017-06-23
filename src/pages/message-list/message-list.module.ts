@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { MessagesPage } from './messages';
+import { MessageListPage } from './message-list';
 import { TabsComponentModule } from '../../components/tabs/tabs.module';
 import { Http } from '@angular/http';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
@@ -10,7 +10,7 @@ import { PipesModule } from '../../pipes/pipes.module';
 
 @NgModule({
   declarations: [
-    MessagesPage,
+    MessageListPage,
   ],
   imports: [
     PipesModule,
@@ -22,11 +22,11 @@ import { PipesModule } from '../../pipes/pipes.module';
         deps: [Http]
       }
     }),
-    IonicPageModule.forChild(MessagesPage)
+    IonicPageModule.forChild(MessageListPage)
   ],
   exports: [
-    MessagesPage,
+    MessageListPage,
     TabsComponentModule
   ]
 })
-export class MessagesPageModule {}
+export class MessageListPageModule {}

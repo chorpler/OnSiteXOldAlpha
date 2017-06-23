@@ -1,0 +1,52 @@
+page-message-list {
+
+  .body-with-header-and-tabs {
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+
+  .messages-no-message {
+    font-style: italic;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .message-header-item {
+
+  }
+
+  .message-item-text {
+    display: inline-block;
+  }
+  .message-label {
+    font-weight: bold;
+  }
+
+  .message-subject {
+    margin-bottom: 5px;
+  }
+
+  .message-body {
+    // height: 200px;
+    border-top: 1px solid rgba(0, 0, 0, 0.2);
+
+  }
+
+  .message-body .input-wrapper {
+    // overflow: visible;
+    // overflow-wrap:
+  }
+
+  .message-item-body {
+    font-weight: normal;
+    // height: 150px;
+  }
+
+  ion-label .message-item-body {
+    white-space: normal;
+  }
+
+  .highlight {
+    font-weight: bold;
+  }
+}
