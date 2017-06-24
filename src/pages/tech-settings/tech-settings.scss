@@ -2,18 +2,47 @@ page-tech-settings {
   .toolbar-title {
     text-align: center;
   }
-  // .xtra-top-padding{
-  //   margin-top: 40px;
-  // }
+  form > ion-list > ion-item > div.item-inner > div > ion-select,
+  ion-select.select.user-settings-select {
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 100%;
+    max-width: 80vw;
+    align-self: center;
+    padding-left: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+form > ion-list > ion-item > div.item-inner > div > ion-select > div.select-icon {
+  width: 20px !important;
+}
+form > ion-list > ion-item {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+form > ion-list > ion-item > div.item-inner > div > ion-select > div.select-text {
+  flex: 0 0 80%;
+  min-width: 80%;
+  color: #488aff;
+}
+ion-input {
+  color: #488aff;
+}
+ion-label.manual-float-label{
+  // transform: translate3d(0, 0, 0) scale(0.8);
+  // transform-origin: left top;
+  flex: 0 0 100%;
+  transform: translate3d(0, 0, 0) scale(0.8);
+  margin-left: 0;
+  margin-right: auto;
+}
   div.scroll-content {
     height: 80%;
     margin-top: 50px;
     padding-bottom: 200px;
     margin-bottom: 300px;
   }
-
-  // .xtra-top-padding {
-  //   margin-top: 40px;
-  // }
-
 }
