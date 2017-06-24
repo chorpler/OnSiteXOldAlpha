@@ -113,7 +113,7 @@ export class HomePage {
               public audio       : SmartAudio )
   {
     window["onsitehome"] = this;
-    Log.l("HomePage: Hi, I'm the HomePage class constructor! And I personally am a logger. In half, I pee feces. (I'm also Yoda.)");
+    Log.l("HomePage: Hi, I'm the HomePage class constructor!");
     HomePage.EVENTS = events;
     var caller = this;
     var startupHandler = function (homepage: any) {
@@ -132,11 +132,11 @@ export class HomePage {
   ionViewDidEnter() {
     Log.l("HomePage: ionViewDidEnter() called. First wait to make sure app is finished loading.");
     var caller = this;
-    if(this.homePageStatus.startupFinished) {
+    // if(HomePage.homePageStatus.startupFinished) {
       Log.l("HomePage.ionViewDidEnter(): startup already finished, just continuing with runEveryTime()...");
       this.tabs.highlightTab(0);
       this.runEveryTime();
-    }
+    // }
   }
 
   ionViewDidLoad() {
@@ -147,6 +147,7 @@ export class HomePage {
   runEveryTime() {
     if (this.ud.getLoginStatus() === false) {
       Log.l("HomePage.ionViewDidEnter(): User not logged in, showing login modal.");
+      HomePage.homePageStatus.startupFinished = true;
       this.presentLoginModal();
     } else {
       Log.l("HomePage: ionViewDidEnter() says work order array not initialized, fetching work orders.");
