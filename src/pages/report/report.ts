@@ -1,99 +1,93 @@
-import { Component, OnInit, ViewChild, NgZone } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators } from "@angular/forms";
-// import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { IonicPage, NavController, NavParams, LoadingController, PopoverController, ModalController } from 'ionic-angular';
-import 'rxjs/add/operator/debounceTime';
-import { DBSrvcs } from '../../providers/db-srvcs';
-import { SrvrSrvcs } from '../../providers/srvr-srvcs';
-import { AuthSrvcs } from '../../providers/auth-srvcs';
-import { TimeSrvc } from '../../providers/time-parse-srvc';
-import { ReportBuildSrvc } from '../../providers/report-build-srvc';
-import { AlertService } from '../../providers/alerts';
-import { Log } from '../../config/config.functions';
-import { PayrollPeriod } from '../../domain/payroll-period';
-import { Shift } from '../../domain/shift';
-import { WorkOrder } from '../../domain/workorder';
-import { Status } from '../../providers/status';
-import { UserData } from '../../providers/user-data';
-import * as moment from 'moment';
-import { sprintf } from 'sprintf-js';
-// import { MultiPickerModule } from 'ion-multi-picker';
-// import { FancySelectComponent } from '../../components/fancy-select/fancy-select';
-import { STRINGS } from '../../config/config.strings';
-import { Preferences } from '../../providers/preferences';
-import { TabsComponent } from '../../components/tabs/tabs';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, OnInit, ViewChild, NgZone                                                       } from '@angular/core'                     ;
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators          } from "@angular/forms"                    ;
+import { IonicPage, NavController, NavParams, LoadingController, PopoverController, ModalController } from 'ionic-angular'                     ;
+import 'rxjs/add/operator/debounceTime'                                                                                                        ;
+import { DBSrvcs                                                                                    } from '../../providers/db-srvcs'          ;
+import { SrvrSrvcs                                                                                  } from '../../providers/srvr-srvcs'        ;
+import { AuthSrvcs                                                                                  } from '../../providers/auth-srvcs'        ;
+import { TimeSrvc                                                                                   } from '../../providers/time-parse-srvc'   ;
+import { ReportBuildSrvc                                                                            } from '../../providers/report-build-srvc' ;
+import { AlertService                                                                               } from '../../providers/alerts'            ;
+import { Log                                                                                        } from '../../config/config.functions'     ;
+import { PayrollPeriod                                                                              } from '../../domain/payroll-period'       ;
+import { Shift                                                                                      } from '../../domain/shift'                ;
+import { WorkOrder                                                                                  } from '../../domain/workorder'            ;
+import { Status                                                                                     } from '../../providers/status'            ;
+import { UserData                                                                                   } from '../../providers/user-data'         ;
+import * as moment from 'moment'                                                                                                               ;
+import { sprintf                                                                                    } from 'sprintf-js'                        ;
+import { STRINGS                                                                                    } from '../../config/config.strings'       ;
+import { Preferences                                                                                } from '../../providers/preferences'       ;
+import { TabsComponent                                                                              } from '../../components/tabs/tabs'        ;
+import { TranslateService                                                                           } from '@ngx-translate/core'               ;
+import { REPORTTYPE                                                                                 } from '../../config/report.object'        ;
 
-@IonicPage({ name: 'Report' })
+
+@IonicPage({
+  name: 'Report'
+})
 @Component({
   selector: 'page-report',
   templateUrl: 'report.html'
 })
 
 export class ReportPage implements OnInit {
-  title: string = 'Work Report';
-  static PREFS: any = new Preferences();
-  prefs: any = ReportPage.PREFS;
-
-  setDate: Date = new Date();
-  year: number = this.setDate.getFullYear();
-  mode: string = 'Add';
-  workOrderForm: FormGroup;
-  workOrder: any;
-  workOrderReport: any;
-  repairHrs: any;
-  profile: any = {};
-  tmpReportData: any;
-  techProfile: any;
-  docID: string;
-  idDate: string;
-  idTime: string;
-  payrollPeriods: Array<PayrollPeriod>;
-  shifts: Array<Shift>;
-  period: PayrollPeriod;
-  selectedShift: Shift;
-  currentDay: any;
-  shiftsStart: any;
-  shifter: any;
-  repairTime: any;
-  public thisWorkOrderContribution: number = 0;
-  public shiftTotalHours: any = 0;
-  public payrollPeriodHours: any = 0;
-  public currentRepairHours: number = 0;
-  public shiftHoursColor: string = "black";
-  public shiftToUse:Shift = null;
-  public shiftSavedHours:number = 0;
-
-  rprtDate: any;
-  timeStarts: any;
-  reportDate: any;
-  startTime: any;
-  timeEnds: any;
-  syncError: boolean = false;
-  chooseHours: any;
-  chooseMins: any;
-  loading: any = {};
-  _startDate: any;
-  _startTime: any;
-  _endTime: any;
-  _repairHours: any;
-  _shift: any;
-  _selected_shift: any;
-  _notes: any;
-
-  public userdata: any;
-  public shiftDateOptions: any;
-
-  // controlValueAccessor: any;
-  public dataReady: boolean = false;
-
-  public techWorkOrders: Array<WorkOrder> = [];
-
-  public shiftDateInputDisabled: boolean = true;
-  public shiftDateInput2Disabled: boolean = false;
-  public selectedShiftText: string = "";
-  public workOrderList: any;
-  public filteredWOList: any;
+  title                     : string           = 'Work Report'              ;
+  static PREFS              : any              = new Preferences()          ;
+  prefs                     : any              = ReportPage.PREFS           ;
+  setDate                   : Date             = new Date()                 ;
+  year                      : number           = this.setDate.getFullYear() ;
+  mode                      : string           = 'Add'                      ;
+  workOrderForm             : FormGroup                                     ;
+  workOrder                 : any                                           ;
+  workOrderReport           : any                                           ;
+  repairHrs                 : any                                           ;
+  profile                   : any              = {}                         ;
+  tmpReportData             : any                                           ;
+  techProfile               : any                                           ;
+  docID                     : string                                        ;
+  idDate                    : string                                        ;
+  idTime                    : string                                        ;
+  payrollPeriods            : Array<PayrollPeriod>                          ;
+  shifts                    : Array<Shift>                                  ;
+  period                    : PayrollPeriod                                 ;
+  selectedShift             : Shift                                         ;
+  currentDay                : any                                           ;
+  shiftsStart               : any                                           ;
+  shifter                   : any                                           ;
+  repairTime                : any                                           ;
+  thisWorkOrderContribution : number           = 0                          ;
+  shiftTotalHours           : any              = 0                          ;
+  payrollPeriodHours        : any              = 0                          ;
+  currentRepairHours        : number           = 0                          ;
+  shiftHoursColor           : string           = "black"                    ;
+  shiftToUse                : Shift            = null                       ;
+  shiftSavedHours           : number           = 0                          ;
+  rprtDate                  : any                                           ;
+  timeStarts                : any                                           ;
+  reportDate                : any                                           ;
+  startTime                 : any                                           ;
+  timeEnds                  : any                                           ;
+  syncError                 : boolean          = false                      ;
+  chooseHours               : any                                           ;
+  chooseMins                : any                                           ;
+  loading                   : any              = {}                         ;
+  _startDate                : any                                           ;
+  _startTime                : any                                           ;
+  _endTime                  : any                                           ;
+  _repairHours              : any                                           ;
+  _shift                    : any                                           ;
+  _selected_shift           : any                                           ;
+  _notes                    : any                                           ;
+  userdata                  : any                                           ;
+  shiftDateOptions          : any                                           ;
+  dataReady                 : boolean          = false                      ;
+  techWorkOrders            : Array<WorkOrder> = []                         ;
+  shiftDateInputDisabled    : boolean          = true                       ;
+  shiftDateInput2Disabled   : boolean          = false                      ;
+  selectedShiftText         : string           = ""                         ;
+  workOrderList             : any                                           ;
+  filteredWOList            : any                                           ;
 
   constructor(
     public navCtrl: NavController,
@@ -153,7 +147,6 @@ export class ReportPage implements OnInit {
         this.workOrder = new WorkOrder();
       }
       this.setupShifts();
-      // this.setupWorkOrderList();
       this.updateActiveShiftWorkOrders(this.selectedShift);
       if (this.mode === 'Add') {
         let startTime = moment(this.selectedShift.start_time);
@@ -234,7 +227,6 @@ export class ReportPage implements OnInit {
     ts = moment().format();
     this.currentRepairHours = wo.getRepairHours();
     this.workOrderForm = new FormGroup({
-      // 'selected_shift': new FormControl(this.shifts[0], Validators.required),
       'selected_shift': new FormControl(this.selectedShift, Validators.required),
       'repair_time': new FormControl(wo.getRepairHoursString(), Validators.required),
       'uNum': new FormControl(wo.unit_number, Validators.required),
@@ -247,7 +239,6 @@ export class ReportPage implements OnInit {
 
   public updateActiveShiftWorkOrders(shift: Shift) {
     let ss = shift;
-    // this.getTotalHoursForShift(ss);
     let shift_time = moment(ss.start_time);
     let shift_serial = ss.getShiftSerial();
     let payroll_period = ss.getPayrollPeriod();
@@ -271,25 +262,8 @@ export class ReportPage implements OnInit {
 
   setupShifts() {
     let endDay = 2;
-    // let now = moment();
-    // for (let i = 0; i < STRINGS.NUMBER_OF_SHIFTS; i++) {
-    //   let tmpDay = moment(now).subtract(i, 'days');
-    //   let shift_day = tmpDay.startOf('day');
-    //   let tmpStart = this.techProfile.shiftStartTime;
-    //   let shift_start_time = moment(shift_day).add(tmpStart, 'hours');
-    //   let shift_length = this.techProfile.shiftLength;
-    //   let client = this.techProfile.client || "SITENAME";
-    //   let thisShift = new Shift(client, null, 'AM', shift_start_time, 8);
-    //   thisShift.updateShiftWeek();
-    //   thisShift.updateShiftNumber();
-    //   thisShift.getExcelDates();
-    //   this.shifts.push(thisShift);
-    // }
 
     this.payrollPeriods = this.ud.getPayrollPeriods();
-    // if(this.period && this.shiftToUse) {
-
-    // } else
     if(this.period) {
       for(let pp of this.payrollPeriods) {
         if(this.period === pp) {
@@ -316,19 +290,11 @@ export class ReportPage implements OnInit {
         }
       }
     }
-    // this.selectedShiftText = this.selectedShift.toString(this.translate);
   }
 
   public showFancySelect() {
     Log.l("showFancySelect(): Called!");
     let options = [];
-    // let selectData = { options: options };
-    // for (let shift of this.period.shifts) {
-    //   let option = { shift: shift };
-    //   options.push(option);
-    // }
-    // selectData.options = options;
-    // Log.l("showFancySelect(): About to create modal, selectData is:\n", selectData);
     let fancySelectModal = this.modal.create('Fancy Select', { title: "Select Shift", shifts: this.period.shifts, periods: this.payrollPeriods }, { cssClass: 'fancy-select-modal' });
     fancySelectModal.onDidDismiss(data => {
       Log.l("ReportPage: Returned from fancy select, got back:\n", data);
@@ -345,23 +311,6 @@ export class ReportPage implements OnInit {
     let ss = shift;
     let savedHours = ss.getNormalHours();
     return savedHours;
-    // if (ss === undefined || ss === null) {
-    //   Log.l("getTotalHoursForShift(): no selected shift somehow.");
-    // } else {
-    //   let shiftID = shift.getShiftSerial();
-    //   this.workOrder.shift_serial = shiftID;
-    //   Log.l("getTotalHoursForShift(): set work order shift_serial to:\n", shiftID);
-    //   let filteredList = this.ud.getWorkOrdersForShift(shiftID);
-    //   this.filteredWOList = filteredList;
-    //   Log.l("getTotalHoursForShift(): Ended up with filtered work order list:\n", filteredList);
-    //   let totalHours = 0;
-    //   for (let wo of filteredList) {
-    //     totalHours += Number(wo['repair_hours']);
-    //   }
-    //   ss.shift_hours = totalHours;
-    //   Log.l(`getTotalHoursForShift(): Total hours for shift '${shiftID}' are ${totalHours}.`);
-    // }
-
   }
 
   getNumberClass(i) {
@@ -375,11 +324,7 @@ export class ReportPage implements OnInit {
     let ss = shift;
     if (ss !== undefined && ss !== null) {
       let total = this.shiftSavedHours + this.currentRepairHours - this.thisWorkOrderContribution;
-
-      // let subtotal = Number(ss.getNormalHours());
-      // let newhours = Number(this.workOrder.getRepairHours());
       let target = Number(this.techProfile.shiftLength);
-      // let total = subtotal + newhours;
       Log.l(`getShiftHoursStatus(): total = ${total}, target = ${target}.`);
       if (total < target) {
         return 'darkred';
@@ -439,8 +384,6 @@ export class ReportPage implements OnInit {
         Log.l("processWO(): Successfully synchronized work order to remote.");
         this.alert.hideSpinner();
         this.tabs.goToPage('ReportHistory');
-        // setTimeout(() => { this.tabs.goToPage('History') });
-        // this.tabs.goToPage('History');
       }).catch((err) => {
         Log.l("processWO(): Error saving work order to local database.");
         Log.e(err);
@@ -452,7 +395,6 @@ export class ReportPage implements OnInit {
 
   cancel() {
     Log.l("ReportPage: User canceled work order.");
-    // setTimeout(() => { this.tabs.goHome() });
     if (this.mode === 'Add') {
       this.tabs.goToPage('OnSiteHome');
     } else {
@@ -479,29 +421,29 @@ export class ReportPage implements OnInit {
     if (this.mode === 'Edit') {
       newReport._rev = wo._rev;
     }
-    newReport._id = newID;
-    newReport.timeStarts = wo.time_start.format();
-    newReport.timeEnds = wo.time_end.format();
-    newReport.repairHrs = wo.repair_hours;
-    newReport.shiftSerial = wo.shift_serial;
-    newReport.payrollPeriod = wo.payroll_period;
-    newReport.uNum = partialReport.uNum;
-    newReport.wONum = partialReport.wONum;
-    newReport.notes = partialReport.notes;
-    newReport.rprtDate = partialReport.rprtDate;
-    newReport.timeStamp = partialReport.timeStamp;
-    newReport.lastName = this.techProfile.lastName;
-    newReport.firstName = this.techProfile.firstName;
-    newReport.client = this.techProfile.client;
-    newReport.location = this.techProfile.location;
-    newReport.locID = this.techProfile.locID;
-    newReport.loc2nd = this.techProfile.loc2nd;
-    newReport.shift = this.techProfile.shift;
-    newReport.shiftLength = this.techProfile.shiftLength;
-    newReport.shiftStartTime = this.techProfile.shiftStartTime;
-    newReport.technician = this.techProfile.technician;
-    newReport.username = this.techProfile.avatarName;
-    this.workOrderReport = newReport;
+    newReport._id            = newID                           ;
+    newReport.timeStarts     = wo.time_start.format()          ;
+    newReport.timeEnds       = wo.time_end.format()            ;
+    newReport.repairHrs      = wo.repair_hours                 ;
+    newReport.shiftSerial    = wo.shift_serial                 ;
+    newReport.payrollPeriod  = wo.payroll_period               ;
+    newReport.uNum           = partialReport.uNum              ;
+    newReport.wONum          = partialReport.wONum             ;
+    newReport.notes          = partialReport.notes             ;
+    newReport.rprtDate       = partialReport.rprtDate          ;
+    newReport.timeStamp      = partialReport.timeStamp         ;
+    newReport.lastName       = this.techProfile.lastName       ;
+    newReport.firstName      = this.techProfile.firstName      ;
+    newReport.client         = this.techProfile.client         ;
+    newReport.location       = this.techProfile.location       ;
+    newReport.locID          = this.techProfile.locID          ;
+    newReport.loc2nd         = this.techProfile.loc2nd         ;
+    newReport.shift          = this.techProfile.shift          ;
+    newReport.shiftLength    = this.techProfile.shiftLength    ;
+    newReport.shiftStartTime = this.techProfile.shiftStartTime ;
+    newReport.technician     = this.techProfile.technician     ;
+    newReport.username       = this.techProfile.avatarName     ;
+    this.workOrderReport     = newReport                       ;
     return newReport;
   }
 
@@ -542,8 +484,6 @@ export class ReportPage implements OnInit {
       this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
     });
   }
-
-
 
 }
 

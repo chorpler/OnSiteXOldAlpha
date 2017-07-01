@@ -34,29 +34,38 @@ export interface ONSITEBASICREPORT {
 }
 
 export interface REPORTHEADER {
-    reportDate    : Date  , 
-    firstName     : string, 
-    lastName      : string, 
-    technician    : string, 
-    client        : string, 
-    location      : string, 
-    locID         : string, 
-    loc2nd        : string, 
-    shift         : string, 
-    shiftLength   : number, 
-    shiftStartTime: number, 
+    reportDate    : Date  ,
+    firstName     : string,
+    lastName      : string,
+    technician    : string,
+    client        : string,
+    location      : string,
+    locID         : string,
+    loc2nd        : string,
+    shift         : string,
+    shiftLength   : number,
+    shiftStartTime: number,
     shiftRotation : string
 }
 
 export interface REPORTMETA {
-    firstName     : string, 
+    firstName     : string,
     lastName      : string,
-    client        : string, 
-    location      : string, 
-    locID         : string, 
-    loc2nd        : string, 
-    shift         : string, 
-    shiftLength   : number, 
-    shiftStartTime: number, 
+    client        : string,
+    location      : string,
+    locID         : string,
+    loc2nd        : string,
+    shift         : string,
+    shiftLength   : number,
+    shiftStartTime: number,
     shiftRotation : string
 }
+
+export const REPORTTYPE = [
+  "Work Order Report",
+  "Training",
+  "Travel",
+  "Sick",
+  "Standby -Billable",
+  "Standby -NonBillable"
+]
