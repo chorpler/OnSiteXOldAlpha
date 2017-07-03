@@ -20,7 +20,7 @@ import { STRINGS                                               } from '../../con
 import { Preferences                                           } from '../../providers/preferences'       ;
 import { TabsComponent                                         } from '../../components/tabs/tabs'        ;
 import { TranslateService                                      } from '@ngx-translate/core'               ;
-import { REPORTTYPE, TRAININGTYPE                              } from '../../config/report.object'        ;
+import { REPORTTYPE, TRAININGTYPE, JOBSITES                    } from '../../config/report.object'        ;
 import * as moment from 'moment'                                                                          ;
 import 'rxjs/add/operator/debounceTime'                                                                   ;
 
@@ -97,6 +97,10 @@ export class ReportPage implements OnInit {
   trngType                  : string = ""                                   ;
   _trngType                 : any                                           ;
   _training_time            : any                                           ;
+  selTrvlLoc                : string[] = JOBSITES                           ;
+  _trvlLoc                  : any                                           ;
+  trvlLoc                   : string = ""                                   ;
+  _trvlTime                 : any                                           ;
 
 
   constructor(
@@ -169,9 +173,11 @@ export class ReportPage implements OnInit {
       }
       this.thisWorkOrderContribution = this.workOrder.getRepairHours() || 0;
       this.initializeForm();
-      this._training_time = this.workOrderForm.controls['training_time' ] ;
       this._type          = this.workOrderForm.controls['type'          ] ;
       this._trngType      = this.workOrderForm.controls['trnType'       ] ;
+      this._training_time = this.workOrderForm.controls['training_time' ] ;
+      this._trvlLoc       = this.workOrderForm.controls['trvlLoc'       ] ;
+      this._trvlTime      = this.workOrderForm.controls['trvlTime'      ] ;
 
       this._endTime = this.workOrderForm.controls.endTime;
       this._repairHours = this.workOrderForm.controls.repair_time;
@@ -186,6 +192,28 @@ export class ReportPage implements OnInit {
                     value === 'FORKLIFT'       ? 3  :
                     value === 'OVERHEAD CRANE' ? 10 : 0;
         this._training_time.setValue(time);
+      });
+      this._trvlLoc.valueChanges.subscribe((value: any) => {
+        this.trvlLoc = value;
+        let trvl =  value === 'BE MDL MNSHOP'         ? 6  :
+                    value === 'HB FORT LUPTON MNSHOP' ? 20 :
+                    value === 'HB ART PMPSHP'         ? 8  :
+                    value === 'HB BRN E-TECH'         ? 8  :
+                    value === 'HB BRN MNSHOP'         ? 8  :
+                    value === 'HB BRN PMPSHP'         ? 0  :
+                    value === 'HB DCN MNSHOP'         ? 8  :
+                    value === 'HB DCN PMPSHP'         ? 8  :
+                    value === 'HB ODS E-TECH'         ? 6  :
+                    value === 'HB ODS MNSHOP'         ? 0  :
+                    value === 'HB RSP MNSHOP'         ? 18 :
+                    value === 'HB SAN MNSHOP'         ? 0  :
+                    value === 'KN MHL MNSHOP'         ? 0  :
+                    value === 'KN ODS MNSHOP'         ? 0  :
+                    value === 'KN SHN MNSHOP'         ? 8  :
+                    value === 'KN SPR E-TECH'         ? 6  :
+                    value === 'KN SPR MNSHOP'         ? 6  :
+                    value === 'SE WES MNSHOP'         ? 0  : 0;
+        this._trvlTime.setValue(trvl);
       });
       this._training_time.valueChanges.subscribe((value: any) => { this.workOrder.training_time = value; });
       this.workOrderForm.valueChanges.debounceTime(500).subscribe((value: any) => {
@@ -261,6 +289,8 @@ export class ReportPage implements OnInit {
       'type'           : new FormControl(wo.type                           , Validators.required) ,
       'trnType'        : new FormControl(wo.trnType                        , Validators.required) ,
       'training_time'  : new FormControl( 2                                , Validators.required) ,
+      'trvlLoc'        : new FormControl( wo.trvlLoc                       , Validators.required) ,
+      'trvlTime'       : new FormControl( 6                                , Validators.required) ,
     });
   }
 

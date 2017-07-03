@@ -72,7 +72,7 @@ export const REPORTTYPE = [
 ]
 
 export const TRAININGTYPE = [
-  "SAFTY",
+  "SAFETY",
   "PEC",
   "FORKLIFT",
   "OVERHEAD CRANE"
@@ -82,3 +82,25 @@ export const TRAININGTYPE = [
 // "PEC": 8Hrs
 // "FORKLIFT": 3Hrs
 // "OVERHEAD CRANE": 10hrs
+
+
+ export const JOBSITES = [
+  "BE MDL MNSHOP",
+  "HB FORT LUPTON MNSHOP",
+  "HB ART PMPSHP",
+  "HB BRN E-TECH",
+  "HB BRN MNSHOP",
+  "HB BRN PMPSHP",
+  "HB DCN MNSHOP",
+  "HB DCN PMPSHP",
+  "HB ODS E-TECH",
+  "HB ODS MNSHOP",
+  "HB RSP MNSHOP",
+  "HB SAN MNSHOP",
+  "KN MHL MNSHOP",
+  "KN ODS MNSHOP",
+  "KN SHN MNSHOP",
+  "KN SPR E-TECH",
+  "KN SPR MNSHOP",
+  "SE WES MNSHOP"
+ ]
