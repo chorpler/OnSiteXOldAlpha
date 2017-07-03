@@ -22,7 +22,6 @@
       <span class="shift-hours-header" [ngClass]="getShiftHoursStatus(selectedShift)" *ngIf="workOrderForm && workOrderForm.value && workOrderForm.value.selected_shift">
         <span class="shift-label">{{'shift' | translate}}</span> #<span class="shift-number">{{selectedShift.updateShiftNumber()}}</span>
         <span class="shift-label">{{'hours' | translate}}</span>:
-        <!--<span class="shift-hours">{{workOrderForm.value.selected_shift.getShiftHours()+currentRepairHours}}</span>-->
         <span class="shift-hours" *ngIf="mode==='Add'">{{shiftSavedHours+currentRepairHours}}</span>
         <span class="shift-hours" *ngIf="mode==='Edit'">{{shiftSavedHours+currentRepairHours-thisWorkOrderContribution}}</span>
         <span class="shift-label">{{'of' | translate}}</span>
@@ -31,16 +30,34 @@
     </div>
     <form [formGroup]="workOrderForm" (ngSubmit)="onSubmit()" *ngIf="dataReady">
       <ion-list padding>
+        <ion-item>
+          <ion-label>Report Type</ion-label>
+          <ion-select formControlName='type'>
+              <ion-option *ngFor='let type of selReportType' [value]='type'>{{type}}</ion-option>
+          </ion-select>
+        </ion-item>
         <ion-item (click)="showFancySelect()" class="item item-button ion-item-button-like">
           <ion-label>{{'shift_date' | translate}}</ion-label>
-          <!-- <ion-input #shiftDateResults [disabled]="shiftDateInputDisabled" class="shift-date-select-results" [value]="selectedShiftText"></ion-input> -->
           <ion-input #shiftDateResults [disabled]="shiftDateInputDisabled" class="shift-date-select-results" [value]="selectedShift.toString(translate)"></ion-input>
           <ion-icon item-right class="shift-date-select-icon" name="md-arrow-dropdown"></ion-icon>
         </ion-item>
+      </ion-list>
+      <ion-list *ngIf="type==='Training'">
+        <ion-item>
+          <ion-label>Training</ion-label>
+          <ion-select formControlName='trnType'>
+              <ion-option *ngFor='let trngType of selTrainingType' [value]='trngType'>{{trngType}}</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label>Training Hours</ion-label>
+              <ion-input formControlName='training_time'>{{training_time}} hrs </ion-input>
+        </ion-item>
+      </ion-list>
+      <ion-list *ngIf="type==='Work Order'">
         <ion-item>
           <ion-label>{{'repair_time' | translate}}</ion-label>
              <ion-multi-picker class="repair-hours-picker" item-content [separator]="':'" [multiPickerColumns]="chooseHours" formControlName='repair_time'></ion-multi-picker>
-           <!-- <ion-input formControlName='repair_time'></ion-input> -->
           <ion-icon item-right class="shift-repair-time-icon" name="md-arrow-dropdown"></ion-icon>
         </ion-item>
         <ion-item>

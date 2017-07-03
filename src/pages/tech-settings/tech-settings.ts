@@ -14,7 +14,9 @@ import { UserData                                     } from '../../providers/us
 import { TabsComponent                                } from '../../components/tabs/tabs'             ;
 
 
-@IonicPage({ name: 'User'})
+@IonicPage({
+  name: 'User'
+})
 @Component({
   selector: 'page-tech-settings',
   templateUrl: 'tech-settings.html',
@@ -92,11 +94,6 @@ export class TechSettingsPage implements OnInit {
     });
   }
 
-  ionViewDidEnter() {
-    // this.fixedHeight = this.mapElement.nativeElement.offsetHeight;
-
-  }
-
   private initializeForm() {
     this.techSettings = new FormGroup({
       'lastName'      : new FormControl(this.lastName       , Validators.required) ,
@@ -129,25 +126,9 @@ export class TechSettingsPage implements OnInit {
     }
     this.lastName       = this.techProfile.lastName       ;
     this.firstName      = this.techProfile.firstName      ;
-    // let keys = ['client' ,'location' ,'locID' ,'loc2nd' ,'shift' ,'shiftLength' ,'shiftStartTime'];
-    // for(let i in keys) {
-    //   let sesaVar = keys [i];
-    //   let selVar  = keys2[i];
-    //   let techVar = keys3[i];
-    //   this[techVar] = this.selectMatch(this.techProfile[techVar], sesaConfig[sesaVar]);
-    //   this[selVar]  = sesaConfig[sesaVar];
-    // }
-    // this.client         = this.techProfile.client         ;
-    // this.location       = this.techProfile.location       ;
-    // this.locID          = this.techProfile.locID          ;
-    // this.loc2nd         = this.techProfile.loc2nd         ;
-    // this.shift          = this.techProfile.shift          ;
-    // this.shiftLength    = this.techProfile.shiftLength    ;
-    // this.shiftStartTime = this.techProfile.shiftStartTime ;
   }
 
   selectMatch(key:string, values:Array<any>) {
-    // Log.l("selectMatch(): Finding matchinb object for '%s' in array...", key);
     Log.l(values);
     let matchKey = String(key).toUpperCase();
     for(let value of values) {
@@ -161,7 +142,6 @@ export class TechSettingsPage implements OnInit {
   }
 
   onSubmit() {
-    // let prof = this.techSettings.value;
     let rprt = this.techSettings.value;
     rprt.updated        = true;
     rprt.technician     = rprt.lastName + ', ' + rprt.firstName;

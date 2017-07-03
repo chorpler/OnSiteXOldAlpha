@@ -1,26 +1,28 @@
-import { Component, OnInit, ViewChild, NgZone                                                       } from '@angular/core'                     ;
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators          } from "@angular/forms"                    ;
-import { IonicPage, NavController, NavParams, LoadingController, PopoverController, ModalController } from 'ionic-angular'                     ;
-import 'rxjs/add/operator/debounceTime'                                                                                                        ;
-import { DBSrvcs                                                                                    } from '../../providers/db-srvcs'          ;
-import { SrvrSrvcs                                                                                  } from '../../providers/srvr-srvcs'        ;
-import { AuthSrvcs                                                                                  } from '../../providers/auth-srvcs'        ;
-import { TimeSrvc                                                                                   } from '../../providers/time-parse-srvc'   ;
-import { ReportBuildSrvc                                                                            } from '../../providers/report-build-srvc' ;
-import { AlertService                                                                               } from '../../providers/alerts'            ;
-import { Log                                                                                        } from '../../config/config.functions'     ;
-import { PayrollPeriod                                                                              } from '../../domain/payroll-period'       ;
-import { Shift                                                                                      } from '../../domain/shift'                ;
-import { WorkOrder                                                                                  } from '../../domain/workorder'            ;
-import { Status                                                                                     } from '../../providers/status'            ;
-import { UserData                                                                                   } from '../../providers/user-data'         ;
-import * as moment from 'moment'                                                                                                               ;
-import { sprintf                                                                                    } from 'sprintf-js'                        ;
-import { STRINGS                                                                                    } from '../../config/config.strings'       ;
-import { Preferences                                                                                } from '../../providers/preferences'       ;
-import { TabsComponent                                                                              } from '../../components/tabs/tabs'        ;
-import { TranslateService                                                                           } from '@ngx-translate/core'               ;
-import { REPORTTYPE                                                                                 } from '../../config/report.object'        ;
+import { Component, OnInit, ViewChild, NgZone                  } from '@angular/core'                     ;
+import { FormsModule, ReactiveFormsModule                      } from "@angular/forms"                    ;
+import { FormBuilder, FormGroup, FormControl, Validators       } from "@angular/forms"                    ;
+import { IonicPage, NavController, NavParams                   } from 'ionic-angular'                     ;
+import { LoadingController, PopoverController, ModalController } from 'ionic-angular'                     ;
+import { DBSrvcs                                               } from '../../providers/db-srvcs'          ;
+import { SrvrSrvcs                                             } from '../../providers/srvr-srvcs'        ;
+import { AuthSrvcs                                             } from '../../providers/auth-srvcs'        ;
+import { TimeSrvc                                              } from '../../providers/time-parse-srvc'   ;
+import { ReportBuildSrvc                                       } from '../../providers/report-build-srvc' ;
+import { AlertService                                          } from '../../providers/alerts'            ;
+import { Log                                                   } from '../../config/config.functions'     ;
+import { PayrollPeriod                                         } from '../../domain/payroll-period'       ;
+import { Shift                                                 } from '../../domain/shift'                ;
+import { WorkOrder                                             } from '../../domain/workorder'            ;
+import { Status                                                } from '../../providers/status'            ;
+import { UserData                                              } from '../../providers/user-data'         ;
+import { sprintf                                               } from 'sprintf-js'                        ;
+import { STRINGS                                               } from '../../config/config.strings'       ;
+import { Preferences                                           } from '../../providers/preferences'       ;
+import { TabsComponent                                         } from '../../components/tabs/tabs'        ;
+import { TranslateService                                      } from '@ngx-translate/core'               ;
+import { REPORTTYPE, TRAININGTYPE                              } from '../../config/report.object'        ;
+import * as moment from 'moment'                                                                          ;
+import 'rxjs/add/operator/debounceTime'                                                                   ;
 
 
 @IonicPage({
@@ -88,6 +90,14 @@ export class ReportPage implements OnInit {
   selectedShiftText         : string           = ""                         ;
   workOrderList             : any                                           ;
   filteredWOList            : any                                           ;
+  selReportType             : string[] = REPORTTYPE                         ;
+  type                      : string                                        ;
+  _type                     : any                                           ;
+  selTrainingType           : string[] = TRAININGTYPE                       ;
+  trngType                  : string = ""                                   ;
+  _trngType                 : any                                           ;
+  _training_time            : any                                           ;
+
 
   constructor(
     public navCtrl: NavController,
@@ -159,11 +169,25 @@ export class ReportPage implements OnInit {
       }
       this.thisWorkOrderContribution = this.workOrder.getRepairHours() || 0;
       this.initializeForm();
+      this._training_time = this.workOrderForm.controls['training_time' ] ;
+      this._type          = this.workOrderForm.controls['type'          ] ;
+      this._trngType      = this.workOrderForm.controls['trnType'       ] ;
 
       this._endTime = this.workOrderForm.controls.endTime;
       this._repairHours = this.workOrderForm.controls.repair_time;
       this._selected_shift = this.workOrderForm.controls.selected_shift;
       this._notes = this.workOrderForm.controls.notes;
+
+      this._type.valueChanges.subscribe((value: any) => { this.type = value; });
+      this._trngType.valueChanges.subscribe((value: any) => {
+        this.trngType = value;
+        let time =  value === 'SAFETY'         ? 2  :
+                    value === 'PEC'            ? 8  :
+                    value === 'FORKLIFT'       ? 3  :
+                    value === 'OVERHEAD CRANE' ? 10 : 0;
+        this._training_time.setValue(time);
+      });
+      this._training_time.valueChanges.subscribe((value: any) => { this.workOrder.training_time = value; });
       this.workOrderForm.valueChanges.debounceTime(500).subscribe((value: any) => {
         Log.l("workOrderForm: valueChanges fired for:\n", value);
         let notes = value.notes;
@@ -227,13 +251,16 @@ export class ReportPage implements OnInit {
     ts = moment().format();
     this.currentRepairHours = wo.getRepairHours();
     this.workOrderForm = new FormGroup({
-      'selected_shift': new FormControl(this.selectedShift, Validators.required),
-      'repair_time': new FormControl(wo.getRepairHoursString(), Validators.required),
-      'uNum': new FormControl(wo.unit_number, Validators.required),
-      'wONum': new FormControl(wo.work_order_number, Validators.required),
-      'notes': new FormControl(wo.notes, Validators.required),
-      'rprtDate': new FormControl(rprtDate.format("YYYY-MM-DD"), Validators.required),
-      'timeStamp': new FormControl({ value: ts, disabled: true }, Validators.required)
+      'selected_shift' : new FormControl(this.selectedShift                , Validators.required) ,
+      'repair_time'    : new FormControl(wo.getRepairHoursString()         , Validators.required) ,
+      'uNum'           : new FormControl(wo.unit_number                    , Validators.required) ,
+      'wONum'          : new FormControl(wo.work_order_number              , Validators.required) ,
+      'notes'          : new FormControl(wo.notes                          , Validators.required) ,
+      'rprtDate'       : new FormControl(rprtDate.format("YYYY-MM-DD")     , Validators.required) ,
+      'timeStamp'      : new FormControl({ value: ts, disabled: true }     , Validators.required) ,
+      'type'           : new FormControl(wo.type                           , Validators.required) ,
+      'trnType'        : new FormControl(wo.trnType                        , Validators.required) ,
+      'training_time'  : new FormControl( 2                                , Validators.required) ,
     });
   }
 
@@ -432,6 +459,7 @@ export class ReportPage implements OnInit {
     newReport.notes          = partialReport.notes             ;
     newReport.rprtDate       = partialReport.rprtDate          ;
     newReport.timeStamp      = partialReport.timeStamp         ;
+    newReport.training_time  = partialReport.training_time     ;
     newReport.lastName       = this.techProfile.lastName       ;
     newReport.firstName      = this.techProfile.firstName      ;
     newReport.client         = this.techProfile.client         ;

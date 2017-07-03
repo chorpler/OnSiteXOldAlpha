@@ -62,10 +62,23 @@ export interface REPORTMETA {
 }
 
 export const REPORTTYPE = [
-  "Work Order Report",
+  "Work Order",
+  "Standby",
+  "Standby: HB DUNCAN",
   "Training",
   "Travel",
   "Sick",
-  "Standby -Billable",
-  "Standby -NonBillable"
+  "Vacation"
 ]
+
+export const TRAININGTYPE = [
+  "SAFTY",
+  "PEC",
+  "FORKLIFT",
+  "OVERHEAD CRANE"
+]
+
+// "SAFTY": 2hrs
+// "PEC": 8Hrs
+// "FORKLIFT": 3Hrs
+// "OVERHEAD CRANE": 10hrs

@@ -3,6 +3,8 @@ import { Log, isMoment } from '../config/config.functions';
 import { sprintf } from 'sprintf-js';
 
 export class WorkOrder {
+  public type             : string;
+  public training_time    : number;
   public time_start       : any;
   public time_end         : any;
   public repair_hours     : any;
@@ -29,6 +31,8 @@ export class WorkOrder {
   public _rev             : any;
 
   constructor(start?: any, end?: any, hours?: any, unit?: any, wo?: any, nts?: any, date?: any, last?: any, first?: any, shift?: any, client?: any, loc?: any, locid?: any, loc2?: any, shiftTime?: any, shiftLength?: any, shiftStartTime?: any, tech?: any, timestamp?: any, user?: any) {
+    this.type              = ""                    ;
+    this.training_time     = null                  ;
     this.time_start        = start          || null;
     this.time_end          = end            || null;
     this.repair_hours      = hours          || null;
@@ -60,7 +64,9 @@ export class WorkOrder {
     let fields = [
       ["_id"           , "_id"              ],
       ["_rev"          , "_rev"             ],
+      ["type"          , "type"             ],
       ["timeStarts"    , "time_start"       ],
+      ["training_time" , "training_time"    ],
       ["timeEnds"      , "time_end"         ],
       ["repairHrs"     , "repair_hours"     ],
       ["uNum"          , "unit_number"      ],
