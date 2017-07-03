@@ -72,7 +72,7 @@ export const REPORTTYPE = [
 ]
 
 export const TRAININGTYPE = [
-  "SAFTY",
+  "SAFETY",
   "PEC",
   "FORKLIFT",
   "OVERHEAD CRANE"
