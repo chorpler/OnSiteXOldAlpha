@@ -65,7 +65,6 @@ export class ReportPage implements OnInit {
   shiftHoursColor           : string           = "black"                    ;
   shiftToUse                : Shift            = null                       ;
   shiftSavedHours           : number           = 0                          ;
-  rprtDate                  : any                                           ;
   timeStarts                : any                                           ;
   reportDate                : any                                           ;
   startTime                 : any                                           ;
@@ -94,28 +93,29 @@ export class ReportPage implements OnInit {
   type                      : string                                        ;
   _type                     : any                                           ;
   selTrainingType           : string[] = TRAININGTYPE                       ;
-  trngType                  : string = ""                                   ;
-  _trngType                 : any                                           ;
+  training_type             : string = ""                                   ;
+  _training_type            : any                                           ;
   _training_time            : any                                           ;
 
 
   constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
-    private db: DBSrvcs,
-    public server: SrvrSrvcs,
-    private timeSrvc: TimeSrvc,
+    public navCtrl      : NavController,
+    public navParams    : NavParams,
+    private db          : DBSrvcs,
+    public server       : SrvrSrvcs,
+    private timeSrvc    : TimeSrvc,
     public reportBuilder: ReportBuildSrvc,
-    public loadingCtrl: LoadingController,
-    public alert: AlertService,
-    public modal: ModalController,
-    public zone: NgZone,
-    public tabs: TabsComponent,
-    public ud: UserData,
-    public translate: TranslateService) {
-    this.shifter = Shift;
-    this.userdata = UserData;
-    window["workorder"] = this;
+    public loadingCtrl  : LoadingController,
+    public alert        : AlertService,
+    public modal        : ModalController,
+    public zone         : NgZone,
+    public tabs         : TabsComponent,
+    public ud           : UserData,
+    public translate    : TranslateService,
+  ) {
+    this.shifter        = Shift             ;
+    this.userdata       = UserData          ;
+    window["workorder"] = this              ;
   }
 
   ionViewDidLoad() { console.log('ionViewDidLoad ReportPage'); }
@@ -171,7 +171,7 @@ export class ReportPage implements OnInit {
       this.initializeForm();
       this._training_time = this.workOrderForm.controls['training_time' ] ;
       this._type          = this.workOrderForm.controls['type'          ] ;
-      this._trngType      = this.workOrderForm.controls['trnType'       ] ;
+      this._training_type = this.workOrderForm.controls['training_type' ] ;
 
       this._endTime = this.workOrderForm.controls.endTime;
       this._repairHours = this.workOrderForm.controls.repair_time;
@@ -179,8 +179,8 @@ export class ReportPage implements OnInit {
       this._notes = this.workOrderForm.controls.notes;
 
       this._type.valueChanges.subscribe((value: any) => { this.type = value; });
-      this._trngType.valueChanges.subscribe((value: any) => {
-        this.trngType = value;
+      this._training_type.valueChanges.subscribe((value: any) => {
+        this.training_type = value;
         let time =  value === 'SAFETY'         ? 2  :
                     value === 'PEC'            ? 8  :
                     value === 'FORKLIFT'       ? 3  :
@@ -229,7 +229,7 @@ export class ReportPage implements OnInit {
         let woStart = moment(shift.getStartTime()).add(woHoursSoFar, 'hours');
         this.workOrder.setStartTime(woStart);
 
-        this.workOrderForm.controls.rprtDate.setValue(rprtDate.format("YYYY-MM-DD"));
+        this.workOrderForm.controls.report_date.setValue(rprtDate.format("YYYY-MM-DD"));
       });
       this.shiftSavedHours = this.selectedShift.getNormalHours();
       this.dataReady = true;
@@ -246,21 +246,21 @@ export class ReportPage implements OnInit {
       rprtDate = moment(this.selectedShift.getStartTime());
       ts = moment().format();
     } else {
-      rprtDate = moment(wo.rprtDate);
+      rprtDate = moment(wo.report_date);
     }
     ts = moment().format();
     this.currentRepairHours = wo.getRepairHours();
     this.workOrderForm = new FormGroup({
-      'selected_shift' : new FormControl(this.selectedShift                , Validators.required) ,
-      'repair_time'    : new FormControl(wo.getRepairHoursString()         , Validators.required) ,
-      'uNum'           : new FormControl(wo.unit_number                    , Validators.required) ,
-      'wONum'          : new FormControl(wo.work_order_number              , Validators.required) ,
-      'notes'          : new FormControl(wo.notes                          , Validators.required) ,
-      'rprtDate'       : new FormControl(rprtDate.format("YYYY-MM-DD")     , Validators.required) ,
-      'timeStamp'      : new FormControl({ value: ts, disabled: true }     , Validators.required) ,
-      'type'           : new FormControl(wo.type                           , Validators.required) ,
-      'trnType'        : new FormControl(wo.trnType                        , Validators.required) ,
-      'training_time'  : new FormControl( 2                                , Validators.required) ,
+      'selected_shift'    : new FormControl(this.selectedShift                , Validators.required) ,
+      'repair_time'       : new FormControl(wo.getRepairHoursString()         , Validators.required) ,
+      'unit_number'       : new FormControl(wo.unit_number                    , Validators.required) ,
+      'work_order_number' : new FormControl(wo.work_order_number              , Validators.required) ,
+      'notes'             : new FormControl(wo.notes                          , Validators.required) ,
+      'report_date'       : new FormControl(rprtDate.format("YYYY-MM-DD")     , Validators.required) ,
+      'timestamp'         : new FormControl({ value: ts, disabled: true }     , Validators.required) ,
+      'type'              : new FormControl(wo.type                           , Validators.required) ,
+      'training_type'     : new FormControl(wo.training_type                  , Validators.required) ,
+      'training_time'     : new FormControl( 2                                , Validators.required) ,
     });
   }
 
@@ -431,48 +431,51 @@ export class ReportPage implements OnInit {
 
   createReport() {
     Log.l("ReportPage: createReport(): Now creating report...");
-    let partialReport = this.workOrderForm.getRawValue();
-    let ts = moment(partialReport.timeStamp);
-    let wo = this.workOrder;
-    Log.l("createReport(): timestamp moment is now:\n", ts);
-    let XLDate = moment([1900, 0, 1]);
-    let xlStamp = ts.diff(XLDate, 'days', true) + 2;
-    partialReport.timeStamp = xlStamp;
-    console.log("processWO() has initial partialReport:");
-    console.log(partialReport);
-    let newReport: any = {};
-    let newID = this.genReportID();
-    if (this.mode !== 'Add') {
-      newID = wo._id;
+    let doc = this.workOrderForm.getRawValue();
+    for(let propName in doc) {
+      let property = doc[propName];
+      this.workOrder[propName] = property;
     }
-    if (this.mode === 'Edit') {
-      newReport._rev = wo._rev;
-    }
-    newReport._id            = newID                           ;
-    newReport.timeStarts     = wo.time_start.format()          ;
-    newReport.timeEnds       = wo.time_end.format()            ;
-    newReport.repairHrs      = wo.repair_hours                 ;
-    newReport.shiftSerial    = wo.shift_serial                 ;
-    newReport.payrollPeriod  = wo.payroll_period               ;
-    newReport.uNum           = partialReport.uNum              ;
-    newReport.wONum          = partialReport.wONum             ;
-    newReport.notes          = partialReport.notes             ;
-    newReport.rprtDate       = partialReport.rprtDate          ;
-    newReport.timeStamp      = partialReport.timeStamp         ;
-    newReport.training_time  = partialReport.training_time     ;
-    newReport.lastName       = this.techProfile.lastName       ;
-    newReport.firstName      = this.techProfile.firstName      ;
-    newReport.client         = this.techProfile.client         ;
-    newReport.location       = this.techProfile.location       ;
-    newReport.locID          = this.techProfile.locID          ;
-    newReport.loc2nd         = this.techProfile.loc2nd         ;
-    newReport.shift          = this.techProfile.shift          ;
-    newReport.shiftLength    = this.techProfile.shiftLength    ;
-    newReport.shiftStartTime = this.techProfile.shiftStartTime ;
-    newReport.technician     = this.techProfile.technician     ;
-    newReport.username       = this.techProfile.avatarName     ;
-    this.workOrderReport     = newReport                       ;
-    return newReport;
+    return this.workOrder.serialize(this.techProfile);
+    // Log.l("createReport(): timestamp moment is now:\n", ts);
+    // let XLDate = moment([1900, 0, 1]);
+    // let xlStamp = ts.diff(XLDate, 'days', true) + 2;
+    // partialReport.timeStamp = xlStamp;
+    // console.log("processWO() has initial partialReport:");
+    // console.log(partialReport);
+    // let newReport: any = {};
+    // let newID = this.genReportID();
+    // if (this.mode !== 'Add') {
+    //   newID = wo._id;
+    // }
+    // if (this.mode === 'Edit') {
+    //   newReport._rev = wo._rev;
+    // }
+    // newReport._id            = newID                           ;
+    // newReport.timeStarts     = wo.time_start.format()          ;
+    // newReport.timeEnds       = wo.time_end.format()            ;
+    // newReport.repairHrs      = wo.repair_hours                 ;
+    // newReport.shiftSerial    = wo.shift_serial                 ;
+    // newReport.payrollPeriod  = wo.payroll_period               ;
+    // newReport.uNum           = partialReport.unit_number       ;
+    // newReport.wONum          = partialReport.work_order_number ;
+    // newReport.notes          = partialReport.notes             ;
+    // newReport.rprtDate       = partialReport.report_date       ;
+    // newReport.timeStamp      = partialReport.timeStamp         ;
+    // newReport.training_time  = partialReport.training_time     ;
+    // newReport.lastName       = this.techProfile.lastName       ;
+    // newReport.firstName      = this.techProfile.firstName      ;
+    // newReport.client         = this.techProfile.client         ;
+    // newReport.location       = this.techProfile.location       ;
+    // newReport.locID          = this.techProfile.locID          ;
+    // newReport.loc2nd         = this.techProfile.loc2nd         ;
+    // newReport.shift          = this.techProfile.shift          ;
+    // newReport.shiftLength    = this.techProfile.shiftLength    ;
+    // newReport.shiftStartTime = this.techProfile.shiftStartTime ;
+    // newReport.technician     = this.techProfile.technician     ;
+    // newReport.username       = this.techProfile.avatarName     ;
+    // this.workOrderReport     = newReport                       ;
+    // return newReport;
   }
 
   deleteWorkOrder(event, item) {

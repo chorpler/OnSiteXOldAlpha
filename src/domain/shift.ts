@@ -283,7 +283,7 @@ export class Shift {
       bonusHours = 3 + (countsForBonusHours - 11);
     }
     shiftTotal += bonusHours;
-    Log.l("getTotalPayrollHoursForShift(): For shift %s, %d reports, %f hours, %f hours eligible, so bonus hours = %f.\nShift total: %f hours.", this.getShiftSerial(), this.shift_reports.length, shiftTotal, countsForBonusHours, bonusHours, shiftTotal);
+    // Log.l("getTotalPayrollHoursForShift(): For shift %s, %d reports, %f hours, %f hours eligible, so bonus hours = %f.\nShift total: %f hours.", this.getShiftSerial(), this.shift_reports.length, shiftTotal, countsForBonusHours, bonusHours, shiftTotal);
     return shiftTotal;
   }
 
@@ -305,7 +305,7 @@ export class Shift {
       payrollWeek = translate.instant('payroll_week');
     }
     strOut = `${start} (${payrollWeek} ${weekStart})`;
-    Log.l('Shift.toString() should output:\n', strOut);
+    // Log.l('Shift.toString() should output:\n', strOut);
     return strOut;
   }
 

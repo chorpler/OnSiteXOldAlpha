@@ -43,5 +43,8 @@ export class Employee {
 
   getFullName() { let fullName = `${this.lastName}, ${this.firstName}`; return fullName; }
 
+  getTechName() { let fullName = `${this.lastName}, ${this.firstName}`; return fullName; }
+
+
 }
 

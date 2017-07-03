@@ -1,9 +1,44 @@
 import * as moment from 'moment';
 import { Log, isMoment } from '../config/config.functions';
 import { sprintf } from 'sprintf-js';
+import { Employee } from './employee';
+
+export const fields = [
+  [ "type"              , "type"           ] ,
+  [ "training_type"     , "training_type"  ] ,
+  [ "training_time"     , "training_time"  ] ,
+  [ "time_start"        , "timeStarts"     ] ,
+  [ "time_end"          , "timeEnds"       ] ,
+  [ "repair_hours"      , "repairHrs"      ] ,
+  [ "unit_number"       , "uNum"           ] ,
+  [ "work_order_number" , "wONum"          ] ,
+  [ "notes"             , "notes"          ] ,
+  [ "report_date"       , "rprtDate"       ] ,
+  [ "last_name"         , "lastName"       ] ,
+  [ "first_name"        , "firstName"      ] ,
+  [ "client"            , "client"         ] ,
+  [ "location"          , "location"       ] ,
+  [ "location_id"       , "locID"          ] ,
+  [ "location_2"        , "loc2nd"         ] ,
+  [ "shift_time"        , "shift"          ] ,
+  [ "shift_length"      , "shiftLength"    ] ,
+  [ "shift_start_time"  , "shiftStartTime" ] ,
+  [ "shift_serial"      , "shiftSerial"    ] ,
+  [ "payroll_period"    , "payrollPeriod"  ] ,
+  [ "technician"        , "technician"     ] ,
+  [ "timestamp"         , "timeStamp"      ] ,
+  [ "username"          , "username"       ] ,
+  [ "shift_serial"     ,  "shift_serial"   ] ,
+  [ "payroll_period"   ,  "payroll_period" ] ,
+  [ "_id"               , "_id"            ] ,
+  [ "_id"               , "_id"            ] ,
+  [ "_rev"              , "_rev"           ] ,
+];
+
 
 export class WorkOrder {
   public type             : string;
+  public training_type    : string;
   public training_time    : number;
   public time_start       : any;
   public time_end         : any;
@@ -32,7 +67,8 @@ export class WorkOrder {
 
   constructor(start?: any, end?: any, hours?: any, unit?: any, wo?: any, nts?: any, date?: any, last?: any, first?: any, shift?: any, client?: any, loc?: any, locid?: any, loc2?: any, shiftTime?: any, shiftLength?: any, shiftStartTime?: any, tech?: any, timestamp?: any, user?: any) {
     this.type              = ""                    ;
-    this.training_time     = null                  ;
+    this.training_type     = ""                    ;
+    this.training_time     = 0                     ;
     this.time_start        = start          || null;
     this.time_end          = end            || null;
     this.repair_hours      = hours          || null;
@@ -61,33 +97,6 @@ export class WorkOrder {
   }
 
   public readFromDoc(doc:any) {
-    let fields = [
-      ["_id"           , "_id"              ],
-      ["_rev"          , "_rev"             ],
-      ["type"          , "type"             ],
-      ["timeStarts"    , "time_start"       ],
-      ["training_time" , "training_time"    ],
-      ["timeEnds"      , "time_end"         ],
-      ["repairHrs"     , "repair_hours"     ],
-      ["uNum"          , "unit_number"      ],
-      ["wONum"         , "work_order_number"],
-      ["notes"         , "notes"            ],
-      ["rprtDate"      , "report_date"      ],
-      ["lastName"      , "last_name"        ],
-      ["firstName"     , "first_name"       ],
-      ["client"        , "client"           ],
-      ["location"      , "location"         ],
-      ["locID"         , "location_id"      ],
-      ["loc2nd"        , "location_2"       ],
-      ["shift"         , "shift_time"       ],
-      ["shiftLength"   , "shift_length"     ],
-      ["shiftStartTime", "shift_start_time" ],
-      ["shiftSerial"   , "shift_serial"     ],
-      ["payrollPeriod" , "payroll_period"   ],
-      ["technician"    , "technician"       ],
-      ["timeStamp"     , "timestamp"        ],
-      ["username"      , "username"         ]
-    ];
     let len = fields.length;
     for(let i = 0; i < len; i++) {
       let docKey  = fields[i][0];
@@ -97,6 +106,66 @@ export class WorkOrder {
     this.time_start = moment(this.time_start);
     this.time_end   = moment(this.time_end);
   }
+
+  public genReportID(tech:Employee) {
+    let now = moment();
+    let idDateTime = now.format("dddDDMMMYYYYHHmmss");
+    let docID = tech.avatarName + '_' + idDateTime;
+    Log.l("genReportID(): Generated ID:\n", docID);
+    return docID;
+  }
+
+  public serialize(tech:Employee) {
+    Log.l("WorkOrder.serialize(): Now serializing report...");
+    let ts = moment(this.timestamp);
+    Log.l("WorkOrder.serialize(): timestamp moment is now:\n", ts);
+    let XLDate = moment([1900, 0, 1]);
+    let xlStamp = ts.diff(XLDate, 'days', true) + 2;
+    this.timestamp = xlStamp;
+    let newReport = {};
+    this._id = this._id || this.genReportID(tech);
+    let len = fields.length;
+    for(let i = 0; i < len; i++) {
+      let key1 = fields[i][0];
+      let key2 = fields[i][1];
+      if(key1 === 'time_start' || key1 === 'time_end') {
+        newReport[key2] = this[key1].format();
+      } else if(key1 === 'technician') {
+        newReport[key2] = tech.getTechName();
+      } else {
+        newReport[key2] = this[key1] || tech[key2];
+      }
+      newReport['username'] = tech['avatarName'];
+    }
+    // newReport['timeStarts']     = this.time_start.format()        ;
+    // newReport['timeEnds']       = this.time_end.format()          ;
+    // newReport['repairHrs']      = this.repair_hours               ;
+    // newReport['shiftSerial']    = this.shift_serial               ;
+    // newReport['payrollPeriod']  = this.payroll_period             ;
+    // newReport['uNum']           = this.unit_number                ;
+    // newReport['wONum']          = this.work_order_number          ;
+    // newReport['notes']          = this.notes                      ;
+    // newReport['rprtDate']       = this.report_date                ;
+    // newReport['timeStamp']      = this.timestamp                  ;
+    // newReport['training_time']  = this.training_time              ;
+    // newReport['lastName']       = tech.lastName                   ;
+    // newReport['firstName']      = tech.firstName                  ;
+    // newReport['client']         = tech.client                     ;
+    // newReport['location']       = tech.location                   ;
+    // newReport['locID']          = tech.locID                      ;
+    // newReport['loc2nd']         = tech.loc2nd                     ;
+    // newReport['shift']          = tech.shift                      ;
+    // newReport['shiftLength']    = tech.shiftLength                ;
+    // newReport['shiftStartTime'] = tech.shiftStartTime             ;
+    // newReport['technician']     = tech.getTechName()              ;
+    // newReport['username']       = tech.avatarName;
+    return newReport;
+  }
+
+  // public serialize(tech:Employee) {
+  //   Log.l("WorkOrder.serialize(): Now serializing report...");
+  //   return this.createReport(tech);
+  // }
 
   public getRepairHours() {
     let val = this.repair_hours || 0;

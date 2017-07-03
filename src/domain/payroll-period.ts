@@ -159,7 +159,7 @@ export class PayrollPeriod {
           thisShift.updateShiftNumber();
           thisShift.getExcelDates();
           shifts.push(thisShift);
-          Log.l(`createPayrollPeriodShiftsForTech(): Now adding day ${i}: ${moment(shift_day).format()} `);
+          // Log.l(`createPayrollPeriodShiftsForTech(): Now adding day ${i}: ${moment(shift_day).format()} `);
         }
       }
       this.shifts = shifts;
