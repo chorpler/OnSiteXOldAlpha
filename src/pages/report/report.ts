@@ -171,6 +171,29 @@ export class ReportPage implements OnInit {
 
       }
       this.thisWorkOrderContribution = this.workOrder.getRepairHours() || 0;
+      if (this.navParams.get('reportOther') !== undefined) {
+        this.reportOther = this.navParams.get('reportOther');
+      } else {
+        this.reportOther  = new ReportOther()           ;
+        let ro            = this.reportOther            ;
+        let tech          = this.techProfile            ;
+        let now           = moment()                    ;
+        let shift         = this.selectedShift          ;
+        ro.timestamp      = now.format()                ;
+        ro.timestampX     = now.toExcel()               ;
+        ro.first_name     = tech.firstName              ;
+        ro.last_name      = tech.lastName               ;
+        ro.username       = tech.avatarName             ;
+        ro.client         = tech.client                 ;
+        ro.location       = tech.location               ;
+        ro.location_2     = tech.loc2nd                 ;
+        ro.location_id    = tech.locID                  ;
+        ro.payroll_period = shift.getPayrollPeriod()    ;
+        ro.shift_serial   = shift.getShiftSerial()      ;
+        let date          = shift.getStartTime()        ;
+        ro.report_date    = moment(date).startOf('day') ;
+      }
+
       this.initializeForm();
       this._type            = this.workOrderForm.controls['type'           ] ;
       this._training_type   = this.workOrderForm.controls['training_type'  ] ;
