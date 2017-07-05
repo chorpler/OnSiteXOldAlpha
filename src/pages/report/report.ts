@@ -6,13 +6,13 @@ import { LoadingController, PopoverController, ModalController } from 'ionic-ang
 import { DBSrvcs                                               } from '../../providers/db-srvcs'          ;
 import { SrvrSrvcs                                             } from '../../providers/srvr-srvcs'        ;
 import { AuthSrvcs                                             } from '../../providers/auth-srvcs'        ;
-import { TimeSrvc                                              } from '../../providers/time-parse-srvc'   ;
-import { ReportBuildSrvc                                       } from '../../providers/report-build-srvc' ;
 import { AlertService                                          } from '../../providers/alerts'            ;
-import { Log                                                   } from '../../config/config.functions'     ;
+import { Log, moment, Moment                                   } from '../../config/config.functions'     ;
 import { PayrollPeriod                                         } from '../../domain/payroll-period'       ;
 import { Shift                                                 } from '../../domain/shift'                ;
 import { WorkOrder                                             } from '../../domain/workorder'            ;
+import { Employee                                              } from '../../domain/employee'             ;
+import { ReportOther                                           } from '../../domain/reportother'          ;
 import { Status                                                } from '../../providers/status'            ;
 import { UserData                                              } from '../../providers/user-data'         ;
 import { sprintf                                               } from 'sprintf-js'                        ;
@@ -20,8 +20,7 @@ import { STRINGS                                               } from '../../con
 import { Preferences                                           } from '../../providers/preferences'       ;
 import { TabsComponent                                         } from '../../components/tabs/tabs'        ;
 import { TranslateService                                      } from '@ngx-translate/core'               ;
-import { REPORTTYPE, TRAININGTYPE                              } from '../../config/report.object'        ;
-import * as moment from 'moment'                                                                          ;
+import { REPORTTYPEI18N, TRAININGTYPEI18N, JOBSITESI18N        } from '../../config/report.object'        ;
 import 'rxjs/add/operator/debounceTime'                                                                   ;
 
 
@@ -40,9 +39,11 @@ export class ReportPage implements OnInit {
   setDate                   : Date             = new Date()                 ;
   year                      : number           = this.setDate.getFullYear() ;
   mode                      : string           = 'Add'                      ;
+  type                      : any = REPORTTYPEI18N[0]                       ;
   workOrderForm             : FormGroup                                     ;
   workOrder                 : any                                           ;
   workOrderReport           : any                                           ;
+  reportOther               : ReportOther      = null                       ;
   repairHrs                 : any                                           ;
   profile                   : any              = {}                         ;
   tmpReportData             : any                                           ;
@@ -80,6 +81,11 @@ export class ReportPage implements OnInit {
   _shift                    : any                                           ;
   _selected_shift           : any                                           ;
   _notes                    : any                                           ;
+  _type                     : any                                           ;
+  _training_type            : any                                           ;
+  _training_time            : any                                           ;
+  _travel_location          : any                                           ;
+  _time                     : any                                           ;
   userdata                  : any                                           ;
   shiftDateOptions          : any                                           ;
   dataReady                 : boolean          = false                      ;
@@ -89,22 +95,17 @@ export class ReportPage implements OnInit {
   selectedShiftText         : string           = ""                         ;
   workOrderList             : any                                           ;
   filteredWOList            : any                                           ;
-  selReportType             : string[] = REPORTTYPE                         ;
-  type                      : string                                        ;
-  _type                     : any                                           ;
-  selTrainingType           : string[] = TRAININGTYPE                       ;
-  training_type             : string = ""                                   ;
-  _training_type            : any                                           ;
-  _training_time            : any                                           ;
-
+  selReportType             : Array<any> = REPORTTYPEI18N                   ;
+  selTrainingType           : Array<any> = TRAININGTYPEI18N                 ;
+  training_type             : any = null                                    ;
+  selTravelLocation         : Array<any> = JOBSITESI18N                     ;
+  travel_location           : any = null                                    ;
 
   constructor(
     public navCtrl      : NavController,
     public navParams    : NavParams,
     private db          : DBSrvcs,
     public server       : SrvrSrvcs,
-    private timeSrvc    : TimeSrvc,
-    public reportBuilder: ReportBuildSrvc,
     public loadingCtrl  : LoadingController,
     public alert        : AlertService,
     public modal        : ModalController,
@@ -152,13 +153,14 @@ export class ReportPage implements OnInit {
     this.shifts = [];
     this.db.getTechProfile().then((res) => {
       Log.l(`ReportPage: Success getting tech profile! Result:\n`, res);
-      this.techProfile = res;
-      if (this.mode === 'Add') {
+      this.techProfile = new Employee();
+      this.techProfile.readFromDoc(res);
+      if (this.mode === 'Add' || this.mode === 'Añadir') {
         this.workOrder = new WorkOrder();
       }
       this.setupShifts();
       this.updateActiveShiftWorkOrders(this.selectedShift);
-      if (this.mode === 'Add') {
+      if (this.mode === 'Add' || this.mode === 'Añadir') {
         let startTime = moment(this.selectedShift.start_time);
         let addTime = this.selectedShift.getShiftHours();
         let newStartTime = moment(startTime).add(addTime, 'hours');
@@ -168,32 +170,84 @@ export class ReportPage implements OnInit {
 
       }
       this.thisWorkOrderContribution = this.workOrder.getRepairHours() || 0;
+
+      if (this.navParams.get('reportOther') !== undefined) {
+        this.reportOther = this.navParams.get('reportOther');
+      } else {
+        this.reportOther = new ReportOther();
+        let ro = this.reportOther;
+        let tech = this.techProfile;
+        let now = moment();
+        let shift = this.selectedShift;
+        ro.timestamp      = now.format()                          ;
+        ro.timestampX     = now.toExcel()                         ;
+        ro.first_name     = tech.firstName                        ;
+        ro.last_name      = tech.lastName                         ;
+        ro.username       = tech.avatarName                       ;
+        ro.client         = tech.client                           ;
+        ro.location       = tech.location                         ;
+        ro.location_2     = tech.loc2nd                           ;
+        ro.location_id    = tech.locID                            ;
+        ro.payroll_period = shift.getPayrollPeriod()              ;
+        ro.shift_serial   = shift.getShiftSerial()                ;
+        let date          = shift.getStartTime()                  ;
+        ro.report_date    = moment(date).startOf('day')           ;
+      }
+
       this.initializeForm();
-      this._training_time = this.workOrderForm.controls['training_time' ] ;
-      this._type          = this.workOrderForm.controls['type'          ] ;
-      this._training_type = this.workOrderForm.controls['training_type' ] ;
+      this._type            = this.workOrderForm.controls['type'           ] ;
+      this._training_type   = this.workOrderForm.controls['training_type'  ] ;
+      this._training_time   = this.workOrderForm.controls['training_time'  ] ;
+      this._travel_location = this.workOrderForm.controls['travel_location'] ;
+      this._time            = this.workOrderForm.controls['time'           ] ;
+      this._endTime         = this.workOrderForm.controls['endTime'        ] ;
+      this._repairHours     = this.workOrderForm.controls['repair_time'    ] ;
+      this._selected_shift  = this.workOrderForm.controls['selected_shift' ] ;
+      this._notes           = this.workOrderForm.controls['notes'          ] ;
 
-      this._endTime = this.workOrderForm.controls.endTime;
-      this._repairHours = this.workOrderForm.controls.repair_time;
-      this._selected_shift = this.workOrderForm.controls.selected_shift;
-      this._notes = this.workOrderForm.controls.notes;
-
-      this._type.valueChanges.subscribe((value: any) => { this.type = value; });
+      this._type.valueChanges.subscribe((value: any) => {
+        this.type = value;
+        let ro = this.reportOther;
+        if(value.name !== 'work_report') {
+          ro.type = value.value;
+        }
+        if(value.name === 'training') {
+          ro.training_type = "Safety";
+          ro.time = 2;
+          this._training_type.setValue(TRAININGTYPEI18N[0]);
+          this.training_type = TRAININGTYPEI18N[0];
+          this._time.setValue(2);
+        } else if(value.name === 'travel') {
+          ro.travel_location = "BE MDL MNSHOP";
+          ro.time     = 6;
+          this.travel_location = JOBSITESI18N[0];
+          this._travel_location.setValue(JOBSITESI18N[0]);
+          this._time.setValue(6);
+        }
+       });
       this._training_type.valueChanges.subscribe((value: any) => {
+        let ro = this.reportOther;
         this.training_type = value;
-        let time =  value === 'SAFETY'         ? 2  :
-                    value === 'PEC'            ? 8  :
-                    value === 'FORKLIFT'       ? 3  :
-                    value === 'OVERHEAD CRANE' ? 10 : 0;
-        this._training_time.setValue(time);
+        ro.training_type   = value.value;
+        let time = value.hours;
+        ro.time = time;
+        this._time.setValue(time);
       });
-      this._training_time.valueChanges.subscribe((value: any) => { this.workOrder.training_time = value; });
+      this._travel_location.valueChanges.subscribe((value: any) => {
+        let ro = this.reportOther;
+        this.travel_location = value;
+        ro.travel_location   = value.value;
+        let time = value.hours;
+        ro.time = time;
+        this._time.setValue(time);
+      });
+      this._time.valueChanges.subscribe((value: any) => { this.reportOther.time = value; });
       this.workOrderForm.valueChanges.debounceTime(500).subscribe((value: any) => {
         Log.l("workOrderForm: valueChanges fired for:\n", value);
         let notes = value.notes;
-        let unit = value.uNum;
-        let woNum = value.woNum;
-        let fields = [['notes', 'notes'], ['wONum', 'work_order_number'], ['uNum', 'unit_number']];
+        let unit = value.unit_number;
+        let woNum = value.work_order_number;
+        let fields = [['notes', 'notes'], ['work_order_number', 'work_order_number'], ['unit_number', 'unit_number']];
         let len = fields.length;
         for (let i = 0; i < len; i++) {
           let key1 = fields[i][0];
@@ -228,6 +282,7 @@ export class ReportPage implements OnInit {
         let woHoursSoFar = shift.getShiftHours();
         let woStart = moment(shift.getStartTime()).add(woHoursSoFar, 'hours');
         this.workOrder.setStartTime(woStart);
+        this.reportOther.report_date = rprtDate;
 
         this.workOrderForm.controls.report_date.setValue(rprtDate.format("YYYY-MM-DD"));
       });
@@ -242,7 +297,7 @@ export class ReportPage implements OnInit {
   private initializeForm() {
     let wo = this.workOrder;
     let ts, rprtDate;
-    if (this.mode == 'Add') {
+    if (this.mode === 'Add' || this.mode === 'Añadir') {
       rprtDate = moment(this.selectedShift.getStartTime());
       ts = moment().format();
     } else {
@@ -258,9 +313,10 @@ export class ReportPage implements OnInit {
       'notes'             : new FormControl(wo.notes                          , Validators.required) ,
       'report_date'       : new FormControl(rprtDate.format("YYYY-MM-DD")     , Validators.required) ,
       'timestamp'         : new FormControl({ value: ts, disabled: true }     , Validators.required) ,
-      'type'              : new FormControl(wo.type                           , Validators.required) ,
-      'training_type'     : new FormControl(wo.training_type                  , Validators.required) ,
-      'training_time'     : new FormControl( 2                                , Validators.required) ,
+      'type'              : new FormControl(this.type                         , Validators.required) ,
+      'training_type'     : new FormControl(null                              , Validators.required) ,
+      'travel_location'   : new FormControl(null                              , Validators.required) ,
+      'time'              : new FormControl(null                              , Validators.required) ,
     });
   }
 
@@ -301,7 +357,7 @@ export class ReportPage implements OnInit {
       this.period = this.payrollPeriods[0];
       this.shifts = this.period.getPayrollShifts();
     }
-    if (this.mode === 'Add') {
+    if (this.mode === 'Add' || this.mode === 'Añadir') {
       if(this.shiftToUse !== null) {
         this.selectedShift = this.shiftToUse;
       } else {
@@ -352,7 +408,7 @@ export class ReportPage implements OnInit {
     if (ss !== undefined && ss !== null) {
       let total = this.shiftSavedHours + this.currentRepairHours - this.thisWorkOrderContribution;
       let target = Number(this.techProfile.shiftLength);
-      Log.l(`getShiftHoursStatus(): total = ${total}, target = ${target}.`);
+      // Log.l(`getShiftHoursStatus(): total = ${total}, target = ${target}.`);
       if (total < target) {
         return 'darkred';
       } else if(total > target) {
@@ -366,7 +422,13 @@ export class ReportPage implements OnInit {
   }
 
   onSubmit() {
-    this.processWO();
+    let form = this.workOrderForm.getRawValue();
+    let type = form.type;
+    if(type === null || type === undefined || type === 'Work Order') {
+      this.processWO();
+    } else {
+      this.processAlternateWO();
+    }
   }
 
   genReportID() {
@@ -380,14 +442,14 @@ export class ReportPage implements OnInit {
   convertFormToWorkOrder() {
     let sWO = this.workOrderForm.getRawValue();
     let wo = this.workOrder;
-
   }
 
   processWO() {
     let workOrderData = this.workOrderForm.getRawValue();
-    this.alert.showSpinner("Saving report...");
+    let lang = this.translate.instant(['spinner_saving_report', 'error', 'error_saving_report_message']);
+    this.alert.showSpinner(lang['spinner_saving_report']);
     let tempWO = this.createReport();
-    if (this.mode === 'Add') {
+    if (this.mode === 'Add' || this.mode === 'Añadir') {
       this.db.addDoc(this.prefs.DB.reports, tempWO).then((res) => {
         Log.l("processWO(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
         return this.db.syncSquaredToServer(this.prefs.DB.reports);
@@ -399,7 +461,7 @@ export class ReportPage implements OnInit {
         Log.l("processWO(): Error saving work order to local database.");
         Log.e(err);
         this.alert.hideSpinner();
-        this.alert.showAlert('ERROR', 'Error saving work report. Please try again later.');
+        this.alert.showAlert(lang['error'], lang['error_saving_report_message']);
       });
     } else {
       tempWO._rev = this.workOrder._rev;
@@ -415,14 +477,38 @@ export class ReportPage implements OnInit {
         Log.l("processWO(): Error saving work order to local database.");
         Log.e(err);
         this.alert.hideSpinner();
-        this.alert.showAlert('ERROR', 'Error saving work report. Please try again later.');
+        this.alert.showAlert(lang['error'], lang['error_saving_report_message']);
       });
     }
   }
 
+  processAlternateWO() {
+    let lang = this.translate.instant(['spinner_saving_report', 'error', 'error_saving_report_message']);
+    this.alert.showSpinner(lang['spinner_saving_report']);
+    let doc = this.workOrderForm.getRawValue();
+    // let newReport = new ReportOther().readFromDoc(doc);
+    let newReport = this.reportOther;
+    Log.l("processAlternateWO(): Read new ReportOther:\n", newReport);
+    let newDoc = newReport.serialize(this.techProfile);
+    Log.l("processAlternateWO(): Serialized ReportOther to:\n", newDoc);
+    this.db.saveReportOther(newDoc).then(res => {
+      Log.l("processAltnerateWO(): Done saving ReportOther!");
+      this.alert.hideSpinner();
+      if(this.mode === 'Add') {
+        this.tabs.goToPage('OnSiteHome');
+      } else {
+        this.tabs.goToPage('ReportHistory');
+      }
+    }).catch(err => {
+      Log.l("processAlternateWO(): Error saving ReportOther!");
+      Log.e(err);
+      this.alert.showAlert(lang['error'], lang['error_saving_report_message']);
+    });
+  }
+
   cancel() {
     Log.l("ReportPage: User canceled work order.");
-    if (this.mode === 'Add') {
+    if (this.mode === 'Add' || this.mode === 'Añadir') {
       this.tabs.goToPage('OnSiteHome');
     } else {
       this.tabs.goToPage('ReportHistory');
@@ -437,45 +523,6 @@ export class ReportPage implements OnInit {
       this.workOrder[propName] = property;
     }
     return this.workOrder.serialize(this.techProfile);
-    // Log.l("createReport(): timestamp moment is now:\n", ts);
-    // let XLDate = moment([1900, 0, 1]);
-    // let xlStamp = ts.diff(XLDate, 'days', true) + 2;
-    // partialReport.timeStamp = xlStamp;
-    // console.log("processWO() has initial partialReport:");
-    // console.log(partialReport);
-    // let newReport: any = {};
-    // let newID = this.genReportID();
-    // if (this.mode !== 'Add') {
-    //   newID = wo._id;
-    // }
-    // if (this.mode === 'Edit') {
-    //   newReport._rev = wo._rev;
-    // }
-    // newReport._id            = newID                           ;
-    // newReport.timeStarts     = wo.time_start.format()          ;
-    // newReport.timeEnds       = wo.time_end.format()            ;
-    // newReport.repairHrs      = wo.repair_hours                 ;
-    // newReport.shiftSerial    = wo.shift_serial                 ;
-    // newReport.payrollPeriod  = wo.payroll_period               ;
-    // newReport.uNum           = partialReport.unit_number       ;
-    // newReport.wONum          = partialReport.work_order_number ;
-    // newReport.notes          = partialReport.notes             ;
-    // newReport.rprtDate       = partialReport.report_date       ;
-    // newReport.timeStamp      = partialReport.timeStamp         ;
-    // newReport.training_time  = partialReport.training_time     ;
-    // newReport.lastName       = this.techProfile.lastName       ;
-    // newReport.firstName      = this.techProfile.firstName      ;
-    // newReport.client         = this.techProfile.client         ;
-    // newReport.location       = this.techProfile.location       ;
-    // newReport.locID          = this.techProfile.locID          ;
-    // newReport.loc2nd         = this.techProfile.loc2nd         ;
-    // newReport.shift          = this.techProfile.shift          ;
-    // newReport.shiftLength    = this.techProfile.shiftLength    ;
-    // newReport.shiftStartTime = this.techProfile.shiftStartTime ;
-    // newReport.technician     = this.techProfile.technician     ;
-    // newReport.username       = this.techProfile.avatarName     ;
-    // this.workOrderReport     = newReport                       ;
-    // return newReport;
   }
 
   deleteWorkOrder(event, item) {
@@ -492,7 +539,7 @@ export class ReportPage implements OnInit {
           Log.l("deleteWorkOrder(): Success:\n", res);
           Log.l("Going to delete work order %d in the list.", i);
           reports.splice(i, 1);
-          if (this.mode === 'Add') {
+          if (this.mode === 'Add' || this.mode === 'Añadir') {
             this.alert.hideSpinner();
             this.tabs.goToPage('OnSiteHome');
           } else {

@@ -1,5 +1,4 @@
-import * as moment from 'moment';
-import { Log, isMoment } from '../config/config.functions';
+import { Log, isMoment, Moment, moment } from '../config/config.functions';
 import { sprintf } from 'sprintf-js';
 import { Employee } from './employee';
 
@@ -30,7 +29,6 @@ export const fields = [
   [ "username"          , "username"       ] ,
   [ "shift_serial"     ,  "shift_serial"   ] ,
   [ "payroll_period"   ,  "payroll_period" ] ,
-  [ "_id"               , "_id"            ] ,
   [ "_id"               , "_id"            ] ,
   [ "_rev"              , "_rev"           ] ,
 ];
@@ -99,8 +97,8 @@ export class WorkOrder {
   public readFromDoc(doc:any) {
     let len = fields.length;
     for(let i = 0; i < len; i++) {
-      let docKey  = fields[i][0];
-      let thisKey = fields[i][1];
+      let thisKey = fields[i][0];
+      let docKey  = fields[i][1];
       this[thisKey] = doc[docKey];
     }
     this.time_start = moment(this.time_start);

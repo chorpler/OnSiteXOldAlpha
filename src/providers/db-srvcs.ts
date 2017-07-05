@@ -9,7 +9,6 @@ import { AuthSrvcs         } from './auth-srvcs'                ;
 import { AlertService      } from './alerts'                    ;
 import { SrvrSrvcs         } from './srvr-srvcs'                ;
 import { UserData          } from './user-data'                 ;
-import { PREFS             } from '../config/config.strings'    ;
 import { Preferences       } from './preferences'               ;
 
 export const noDD = "_\uffff";
@@ -136,8 +135,8 @@ export class DBSrvcs {
   syncSquaredToServer(dbname: string) {
     Log.l(`syncSquaredToServer(): About to attempt replication of '${dbname}'->remote`);
     let ev2 = function(b) { Log.l(b.status); Log.l(b);};
-    let db1 = DBSrvcs.addDB(dbname);
-    let db2 = DBSrvcs.addRDB(dbname);
+    let db1 = this.addDB(dbname);
+    let db2 = this.addRDB(dbname);
     // var done = DBSrvcs.StaticPouchDB.replicate(db1, db2, DBSrvcs.repopts);
     return new Promise((resolve, reject) => {
       db1.replicate.to(db2, this.prefs.SERVER.repopts).then((res) => {
@@ -445,5 +444,35 @@ export class DBSrvcs {
       Log.e(err);
     });
   }
+
+  public saveReportOther(report: any) {
+    return new Promise((resolve, reject) => {
+      let db1 = this.addDB(this.prefs.DB.reports_other);
+      db1.upsert(report._id, (doc) => {
+        let id = doc['_id'] || null;
+        let rev = doc['_rev'] || null;
+        doc = report;
+        if(id) { doc['_id'] = id; }
+        if(rev) { doc['_rev'] = rev; }
+        return doc;
+      }).then(res => {
+        Log.l("saveReportOther(): Save ReportOther via upsert, result:\n", res);
+        if(!res.ok && !res.updated) {
+          reject(res);
+        } else {
+          return this.syncSquaredToServer(this.prefs.DB.reports_other);
+        }
+      }).then(res => {
+        Log.l("saveReportOther(): Done synchronizing ReportOther to server.");
+        resolve(res);
+      }).catch(err => {
+        Log.l("saveReportOther(): Error saving report:\n", report);
+        Log.e(err);
+        reject(err);
+      })
+    });
+  }
+
+
 
 }

@@ -34,6 +34,7 @@ export class ReportHistory implements OnInit {
   public period       : PayrollPeriod = null                                                            ;
   public filtReports  : any = {}                                                                        ;
   public filterKeys   : Array<string>                                                                   ;
+  public filtOther    : any = {}                                                                        ;
   public data         : any                                                                             ;
   public loading      : any                                                                             ;
   public static PREFS : any              = new Preferences()                                            ;
@@ -64,9 +65,8 @@ export class ReportHistory implements OnInit {
     if(this.navParams.get('shift') !== undefined) { this.shiftToUse = this.navParams.get('shift');}
     if (this.navParams.get('payroll_period') !== undefined) { this.period = this.navParams.get('payroll_period');}
     this.periods = this.ud.getPayrollPeriods();
-    let lang = this.translate.instant(['spinner_retrieving_reports', 'error', 'error_server_connect_message']);
+    let lang = this.translate.instant(['spinner_retrieving_reports', 'spinner_retrieving_reports_other', 'error', 'error_server_connect_message']);
     this.alert.showSpinner(lang['spinner_retrieving_reports']);
-    // this.
     if(this.shiftToUse !== null) {
       Log.l("ReportHistory: Showing only shift:\n", this.shiftToUse);
       this.shifts = [this.shiftToUse];
@@ -81,25 +81,15 @@ export class ReportHistory implements OnInit {
         for(let shift of periodShifts) {
           this.shifts.push(shift);
         }
-        // let shifts = this.shifts;
-        // let shifts = [...this.shifts, ...periodShifts];
-        // this.shifts = shifts;
       }
       Log.l("ReportHistory: Ended up with all shifts:\n", this.shifts);
     }
-    // for(let shift of this.shifts) {
-    //   let date = shift.getStartTime().format("YYYY-MM-DD");
-    //   this.filterKeys.push(date);
-    // }
-    // this.reports = this.ud.getWorkOrderList();
-    // this.pageReady = true;
     let u = this.ud.getUsername();
     let sortReports = function(a,b) {
       let startA = a['time_start'];
       let startB = b['time_start'];
       if (isMoment(a) && isMoment(b)) {
-        let val = moment(a).isBefore(moment(b)) ? -1 : moment(a).isAfter(moment(b)) ? 1 : 0;
-        return val;
+        return moment(a).isBefore(moment(b)) ? -1 : moment(a).isAfter(moment(b)) ? 1 : 0;
       } else {
         return 0;
       }
@@ -109,17 +99,28 @@ export class ReportHistory implements OnInit {
       let unsortedReports = res;
       this.ud.setWorkOrderList(res);
       this.reports = unsortedReports.sort(sortReports);
+      Log.l("ReportHistory: created date-sorted report list:\n", this.reports);
+      this.alert.hideSpinner();
+      this.alert.showSpinner(lang['spinner_retrieving_reports_other']);
+      return this.server.getReportsOtherForTech(u);
+    }).then(res => {
+      Log.l("ReportHistory: pulled ReportOther for tech:\n", res);
       this.filtReports = {};
       this.filterKeys = [];
       for(let shift of this.shifts) {
         let date = shift.getStartTime().format("YYYY-MM-DD");
         this.filterKeys.push(date);
         let serial = shift.getShiftSerial();
-        // let oneReportSet = this.ud.getWorkOrdersForShift(serial);
-        let oneReportSet = shift.getShiftReports()
+        let oneReportSet = shift.getShiftReports();
+        let reportOthers = res.sort(sortReports);
         this.filtReports[date] = oneReportSet;
+        for(let report of this.reports) {
+          this.filtReports[date].push(report);
+        }
+        for(let other of reportOthers) {
+          this.filtReports[date].push(other);
+        }
       }
-      Log.l("ReportHistory: created date-sorted report list:\n", this.filtReports);
       this.alert.hideSpinner();
       this.pageReady = true;
     }).catch(err => {
@@ -128,35 +129,6 @@ export class ReportHistory implements OnInit {
       let lang = ['error_fetching_reports_title', 'error_fetching_reports_message'];
       this.alert.showAlert(lang['error_fetching_reports_title'], lang['error_fetching_reports_message']);
     });
-    // this.server.getReportsForTech(u).then((res) => {
-    //   Log.l("ReportHistory: Got report list:\n", res);
-    //   let unsortedReports = res;
-    //   this.reports = unsortedReports.sort(sortReports);
-    //   if (this.shiftToUse !== null) {
-    //     Log.l("ReportHistory: Showing only shift:\n", this.shiftToUse);
-    //     this.shifts = [this.shiftToUse];
-    //   } else {
-    //     Log.l("ReportHistory: Showing all shifts.");
-    //     this.shifts = this.ud.getPeriodShifts();
-    //   }
-    //   this.filtReports = {};
-    //   for(let shift of this.shifts) {
-    //     let date = shift.getStartTime().format("YYYY-MM-DD");
-    //     this.filterKeys.push(date);
-    //     let serial = shift.getShiftSerial();
-    //     let oneReportSet = this.ud.getWorkOrdersForShift(serial);
-    //     this.filtReports[date] = oneReportSet;
-    //   }
-    //   Log.l("ReportHistory: created date-sorted report list:\n", this.filtReports);
-    //   this.alert.hideSpinner();
-    //   // this.zone.run(() => { this.pageReady = true; });
-    //   this.pageReady = true;
-    // }).catch((err) => {
-    //   Log.l("ReportHistory: Error getting report list.");
-    //   Log.e(err);
-    //   this.alert.hideSpinner();
-    //   this.alert.showAlert(lang['error'], lang['error_server_connect_message']);
-    // });
   }
 
   itemTapped(event, item) {
@@ -170,11 +142,6 @@ export class ReportHistory implements OnInit {
       }
     }
     this.tabs.goToPage('Report', {mode: 'Edit', workOrder: item, shift: shiftToSend, payroll_period: this.period});
-    // if(this.shiftToUse) {
-    //   this.tabs.goToPage('Report', {mode: 'Edit', workOrder: item, shift: this.shifttoUse, period: this.period});
-    // } else {
-    //   this.tabs.goToPage('Report', {mode: 'Edit', workOrder: item});
-    // }
   }
 
   deleteWorkOrder(event, item) {

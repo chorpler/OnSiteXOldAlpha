@@ -4,6 +4,7 @@ import 'rxjs/add/operator/map'                                ;
 import { PouchDBService } from '../providers/pouchdb-service' ;
 import { Log          }     from '../config/config.functions' ;
 import { WorkOrder } from '../domain/workorder'               ;
+import { ReportOther } from '../domain/reportother'           ;
 import { UserData } from '../providers/user-data'             ;
 import { Message } from '../domain/message'                   ;
 import { Preferences } from '../providers/preferences'        ;
@@ -275,19 +276,17 @@ export class SrvrSrvcs {
     return new Promise((resolve, reject) => {
       let u = this.ud.getUsername();
       let p = this.ud.getPassword();
-      // let c = this.ud.getCredentials();
-      // Log.l("getReportsForTech(): Got credentials:\n", c);
       let woArray = new Array<WorkOrder>();
       Log.l("getReportsForTech(): Using database: ", this.prefs.DB.reports);
       this.loginToServer(u, p, this.prefs.DB.login).then((res) => {
         if (res) {
-          let rpdb = this.addRDB(this.prefs.DB.reports);
+          let rdb1 = this.addRDB(this.prefs.DB.reports);
           // let username = tech.username;
           let query = {selector: {username: {$eq: tech}}};
           // query.selector.username['$eq'] = username;
-          rpdb.createIndex({index: {fields: ['username']}}).then((res) => {
+          rdb1.createIndex({index: {fields: ['username']}}).then((res) => {
             Log.l(`getReportsForTech(): index created successfully, now running query...`);
-            return rpdb.find(query);
+            return rdb1.find(query);
           }).then((res) => {
             Log.l(`getReportsForTech(): Got reports for '${tech}':\n`, res);
             let woArray = new Array<WorkOrder>();
@@ -296,6 +295,7 @@ export class SrvrSrvcs {
               wo.readFromDoc(doc);
               woArray.push(wo);
             }
+            Log.l("getReportsForTech(): Returning final reports array:\n", woArray);
             resolve(woArray);
           }).catch((err) => {
             Log.l(`getReportsForTech(): Error getting reports for '${tech}'.`);
@@ -307,6 +307,46 @@ export class SrvrSrvcs {
         }
       }).catch((err) => {
         Log.l("getReportsForTech(): Error logging in to server.")
+        Log.e(err);
+        resolve(woArray);
+      });
+    });
+  }
+
+  getReportsOtherForTech(tech:string):Promise<Array<ReportOther>> {
+    return new Promise((resolve, reject) => {
+      let u = this.ud.getUsername();
+      let p = this.ud.getPassword();
+      // let c = this.ud.getCredentials();
+      // Log.l("getReportsForTech(): Got credentials:\n", c);
+      let woArray = new Array<ReportOther>();
+      Log.l("getReportsOtherForTech(): Using database: ", this.prefs.DB.reports_other);
+      this.loginToServer(u, p, this.prefs.DB.login).then((res) => {
+        if (res) {
+          let rdb1 = this.addRDB(this.prefs.DB.reports_other);
+          let query = {selector: {username: {$eq: tech}}};
+          rdb1.createIndex({index: {fields: ['username']}}).then((res) => {
+            Log.l(`getReportsOtherForTech(): index created successfully, now running query...`);
+            return rdb1.find(query);
+          }).then((res) => {
+            Log.l(`getReportsOtherForTech(): Got reports for '${tech}':\n`, res);
+            let woArray = new Array<ReportOther>();
+            for(let doc of res.docs) {
+              let report = new ReportOther();
+              report.readFromDoc(doc);
+              woArray.push(report);
+            }
+            resolve(woArray);
+          }).catch((err) => {
+            Log.l(`getReportsOtherForTech(): Error getting reports for '${tech}'.`);
+            Log.l(err);
+            resolve(woArray);
+          });
+        } else {
+          resolve(woArray);
+        }
+      }).catch((err) => {
+        Log.l("getReportsOtherForTech(): Error logging in to server.")
         Log.e(err);
         resolve(woArray);
       });

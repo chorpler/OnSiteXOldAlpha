@@ -263,7 +263,11 @@ export class Shift {
   getTotalShiftHours() {
     let total = 0;
     for(let report of this.shift_reports) {
-      total += report.getRepairHours();
+      if(report.type === 'Work Report') {
+        total += report.getRepairHours();
+      } else {
+       /* ToDo(2017-07-05): Ask Mike if miscellaneous reports should count for shift hours, or what */
+      }
     }
     return total;
   }
@@ -271,10 +275,13 @@ export class Shift {
   getTotalPayrollHoursForShift() {
     let shiftTotal = 0, bonusHours = 0, countsForBonusHours = 0;
     for (let report of this.shift_reports) {
-      let subtotal = report.getRepairHours();
-      shiftTotal += subtotal;
-      if (report.client !== "SESA") {
-        countsForBonusHours += subtotal;
+      if(report.type === 'Work Report') {
+        let subtotal = report.getRepairHours();
+        shiftTotal += subtotal;
+        if (report.client !== "SESA") {
+          countsForBonusHours += subtotal;
+        }
+
       }
     }
     if (countsForBonusHours >= 8 && countsForBonusHours <= 11) {

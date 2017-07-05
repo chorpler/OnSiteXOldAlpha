@@ -1,0 +1,133 @@
+import * as moment from 'moment';
+import { Log, isMoment } from '../config/config.functions';
+import { sprintf } from 'sprintf-js';
+import { Employee } from './employee';
+
+export const fields = [
+  "type",
+  "training_type",
+  "travel_location",
+  "time",
+  "notes",
+  "report_date",
+  "last_name",
+  "first_name",
+  "client",
+  "location",
+  "location_id",
+  "location_2",
+  "timestamp",
+  "timestampX",
+  "username",
+  "shift_serial",
+  "payroll_period",
+  "_id",
+  "_rev",
+];
+
+export class ReportOther {
+  public type             : string;
+  public training_type    : string;
+  public travel_location  : string;
+  public time             : any;
+  public notes            : any;
+  public report_date      : any;
+  public last_name        : any;
+  public first_name       : any;
+  public client           : any;
+  public location         : any;
+  public location_id      : any;
+  public location_2       : any;
+  public timestamp        : any;
+  public timestampX       : any;
+  public username         : any;
+  public shift_serial     : any;
+  public payroll_period   : any;
+  public _id              : any;
+  public _rev             : any;
+
+  constructor() {
+    this.type              = ""                    ;
+    this.training_type     = ""                    ;
+    this.time              = ""                    ;
+    this.notes             = ""                    ;
+    this.report_date       = ""                    ;
+    this.last_name         = ""                    ;
+    this.first_name        = ""                    ;
+    this.client            = ""                    ;
+    this.location          = ""                    ;
+    this.location_id       = ""                    ;
+    this.location_2        = ""                    ;
+    this.shift_serial      = ""                    ;
+    this.timestamp         = ""                    ;
+    this.timestampX        = ""                    ;
+    this.username          = ""                    ;
+    this.shift_serial      = ""                    ;
+    this.payroll_period    = ""                    ;
+    this._id               = ""                    ;
+    this._rev              = ""                    ;
+  }
+
+  public readFromDoc(doc:any) {
+    let len = fields.length;
+    for(let i = 0; i < len; i++) {
+      let docKey  = fields[i][0];
+      let thisKey = fields[i][1];
+      this[thisKey] = doc[docKey];
+    }
+    this.report_date = moment(this.report_date)    ;
+    this.timestampX  = moment(this.timestampX)     ;
+    return this;
+  }
+
+  public genReportID(tech:Employee) {
+    let now = moment();
+    let idDateTime = now.format("YYYYMMDDHHmmss_ddd");
+    let docID = tech.avatarName + '_' + idDateTime;
+    Log.l("genReportID(): Generated ID:\n", docID);
+    return docID;
+  }
+
+  public serialize(tech:Employee) {
+    Log.l("ReportOther.serialize(): Now serializing report...");
+    // let ts = moment(this.timestamp);
+    // Log.l("WorkOrder.serialize(): timestamp moment is now:\n", ts);
+    // let XLDate = moment([1900, 0, 1]);
+    // let xlStamp = ts.diff(XLDate, 'days', true) + 2;
+    // this.timestamp = xlStamp;
+    let newReport = {};
+    this._id = this._id || this.genReportID(tech);
+    let len = fields.length;
+    for(let i = 0; i < len; i++) {
+      let key = fields[i];
+      if(key === 'report_date') {
+        newReport[key] = this[key].format("YYYY-MM-DD");
+      } else if(key === 'technician') {
+        newReport[key] = tech.getTechName();
+      } else {
+        if(this[key] !== undefined && this[key] !== null) {
+          newReport[key] = this[key];
+        } else if(tech[key] !== undefined && tech[key] !== null) {
+          newReport[key] = tech[key];
+        }
+      }
+      newReport['username'] = tech['avatarName'];
+    }
+    return newReport;
+  }
+
+  public clone() {
+    let newWO = new ReportOther();
+    for(let key of fields) {
+      if(moment.isMoment(this[key])) {
+        newWO[key] = moment(this[key]);
+      } else if(typeof this[key] === 'object') {
+        newWO[key] = Object.assign({}, this[key]);
+      } else {
+        newWO[key] = this[key];
+      }
+    }
+    return newWO;
+  }
+
+}

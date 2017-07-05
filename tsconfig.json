@@ -14,8 +14,10 @@
     "target": "es2015"
   },
   "include": [
-    "src/**/*.ts",
-    "node_modules/moment/moment.d.ts"
+    "src/config/config.types.d.ts",
+    "src/**/*.ts"
+    // "node_modules/moment/moment.d.ts"
+
   ],
   "exclude": [
     "node_modules",

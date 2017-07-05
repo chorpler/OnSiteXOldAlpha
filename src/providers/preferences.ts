@@ -14,6 +14,7 @@ import 'rxjs/add/operator/map';
 export class Preferences {
   public static DB: any = {
     'reports': 'reports_ver101100',
+    'reports_other': 'sesa-reports-other',
     'employees': 'sesa-employees',
     'config': 'sesa-config',
     'jobsites': 'sesa-jobsites',
@@ -27,16 +28,16 @@ export class Preferences {
     port: '443',
     protocol: 'https',
     opts: { adapter: 'websql', auto_compaction: true },
-    ropts: { adapter: null, skipSetup: true },
-    cropts: { adapter: null },
+    ropts: { get adapter() { return Preferences.SERVER.protocol; }, skipSetup: true },
+    cropts: { get adapter() { return Preferences.SERVER.protocol; } },
     repopts: { live: false, retry: false },
     ajaxOpts: { headers: { Authorization: '' } },
     remoteDBInfo: {},
     rdbServer: {
-      protocol: null,
-      server: null,
+      get protocol() { return Preferences.SERVER.protocol; },
+      get server() { return Preferences.SERVER.server; },
       opts: {
-        adapter: null,
+        get adapter() { return Preferences.SERVER.protocol; },
         skipSetup: true
       }
     }
@@ -51,12 +52,6 @@ export class Preferences {
   public USER:any = Preferences.USER;
   constructor() {
     window["onsiteprefs"] = this;
-    let protocol = Preferences.SERVER.protocol;
-    Preferences.SERVER.ropts.adapter = protocol;
-    Preferences.SERVER.cropts.adapter = protocol;
-    Preferences.SERVER.rdbServer.protocol = protocol;
-    Preferences.SERVER.rdbServer.server = Preferences.SERVER.server;
-    Preferences.SERVER.rdbServer.opts.adapter = protocol;
   }
 
   getPrefs() {

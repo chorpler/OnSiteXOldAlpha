@@ -21,32 +21,70 @@
         </ion-item-divider>
         <div class="report-history-reports-subcontainer" *ngIf="filtReports[filterKeys[i]].length">
           <ion-item-sliding class="report-history-list-item-sliding" *ngFor="let report of filtReports[filterKeys[i]]">
-            <ion-item class="report-history-list-item" (click)="itemTapped($event, report)">
-              <div class="report-history-report-item">
-                <span class="report-history-report-item-header">{{'hours_header' | translate}}&nbsp;&nbsp;</span>
-                <span class="report-history-report-item-data">{{report.repair_hours}}</span>
-              </div>
-              <div class="report-history-report-item">
-                <span class="report-history-report-item-header">{{'report_label_wo_number' | translate}}&nbsp;&nbsp;</span>
-                <span class="report-history-report-item-data">{{report.work_order_number}}</span>
-              </div>
-              <div class="report-history-report-item">
-                <span class="report-history-report-item-header">{{'report_label_unit_number' | translate}}&nbsp;&nbsp;</span>
-                <span class="report-history-report-item-data">{{report.unit_number}}</span>
-              </div>
-              <div class="report-history-report-notes-item">
-                <span class="report-history-report-item-header">{{'report_label_notes' | translate}}&nbsp;&nbsp;</span>
-                <div class="report-history-notes-data">
-                  <p>{{report.notes}}</p>
+            <div class="report-and-reportother-container" *ngIf="report.type==='Work Report'">
+              <ion-item class="report-history-list-item" (click)="itemTapped($event, report)">
+                <div class="report-history-report-item">
+                  <span class="report-history-report-item-header">{{'hours_header' | translate}}&nbsp;&nbsp;</span>
+                  <span class="report-history-report-item-data">{{report.repair_hours}}</span>
                 </div>
-              </div>
-            </ion-item>
-            <ion-item-options side="right">
-              <button ion-button color="danger" (click)="deleteWorkOrder($event, report)">
-                <ion-icon name="trash"></ion-icon>
-                {{"delete" | translate}}
-              </button>
-            </ion-item-options>
+                <div class="report-history-report-item">
+                  <span class="report-history-report-item-header">{{'report_label_wo_number' | translate}}&nbsp;&nbsp;</span>
+                  <span class="report-history-report-item-data">{{report.work_order_number}}</span>
+                </div>
+                <div class="report-history-report-item">
+                  <span class="report-history-report-item-header">{{'report_label_unit_number' | translate}}&nbsp;&nbsp;</span>
+                  <span class="report-history-report-item-data">{{report.unit_number}}</span>
+                </div>
+                <div class="report-history-report-notes-item">
+                  <span class="report-history-report-item-header">{{'report_label_notes' | translate}}&nbsp;&nbsp;</span>
+                  <div class="report-history-notes-data">
+                    <p>{{report.notes}}</p>
+                  </div>
+                </div>
+              </ion-item>
+              <ion-item-options side="right">
+                <button ion-button color="danger" (click)="deleteWorkOrder($event, report)">
+                  <ion-icon name="trash"></ion-icon>
+                  {{"delete" | translate}}
+                </button>
+              </ion-item-options>
+            </div>
+            <div class="report-and-reportother-container" *ngIf="report.type==='Travel'">
+              <ion-item class="report-history-list-item" (click)="itemTapped($event, report)">
+                <div class="report-history-report-item">
+                  <span class="report-history-report-item-header">{{'travel' | translate}}&nbsp;&nbsp;</span>
+                  <span class="report-history-report-item-data">{{report.travel_location}}</span>
+                </div>
+                <div class="report-history-report-item">
+                  <span class="report-history-report-item-header">{{'travel_hours' | translate}}&nbsp;&nbsp;</span>
+                  <span class="report-history-report-item-data">{{report.time}}</span>
+                </div>
+              </ion-item>
+              <ion-item-options side="right">
+                <button ion-button color="danger" (click)="deleteWorkOrder($event, report)">
+                  <ion-icon name="trash"></ion-icon>
+                  {{"delete" | translate}}
+                </button>
+              </ion-item-options>
+            </div>
+            <div class="report-and-reportother-container" *ngIf="report.type==='Training'">
+              <ion-item class="report-history-list-item" (click)="itemTapped($event, report)">
+                <div class="report-history-report-item">
+                  <span class="report-history-report-item-header">{{'training' | translate}}&nbsp;&nbsp;</span>
+                  <span class="report-history-report-item-data">{{report.training_type}}</span>
+                </div>
+                <div class="report-history-report-item">
+                  <span class="report-history-report-item-header">{{'training_hours' | translate}}&nbsp;&nbsp;</span>
+                  <span class="report-history-report-item-data">{{report.time}}</span>
+                </div>
+              </ion-item>
+              <ion-item-options side="right">
+                <button ion-button color="danger" (click)="deleteWorkOrder($event, report)">
+                  <ion-icon name="trash"></ion-icon>
+                  {{"delete" | translate}}
+                </button>
+              </ion-item-options>
+            </div>
           </ion-item-sliding>
         </div>
         <div class="report-history-reports-subcontainer" *ngIf="!filtReports[filterKeys[i]].length">

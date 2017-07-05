@@ -1,36 +1,34 @@
-import { Street } from './street';
-import { Address } from './address';
-import { Log, CONSOLE } from '../config/config.functions';
+import { Street  } from './street'                   ;
+import { Address } from './address'                  ;
+import { Log     } from '../config/config.functions' ;
 
 export class Jobsite {
-  public client:any;
-  public location: any;
-  // public locID: Array<string>;
-  public locID: any;
-  public loc2nd: any;
-  public address:Address;
-  public billing_address:Address = this.address;
-  public latitude: number;
-  public longitude: number;
-  public within: number;
-  public account_number: any;
-  public travel_time: number;
-  public per_diem_rate: number;
-  public requires_preauth: boolean = false;
-  public requires_preauth_pertech: boolean = false;
-  public requires_invoice_woreports: boolean = false;
-  public account_or_contract: string = 'Contract';
-  public billing_rate: number = 65;
-  public site_active: boolean = true;
-  public divisions:any;
-  public shiftRotations:any;
-  public hoursList:any;
-  public techShifts:any;
-  
+  public client                     : any                    ;
+  public location                   : any                    ;
+  public locID                      : any                    ;
+  public loc2nd                     : any                    ;
+  public address                    : Address                ;
+  public billing_address            : Address = this.address ;
+  public latitude                   : number                 ;
+  public longitude                  : number                 ;
+  public within                     : number                 ;
+  public account_number             : any                    ;
+  public travel_time                : number                 ;
+  public per_diem_rate              : number                 ;
+  public requires_preauth           : boolean = false        ;
+  public requires_preauth_pertech   : boolean = false        ;
+  public requires_invoice_woreports : boolean = false        ;
+  public account_or_contract        : string = 'Contract'    ;
+  public billing_rate               : number = 65            ;
+  public site_active                : boolean = true         ;
+  public divisions                  : any                    ;
+  public shiftRotations             : any                    ;
+  public hoursList                  : any                    ;
+  public techShifts                 : any                    ;
+
   constructor(inClient?:any, inLoc?: any, inLocID?:any, inAddress?:Address, inLat?:number, inLon?:number, inWI?:number) {
     this.client = inClient;
     this.location = inLoc;
-    // this.locID = {"name": "MNSHOP", "fullName": "Maintenance Shop"};
     this.locID = inLocID;
     this.loc2nd = null;
     this.address = inAddress;
@@ -76,13 +74,6 @@ export class Jobsite {
     } else {
       this.billing_address = new Address(new Street('', ''), '', '', '');
     }
-    // if(doc.client) {
-    //   this.client = doc.client;
-    // }
-    // if(doc.location) {
-    //   this.location = doc.location;
-    // }
-
     for(let prop in doc) {
       if(prop != 'address' && prop != 'billing_address') {
         this[prop] = doc[prop];
@@ -115,7 +106,7 @@ export class Jobsite {
     if(this.locID.name != "MNSHOP") {
       siteName += `${lid}`
     }
-    
+
     return siteName;
     // let siteName = `${cli} ${loc}
   }
