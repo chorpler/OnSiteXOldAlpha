@@ -49,7 +49,7 @@ export class Shift {
       this.getShiftSerial();
     }
   }
-//
+
   public readFromDoc(doc) {
     for(let prop in doc) {
       this[prop] = doc[prop];
@@ -263,7 +263,7 @@ export class Shift {
   getTotalShiftHours() {
     let total = 0;
     for(let report of this.shift_reports) {
-      if(report.type === 'Work Report') {
+      if(!report['type'] || report['type'] === 'Work Report') {
         total += report.getRepairHours();
       } else {
        /* ToDo(2017-07-05): Ask Mike if miscellaneous reports should count for shift hours, or what */
@@ -275,7 +275,7 @@ export class Shift {
   getTotalPayrollHoursForShift() {
     let shiftTotal = 0, bonusHours = 0, countsForBonusHours = 0;
     for (let report of this.shift_reports) {
-      if(report.type === 'Work Report') {
+      if (!report['type'] || report['type'] === 'Work Report') {
         let subtotal = report.getRepairHours();
         shiftTotal += subtotal;
         if (report.client !== "SESA") {

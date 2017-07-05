@@ -3,9 +3,9 @@ import { sprintf } from 'sprintf-js';
 import { Employee } from './employee';
 
 export const fields = [
-  [ "type"              , "type"           ] ,
-  [ "training_type"     , "training_type"  ] ,
-  [ "training_time"     , "training_time"  ] ,
+  // [ "type"              , "type"           ] ,
+  // [ "training_type"     , "training_type"  ] ,
+  // [ "training_time"     , "training_time"  ] ,
   [ "time_start"        , "timeStarts"     ] ,
   [ "time_end"          , "timeEnds"       ] ,
   [ "repair_hours"      , "repairHrs"      ] ,
@@ -26,6 +26,7 @@ export const fields = [
   [ "payroll_period"    , "payrollPeriod"  ] ,
   [ "technician"        , "technician"     ] ,
   [ "timestamp"         , "timeStamp"      ] ,
+  [ "timestampM"        , "timeStampM"     ] ,
   [ "username"          , "username"       ] ,
   [ "shift_serial"     ,  "shift_serial"   ] ,
   [ "payroll_period"   ,  "payroll_period" ] ,
@@ -35,9 +36,9 @@ export const fields = [
 
 
 export class WorkOrder {
-  public type             : string;
-  public training_type    : string;
-  public training_time    : number;
+  // public type             : string;
+  // public training_type    : string;
+  // public training_time    : number;
   public time_start       : any;
   public time_end         : any;
   public repair_hours     : any;
@@ -57,6 +58,7 @@ export class WorkOrder {
   public shift_start_time : any;
   public technician       : any;
   public timestamp        : any;
+  public timestampM       : any;
   public username         : any;
   public shift_serial     : any;
   public payroll_period   : any;
@@ -64,9 +66,9 @@ export class WorkOrder {
   public _rev             : any;
 
   constructor(start?: any, end?: any, hours?: any, unit?: any, wo?: any, nts?: any, date?: any, last?: any, first?: any, shift?: any, client?: any, loc?: any, locid?: any, loc2?: any, shiftTime?: any, shiftLength?: any, shiftStartTime?: any, tech?: any, timestamp?: any, user?: any) {
-    this.type              = ""                    ;
-    this.training_type     = ""                    ;
-    this.training_time     = 0                     ;
+    // this.type              = ""                    ;
+    // this.training_type     = ""                    ;
+    // this.training_time     = 0                     ;
     this.time_start        = start          || null;
     this.time_end          = end            || null;
     this.repair_hours      = hours          || null;
@@ -88,6 +90,7 @@ export class WorkOrder {
     this.technician        = tech           || null;
     this.timestamp         = timestamp      || null;
     this.username          = user           || null;
+    this.timestampM        = null                  ;
     this.shift_serial      = null                  ;
     this.payroll_period    = null                  ;
     this._id               = null                  ;
@@ -103,6 +106,7 @@ export class WorkOrder {
     }
     this.time_start = moment(this.time_start);
     this.time_end   = moment(this.time_end);
+
   }
 
   public genReportID(tech:Employee) {

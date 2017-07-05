@@ -137,3 +137,7 @@ export const JOBSITESI18N = [
   {name: "SE WES MNSHOP"         , value: "SE WES MNSHOP"         , hours: 0  },
 ]
 
+// "SAFTY": 2hrs
+// "PEC": 8Hrs
+// "FORKLIFT": 3Hrs
+// "OVERHEAD CRANE": 10hrs

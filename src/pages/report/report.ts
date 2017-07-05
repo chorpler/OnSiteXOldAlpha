@@ -66,6 +66,7 @@ export class ReportPage implements OnInit {
   shiftHoursColor           : string           = "black"                    ;
   shiftToUse                : Shift            = null                       ;
   shiftSavedHours           : number           = 0                          ;
+  rprtDate                  : any                                           ;
   timeStarts                : any                                           ;
   reportDate                : any                                           ;
   startTime                 : any                                           ;
@@ -170,30 +171,6 @@ export class ReportPage implements OnInit {
 
       }
       this.thisWorkOrderContribution = this.workOrder.getRepairHours() || 0;
-
-      if (this.navParams.get('reportOther') !== undefined) {
-        this.reportOther = this.navParams.get('reportOther');
-      } else {
-        this.reportOther = new ReportOther();
-        let ro = this.reportOther;
-        let tech = this.techProfile;
-        let now = moment();
-        let shift = this.selectedShift;
-        ro.timestamp      = now.format()                          ;
-        ro.timestampX     = now.toExcel()                         ;
-        ro.first_name     = tech.firstName                        ;
-        ro.last_name      = tech.lastName                         ;
-        ro.username       = tech.avatarName                       ;
-        ro.client         = tech.client                           ;
-        ro.location       = tech.location                         ;
-        ro.location_2     = tech.loc2nd                           ;
-        ro.location_id    = tech.locID                            ;
-        ro.payroll_period = shift.getPayrollPeriod()              ;
-        ro.shift_serial   = shift.getShiftSerial()                ;
-        let date          = shift.getStartTime()                  ;
-        ro.report_date    = moment(date).startOf('day')           ;
-      }
-
       this.initializeForm();
       this._type            = this.workOrderForm.controls['type'           ] ;
       this._training_type   = this.workOrderForm.controls['training_type'  ] ;
@@ -284,7 +261,7 @@ export class ReportPage implements OnInit {
         this.workOrder.setStartTime(woStart);
         this.reportOther.report_date = rprtDate;
 
-        this.workOrderForm.controls.report_date.setValue(rprtDate.format("YYYY-MM-DD"));
+        this.workOrderForm.controls.rprtDate.setValue(rprtDate.format("YYYY-MM-DD"));
       });
       this.shiftSavedHours = this.selectedShift.getNormalHours();
       this.dataReady = true;
@@ -301,7 +278,7 @@ export class ReportPage implements OnInit {
       rprtDate = moment(this.selectedShift.getStartTime());
       ts = moment().format();
     } else {
-      rprtDate = moment(wo.report_date);
+      rprtDate = moment(wo.rprtDate);
     }
     ts = moment().format();
     this.currentRepairHours = wo.getRepairHours();
@@ -517,10 +494,22 @@ export class ReportPage implements OnInit {
 
   createReport() {
     Log.l("ReportPage: createReport(): Now creating report...");
-    let doc = this.workOrderForm.getRawValue();
-    for(let propName in doc) {
-      let property = doc[propName];
-      this.workOrder[propName] = property;
+    let partialReport = this.workOrderForm.getRawValue();
+    let ts = moment(partialReport.timeStamp);
+    let wo = this.workOrder;
+    Log.l("createReport(): timestamp moment is now:\n", ts);
+    let XLDate = moment([1900, 0, 1]);
+    let xlStamp = ts.diff(XLDate, 'days', true) + 2;
+    partialReport.timeStamp = xlStamp;
+    console.log("processWO() has initial partialReport:");
+    console.log(partialReport);
+    let newReport: any = {};
+    let newID = this.genReportID();
+    if (this.mode !== 'Add') {
+      newID = wo._id;
+    }
+    if (this.mode === 'Edit') {
+      newReport._rev = wo._rev;
     }
     return this.workOrder.serialize(this.techProfile);
   }

@@ -20,11 +20,11 @@
     <div class="work-order-payroll-hours-header">
       <span class="shift-hours-header" [ngClass]="getShiftHoursStatus(selectedShift)" *ngIf="workOrderForm && workOrderForm.value && workOrderForm.value.selected_shift">
         <span class="shift-label">{{'shift' | translate}}</span> #<span class="shift-number">{{selectedShift.updateShiftNumber()}}</span>
-        <span class="shift-label">{{'hours' | translate}}</span>:
-        <span class="shift-hours" *ngIf="mode==='Add'">{{shiftSavedHours+currentRepairHours}}</span>
-        <span class="shift-hours" *ngIf="mode==='Edit'">{{shiftSavedHours+currentRepairHours-thisWorkOrderContribution}}</span>
-        <span class="shift-label">{{'of' | translate}}</span>
-        <span class="shift-hours">{{techProfile.shiftLength}}</span>
+      <span class="shift-label">{{'hours' | translate}}</span>:
+      <span class="shift-hours" *ngIf="mode==='Add'">{{shiftSavedHours+currentRepairHours}}</span>
+      <span class="shift-hours" *ngIf="mode==='Edit'">{{shiftSavedHours+currentRepairHours-thisWorkOrderContribution}}</span>
+      <span class="shift-label">{{'of' | translate}}</span>
+      <span class="shift-hours">{{techProfile.shiftLength}}</span>
       </span>
     </div>
     <form [formGroup]="workOrderForm" (ngSubmit)="onSubmit()" *ngIf="dataReady">
@@ -50,7 +50,7 @@
         </ion-item>
         <ion-item>
           <ion-label>{{'travel_hours' | translate}} </ion-label>
-          <ion-input formControlName='time'>{{travel_time}} hrs </ion-input>
+          <ion-input formControlName='time'></ion-input>
         </ion-item>
       </ion-list>
       <ion-list *ngIf="type.name==='training'">
@@ -62,7 +62,7 @@
         </ion-item>
         <ion-item>
           <ion-label>{{'training_hours' | translate}}</ion-label>
-          <ion-input formControlName='time'>{{training_time}}</ion-input>
+          <ion-input formControlName='time'></ion-input>
         </ion-item>
       </ion-list>
       <ion-list *ngIf="type.name==='work_report'">
@@ -73,11 +73,11 @@
         </ion-item>
         <ion-item>
           <ion-label floating>{{'unit_number' | translate}}</ion-label>
-          <ion-input type='text' formControlName='unit_number'></ion-input>
+          <ion-input type='text' formControlName='uNum'></ion-input>
         </ion-item>
         <ion-item>
           <ion-label floating>{{'work_order_number' | translate}}</ion-label>
-          <ion-input type='text' formControlName='work_order_number'></ion-input>
+          <ion-input type='text' formControlName='wONum'></ion-input>
         </ion-item>
         <ion-item>
           <ion-label floating>{{'job_notes' | translate}}</ion-label>
