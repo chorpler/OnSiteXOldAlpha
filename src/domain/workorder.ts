@@ -139,35 +139,8 @@ export class WorkOrder {
       }
       newReport['username'] = tech['avatarName'];
     }
-    // newReport['timeStarts']     = this.time_start.format()        ;
-    // newReport['timeEnds']       = this.time_end.format()          ;
-    // newReport['repairHrs']      = this.repair_hours               ;
-    // newReport['shiftSerial']    = this.shift_serial               ;
-    // newReport['payrollPeriod']  = this.payroll_period             ;
-    // newReport['uNum']           = this.unit_number                ;
-    // newReport['wONum']          = this.work_order_number          ;
-    // newReport['notes']          = this.notes                      ;
-    // newReport['rprtDate']       = this.report_date                ;
-    // newReport['timeStamp']      = this.timestamp                  ;
-    // newReport['training_time']  = this.training_time              ;
-    // newReport['lastName']       = tech.lastName                   ;
-    // newReport['firstName']      = tech.firstName                  ;
-    // newReport['client']         = tech.client                     ;
-    // newReport['location']       = tech.location                   ;
-    // newReport['locID']          = tech.locID                      ;
-    // newReport['loc2nd']         = tech.loc2nd                     ;
-    // newReport['shift']          = tech.shift                      ;
-    // newReport['shiftLength']    = tech.shiftLength                ;
-    // newReport['shiftStartTime'] = tech.shiftStartTime             ;
-    // newReport['technician']     = tech.getTechName()              ;
-    // newReport['username']       = tech.avatarName;
     return newReport;
   }
-
-  // public serialize(tech:Employee) {
-  //   Log.l("WorkOrder.serialize(): Now serializing report...");
-  //   return this.createReport(tech);
-  // }
 
   public getRepairHours() {
     let val = this.repair_hours || 0;
