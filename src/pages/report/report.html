@@ -27,7 +27,9 @@
       <span class="shift-hours">{{techProfile.shiftLength}}</span>
       </span>
     </div>
+
     <form [formGroup]="workOrderForm" (ngSubmit)="onSubmit()" *ngIf="dataReady">
+
       <ion-list padding>
         <ion-item>
           <ion-label>{{'report_type' | translate}}</ion-label>
@@ -41,30 +43,8 @@
           <ion-icon item-right class="shift-date-select-icon" name="md-arrow-dropdown"></ion-icon>
         </ion-item>
       </ion-list>
-      <ion-list *ngIf="type.name==='travel'">
-        <ion-item>
-          <ion-label>{{'travel' | translate}} </ion-label>
-          <ion-select formControlName='travel_location'>
-            <ion-option *ngFor='let travel_location of selTravelLocation' [value]='travel_location'>{{travel_location.name | translate}}</ion-option>
-          </ion-select>
-        </ion-item>
-        <ion-item>
-          <ion-label>{{'travel_hours' | translate}} </ion-label>
-          <ion-input formControlName='time'></ion-input>
-        </ion-item>
-      </ion-list>
-      <ion-list *ngIf="type.name==='training'">
-        <ion-item>
-          <ion-label>{{'training' | translate}}</ion-label>
-          <ion-select formControlName='training_type'>
-              <ion-option *ngFor='let training_type of selTrainingType' [value]='training_type'>{{training_type.name | translate}}</ion-option>
-          </ion-select>
-        </ion-item>
-        <ion-item>
-          <ion-label>{{'training_hours' | translate}}</ion-label>
-          <ion-input formControlName='time'></ion-input>
-        </ion-item>
-      </ion-list>
+<!-- ******************************************************************************************************************************  -->
+<!--WORK REPORT  -->
       <ion-list *ngIf="type.name==='work_report'">
         <ion-item>
           <ion-label>{{'repair_time' | translate}}</ion-label>
@@ -87,6 +67,73 @@
           <div>{{'report_submit_error' | translate}}</div>
         </ion-item>
       </ion-list>
+
+<!-- TRAVEL  -->
+      <ion-list *ngIf="type.name==='travel'">
+        <ion-item>
+          <ion-label>{{'travel' | translate}} </ion-label>
+          <ion-select formControlName='travel_location'>
+            <ion-option *ngFor='let travel_location of selTravelLocation' [value]='travel_location'>{{travel_location.name | translate}}</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label>{{'travel_hours' | translate}} </ion-label>
+          <ion-input formControlName='time'></ion-input>
+        </ion-item>
+      </ion-list>
+
+<!-- TRAINING  -->
+      <ion-list *ngIf="type.name==='training'">
+        <ion-item>
+          <ion-label>{{'training' | translate}}</ion-label>
+          <ion-select formControlName='training_type'>
+              <ion-option *ngFor='let training_type of selTrainingType' [value]='training_type'>{{training_type.name | translate}}</ion-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label>{{'training_hours' | translate}}</ion-label>
+          <ion-input formControlName='time'></ion-input>
+        </ion-item>
+      </ion-list>
+
+<!-- SICK TIME  -->
+      <ion-list *ngIf="type.name==='sick'" >
+        <ion-item>
+          <ion-label>All Day</ion-label>
+          <ion-toggle formControlName='allDay' checked="true"></ion-toggle>
+        </ion-item>
+          <ion-item>
+            <ion-label floating>Sick Hrs.</ion-label>
+            <ion-input [disabled]="workOrderForm.value.allDay" formControlName='time' type="number">{{sickTime}}</ion-input>
+          </ion-item>
+      </ion-list>
+
+<!-- VACATION  -->
+      <ion-list *ngIf="type.name==='vacation'" >
+        <ion-item>
+          <ion-label>Vacation</ion-label>
+          <ion-input formControlName='time' value="8"></ion-input>
+        </ion-item>
+      </ion-list>
+
+<!-- DUNCAN STANDBY  -->
+      <ion-list *ngIf="type.name==='standby_hb_duncan'">
+        <ion-item>
+          <ion-label>Standby</ion-label>
+          <ion-input formControlName='time' value="S">{{Standby_HB_DCN}}</ion-input>
+        </ion-item>
+      </ion-list>
+
+<!-- STANDBY (BILLABLE)  -->
+      <ion-list *ngIf="type.name==='standby'">
+        <ion-item>
+          <ion-label>Standby</ion-label>
+          <ion-input formControlName='time'type="number">{{Standby}}</ion-input>
+        </ion-item>
+      </ion-list>
+
+<!-- ******************************************************************************************************************************  -->
+
       <button type="submit" ion-button block color="favorite" *ngIf="mode==='Add'">{{'submit_report' | translate}}</button>
       <button type="submit" ion-button block color="favorite" *ngIf="mode==='Edit'">{{'save_report' | translate}}</button>
       <button type="button" ion-button block color="light" (click)="cancel()">{{'cancel' | translate}}</button>

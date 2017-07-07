@@ -33,6 +33,8 @@ import 'rxjs/add/operator/debounceTime'                                         
 })
 
 export class ReportPage implements OnInit {
+  S                         :number            = 8                          ;
+  V                         :number            = 8                          ;
   title                     : string           = 'Work Report'              ;
   static PREFS              : any              = new Preferences()          ;
   prefs                     : any              = ReportPage.PREFS           ;
@@ -101,6 +103,8 @@ export class ReportPage implements OnInit {
   training_type             : any = null                                    ;
   selTravelLocation         : Array<any> = JOBSITESI18N                     ;
   travel_location           : any = null                                    ;
+  sickTime                  : any                                           ;
+  _sickTime                 : any                                           ;
 
   constructor(
     public navCtrl      : NavController,
@@ -223,6 +227,18 @@ export class ReportPage implements OnInit {
           this.travel_location = JOBSITESI18N[0];
           this._travel_location.setValue(JOBSITESI18N[0]);
           this._time.setValue(6);
+        } else if(value.name === 'sick') {
+          ro.time = 8;
+          this._time.setValue(8);
+        } else if(value.name === 'vacation') {
+          ro.time = 8;
+          this._time.setValue(8);
+        } else if(value.name === 'standby') {
+          ro.time = 8;
+          this._time.setValue(8);
+        } else if(value.name === 'standby_hb_duncan') {
+          ro.time = "S";
+          this._time.setValue("S");
         }
        });
       this._training_type.valueChanges.subscribe((value: any) => {
@@ -317,6 +333,11 @@ export class ReportPage implements OnInit {
       'training_type'     : new FormControl(null                              , Validators.required) ,
       'travel_location'   : new FormControl(null                              , Validators.required) ,
       'time'              : new FormControl(null                              , Validators.required) ,
+      'allDay'            : new FormControl(false                             , Validators.required) ,
+      'sickTime'          : new FormControl(8                                 , Validators.required) ,
+      'vacation'          : new FormControl(8                                 , Validators.required) ,
+      'Standby_HB_DCN'    : new FormControl("S"                               , Validators.required) ,
+      'Standby'           : new FormControl(0                                 , Validators.required) ,
     });
   }
 
