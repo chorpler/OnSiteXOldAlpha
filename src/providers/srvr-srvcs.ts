@@ -438,7 +438,7 @@ export class SrvrSrvcs {
           rdb1.allDocs({include_docs: true}).then((result) => {
 		        let data = [];
 						let docs = result.rows.map((row) => {
-							if( row.doc.username === user ) { data.push(row.doc); }
+							if( row && row.id[0] !== '_' && row.doc && row.doc.username === user ) { data.push(row.doc); }
 							resolve(data);
 						});
 					}).catch((error) => {
@@ -542,7 +542,7 @@ export class SrvrSrvcs {
         // remote = new Array<Message>();
         for(let row of res.rows) {
           let doc = row.doc;
-          if(doc) {
+          if(doc && row.id[0] !== '_') {
             let msg = new Message();
             msg.readFromDoc(row.doc);
             out.push(msg);
@@ -672,7 +672,7 @@ export class SrvrSrvcs {
         let sites = new Array<Jobsite>();
         for(let row of res.rows) {
           let doc = row.doc;
-          if (doc) {
+          if (doc && row.id[0] !== '_') {
             let site = new Jobsite();
             site.readFromDoc(doc);
             sites.push(site);

@@ -11,7 +11,8 @@ if not exist plugins\cordova-plugin-app-update (
   ionic cordova plugin add cordova-plugin-device
   ionic cordova plugin add cordova-plugin-uniquedeviceid
   ionic cordova plugin add cordova-plugin-badge
-  npm install --save @ionic-native/app-update @ionic-native/device @ionic-native/unique-device-id @ionic-native/badge
+  ionic cordova plugin add cordova-plugin-camera
+  npm install --save @ionic-native/app-update @ionic-native/device @ionic-native/unique-device-id @ionic-native/badge @ionic-native/camera
   echo Starting ionic serve completely seriously, if anyone from any government agency is listening...
   ionic serve --lab
 ) else (

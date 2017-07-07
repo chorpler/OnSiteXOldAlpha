@@ -13,15 +13,6 @@ import { SplashScreen                                            } from '@ionic-
 import { StatusBar                                               } from '@ionic-native/status-bar'               ;
 import { IonicStorageModule                                      } from '@ionic/storage'                         ;
 import { SecureStorage, SecureStorageObject                      } from '@ionic-native/secure-storage'           ;
-import { OnSiteApp                                               } from './app.component.ts'                     ;
-import { ProfileSettings                                         } from '../providers/profile-settings.ts'       ;
-import { AuthSrvcs                                               } from '../providers/auth-srvcs'                ;
-import { DBSrvcs                                                 } from '../providers/db-srvcs'                  ;
-import { TimeSrvc                                                } from '../providers/time-parse-srvc'           ;
-import { ReportBuildSrvc                                         } from '../providers/report-build-srvc'         ;
-import { UserData                                                } from '../providers/user-data'                 ;
-import { SrvrSrvcs                                               } from '../providers/srvr-srvcs'                ;
-import { NetworkStatus                                           } from '../providers/network-status'            ;
 import { Geofence                                                } from '@ionic-native/geofence'                 ;
 import { BackgroundGeolocation, BackgroundGeolocationConfig      } from '@ionic-native/background-geolocation'   ;
 import { BackgroundGeolocationResponse                           } from '@ionic-native/background-geolocation'   ;
@@ -31,6 +22,17 @@ import { LocalNotifications                                      } from '@ionic-
 import { UniqueDeviceID                                          } from '@ionic-native/unique-device-id'         ;
 import { Device                                                  } from '@ionic-native/device'                   ;
 import { AppVersion                                              } from '@ionic-native/app-version'              ;
+import { NativeAudio                                             } from '@ionic-native/native-audio'             ;
+import { Camera, CameraOptions                                   } from '@ionic-native/camera'                   ;
+import { OnSiteApp                                               } from './app.component.ts'                     ;
+import { ProfileSettings                                         } from '../providers/profile-settings.ts'       ;
+import { AuthSrvcs                                               } from '../providers/auth-srvcs'                ;
+import { DBSrvcs                                                 } from '../providers/db-srvcs'                  ;
+import { TimeSrvc                                                } from '../providers/time-parse-srvc'           ;
+import { ReportBuildSrvc                                         } from '../providers/report-build-srvc'         ;
+import { UserData                                                } from '../providers/user-data'                 ;
+import { SrvrSrvcs                                               } from '../providers/srvr-srvcs'                ;
+import { NetworkStatus                                           } from '../providers/network-status'            ;
 import { AlertService                                            } from '../providers/alerts'                    ;
 import { GeolocService                                           } from '../providers/geoloc-service'            ;
 import { PouchDBService                                          } from '../providers/pouchdb-service'           ;
@@ -43,7 +45,6 @@ import { TabsComponent                                           } from '../comp
 import { PipesModule                                             } from '../pipes/pipes.module'                  ;
 import { Preferences                                             } from '../providers/preferences'               ;
 import { SmartAudio                                              } from '../providers/smart-audio'               ;
-import { NativeAudio                                             } from '@ionic-native/native-audio'             ;
 import { MessageService                                          } from '../providers/message-service'           ;
 import { CommentService                                          } from '../providers/comment-service'           ;
 
@@ -101,6 +102,8 @@ import { CommentService                                          } from '../prov
                       LocalNotifications,
                       UniqueDeviceID,
                       Device,
+                      NativeAudio,
+                      Camera,
                       GeolocService,
                       PouchDBService,
                       StorageService,
@@ -108,7 +111,6 @@ import { CommentService                                          } from '../prov
                       AppVersion,
                       Preferences,
                       SmartAudio,
-                      NativeAudio,
                       MessageService,
                       CommentService,
                     ]

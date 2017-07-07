@@ -26,13 +26,19 @@
       <ion-item class="home-card-header-payroll-period-label-item">
         <ion-label class="home-card-header-payroll-period-label-label">{{'payroll_period' | translate}}</ion-label>
       </ion-item>
-      <ion-item class="home-card-header-payroll-period-data-item">
-        <ion-select class="home-card-header-payroll-period-data-select" [(ngModel)]="period" (ionChange)="changedPayrollPeriod(period)">
+        <ion-list radio-group [(ngModel)]="period">
+          <ion-item *ngFor="let period of payrollPeriods">
+            <ion-label>{{period.getPayrollPeriodDescription()}}</ion-label>
+            <ion-radio [value]="period" checked="period" (ionSelect)="changedPayrollPeriod(period)"></ion-radio>
+          </ion-item>
+        </ion-list>
+      <!-- <ion-item class="home-card-header-payroll-period-data-item"> -->
+        <!-- <ion-select class="home-card-header-payroll-period-data-select" [(ngModel)]="period" (ionChange)="changedPayrollPeriod(period)">
           <ion-option *ngFor="let period of payrollPeriods" [value]="period">{{period.getPayrollPeriodDescription()}}</ion-option>
-        </ion-select>
-      </ion-item>
+        </ion-select> -->
+      <!-- </ion-item> -->
     </ion-card-header>
-    <ion-list no-lines no-border>
+    <ion-list no-lines no-border class="home-card-body-list">
       <ion-item class="ion-item-button-like"  *ngFor="let shift of period.shifts; let i=index" (click)="showShiftReports(shift)">
         <ion-icon class="shft-num-icon">{{numChars[shift.shift_number]}}</ion-icon>
         <span class="shift-text">{{shift.getNormalHours()}}&nbsp;/&nbsp;{{shift.getShiftLength()}} &nbsp;Hrs. &nbsp;&nbsp;</span>

@@ -1,9 +1,7 @@
-
-import { WorkOrder } from './workorder';
-import { ReportOther } from './reportother';
-import { Log, isMoment } from '../config/config.functions';
-import * as moment from 'moment';
-import { sprintf } from 'sprintf-js';
+import { WorkOrder                     } from './workorder'                ;
+import { ReportOther                   } from './reportother'              ;
+import { Log, isMoment, moment, Moment } from '../config/config.functions' ;
+import { sprintf                       } from 'sprintf-js'                 ;
 
 const XL = moment([1900, 0, 1]);
 
@@ -65,6 +63,31 @@ export class Shift {
     } else {
       Log.w("getStartTime(): Can't, start_time is not a moment:\n", this.start_time);
     }
+  }
+
+  public setStartTime(time:Moment|string) {
+    let start;
+    if(time && isMoment(time)) {
+      start = moment(time);
+      this.start_time = start;
+    } else if(time && typeof time === 'string' && time.length > 5) {
+      start = moment(time);
+      this.start_time = start;
+    } else if(time && typeof time === 'string') {
+      let xl = this.shift_id;
+      start = moment().fromExcel(xl);
+      let times = time.split(":");
+      let hrs = Number(times[0]);
+      let min = Number(times[1]);
+      if(!isNaN(hrs)) {
+        start.hour(hrs);
+      }
+      if(!isNaN(min)) {
+        start.minutes(min);
+      }
+      this.start_time = start;
+    }
+    return this.start_time;
   }
 
   public getShiftWeek() {

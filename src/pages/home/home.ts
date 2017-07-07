@@ -70,6 +70,7 @@ export class HomePage {
   shifts                      : Array<Shift>  = []                       ;
   payrollPeriods              : Array<PayrollPeriod> = []                ;
   period                      : PayrollPeriod = null                     ;
+  tech                        : Employee                                 ;
   payrollPeriodCount          : number        = 2                        ;
   payrollPeriodHoursTotal     : number        = 0                        ;
   payrollPeriodHours          : number        = 0                        ;
@@ -226,7 +227,10 @@ export class HomePage {
         return this.server.getReportsOtherForTech(techid);
       }).then(res => {
         this.otherReports      = res;
-        let tech               = this.ud.getTechProfile();
+        let profile            = this.ud.getTechProfile();
+        let tech               = new Employee();
+        tech.readFromDoc(profile);
+        this.tech              = tech;
         let now                = moment();
         let payrollPeriod      = this.ud.getPayrollPeriodForDate(now);
         this.payrollPeriods    = this.ud.createPayrollPeriods(tech, this.payrollPeriodCount);
@@ -249,6 +253,50 @@ export class HomePage {
             }
             shift.setShiftReports(reports);
             shift.setOtherReports(otherReports);
+            let shiftDay = shift.start_time.isoWeekday();
+            let ppIndex  = (shiftDay + 4) % 7;
+            let sites = this.ud.getData('sites');
+            let techClient = tech.client.toUpperCase().trim();
+            let techLocation = tech.location.toUpperCase().trim();
+            let techLocID    = tech.locID.toUpperCase().trim();
+            let techLoc2nd   = typeof tech.loc2nd === 'string' ? tech.loc2nd.toUpperCase().trim() : "";
+            innerloop:
+            for(let site of sites) {
+              let clientName   = site.client.name.toUpperCase();
+              let clientFull   = site.client.fullName.toUpperCase();
+              let locationName = site.location.name.toUpperCase();
+              let locationFull = site.location.fullName.toUpperCase();
+              let locIDName    = site.locID.name.toUpperCase();
+              let locIDFull    = site.locID.fullName.toUpperCase();
+              let loc2Name     = site.loc2nd && typeof site.loc2nd === 'object' ? site.loc2nd.name.toUpperCase() : "NA";
+              let loc2Full     = site.loc2nd && typeof site.loc2nd === 'object' ? site.loc2nd.fullName.toUpperCase() : "N/A";
+              if((techClient === clientName || techClient === clientFull) && (techLocation === locationName || techLocation === locationFull) && (techLocID === locIDName || techLocID === locIDFull) && (techLoc2nd === loc2Name || techLoc2nd === loc2Full)) {
+                // let hours = Number(site.shiftLength);
+                Log.l("User is at site '%s', site object is:", site.getSiteName());
+                Log.l(site);
+                let times = site.getShiftStartTimes();
+                let shiftType = tech.shift;
+                let shiftRotation = tech.rotation;
+                let hoursList = site.getHoursList(shiftRotation, shiftType);
+                let shiftLengthString = hoursList[ppIndex];
+                let shiftLength;
+                if(isNaN(Number(shiftLengthString))) {
+                  shiftLength = shiftLengthString;
+                } else {
+                  shiftLength = Number(shiftLengthString);
+                }
+                shift.setShiftLength(shiftLength);
+                let startTimeString = times[shiftType];
+                let xl = shift.shift_id;
+                let startTime = moment().fromExcel(xl);
+                let hrsMins = startTimeString.split(":");
+                let hrs = hrsMins[0];
+                let min = hrsMins[1];
+                startTime.hours(hrs).minutes(min);
+                shift.setStartTime(startTime);
+                break innerloop;
+              }
+            }
           }
         }
         this.period            = this.payrollPeriods[0];

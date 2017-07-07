@@ -125,5 +125,6 @@
   "success": "Éxito",
   "could_not_read_phone_info": "No se pudo leer la marca y modelo del teléfono. En su comentario, por favor díganos qué tipo de teléfono tiene.",
   "comment": "Comentario",
-  "send_comment": "Enviar Comentario"
+  "send_comment": "Enviar Comentario",
+  "spinner_app_loading": "Cargando la Aplicación"
 }

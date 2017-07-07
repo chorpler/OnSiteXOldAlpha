@@ -101,7 +101,6 @@ export class OnSiteApp {
       window[ 'Log'    ] = Log;
       window[ 't1'     ] = CONSOLE.t1;
       window[ 'c1'     ] = CONSOLE.c1;
-
       this.preloadAudioFiles();
 
       this.checkPreferences().then(() => {
@@ -111,6 +110,9 @@ export class OnSiteApp {
           this.translate.use(language);
         }
         var callingClass = this;
+        this.translate.get('spinner_app_loading').subscribe((result) => {
+          this.alert.showSpinner(result['spinner_app_loading']);
+        });
         this.checkLogin().then(res => {
           Log.l("OnSite.initializeApp(): User passed login check. Should be fine.");
           // this.finishStartup().then(() => {
@@ -128,6 +130,7 @@ export class OnSiteApp {
           Log.l("OnSite.initializeApp(): Got new messages.");
           let badges = this.msgService.getNewMessageCount();
           this.tabs.setMessageBadge(badges);
+          this.alert.hideSpinner();
           this.rootPage = 'OnSiteHome';
           this.events.publish('startup:finished', true);
           setTimeout(() => {
@@ -137,6 +140,7 @@ export class OnSiteApp {
         }).catch(err => {
           Log.l("OnSite.initializeApp(): Error with login or with publishing startup:finished event!");
           Log.e(err);
+          this.alert.hideSpinner();
           this.rootPage = 'Login';
         });
       // }).catch(err => {
@@ -145,6 +149,7 @@ export class OnSiteApp {
         // });
       }).catch((err) => {
         Log.l("OnSite.initializeApp(): Preferences check failed. Sending to login.");
+        this.alert.hideSpinner();
         this.rootPage = 'Login';
       });
     });
