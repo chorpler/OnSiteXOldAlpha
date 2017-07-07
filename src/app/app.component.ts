@@ -22,20 +22,28 @@ import { TabsComponent                               } from '../components/tabs/
 import { Preferences                                 } from '../providers/preferences'          ;
 import { TranslateService                            } from '@ngx-translate/core'               ;
 import { SmartAudio                                  } from '../providers/smart-audio'          ;
+import { Jobsite                                     } from '../domain/jobsite'                 ;
+import { ReportOther                                 } from '../domain/reportother'             ;
+import { WorkOrder                                   } from '../domain/workorder'               ;
+import { Employee                                    } from '../domain/employee'                ;
+import { Shift                                       } from '../domain/shift'                   ;
+import { PayrollPeriod                               } from '../domain/payroll-period'          ;
+import { Message                                     } from '../domain/message'                 ;
 
 @Component({ templateUrl: 'app.html' })
-
 export class OnSiteApp {
   @ViewChild(Nav) nav: Nav;
 
-  title                    : string  = 'OnSiteHome'      ;
-  rootPage                 : any                         ;
-  pouchOptions             : any     = {          }      ;
-  backButtonPressedAlready : boolean = false             ;
-  static PREFS             : any     = new Preferences() ;
-  prefs                    : any     = OnSiteApp.PREFS   ;
-
-  private network: any;
+  public title                   : string  = 'OnSiteHome'      ;
+  public rootPage                : any                         ;
+  public pouchOptions            : any     = { }               ;
+  public backButtonPressedAlready: boolean = false             ;
+  public static PREFS            : any     = new Preferences() ;
+  public prefs                   : any     = OnSiteApp.PREFS   ;
+  public network                 : any                         ;
+  public data                    : any                         ;
+  private ui                     : any                         ;
+  public tech                    : Employee                    ;
 
   constructor(
                 public platform    : Platform          ,
@@ -109,7 +117,12 @@ export class OnSiteApp {
           //   Log.l("Done with finishStartup.");
           // this.rootPage = 'OnSiteHome';
           // }).then(() => {
-          Log.l("OnSite.initializeApp(): Publishing startup event!");
+          // Log.l("OnSite.initializeApp(): Publishing startup event!");
+
+          return this.server.getAllData(this.tech);
+        }).then(res => {
+          this.data = res;
+          this.ud.setData(this.data);
           return this.msgService.getMessages();
         }).then(res => {
           Log.l("OnSite.initializeApp(): Got new messages.");
@@ -189,11 +202,16 @@ export class OnSiteApp {
         let loginData = res;
         let u = loginData['username'];
         let p = loginData['password'];
+        this.ui = {u:u, p:p};
         // let udLoginData = {"user": u, "pass": p};
         // this.ud.storeCredentials(u, p);
         return this.server.loginToServer(u, p, '_session');
       }).then((res) => {
         Log.l("checkLogin(): Successfully logged in! Now retrieving config...");
+        let profile = this.ud.getTechProfile();
+        let tech = new Employee();
+        tech.readFromDoc(profile);
+        this.tech = tech;
         return this.db.getAllConfigData();
       }).then(res => {
         // this.ud.setLoginStatus(true);

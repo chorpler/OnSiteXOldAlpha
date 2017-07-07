@@ -2,20 +2,22 @@ import { Injectable     } from '@angular/core'                ;
 import { Http           } from '@angular/http'                ;
 import { PouchDBService } from '../providers/pouchdb-service' ;
 import { Log            } from '../config/config.functions'   ;
-import { WorkOrder      } from '../domain/workorder'          ;
-import { ReportOther    } from '../domain/reportother'        ;
-import { Jobsite        } from '../domain/jobsite'            ;
 import { UserData       } from '../providers/user-data'       ;
 import { Message        } from '../domain/message'            ;
 import { Preferences    } from '../providers/preferences'     ;
 import { Comment        } from '../domain/comment'            ;
-// import { StorageService } from '../providers/storage-service' ;
+import { Jobsite        } from '../domain/jobsite'            ;
+import { WorkOrder      } from '../domain/workorder'          ;
+import { ReportOther    } from '../domain/reportother'        ;
+import { Employee       } from '../domain/employee'           ;
+import { Shift          } from '../domain/shift'              ;
+import { PayrollPeriod  } from '../domain/payroll-period'     ;
 import 'rxjs/add/operator/map'                                ;
-
 
 export const noDD     = "_\uffff";
 export const noDesign = {include_docs: true, startkey: noDD };
 export const PouchDB  = PouchDBService.PouchInit();
+
 /*
   Generated class for the SrvrSrvcs provider.
 
@@ -643,38 +645,89 @@ export class SrvrSrvcs {
     });
   }
 
-  // public getAllData(): Promise<any> {
-  //   return new Promise((resolve, reject) => {
-  //     let data = { sites: [], reports: [], payrollPeriods: [], shifts: [] };
-  //     this.getReportsForTech().then(res => {
-  //       for (let doc of res) {
-  //         let site = new Jobsite();
-  //         site.readFromDoc(doc);
-  //         data.sites.push(site);
-  //       }
-  //       return this.getEmployees();
-  //     }).then(res => {
-  //       for (let doc of res) {
-  //         let user = new Employee();
-  //         user.readFromDoc(doc);
-  //         data.employees.push(user);
-  //       }
-  //       return this.getAllReportsPlusNew();
-  //     }).then(res => {
-  //       for (let doc of res) {
-  //         data.reports.push(doc);
-  //       }
-  //       Log.l("getAllData(): Success, final data to be returned is:\n", data);
-  //       resolve(data);
-  //       // }).then(res => {
-  //       // }).then(res => {
-  //       // }).then(res => {
-  //     }).catch(err => {
-  //       Log.l("getAllData(): Error retrieving all data!");
-  //       Log.e(err);
-  //       reject(err);
-  //     })
-  //   });
-  // }
+  public getMessages() {
+    return this.fetchNewMessages();
+  }
+
+  public getUserInfo() {
+    let rdb1 = this.addRDB(this.prefs.DB.employees);
+    let name = this.ud.getUsername();
+    return new Promise((resolve, reject) => {
+      rdb1.get(name).then(res => {
+        let tech = new Employee();
+        tech.readFromDoc(res);
+        resolve(res);
+      }).catch(err => {
+        Log.l("getUserInfo(): Error getting user info from server for user '%s'!", name);
+        Log.e(err);
+        reject(err);
+      });
+    });
+  }
+
+  public getJobsites():Promise<Array<Jobsite>> {
+    return new Promise((resolve,reject) => {
+      let rdb1 = this.addRDB(this.prefs.DB.jobsites);
+      rdb1.allDocs({include_docs:true}).then(res => {
+        let sites = new Array<Jobsite>();
+        for(let row of res.rows) {
+          let doc = row.doc;
+          if (doc) {
+            let site = new Jobsite();
+            site.readFromDoc(doc);
+            sites.push(site);
+          }
+        }
+        Log.l("getJobsites(): Success, final output array is:\n", sites);
+        resolve(sites);
+      }).catch(err => {
+        Log.l("getJobsites(): Error getting all jobsites.");
+        Log.e(err);
+        reject(err);
+      })
+    });
+  }
+
+  public getAllData(tech:Employee):Promise<any> {
+    return new Promise((resolve, reject) => {
+      let data = { employee: [], sites: [], reports: [], otherReports: [], payrollPeriods: [], shifts: [], messages: [] };
+      let username = tech.getUsername();
+      data.employee.push(tech);
+      this.getReportsForTech(username).then(res => {
+        for (let doc of res) {
+          let report = new WorkOrder();
+          report.readFromDoc(doc);
+          data.reports.push(report);
+        }
+        return this.getReportsOtherForTech(username);
+      }).then(res => {
+        for(let doc of res) {
+          let other = new ReportOther();
+          other.readFromDoc(doc);
+          data.otherReports.push(other);
+        }
+        return this.getJobsites();
+      }).then(res => {
+        for (let doc of res) {
+          let site = new Jobsite();
+          site.readFromDoc(doc);
+          data.sites.push(site);
+        }
+        return this.getMessages();
+      }).then(res => {
+        for(let doc of res) {
+          let msg = new Message();
+          msg.readFromDoc(doc);
+          data.messages.push(msg);
+        }
+        Log.l("getAllData(): Success, final data to be returned is:\n", data);
+        resolve(data);
+      }).catch(err => {
+        Log.l("getAllData(): Error retrieving all data!");
+        Log.e(err);
+        reject(err);
+      })
+    });
+  }
 
 }

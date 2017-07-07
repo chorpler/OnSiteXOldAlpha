@@ -1,58 +1,92 @@
-import { Injectable             } from '@angular/core'              ;
-import { Events, Platform       } from 'ionic-angular'              ;
-import { Storage                } from '@ionic/storage'             ;
-import { NativeStorage          } from 'ionic-native'               ;
-import { DBSrvcs                } from './db-srvcs'                 ;
-import { Shift                  } from '../domain/shift'            ;
-import { PayrollPeriod          } from '../domain/payroll-period'   ;
-import { WorkOrder              } from '../domain/workorder'        ;
-import { ReportOther            } from '../domain/reportother'      ;
-import { Employee               } from '../domain/employee'         ;
-import { Log, isMoment          } from '../config/config.functions' ;
-import { Preferences            } from './preferences'              ;
-import { PREFS, STRINGS         } from '../config/config.strings'   ;
-import * as moment from 'moment';
+import { Injectable                    } from '@angular/core'              ;
+import { Events, Platform              } from 'ionic-angular'              ;
+import { Storage                       } from '@ionic/storage'             ;
+import { NativeStorage                 } from 'ionic-native'               ;
+import { DBSrvcs                       } from './db-srvcs'                 ;
+import { Shift                         } from '../domain/shift'            ;
+import { PayrollPeriod                 } from '../domain/payroll-period'   ;
+import { WorkOrder                     } from '../domain/workorder'        ;
+import { ReportOther                   } from '../domain/reportother'      ;
+import { Employee                      } from '../domain/employee'         ;
+import { Log, isMoment, moment, Moment } from '../config/config.functions' ;
+import { Preferences                   } from './preferences'              ;
+import { STRINGS                       } from '../config/config.strings'   ;
+
+// import * as moment from 'moment';
 
 const XL = moment([1900, 0, 1]);
 
 @Injectable()
 export class UserData {
-  public static _favorites: string[] = [];
-  public static HAS_LOGGED_IN = 'hasLoggedIn';
-  public static HAS_SEEN_TUTORIAL = 'hasSeenTutorial';
-  public static BOOT_STATUS:any = {finished: false};
-  public BOOT_STATUS:any = UserData.BOOT_STATUS;
-  public static shift: Shift;
-  // public static PREFS:any = new Preferences();
-  // public prefs:any = UserData.PREFS;
-  public static workOrderList: Array<WorkOrder> = [];
-  public static current_shift_hours: any;
-  public static circled_numbers:Array<string>;
-  public static circled_numbers_chars: Array<string> = STRINGS.NUMCHARS;
-  public static techWOArrayInitialized:boolean = false;
-  public static shifts:Array<Shift> = [];
-  public static payrollPeriods:Array<PayrollPeriod> = [];
-  public static reports:Array<WorkOrder> = [];
-  public static otherReports:Array<ReportOther> = [];
-  public static user:Employee = null;
-  public static techProfile:any;
-  public static userLoggedIn:boolean = false;
-  public static sesaConfig:any = {};
-  public shifts:Array<Shift> = UserData.shifts;
-  public payrollPeriods:Array<PayrollPeriod> = UserData.payrollPeriods;
-  public reports:Array<WorkOrder> = UserData.reports;
-  public otherReports:Array<ReportOther> = UserData.otherReports;
-  public user:Employee = UserData.user;
-  public techProfile:any = UserData.techProfile;
-  public sesaConfig:any = UserData.sesaConfig;
-  public userLoggedIn:boolean = UserData.userLoggedIn;
+  public static _favorites            : string[]             = []                      ;
+  public static HAS_LOGGED_IN         = 'hasLoggedIn'                                  ;
+  public static HAS_SEEN_TUTORIAL     = 'hasSeenTutorial'                              ;
+  public static BOOT_STATUS           : any                  =   {finished: false }    ;
+  public BOOT_STATUS                  : any                  = UserData.BOOT_STATUS    ;
+  public static shift                 : Shift                                          ;
+  // public static PREFS              : any                  = new Preferences()       ;
+  // public prefs                     : any                  = UserData.PREFS          ;
+  public static workOrderList         : Array<WorkOrder>     = []                      ;
+  public static current_shift_hours   : any                                            ;
+  public static circled_numbers       : Array<string>                                  ;
+  public static circled_numbers_chars : Array<string>        = STRINGS.NUMCHARS        ;
+  public static techWOArrayInitialized: boolean              = false                   ;
+  public static shifts                : Array<Shift>         = []                      ;
+  public static payrollPeriods        : Array<PayrollPeriod> = []                      ;
+  public static reports               : Array<WorkOrder>     = []                      ;
+  public static otherReports          : Array<ReportOther>   = []                      ;
+  public static user                  : Employee             = null                    ;
+  public static techProfile           : any                                            ;
+  public static userLoggedIn          : boolean              = false                   ;
+  public static sesaConfig            : any                  = { }                     ;
+  public static data                  : any = { employee: [], sites: [], reports: [], otherReports: [], payrollPeriods: [], shifts: [], messages: [] };
+  public shifts                       : Array<Shift>         = UserData.shifts         ;
+  public payrollPeriods               : Array<PayrollPeriod> = UserData.payrollPeriods ;
+  public reports                      : Array<WorkOrder>     = UserData.reports        ;
+  public otherReports                 : Array<ReportOther>   = UserData.otherReports   ;
+  public user                         : Employee             = UserData.user           ;
+  public techProfile                  : any                  = UserData.techProfile    ;
+  public sesaConfig                   : any                  = UserData.sesaConfig     ;
+  public data                         : any                  = UserData.data           ;
+  public userLoggedIn                 : boolean              = UserData.userLoggedIn   ;
 
   private static loginData:any = null;
 
   constructor(public events: Events, public storage: Storage, public platform: Platform, public prefs: Preferences) {
     window["onsiteuserdata"] = this;
     window["UserData"] = UserData;
-   }
+  }
+
+  public setData(data:any) {
+    if(data['sites']['length'] === undefined || data['reports']['length'] === undefined || data['otherReports']['length'] === undefined) {
+      Log.e("setData(): Can't use this data to set data property. It is incomplete.\n", data);
+      return false;
+    } else {
+      let keys = Object.keys(data);
+      for(let key of keys) {
+        UserData.data[key] = [];
+        for(let object of data[key]) {
+          UserData.data[key].push(object);
+        }
+      }
+      Log.l("setData(): Done. UserData.data is now:\n", UserData.data);
+      this.data = UserData.data;
+      return UserData.data;
+    }
+  }
+
+  public getData(key?:string) {
+    if(key) {
+      if(UserData.data[key]['length'] !== undefined) {
+        return UserData.data[key];
+      } else {
+        Log.e(`getData('${key}') could not be found.`);
+        return null;
+      }
+    } else {
+      return UserData.data;
+    }
+  }
 
   public getReportsForTech() {
     return this.reports;
