@@ -1,5 +1,6 @@
 
 import { WorkOrder } from './workorder';
+import { ReportOther } from './reportother';
 import { Log, isMoment } from '../config/config.functions';
 import * as moment from 'moment';
 import { sprintf } from 'sprintf-js';
@@ -22,22 +23,23 @@ export class Shift {
   public shift_serial:any;
   public shift_hours:any;
   public shift_reports:Array<WorkOrder> = [];
+  public other_reports:Array<ReportOther> = [];
 
   constructor(site_name?, shift_week?, shift_time?, start_time?, shift_length?) {
     if(arguments.length == 1 && typeof arguments[0] == 'object') {
       this.readFromDoc(arguments[0]);
     } else {
-      this.site_name = site_name || '';
-      this.shift_week = shift_week || '';
-      this.shift_time = shift_time || 'AM';
-      this.start_time = start_time || '';
-      this.shift_length = shift_length || -1;
-      this.shift_id = -1;
-      this.shift_number = -1;
-      this.shift_week_id = -1;
-      this.payroll_period = null;
-      this.shift_serial = null;
-      this.shift_hours = 0;
+      this.site_name      = site_name    || ''   ;
+      this.shift_week     = shift_week   || ''   ;
+      this.shift_time     = shift_time   || 'AM' ;
+      this.start_time     = start_time   || ''   ;
+      this.shift_length   = shift_length || -1   ;
+      this.shift_id       = -1                   ;
+      this.shift_number   = -1                   ;
+      this.shift_week_id  = -1                   ;
+      this.payroll_period = null                 ;
+      this.shift_serial   = null                 ;
+      this.shift_hours    = 0                    ;
       this.updateShiftNumber();
       this.colors = {'red': false, 'green': false, 'blue': false};
       this.XL = { 'shift_time': null, 'shift_week': null, 'current_payroll_week': null};
@@ -263,7 +265,7 @@ export class Shift {
   getTotalShiftHours() {
     let total = 0;
     for(let report of this.shift_reports) {
-      if(!report['type'] || report['type'] === 'Work Report') {
+      if(report['type'] === undefined || report['type'] === 'Work Report') {
         total += report.getRepairHours();
       } else {
        /* ToDo(2017-07-05): Ask Mike if miscellaneous reports should count for shift hours, or what */
@@ -273,6 +275,14 @@ export class Shift {
   }
 
   getTotalPayrollHoursForShift() {
+    let shiftTotal = this.getTotalShiftHours();
+    let bonusHours = this.getTotalBonusHoursForShift();
+    shiftTotal += bonusHours;
+    // Log.l("getTotalPayrollHoursForShift(): For shift %s, %d reports, %f hours, %f hours eligible, so bonus hours = %f.\nShift total: %f hours.", this.getShiftSerial(), this.shift_reports.length, shiftTotal, countsForBonusHours, bonusHours, shiftTotal);
+    return shiftTotal;
+  }
+
+  public getTotalBonusHoursForShift() {
     let shiftTotal = 0, bonusHours = 0, countsForBonusHours = 0;
     for (let report of this.shift_reports) {
       if (!report['type'] || report['type'] === 'Work Report') {
@@ -281,7 +291,6 @@ export class Shift {
         if (report.client !== "SESA") {
           countsForBonusHours += subtotal;
         }
-
       }
     }
     if (countsForBonusHours >= 8 && countsForBonusHours <= 11) {
@@ -289,9 +298,9 @@ export class Shift {
     } else if (countsForBonusHours > 11) {
       bonusHours = 3 + (countsForBonusHours - 11);
     }
-    shiftTotal += bonusHours;
+    // shiftTotal += bonusHours;
     // Log.l("getTotalPayrollHoursForShift(): For shift %s, %d reports, %f hours, %f hours eligible, so bonus hours = %f.\nShift total: %f hours.", this.getShiftSerial(), this.shift_reports.length, shiftTotal, countsForBonusHours, bonusHours, shiftTotal);
-    return shiftTotal;
+    return bonusHours;
   }
 
   getNormalHours() {
@@ -300,6 +309,47 @@ export class Shift {
 
   getPayrollHours() {
     return this.getTotalPayrollHoursForShift();
+  }
+
+  getBonusHours() {
+    return this.getTotalBonusHoursForShift();
+  }
+
+  getTrainingHours() {
+    let total = 0;
+    for(let other of this.other_reports) {
+      if(other.type !== undefined && other.type === 'Training') {
+        total += other.getTotalHours();
+      }
+    }
+    return total;
+  }
+
+  getTravelHours() {
+    let total = 0;
+    for(let other of this.other_reports) {
+      if(other.type !== undefined && other.type === 'Travel') {
+        total += other.getTotalHours();
+      }
+    }
+    return total;
+  }
+
+  getOtherReports() {
+    return this.other_reports;
+  }
+
+  setOtherReports(others:Array<ReportOther>) {
+    this.other_reports = [];
+    for(let other of others) {
+      this.other_reports.push(other);
+    }
+    return this.other_reports;
+  }
+
+  addOtherReport(other:ReportOther) {
+    this.other_reports.push(other);
+    return this.other_reports;
   }
 
   toString(translate?:any) {

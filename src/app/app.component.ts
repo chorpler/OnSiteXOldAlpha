@@ -1,28 +1,27 @@
-import { Http                                   } from '@angular/http'                     ;
-import { Component, ViewChild                   } from '@angular/core'                     ;
-import { Platform, Nav, ToastController, Events, App } from 'ionic-angular'                ;
-import { StatusBar                              } from '@ionic-native/status-bar'          ;
-import { SplashScreen                           } from '@ionic-native/splash-screen'       ;
-import { Storage                                } from '@ionic/storage'                    ;
-import { Push, PushObject, PushOptions          } from '@ionic-native/push'                ;
-import { UserData                               } from '../providers/user-data'            ;
-import { PouchDBService                         } from '../providers/pouchdb-service'      ;
-import { DBSrvcs                                } from '../providers/db-srvcs'             ;
-import { SrvrSrvcs                              } from '../providers/srvr-srvcs'           ;
-import { AuthSrvcs                              } from '../providers/auth-srvcs'           ;
-import { AlertService                           } from '../providers/alerts'               ;
-import { NetworkStatus                          } from '../providers/network-status'       ;
-import { GeolocService                          } from '../providers/geoloc-service'       ;
-import { Log, CONSOLE                           } from '../config/config.functions'        ;
-import { DOMTimeStamp, Coordinates, Position    } from '../config/geoloc'                  ;
-import { LocalNotifications                     } from '@ionic-native/local-notifications' ;
-import * as moment                                from 'moment'                            ;
-import { HomePage                               } from '../pages/home/home'                ;
-import { MessageService                         } from '../providers/message-service'      ;
-import { TabsComponent                          } from '../components/tabs/tabs'           ;
-import { Preferences                            } from '../providers/preferences'          ;
-import { TranslateService                       } from '@ngx-translate/core'               ;
-import { SmartAudio                             } from '../providers/smart-audio'          ;
+import { Http                                        } from '@angular/http'                     ;
+import { Component, ViewChild                        } from '@angular/core'                     ;
+import { Platform, Nav, ToastController, Events, App } from 'ionic-angular'                     ;
+import { StatusBar                                   } from '@ionic-native/status-bar'          ;
+import { SplashScreen                                } from '@ionic-native/splash-screen'       ;
+import { Storage                                     } from '@ionic/storage'                    ;
+import { Push, PushObject, PushOptions               } from '@ionic-native/push'                ;
+import { UserData                                    } from '../providers/user-data'            ;
+import { PouchDBService                              } from '../providers/pouchdb-service'      ;
+import { DBSrvcs                                     } from '../providers/db-srvcs'             ;
+import { SrvrSrvcs                                   } from '../providers/srvr-srvcs'           ;
+import { AuthSrvcs                                   } from '../providers/auth-srvcs'           ;
+import { AlertService                                } from '../providers/alerts'               ;
+import { NetworkStatus                               } from '../providers/network-status'       ;
+import { GeolocService                               } from '../providers/geoloc-service'       ;
+import { Log, CONSOLE, moment, Moment                } from '../config/config.functions'        ;
+import { DOMTimeStamp, Coordinates, Position         } from '../config/geoloc'                  ;
+import { LocalNotifications                          } from '@ionic-native/local-notifications' ;
+import { HomePage                                    } from '../pages/home/home'                ;
+import { MessageService                              } from '../providers/message-service'      ;
+import { TabsComponent                               } from '../components/tabs/tabs'           ;
+import { Preferences                                 } from '../providers/preferences'          ;
+import { TranslateService                            } from '@ngx-translate/core'               ;
+import { SmartAudio                                  } from '../providers/smart-audio'          ;
 
 @Component({ templateUrl: 'app.html' })
 
@@ -88,6 +87,7 @@ export class OnSiteApp {
       window["Platform"] = this.platform;
       window["PouchDB" ].defaults(this.pouchOptions);
 
+      // window[ "PouchDB"].debug.enable('*');
       window[ "PouchDB"].debug.disable('*');
       window[ 'moment' ] = moment;
       window[ 'Log'    ] = Log;
@@ -107,19 +107,20 @@ export class OnSiteApp {
           Log.l("OnSite.initializeApp(): User passed login check. Should be fine.");
           // this.finishStartup().then(() => {
           //   Log.l("Done with finishStartup.");
-          this.rootPage = 'OnSiteHome';
+          // this.rootPage = 'OnSiteHome';
           // }).then(() => {
           Log.l("OnSite.initializeApp(): Publishing startup event!");
-          this.events.publish('startup:finished', true);
           return this.msgService.getMessages();
         }).then(res => {
           Log.l("OnSite.initializeApp(): Got new messages.");
           let badges = this.msgService.getNewMessageCount();
           this.tabs.setMessageBadge(badges);
+          this.rootPage = 'OnSiteHome';
+          this.events.publish('startup:finished', true);
           setTimeout(() => {
             Log.l("OnSite.initializeApp(): Publishing startup event after timeout!");
             callingClass.events.publish('startup:finished', true);
-          }, 500);
+          }, 100);
         }).catch(err => {
           Log.l("OnSite.initializeApp(): Error with login or with publishing startup:finished event!");
           Log.e(err);

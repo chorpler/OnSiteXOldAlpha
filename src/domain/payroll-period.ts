@@ -13,6 +13,7 @@ export class PayrollPeriod {
   public shift_hours_list:Array<number> = [];
   public shift_payroll_hours_list:Array<number> = [];
   public total_hours:number = 0;
+  public bonus_hours:number = 0;
   public payroll_hours:number = 0;
 
   constructor(start_date?: moment.Moment | string | number, end_date?: moment.Moment | string | number, serial_number?:number, shifts?:Array<Shift>, total_hours?:number, payroll_hours?:number) {
@@ -22,6 +23,7 @@ export class PayrollPeriod {
     this.shifts                   = shifts        || []  ;
     this.total_hours              = total_hours   || 0   ;
     this.payroll_hours            = payroll_hours || 0   ;
+    this.bonus_hours              =                  0   ;
     this.shift_hours_list         = []                   ;
     this.shift_payroll_hours_list = []                   ;
 
@@ -110,6 +112,37 @@ export class PayrollPeriod {
     return this.payroll_hours;
   }
 
+  public getBonusHours() {
+    let total = 0;
+    for(let shift of this.shifts) {
+      total += shift.getTotalBonusHoursForShift();
+    }
+    this.bonus_hours = total;
+    return total;
+  }
+
+  public getTrainingHours() {
+    let total = 0;
+    for(let shift of this.shifts) {
+      total += shift.getTrainingHours();
+    }
+    return total;
+  }
+
+  public getTravelHours() {
+    let total = 0;
+    for(let shift of this.shifts) {
+      total += shift.getTravelHours();
+    }
+    return total;
+  }
+
+  public getTotalHours() {
+    let total = 0;
+    total += this.getNormalHours() + this.getBonusHours() + this.getTrainingHours() + this.getTravelHours();
+    return total;
+  }
+
   static getPayrollPeriodDateForShiftDate(date:moment.Moment | Date | string) {
     let scheduleStartsOnDay = 3;
     let day = null, periodStart = null;
@@ -184,6 +217,10 @@ export class PayrollPeriod {
       this.shift_payroll_hours_list.push(hours);
     }
     return this.shift_payroll_hours_list;
+  }
+
+  getPayrollPeriodBonusHours() {
+
   }
 
 }

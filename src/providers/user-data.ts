@@ -6,6 +6,7 @@ import { DBSrvcs                } from './db-srvcs'                 ;
 import { Shift                  } from '../domain/shift'            ;
 import { PayrollPeriod          } from '../domain/payroll-period'   ;
 import { WorkOrder              } from '../domain/workorder'        ;
+import { ReportOther            } from '../domain/reportother'      ;
 import { Employee               } from '../domain/employee'         ;
 import { Log, isMoment          } from '../config/config.functions' ;
 import { Preferences            } from './preferences'              ;
@@ -31,10 +32,21 @@ export class UserData {
   public static techWOArrayInitialized:boolean = false;
   public static shifts:Array<Shift> = [];
   public static payrollPeriods:Array<PayrollPeriod> = [];
+  public static reports:Array<WorkOrder> = [];
+  public static otherReports:Array<ReportOther> = [];
+  public static user:Employee = null;
   public static techProfile:any;
   public static userLoggedIn:boolean = false;
   public static sesaConfig:any = {};
+  public shifts:Array<Shift> = UserData.shifts;
+  public payrollPeriods:Array<PayrollPeriod> = UserData.payrollPeriods;
+  public reports:Array<WorkOrder> = UserData.reports;
+  public otherReports:Array<ReportOther> = UserData.otherReports;
+  public user:Employee = UserData.user;
+  public techProfile:any = UserData.techProfile;
   public sesaConfig:any = UserData.sesaConfig;
+  public userLoggedIn:boolean = UserData.userLoggedIn;
+
   private static loginData:any = null;
 
   constructor(public events: Events, public storage: Storage, public platform: Platform, public prefs: Preferences) {
@@ -42,37 +54,76 @@ export class UserData {
     window["UserData"] = UserData;
    }
 
-   public static getSesaConfig() {
-     return UserData.sesaConfig;
-   }
-   public getSesaConfig() {
-     return UserData.getSesaConfig();
-   }
-   public static setSesaConfig(config:any) {
-     for(let key of Object.keys(config)) {
-       UserData.sesaConfig[key] = config[key];
-     }
-     return UserData.sesaConfig;
-   }
-   public setSesaConfig(config:any) {
-    return UserData.setSesaConfig(config);
-   }
+  public getReportsForTech() {
+    return this.reports;
+  }
 
-   public static startupFinished() {
-     UserData.BOOT_STATUS.finished = true;
-     return UserData.BOOT_STATUS.finished;
-   }
-   public startupFinished() {
-     return UserData.startupFinished();
-   }
+  public setReportsForTech(reports:Array<WorkOrder>) {
+    let workReports = [];
+    for(let report of reports) {
+      workReports.push(report);
+    }
+    UserData.reports = workReports;
+    this.reports = workReports;
+    return workReports;
+  }
 
-   public static waitForStartup() {
-     return new Promise((resolve,reject) => {
-      if(UserData.BOOT_STATUS.finished) {
-        resolve(true);
-      }
-     });
-   }
+  public getReportsOtherForTech() {
+    return this.otherReports;
+  }
+
+  public setReportsOtherForTech(reportsOther:Array<ReportOther>) {
+    let otherReports = [];
+    for(let report of reportsOther) {
+      otherReports.push(report);
+    }
+    UserData.reports = otherReports;
+    this.reports = otherReports;
+    return otherReports;
+  }
+
+  public getShifts() {
+    return this.shifts;
+  }
+
+  public setShifts(shifts:Array<Shift>) {
+    let newShifts = [];
+    for(let shift of shifts) {
+      newShifts.push()
+    }
+  }
+
+  public static getSesaConfig() {
+    return UserData.sesaConfig;
+  }
+  public getSesaConfig() {
+    return UserData.getSesaConfig();
+  }
+  public static setSesaConfig(config:any) {
+    for(let key of Object.keys(config)) {
+      UserData.sesaConfig[key] = config[key];
+    }
+    return UserData.sesaConfig;
+  }
+  public setSesaConfig(config:any) {
+  return UserData.setSesaConfig(config);
+  }
+
+  public static startupFinished() {
+    UserData.BOOT_STATUS.finished = true;
+    return UserData.BOOT_STATUS.finished;
+  }
+  public startupFinished() {
+    return UserData.startupFinished();
+  }
+
+  public static waitForStartup() {
+    return new Promise((resolve,reject) => {
+    if(UserData.BOOT_STATUS.finished) {
+      resolve(true);
+    }
+    });
+  }
 
   getPlatforms() {
   	return this.platform.platforms();

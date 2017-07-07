@@ -157,6 +157,40 @@ page-home {
     max-width: 90%;
   }
 
+  .home-hours-submitted {
+    border-bottom: 1px solid #dedede;
+    ion-note {
+      color: grey;
+    }
+  }
+  .home-hours-extended {
+    margin-top: 5px;
+    ion-note {
+      color: blue;
+    }
+  }
+  .home-hours-training {
+
+    ion-note {
+      color: blue;
+    }
+  }
+  .home-hours-travel {
+    border-bottom: 1px solid #dedede;
+    ion-note {
+      color: blue;
+    }
+  }
+  .home-hours-total {
+    color: black;
+    font-weight: bold;
+    margin-top: 5px;
+    ion-note {
+      color: black;
+      font-weight: bold;
+    }
+  }
+
 
   // ion-popover page-popover-template .scroll-content {
   //   height: 300vh;

@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { App, Platform     } from 'ionic-angular';
-// import { AuthSrvcs         } from '../../providers/auth-srvcs';
-import { NgZone            } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { UserData } from '../../providers/user-data';
-import { AlertService } from '../../providers/alerts';
-import { Log          } from '../../config/config.functions';
+import    { Component, OnInit } from '@angular/core'                 ;
+import    { App, Platform     } from 'ionic-angular'                 ;
+// import { AuthSrvcs         } from '../../providers/auth-srvcs'    ;
+import    { NgZone            } from '@angular/core'                 ;
+import    { TranslateService  } from '@ngx-translate/core'           ;
+import    { UserData          } from '../../providers/user-data'     ;
+import    { AlertService      } from '../../providers/alerts'        ;
+import    { Log               } from '../../config/config.functions' ;
 
 enum Pages {
   'OnSiteHome'    = 0,
@@ -23,31 +23,31 @@ enum Pages {
 })
 export class TabsComponent implements OnInit {
 
-  static nav:any;
-  nav:any = TabsComponent.nav;
-  static tabClass: Array<boolean> = [ false, false, false, false, false, false, false ];
-  tabClass:Array<boolean> = TabsComponent.tabClass;
-  static allTabs:any = {'disabled': false};
-  allTabs:any = TabsComponent.allTabs;
-  static tabInfo:any = [
-    { name: 'OnSiteHome'    , fullName: 'OnSite Home'        , icon: 'ios-home-outline'     , active: false, hideBadge: true , badgeCount: 0 } ,
-    { name: 'Report'        , fullName: 'Report'             , icon: 'ios-document-outline' , active: false, hideBadge: true , badgeCount: 0 } ,
-    { name: 'ReportHistory' , fullName: 'Report History'     , icon: 'ios-folder-outline'   , active: false, hideBadge: true , badgeCount: 0 } ,
-    { name: 'User'          , fullName: 'User'               , icon: 'ios-contact-outline'  , active: false, hideBadge: true , badgeCount: 0 } ,
-    { name: 'Message List'  , fullName: 'Messages'           , icon: 'ios-text-outline'     , active: false, hideBadge: false, badgeCount: 0 } ,
-    { name: 'Settings'      , fullName: 'Settings'           , icon: 'ios-settings-outline' , active: false, hideBadge: true , badgeCount: 0 } ,
+  public static nav:any;
+  public nav:any = TabsComponent.nav;
+  public static tabClass: Array<boolean> = [ false, false, false, false, false, false, false ];
+  public tabClass:Array<boolean> = TabsComponent.tabClass;
+  public static allTabs:any = {'disabled': false};
+  public allTabs:any = TabsComponent.allTabs;
+  public static tabInfo:any = [
+    { name: 'OnSiteHome'    , fullName: 'OnSite Home'        , icon: 'ios-home-outline'     , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 ? true : false}, set hideBadge(val:boolean) {} } ,
+    { name: 'Report'        , fullName: 'Report'             , icon: 'ios-document-outline' , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 ? true : false}, set hideBadge(val:boolean) {} } ,
+    { name: 'ReportHistory' , fullName: 'Report History'     , icon: 'ios-folder-outline'   , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 ? true : false}, set hideBadge(val:boolean) {} } ,
+    { name: 'User'          , fullName: 'User'               , icon: 'ios-contact-outline'  , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 ? true : false}, set hideBadge(val:boolean) {} } ,
+    { name: 'Message List'  , fullName: 'Messages'           , icon: 'ios-text-outline'     , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 ? true : false}, set hideBadge(val:boolean) {} } ,
+    { name: 'Settings'      , fullName: 'Settings'           , icon: 'ios-settings-outline' , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 ? true : false}, set hideBadge(val:boolean) {} } ,
   ];
-  tabInfo:any = TabsComponent.tabInfo;
-  static developerTab: any = { name: 'DevPage', fullName: 'Developer Settings', icon: 'options', active: false, hideBadge: true, badgeCount: 0 };
-  developerTab:any = TabsComponent.developerTab;
-  static tab:any = {
+  public tabInfo:any = TabsComponent.tabInfo;
+  public static developerTab: any = { name: 'DevPage', fullName: 'Developer Settings', icon: 'options', active: false, badgeCount: 0, get hideBadge() { return this.badgeCount <= 0 ? true : false }, set hideBadge(val: boolean) { } };
+  public developerTab:any = TabsComponent.developerTab;
+  public static tab:any = {
     'OnSiteHome': {}
   };
-  onSitePage: any;
-  userLoggedIn: boolean;
-  userIsDeveloper:boolean = false;
-  enumPages:any;
-  enumPagesDef:any;
+  public onSitePage: any;
+  public userLoggedIn: boolean;
+  public userIsDeveloper:boolean = false;
+  public enumPages:any;
+  public enumPagesDef:any;
 
   constructor( public app: App, public platform: Platform, public zone: NgZone, public translate: TranslateService, public ud:UserData, public alert:AlertService) {
     this.getActiveNav();

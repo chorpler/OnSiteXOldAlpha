@@ -71,9 +71,8 @@ export class ReportOther {
   public readFromDoc(doc:any) {
     let len = fields.length;
     for(let i = 0; i < len; i++) {
-      let docKey  = fields[i][0];
-      let thisKey = fields[i][1];
-      this[thisKey] = doc[docKey];
+      let key  = fields[i];
+      this[key] = doc[key];
     }
     this.report_date = moment(this.report_date)    ;
     this.timestampX  = moment(this.timestampX)     ;
@@ -86,6 +85,16 @@ export class ReportOther {
     let docID = tech.avatarName + '_' + idDateTime;
     Log.l("genReportID(): Generated ID:\n", docID);
     return docID;
+  }
+
+  public getTotalHours() {
+    let hours = Number(this.time);
+    if(!isNaN(hours)) {
+      return hours;
+    } else {
+      Log.e("ReportOther.getTotalHours(): Total hours for this report was not numberlike!\n", this.time);
+      return NaN;
+    }
   }
 
   public serialize(tech:Employee) {

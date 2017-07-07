@@ -29,6 +29,7 @@ import { Network                                                 } from '@ionic-
 import { Push, PushObject, PushOptions                           } from '@ionic-native/push'                     ;
 import { LocalNotifications                                      } from '@ionic-native/local-notifications'      ;
 import { UniqueDeviceID                                          } from '@ionic-native/unique-device-id'         ;
+import { Device                                                  } from '@ionic-native/device'                   ;
 import { AppVersion                                              } from '@ionic-native/app-version'              ;
 import { AlertService                                            } from '../providers/alerts'                    ;
 import { GeolocService                                           } from '../providers/geoloc-service'            ;
@@ -44,6 +45,7 @@ import { Preferences                                             } from '../prov
 import { SmartAudio                                              } from '../providers/smart-audio'               ;
 import { NativeAudio                                             } from '@ionic-native/native-audio'             ;
 import { MessageService                                          } from '../providers/message-service'           ;
+import { CommentService                                          } from '../providers/comment-service'           ;
 
 @NgModule({
   declarations   : [
@@ -97,6 +99,8 @@ import { MessageService                                          } from '../prov
                       Network,
                       Push,
                       LocalNotifications,
+                      UniqueDeviceID,
+                      Device,
                       GeolocService,
                       PouchDBService,
                       StorageService,
@@ -105,7 +109,8 @@ import { MessageService                                          } from '../prov
                       Preferences,
                       SmartAudio,
                       NativeAudio,
-                      MessageService
+                      MessageService,
+                      CommentService,
                     ]
 })
 

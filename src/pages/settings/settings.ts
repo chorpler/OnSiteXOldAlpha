@@ -1,15 +1,15 @@
-import { Component, OnInit                    } from '@angular/core'           ;
-import { IonicPage, NavController, Platform, ModalController, ViewController   } from 'ionic-angular'           ;
-import { DBSrvcs                              } from '../../providers/db-srvcs'     ;
-import { Login                                } from '../login/login'               ;
-import { Log                                  } from '../../config/config.functions';
-import { AuthSrvcs                            } from '../../providers/auth-srvcs'   ;
-import { AlertService                         } from '../../providers/alerts'       ;
-import { TabsComponent                        } from '../../components/tabs/tabs'   ;
-import { TranslateService                     } from '@ngx-translate/core'          ;
-import { AppVersion                           } from '@ionic-native/app-version'    ;
-import { StorageService                       } from '../../providers/storage-service';
-import { Preferences                          } from '../../providers/preferences'  ;
+import { Component, OnInit                                                   } from '@angular/core'                   ;
+import { IonicPage, NavController, Platform, ModalController, ViewController } from 'ionic-angular'                   ;
+import { DBSrvcs                                                             } from '../../providers/db-srvcs'        ;
+import { Login                                                               } from '../login/login'                  ;
+import { Log                                                                 } from '../../config/config.functions'   ;
+import { AuthSrvcs                                                           } from '../../providers/auth-srvcs'      ;
+import { AlertService                                                        } from '../../providers/alerts'          ;
+import { TabsComponent                                                       } from '../../components/tabs/tabs'      ;
+import { TranslateService                                                    } from '@ngx-translate/core'             ;
+import { AppVersion                                                          } from '@ionic-native/app-version'       ;
+import { StorageService                                                      } from '../../providers/storage-service' ;
+import { Preferences                                                         } from '../../providers/preferences'     ;
 
 
 @IonicPage({ name: 'Settings' })
@@ -31,7 +31,7 @@ export class Settings implements OnInit {
   // public static PREFS:any = new Preferences();
   // public prefs:any = Settings.PREFS;
 
-  constructor( public navCtrl: NavController, public platform: Platform,  public auth: AuthSrvcs, public alert: AlertService, public tabs: TabsComponent, public translate: TranslateService, public version: AppVersion, public prefs:Preferences, public storage:StorageService) {
+  constructor( public navCtrl: NavController, public platform: Platform,  public auth: AuthSrvcs, public alert: AlertService, public tabs: TabsComponent, public translate: TranslateService, public version: AppVersion, public prefs:Preferences, public storage:StorageService, public modalCtrl:ModalController) {
     window["onsitesettings"] = this;
   }
 
@@ -112,8 +112,16 @@ export class Settings implements OnInit {
   }
 
   sendComment() {
-    let lang = this.translate.instant(['send_comment_title', 'send_comment_message'])
-    this.alert.showAlert(lang['send_comment_title'], lang['send_comment_message']);
+    // let lang = this.translate.instant(['send_comment_title', 'send_comment_message'])
+    // this.alert.showAlert(lang['send_comment_title'], lang['send_comment_message']);
+    let commentModal = this.modalCtrl.create('Comment', {}, {enableBackdropDismiss: true, cssClass: 'comment-modal'});
+    commentModal.onDidDismiss(data => {
+      Log.l("sendComment(): Comment modal dismissed.");
+      if(data) {
+        Log.l(data);
+      }
+    });
+    commentModal.present();
   }
 
   public savePreferences() {

@@ -113,5 +113,16 @@
   "forklift": "Forklift",
   "overhead_crane": "Overhead Crane",
   "spinner_retrieving_reports_other": "Fetching Miscellaneous Reports...",
-  "work_site": "Work Site"
+  "work_site": "Work Site",
+  "report_submit_error_title": "Incomplete Report",
+  "report_submit_error_message": "Please select how many hours and minutes this job took.",
+  "extended_hours": "Extended Hours",
+  "total_payroll_hours": "Total Pay Period Hours",
+  "submitting_comment": "Submitting comment...",
+  "could_not_submit_comment": "Could not submit comment at this time. Internet or server connection problem.",
+  "submitted_comment_successfully": "Your comment has been submitted. Thank you!",
+  "success": "Success",
+  "could_not_read_phone_info": "Could not read phone make and model. In your comment, please tell us what kind of phone you have.",
+  "comment": "Comment",
+  "send_comment": "Send Comment"
 }

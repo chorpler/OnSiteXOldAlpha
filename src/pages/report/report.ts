@@ -425,7 +425,12 @@ export class ReportPage implements OnInit {
     let form = this.workOrderForm.getRawValue();
     let type = form.type;
     if(type === null || type === undefined || type === 'Work Order') {
-      this.processWO();
+      let lang = this.translate.instant(['report_submit_error_title', 'report_submit_error_message']);
+      if (!form.repair_hours) {
+        this.alert.showAlert(lang['report_submit_error_title'], lang['report_submit_error_message']);
+      } else {
+        this.processWO();
+      }
     } else {
       this.processAlternateWO();
     }
@@ -445,41 +450,45 @@ export class ReportPage implements OnInit {
   }
 
   processWO() {
-    let workOrderData = this.workOrderForm.getRawValue();
+    let data = this.workOrderForm.getRawValue();
     let lang = this.translate.instant(['spinner_saving_report', 'error', 'error_saving_report_message']);
-    this.alert.showSpinner(lang['spinner_saving_report']);
-    let tempWO = this.createReport();
-    if (this.mode === 'Add' || this.mode === 'Añadir') {
-      this.db.addDoc(this.prefs.DB.reports, tempWO).then((res) => {
-        Log.l("processWO(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
-        return this.db.syncSquaredToServer(this.prefs.DB.reports);
-      }).then((res) => {
-        Log.l("processWO(): Successfully synchronized work order to remote.");
-        this.alert.hideSpinner();
-        this.tabs.goToPage('OnSiteHome');
-      }).catch((err) => {
-        Log.l("processWO(): Error saving work order to local database.");
-        Log.e(err);
-        this.alert.hideSpinner();
-        this.alert.showAlert(lang['error'], lang['error_saving_report_message']);
-      });
-    } else {
-      tempWO._rev = this.workOrder._rev;
-      Log.l("processWO(): In Edit mode, now trying to save report:\n", tempWO);
-      this.db.updateDoc(this.prefs.DB.reports, tempWO).then((res) => {
-        Log.l("processWO(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
-        return this.db.syncSquaredToServer(this.prefs.DB.reports);
-      }).then((res) => {
-        Log.l("processWO(): Successfully synchronized work order to remote.");
-        this.alert.hideSpinner();
-        this.tabs.goToPage('ReportHistory');
-      }).catch((err) => {
-        Log.l("processWO(): Error saving work order to local database.");
-        Log.e(err);
-        this.alert.hideSpinner();
-        this.alert.showAlert(lang['error'], lang['error_saving_report_message']);
-      });
-    }
+    // if(!data.repair_hours) {
+    //   this.alert.showAlert(lang['report_submit_error_title'], lang['report_submit_error_message']);
+    // } else {
+      this.alert.showSpinner(lang['spinner_saving_report']);
+      let tempWO = this.createReport();
+      if (this.mode === 'Add' || this.mode === 'Añadir') {
+        this.db.addDoc(this.prefs.DB.reports, tempWO).then((res) => {
+          Log.l("processWO(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
+          return this.db.syncSquaredToServer(this.prefs.DB.reports);
+        }).then((res) => {
+          Log.l("processWO(): Successfully synchronized work order to remote.");
+          this.alert.hideSpinner();
+          this.tabs.goToPage('OnSiteHome');
+        }).catch((err) => {
+          Log.l("processWO(): Error saving work order to local database.");
+          Log.e(err);
+          this.alert.hideSpinner();
+          this.alert.showAlert(lang['error'], lang['error_saving_report_message']);
+        });
+      } else {
+        tempWO._rev = this.workOrder._rev;
+        Log.l("processWO(): In Edit mode, now trying to save report:\n", tempWO);
+        this.db.updateDoc(this.prefs.DB.reports, tempWO).then((res) => {
+          Log.l("processWO(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
+          return this.db.syncSquaredToServer(this.prefs.DB.reports);
+        }).then((res) => {
+          Log.l("processWO(): Successfully synchronized work order to remote.");
+          this.alert.hideSpinner();
+          this.tabs.goToPage('ReportHistory');
+        }).catch((err) => {
+          Log.l("processWO(): Error saving work order to local database.");
+          Log.e(err);
+          this.alert.hideSpinner();
+          this.alert.showAlert(lang['error'], lang['error_saving_report_message']);
+        });
+      }
+    // }
   }
 
   processAlternateWO() {

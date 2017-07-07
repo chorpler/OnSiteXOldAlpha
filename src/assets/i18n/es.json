@@ -114,5 +114,16 @@
   "forklift": "Máquina Elevadora",
   "overhead_crane": "Grúa Aérea",
   "spinner_retrieving_reports_other": "Obtener Reportes Varios...",
-  "work_site": "Sitio de Trabajo"
+  "work_site": "Sitio de Trabajo",
+  "report_submit_error_title": "Reporte Incompleto",
+  "report_submit_error_message": "Por favor, seleccione cuántas horas y minutos este trabajo tomó.",
+  "extended_hours": "Horas Extendidas",
+  "total_payroll_hours": "Horas de Semana de Nómina",
+  "submitting_comment": "Enviar comentario...",
+  "could_not_submit_comment": "No se pudo enviar comentarios en este momento. Problema de conexión a Internet o servidor.",
+  "submitted_comment_successfully": "Su comentario ha sido enviado. ¡Gracias!",
+  "success": "Éxito",
+  "could_not_read_phone_info": "No se pudo leer la marca y modelo del teléfono. En su comentario, por favor díganos qué tipo de teléfono tiene.",
+  "comment": "Comentario",
+  "send_comment": "Enviar Comentario"
 }

@@ -181,51 +181,53 @@ export class StorageService {
           resolve(false);
         });
       } else if(this.ud.getPlatform() == 'android') {
-        let ss = {};
-        Log.l("SecureStorage is probably not available (Android) but we will check");
-        var _init = (param) => {
-          let {STORAGE: {LOCKSCREEN: { FIRST, SECOND}}} = STRINGS;
-          return new Promise((iresolve,ireject) => {
-              window['ss'] = new window['cordova']['plugins']['SecureStorage'](
-                () => { iresolve(true);},
-                () => {
-                  if(param==0) {
-                    this.alert.showConfirm(FIRST.TITLE, FIRST.TEXT).then((goToSettings) => {
-                      if(goToSettings) {
-                        window['ss'].secureDevice(() => {iresolve(true)}, () => {Log.l("secureDevice called fail callback and is triggering init again."); iresolve(_init(1));});
-                      } else {
-                        // this.alert.showConfirm('ARE YOU SURE?', 'You will have to log in every time. Go to security settings?').then((res) => {
-                        //   if(res) {
-                        //     window['ss'].secureDevice(() => {iresolve(true)}, () => {iresolve(false)});
-                        //   } else {
-                            iresolve(false);
-                          // }
-                        // }).catch((err) => {
-                        //   iresolve(false);
-                        // });
-                      }
-                    });
-                  } else {
-                    // this.alert.showConfirm(SECOND.TITLE, SECOND.TEXT).then((res) => {
-                    //   if(res) {
-                    //     window['ss'].secureDevice(() => {iresolve(true)}, () => {iresolve(false)});
-                    //   } else {
-                        iresolve(false);
-                    //   }
-                    // }).catch((err) => {
-                    //   iresolve(false);
-                    // });
-                  }
-                }, 'OnSiteX');
-          })
-        };
-        _init(0).then((res) => {
-          resolve(res);
-        }).catch((err) => {
-          Log.l("secureAvailable(): Error!");
-          Log.e(err);
-          resolve(false);
-        });
+        // 2017-07-06: Fuck it, nobody wants to see this warning
+        resolve(false);
+        // let ss = {};
+        // Log.l("SecureStorage is probably not available (Android) but we will check");
+        // var _init = (param) => {
+        //   let {STORAGE: {LOCKSCREEN: { FIRST, SECOND}}} = STRINGS;
+        //   return new Promise((iresolve,ireject) => {
+        //       window['ss'] = new window['cordova']['plugins']['SecureStorage'](
+        //         () => { iresolve(true);},
+        //         () => {
+        //           if(param==0) {
+        //             this.alert.showConfirm(FIRST.TITLE, FIRST.TEXT).then((goToSettings) => {
+        //               if(goToSettings) {
+        //                 window['ss'].secureDevice(() => {iresolve(true)}, () => {Log.l("secureDevice called fail callback and is triggering init again."); iresolve(_init(1));});
+        //               } else {
+        //                 // this.alert.showConfirm('ARE YOU SURE?', 'You will have to log in every time. Go to security settings?').then((res) => {
+        //                 //   if(res) {
+        //                 //     window['ss'].secureDevice(() => {iresolve(true)}, () => {iresolve(false)});
+        //                 //   } else {
+        //                     iresolve(false);
+        //                   // }
+        //                 // }).catch((err) => {
+        //                 //   iresolve(false);
+        //                 // });
+        //               }
+        //             });
+        //           } else {
+        //             // this.alert.showConfirm(SECOND.TITLE, SECOND.TEXT).then((res) => {
+        //             //   if(res) {
+        //             //     window['ss'].secureDevice(() => {iresolve(true)}, () => {iresolve(false)});
+        //             //   } else {
+        //                 iresolve(false);
+        //             //   }
+        //             // }).catch((err) => {
+        //             //   iresolve(false);
+        //             // });
+        //           }
+        //         }, 'OnSiteX');
+        //   });
+        // };
+        // _init(0).then((res) => {
+        //   resolve(res);
+        // }).catch((err) => {
+        //   Log.l("secureAvailable(): Error!");
+        //   Log.e(err);
+        //   resolve(false);
+        // });
       } else {
         Log.l("SecureStorage is not available (not cordova)");
         resolve(false);

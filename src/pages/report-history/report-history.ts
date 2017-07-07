@@ -5,17 +5,39 @@ import { AuthSrvcs                                              } from '../../pr
 import { SrvrSrvcs                                              } from '../../providers/srvr-srvcs'    ;
 import { UserData                                               } from '../../providers/user-data'     ;
 import { AlertService                                           } from '../../providers/alerts'        ;
-import { Log, isMoment                                          } from '../../config/config.functions' ;
+import { Log, isMoment, moment, Moment                          } from '../../config/config.functions' ;
 import { WorkOrder                                              } from '../../domain/workorder'        ;
+import { ReportOther                                            } from '../../domain/reportother'      ;
 import { Shift                                                  } from '../../domain/shift'            ;
 import { PayrollPeriod                                          } from '../../domain/payroll-period'   ;
 import { Preferences                                            } from '../../providers/preferences'   ;
 import { TranslateService                                       } from '@ngx-translate/core'           ;
 import { TabsComponent                                          } from '../../components/tabs/tabs'    ;
 import { OrderBy                                                } from '../../pipes/pipes'             ;
-import * as moment from 'moment';
+// import * as moment from 'moment';
 import { STRINGS                                                } from '../../config/config.strings'   ;
 import { SmartAudio                                             } from '../../providers/smart-audio'   ;
+
+export const _sortReports = function(a,b) {
+  let startA = a['time_start'];
+  let startB = b['time_start'];
+  if (isMoment(a) && isMoment(b)) {
+    return moment(a).isBefore(moment(b)) ? -1 : moment(a).isAfter(moment(b)) ? 1 : 0;
+  } else {
+    return 0;
+  }
+};
+
+export const _sortOtherReports = function(a,b) {
+  let dateA = a['report_date'];
+  let dateB = b['report_date'];
+  return dateA < dateB ? -1 : dateA > dateB ? 1 : 0;
+  // if (isMoment(a) && isMoment(b)) {
+  //   return moment(a).isBefore(moment(b)) ? -1 : moment(a).isAfter(moment(b)) ? 1 : 0;
+  // } else {
+  //   return 0;
+  // }
+};
 
 
 @IonicPage({ name    : 'ReportHistory'                                           })
@@ -29,6 +51,7 @@ export class ReportHistory implements OnInit {
   public selectedItem : any                                                                             ;
   public items        : Array<{title: string, note: string}> = new Array<{title:string, note:string}>() ;
   public reports      : Array<WorkOrder> = []                                                           ;
+  public otherReports : Array<ReportOther> = []
   public shifts       : Array<Shift> = []                                                               ;
   public periods      : Array<PayrollPeriod> = []                                                       ;
   public period       : PayrollPeriod = null                                                            ;
@@ -55,13 +78,13 @@ export class ReportHistory implements OnInit {
     Log.l("ReportHistory: ngOnInit called...");
   }
 
-  ionViewDidEnter() {
+  ionViewDidLoad() {
     Log.l("ReportHistory: ionViewDidEnter called...");
     window["onsitereporthistory"] = this;
-    this.pageReady = false;
-    this.reports = [];
-    this.filterKeys = [];
-    this.filtReports = {};
+    this.pageReady   = false ;
+    this.reports     = []    ;
+    this.filterKeys  = []    ;
+    this.filtReports = { }   ;
     if(this.navParams.get('shift') !== undefined) { this.shiftToUse = this.navParams.get('shift');}
     if (this.navParams.get('payroll_period') !== undefined) { this.period = this.navParams.get('payroll_period');}
     this.periods = this.ud.getPayrollPeriods();
@@ -85,20 +108,11 @@ export class ReportHistory implements OnInit {
       Log.l("ReportHistory: Ended up with all shifts:\n", this.shifts);
     }
     let u = this.ud.getUsername();
-    let sortReports = function(a,b) {
-      let startA = a['time_start'];
-      let startB = b['time_start'];
-      if (isMoment(a) && isMoment(b)) {
-        return moment(a).isBefore(moment(b)) ? -1 : moment(a).isAfter(moment(b)) ? 1 : 0;
-      } else {
-        return 0;
-      }
-    }
     Log.l("ReportHistory: pulling reports...");
     this.server.getReportsForTech(u).then((res) => {
       let unsortedReports = res;
-      this.ud.setWorkOrderList(res);
-      this.reports = unsortedReports.sort(sortReports);
+      // this.ud.setWorkOrderList(res);
+      this.reports = unsortedReports.sort(_sortReports);
       Log.l("ReportHistory: created date-sorted report list:\n", this.reports);
       this.alert.hideSpinner();
       this.alert.showSpinner(lang['spinner_retrieving_reports_other']);
@@ -107,18 +121,22 @@ export class ReportHistory implements OnInit {
       Log.l("ReportHistory: pulled ReportOther for tech:\n", res);
       this.filtReports = {};
       this.filterKeys = [];
+      let reportOthers = res.sort(_sortOtherReports);
+      this.otherReports = reportOthers;
       for(let shift of this.shifts) {
         let date = shift.getStartTime().format("YYYY-MM-DD");
         this.filterKeys.push(date);
         let serial = shift.getShiftSerial();
         let oneReportSet = shift.getShiftReports();
-        let reportOthers = res.sort(sortReports);
-        this.filtReports[date] = oneReportSet;
-        for(let report of this.reports) {
+        // this.filtReports[date] = oneReportSet;
+        this.filtReports[date] = [];
+        for (let report of oneReportSet) {
           this.filtReports[date].push(report);
         }
         for(let other of reportOthers) {
-          this.filtReports[date].push(other);
+          if(other.report_date.format("YYYY-MM-DD") === date) {
+            this.filtReports[date].push(other);
+          }
         }
       }
       this.alert.hideSpinner();

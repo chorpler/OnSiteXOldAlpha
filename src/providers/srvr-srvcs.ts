@@ -1,20 +1,21 @@
-import { Injectable   }     from '@angular/core'              ;
-import { Http         }     from '@angular/http'              ;
-import 'rxjs/add/operator/map'                                ;
+import { Injectable     } from '@angular/core'                ;
+import { Http           } from '@angular/http'                ;
 import { PouchDBService } from '../providers/pouchdb-service' ;
-import { Log          }     from '../config/config.functions' ;
-import { WorkOrder } from '../domain/workorder'               ;
-import { ReportOther } from '../domain/reportother'           ;
-import { UserData } from '../providers/user-data'             ;
-import { Message } from '../domain/message'                   ;
-import { Preferences } from '../providers/preferences'        ;
-// import { StorageService } from '../providers/storage-service'    ;
-// import { PREFS     } from '../config/config.strings'          ;
+import { Log            } from '../config/config.functions'   ;
+import { WorkOrder      } from '../domain/workorder'          ;
+import { ReportOther    } from '../domain/reportother'        ;
+import { Jobsite        } from '../domain/jobsite'            ;
+import { UserData       } from '../providers/user-data'       ;
+import { Message        } from '../domain/message'            ;
+import { Preferences    } from '../providers/preferences'     ;
+import { Comment        } from '../domain/comment'            ;
+// import { StorageService } from '../providers/storage-service' ;
+import 'rxjs/add/operator/map'                                ;
 
 
 export const noDD     = "_\uffff";
 export const noDesign = {include_docs: true, startkey: noDD };
-
+export const PouchDB  = PouchDBService.PouchInit();
 /*
   Generated class for the SrvrSrvcs provider.
 
@@ -23,7 +24,6 @@ export const noDesign = {include_docs: true, startkey: noDD };
 */
 @Injectable()
 export class SrvrSrvcs {
-
 	public PouchDB              : any    = {                                                }     ;
 	public RemoteDB             : any    = {                                                }     ;
 	public static staticRDB     : any    = {                                                }     ;
@@ -37,7 +37,7 @@ export class SrvrSrvcs {
 
   constructor(public http: Http, public ud:UserData) {
     Log.l("Hello SrvrSrvcs provider");
-    window["serverServices"] = this;
+    window["ServerServices"] = this;
     window["SrvrSrvcs"] = SrvrSrvcs;
     SrvrSrvcs.StaticPouchDB = PouchDBService.PouchInit();
     this.PouchDB = SrvrSrvcs.StaticPouchDB;
@@ -45,24 +45,20 @@ export class SrvrSrvcs {
     // Log.l("SrvrSrvcs: StaticPouchDB is:\n",SrvrSrvcs.StaticPouchDB);
   }
 
-  static getAuthHeaders(user: string, pass: string) {
+  public static getAuthHeaders(user: string, pass: string) {
     let authToken = 'Basic ' + window.btoa(user + ':' + pass);
     let ajaxOpts = { headers: { Authorization: authToken } };
     return ajaxOpts;
   }
 
-  static getBaseURL() {
-    let port = this.prefs.SERVER.port;
+  public static getBaseURL() {
+    let port = Number(this.prefs.SERVER.port);
     let server = this.prefs.SERVER.server;
     let protocol = this.prefs.SERVER.protocol;
-    if(port !== '' && port !== undefined && port !== null) {
-      return `${protocol}://${server}:${port}`;
-    } else {
-      return `${protocol}://${server}`;
-    }
+    return port !== 443 ? `${protocol}://${server}:${port}` : `${protocol}://${server}`;
   }
 
-  static getInsecureLoginBaseURL(user:string, pass:string) {
+  public static getInsecureLoginBaseURL(user:string, pass:string) {
     let port = this.prefs.SERVER.port;
     let server = this.prefs.SERVER.server;
     let protocol = this.prefs.SERVER.protocol;
@@ -80,20 +76,75 @@ export class SrvrSrvcs {
     return url1;
   }
 
-  static getGeolocationHeaders(user:string, pass:string) {
+  public static getGeolocationHeaders(user:string, pass:string) {
     let ajaxOpts = SrvrSrvcs.getAuthHeaders(user, pass);
     ajaxOpts['headers']['Content-Type'] = "application/json";
     ajaxOpts['headers']['Accept'] = "application/json";
     return ajaxOpts['headers'];
   }
 
-  static getGeolocationURL(user:string, pass:string) {
+  public static getGeolocationURL(user:string, pass:string) {
     // let ajaxOpts = SrvrSrvcs.getAuthHeaders(user, pass);
     // ajaxOpts['headers']['Content-Type'] = "application/json";
     // ajaxOpts['headers']['Accept'] = "application/json";
     // let URL = `${SrvrSrvcs.getBaseURL()}/sesa_geolocation`;
     let URL = `${SrvrSrvcs.getInsecureLoginBaseURL(user, pass)}/sesa_geolocation`;
     return URL;
+  }
+
+  public getAuthHeaders(user:string, pass:string) {
+    return SrvrSrvcs.getAuthHeaders(user, pass);
+  }
+
+  public getBaseURL() {
+    return SrvrSrvcs.getBaseURL();
+  }
+
+  public getInsecureLoginBaseURL(user:string, pass:string) {
+    return SrvrSrvcs.getInsecureLoginBaseURL(user, pass);
+  }
+
+  public getRemoteDatabaseURL(dbname?:string) {
+    return SrvrSrvcs.getRemoteDatabaseURL(dbname);
+  }
+
+  public getgetGeolocationHeaders(user:string, pass:string) {
+    return SrvrSrvcs.getGeolocationHeaders(user, pass);
+  }
+
+  public getGeolocationURL(user:string, pass:string) {
+    return SrvrSrvcs.getGeolocationURL(user, pass);
+  }
+
+  public loginToDatabase(user:string, pass:string, dbname:string) {
+    let adapter = this.prefs.SERVER.protocol;
+    let authToken = 'Basic ' + window.btoa(user + ':' + pass);
+    let authOpts = { headers: { Authorization: authToken } };
+    let ajaxOpts = { ajax: authOpts };
+    let opts = { adapter: adapter, skip_setup: true, ajax: { withCredentials: true, headers: authOpts.headers, auth: { username: user, password: pass } } };
+
+    return new Promise((resolve, reject) => {
+      Log.l(`loginToDatabase(): About to login to database ${dbname} with options:\n`, opts);
+      let rdb1 = this.addRDB(dbname);
+      rdb1.login(user, pass, opts).then(res => {
+        return rdb1.getSession();
+      }).then((session) => {
+        if (typeof session.info === 'undefined' || typeof session.info.authenticated !== 'string') {
+          Log.l("loginToDatabase(): Authentication failed");
+          SrvrSrvcs.userInfo = { u: '', p: '' };
+          resolve(false);
+        } else {
+          Log.l("loginToDatabase(): Authentication successful.");
+          SrvrSrvcs.userInfo = { u: user, p: pass };
+          this.ud.storeCredentials(user, pass);
+          resolve(true);
+        }
+      }).catch(err => {
+        Log.l("loginToDatabase(): Error logging in.");
+        Log.e(err);
+        reject(err);
+      });
+    });
   }
 
   loginToServer(user:string, pass:string, dbname?:string, auto?:boolean) {
@@ -105,22 +156,24 @@ export class SrvrSrvcs {
   		}
       let url = SrvrSrvcs.getBaseURL() + '/' + dbURL;
 			let authToken = 'Basic ' + window.btoa(user + ':' + pass);
-			let ajaxOpts = { headers: { Authorization: authToken } };
-			let opts = {adapter: adapter, skipSetup: true, ajax: {withCredentials: true, ajaxOpts, auth: {username: user, password: pass}}};
+      let authOpts = { headers: { Authorization: authToken } };
+      let ajaxOpts = { ajax: authOpts };
+      let opts = { adapter: adapter, skip_setup: true, ajax: { withCredentials: true, headers: authOpts.headers, auth: { username: user, password: pass } } };
 			let rdb1 = this.addRDB(dbURL);
       let tprofile = null;
       Log.l(`loginToServer(): About to login with u '${user}', p '${pass}', dburl '${dbURL}'.`);
-			rdb1.login(user, pass, {ajax: ajaxOpts}).then((res) => {
-  			return rdb1.getSession();
-  		}).then((session) => {
-				if(typeof session.info == 'undefined' || typeof session.info.authenticated != 'string') {
-					Log.l("loginToServer(): Authentication failed");
-					SrvrSrvcs.userInfo = {u: '', p: ''};
-					resolve(false);
-				} else {
+      this.loginToDatabase(user, pass, dbURL).then(res => {
+      // rdb1.login(user, pass, opts).then((res) => {
+  		// 	return rdb1.getSession();
+  		// }).then((session) => {
+				// if(typeof session.info === 'undefined' || typeof session.info.authenticated !== 'string') {
+				// 	Log.l("loginToServer(): Authentication failed");
+				// 	SrvrSrvcs.userInfo = {u: '', p: ''};
+				// 	resolve(false);
+				// } else {
 					Log.l("loginToServer(): Authentication successful.");
-					SrvrSrvcs.userInfo = {u: user, p: pass};
-          this.ud.storeCredentials(user, pass);
+					// SrvrSrvcs.userInfo = {u: user, p: pass};
+          // this.ud.storeCredentials(user, pass);
           // this.ud.setLoginStatus(true);
           let rdb2 = this.addRDB(this.prefs.DB.employees);
           if(auto === undefined || auto === false) {
@@ -149,7 +202,7 @@ export class SrvrSrvcs {
               resolve(true);
             });
           }
-				}
+				// }
 			}).catch((err) => {
 				Log.l("loginToServer(): Authentication successful.");
   			Log.e(err);
@@ -272,24 +325,32 @@ export class SrvrSrvcs {
     });
   }
 
-  getReportsForTech(tech:string):Promise<Array<WorkOrder>> {
+  getReportsForTech(tech:string, dates?:any):Promise<Array<WorkOrder>> {
     return new Promise((resolve, reject) => {
       let u = this.ud.getUsername();
       let p = this.ud.getPassword();
       let woArray = new Array<WorkOrder>();
+      let query:any = {selector: {username: {$eq: tech}}, limit:10000};
       Log.l("getReportsForTech(): Using database: ", this.prefs.DB.reports);
-      this.loginToServer(u, p, this.prefs.DB.login).then((res) => {
+      if(dates) {
+        if(dates['start'] !== undefined && dates['end'] === undefined) {
+          query.selector = {$and: [{username: {$eq: tech}}, {rprtDate: {$eq: dates['start']}}]};
+        } else if(dates['start'] !== undefined && dates['end'] !== undefined) {
+          query.selector = { $and: [{ username: { $eq: tech } }, {rprtDate: { $geq: dates['start'] }}, {rprtDate: {$leq: dates['end']}}]};
+        }
+      }
+      this.loginToDatabase(u, p, this.prefs.DB.reports).then((res) => {
         if (res) {
           let rdb1 = this.addRDB(this.prefs.DB.reports);
-          // let username = tech.username;
-          let query = {selector: {username: {$eq: tech}}};
-          // query.selector.username['$eq'] = username;
-          rdb1.createIndex({index: {fields: ['username']}}).then((res) => {
-            Log.l(`getReportsForTech(): index created successfully, now running query...`);
-            return rdb1.find(query);
-          }).then((res) => {
+          // rdb1.createIndex({index: {fields: ['username']}}).then((res) => {
+          //   Log.l(`getReportsForTech(): index created successfully, now running query...`);
+          //   return
+            rdb1.find(query)
+            // ;
+          // })
+          .then((res) => {
             Log.l(`getReportsForTech(): Got reports for '${tech}':\n`, res);
-            let woArray = new Array<WorkOrder>();
+            // let woArray = new Array<WorkOrder>();
             for(let doc of res.docs) {
               let wo = new WorkOrder();
               wo.readFromDoc(doc);
@@ -313,22 +374,34 @@ export class SrvrSrvcs {
     });
   }
 
-  getReportsOtherForTech(tech:string):Promise<Array<ReportOther>> {
+  getReportsOtherForTech(tech: string, dates?: any):Promise<Array<ReportOther>> {
     return new Promise((resolve, reject) => {
       let u = this.ud.getUsername();
       let p = this.ud.getPassword();
       // let c = this.ud.getCredentials();
       // Log.l("getReportsForTech(): Got credentials:\n", c);
+      let query: any = { selector: { username: { $eq: tech } }, limit: 10000 };
+      Log.l("getReportsForTech(): Using database: ", this.prefs.DB.reports);
+      if (dates) {
+        if (dates['start'] !== undefined && dates['end'] === undefined) {
+          query.selector = { $and: [{ username: { $eq: tech } }, { rprtDate: { $eq: dates['start'] } }] };
+        } else if (dates['start'] !== undefined && dates['end'] !== undefined) {
+          query.selector = { $and: [{ username: { $eq: tech } }, { rprtDate: { $geq: dates['start'] } }, { rprtDate: { $leq: dates['end'] } }] };
+        }
+      }
       let woArray = new Array<ReportOther>();
       Log.l("getReportsOtherForTech(): Using database: ", this.prefs.DB.reports_other);
-      this.loginToServer(u, p, this.prefs.DB.login).then((res) => {
+      this.loginToDatabase(u, p, this.prefs.DB.reports_other).then((res) => {
         if (res) {
           let rdb1 = this.addRDB(this.prefs.DB.reports_other);
           let query = {selector: {username: {$eq: tech}}};
-          rdb1.createIndex({index: {fields: ['username']}}).then((res) => {
-            Log.l(`getReportsOtherForTech(): index created successfully, now running query...`);
-            return rdb1.find(query);
-          }).then((res) => {
+          // rdb1.createIndex({index: {fields: ['username']}}).then((res) => {
+          //   Log.l(`getReportsOtherForTech(): index created successfully, now running query...`);
+          //   return
+            rdb1.find(query)
+            // ;
+          // })
+          .then((res) => {
             Log.l(`getReportsOtherForTech(): Got reports for '${tech}':\n`, res);
             let woArray = new Array<ReportOther>();
             for(let doc of res.docs) {
@@ -359,8 +432,8 @@ export class SrvrSrvcs {
       let p = this.ud.getPassword();
       this.loginToServer(u, p, this.prefs.DB.login).then((res) => {
       	if(res) {
-      		let rpdb = this.addRDB(this.prefs.DB.reports);
-      		rpdb.allDocs({include_docs: true}).then((result) => {
+      		let rdb1 = this.addRDB(this.prefs.DB.reports);
+          rdb1.allDocs({include_docs: true}).then((result) => {
 		        let data = [];
 						let docs = result.rows.map((row) => {
 							if( row.doc.username === user ) { data.push(row.doc); }
@@ -416,18 +489,31 @@ export class SrvrSrvcs {
   }
 
   syncFromServer(dbname: string) {
-    Log.l(`syncFromServer(): About to attempt replication of remote->'${dbname}'`);
-    var ev2 = function(b) { Log.l(b.status); Log.l(b);};
-    var db1 = this.addDB(dbname);
-    var db2 = this.addRDB(dbname);
+    Log.l(`syncFromServer(): About to attempt replication of remote->'${dbname}' with options:\n`, this.prefs.SERVER.repopts);
+    // let ev2 = function(b) { Log.l(b.status); Log.l(b);};
+    let db1 = this.addDB(dbname);
+    let db2 = this.addRDB(dbname);
+    Log.l(db1);
+    Log.l(db2);
+    let rdbURL = this.getBaseURL() + "/" + dbname;
+    let opts = { live: false, retry: false };
+    let u = this.ud.getUsername(), p = this.ud.getPassword();
     return new Promise((resolve, reject) => {
-      db2.replicate.to(db1, this.prefs.SERVER.repopts).then((res) => {
+      this.loginToDatabase(u, p, dbname).then(res => {
+        Log.l(`syncFromServer(): Successfully logged in to remote->'${dbname}'`);
+        return db1.replicate.from(db2, opts);
+        // return db1.replicate.from(db2, {live: false, retry: true});
+        // return db1.replicate.from(db2, this.prefs.SERVER.repopts);
+        // return db1.replicate.from(db2, this.prefs.SERVER.repopts);
+        // return PouchDB.replicate(rdbURL, dbname, opts);
+
+      }).then((res) => {
         Log.l(`syncFromServer(): Successfully replicated remote->'${dbname}'`);
         Log.l(res);
         resolve(res);
       }).catch((err) => {
         Log.l(`syncFromServer(): Failure replicating remote->'${dbname}'`);
-        Log.l(err);
+        Log.e(err);
         reject(err);
       });
     });
@@ -442,57 +528,58 @@ export class SrvrSrvcs {
       let dbname = this.prefs.DB.messages;
       let db1 = this.addDB(dbname);
       let rdb1 = this.addRDB(dbname);
-      rdb1.allDocs({include_docs:true}).then(res => {
-      // this.syncFromServer(dbname).then(res => {
+      // rdb1.allDocs({include_docs:true}).then(res => {
+      this.syncFromServer(dbname).then((res:any) => {
         // Log.l("fetchNewMessages(): Successfully synchronized messages from server. Now looking for new messages.");
-        // return rdb1.allDocs({include_docs: true});
-        Log.l("fetchNewMessages(): Successfully retrieved all messages from the server.");
+        return db1.allDocs({include_docs: true});
+      }).then(res => {
+        // Log.l("fetchNewMessages(): Successfully retrieved all messages from the server.");
 
       // }).then(res => {
-        Log.l("fetchNewMessages(): Got results:\n", res);
-        remote = new Array<Message>();
+        // Log.l("fetchNewMessages(): Got results:\n", res);
+        // remote = new Array<Message>();
         for(let row of res.rows) {
           let doc = row.doc;
           if(doc) {
             let msg = new Message();
             msg.readFromDoc(row.doc);
-            remote.push(msg);
-          }
-        }
-        Log.l("fetchNewMessages(): Final remote messages array is:\n", remote);
-        Log.l("fetchNewMessages(): Now getting local messages...");
-        return db1.allDocs({include_docs:true});
-      }).then(res => {
-        Log.l("fetchNewMessages(): Done getting local messages:\n", res);
-        for(let row of res.rows) {
-          let doc = row.doc;
-          if(doc) {
-            let msg = new Message();
-            msg.readFromDoc(row.doc);
-            local.push(msg);
-          }
-        }
-        Log.l("fetchNewMessages(): Final output of local messages is:\n", local);
-        let j = -1;
-        let msg = null, lmsg = null;
-        for(msg of remote) {
-          let i = 0, match = -1;
-          j++;
-          for(lmsg of local) {
-            Log.l(`fetchNewMessages():Index ${j}.${i} remote '${msg._id}' to local '${lmsg._id}'...`);
-            if(msg._id === lmsg._id && lmsg.read == true) {
-              Log.l(`fetchNewMessages(): ======> Match at index ${j}.${i}!`);
-              match = i;
-            }
-            i++;
-          }
-          if(match === -1) {
             out.push(msg);
-            continue;
-          } else {
-            out.push(local[match]);
           }
         }
+        // Log.l("fetchNewMessages(): Final remote messages array is:\n", remote);
+        // Log.l("fetchNewMessages(): Now getting local messages...");
+        // return db1.allDocs({include_docs:true});
+      // }).then(res => {
+        // Log.l("fetchNewMessages(): Done getting local messages:\n", res);
+        // for(let row of res.rows) {
+        //   let doc = row.doc;
+        //   if(doc) {
+        //     let msg = new Message();
+        //     msg.readFromDoc(row.doc);
+        //     local.push(msg);
+        //   }
+        // }
+        // Log.l("fetchNewMessages(): Final output of local messages is:\n", local);
+        // let j = -1;
+        // let msg = null, lmsg = null;
+        // for(msg of remote) {
+        //   let i = 0, match = -1;
+        //   j++;
+        //   for(lmsg of local) {
+        //     // Log.l(`fetchNewMessages():Index ${j}.${i} remote '${msg._id}' to local '${lmsg._id}'...`);
+        //     if(msg._id === lmsg._id && lmsg.read == true) {
+        //       // Log.l(`fetchNewMessages(): ======> Match at index ${j}.${i}!`);
+        //       match = i;
+        //     }
+        //     i++;
+        //   }
+        //   if(match === -1) {
+        //     out.push(msg);
+        //     continue;
+        //   } else {
+        //     out.push(local[match]);
+        //   }
+        // }
         Log.l("fetchNewMessages(): Final output of new messages is:\n", out);
         resolve(out);
       }).catch(err => {
@@ -527,5 +614,67 @@ export class SrvrSrvcs {
       });
     });
   }
+
+  public saveComment(comment:Comment) {
+    return new Promise((resolve,reject) => {
+      let rdb1 = this.addRDB(this.prefs.DB.comments);
+      let newDoc = comment.serialize();
+      Log.l("saveComment(): Attempting to save comment to server:\n", comment);
+      Log.l(newDoc);
+      rdb1.upsert(newDoc['_id'], (doc) => {
+        if(doc) {
+          let id = doc._id;
+          let rev = doc._rev;
+          doc = newDoc;
+          doc._rev = rev;
+        } else {
+          doc = newDoc;
+          delete doc['_rev'];
+        }
+        return doc;
+      }).then(res => {
+        Log.l("saveComment(): Succeeded in submitting comment!\n", res);
+        resolve(res);
+      }).catch(err => {
+        Log.l("saveComment(): Error submitting comment!");
+        Log.e(err);
+        reject(err);
+      });
+    });
+  }
+
+  // public getAllData(): Promise<any> {
+  //   return new Promise((resolve, reject) => {
+  //     let data = { sites: [], reports: [], payrollPeriods: [], shifts: [] };
+  //     this.getReportsForTech().then(res => {
+  //       for (let doc of res) {
+  //         let site = new Jobsite();
+  //         site.readFromDoc(doc);
+  //         data.sites.push(site);
+  //       }
+  //       return this.getEmployees();
+  //     }).then(res => {
+  //       for (let doc of res) {
+  //         let user = new Employee();
+  //         user.readFromDoc(doc);
+  //         data.employees.push(user);
+  //       }
+  //       return this.getAllReportsPlusNew();
+  //     }).then(res => {
+  //       for (let doc of res) {
+  //         data.reports.push(doc);
+  //       }
+  //       Log.l("getAllData(): Success, final data to be returned is:\n", data);
+  //       resolve(data);
+  //       // }).then(res => {
+  //       // }).then(res => {
+  //       // }).then(res => {
+  //     }).catch(err => {
+  //       Log.l("getAllData(): Error retrieving all data!");
+  //       Log.e(err);
+  //       reject(err);
+  //     })
+  //   });
+  // }
 
 }

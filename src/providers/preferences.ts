@@ -21,6 +21,7 @@ export class Preferences {
     'scheduling': 'sesa-scheduling',
     'technicians': 'sesa-technicians',
     'messages': 'sesa-messages',
+    'comments': 'sesa-comments',
     'login': '_session'
   };
   public static SERVER: any = {
@@ -147,11 +148,14 @@ export class Preferences {
   reinitializePrefs() {
     Preferences.DB = {
       'reports': 'reports_ver101100',
+      'reports_other': 'sesa-reports-other',
       'employees': 'sesa-employees',
       'config': 'sesa-config',
       'jobsites': 'sesa-jobsites',
       'scheduling': 'sesa-scheduling',
       'technicians': 'sesa-technicians',
+      'messages': 'sesa-messages',
+      'comments': 'sesa-comments',
       'login': '_session'
     };
 

@@ -11,6 +11,7 @@ import { SrvrSrvcs                                        } from '../../provider
 import { AlertService                                     } from '../../providers/alerts'        ;
 import { UserData                                         } from '../../providers/user-data'     ;
 import { WorkOrder                                        } from '../../domain/workorder'        ;
+import { ReportOther                                      } from '../../domain/reportother'      ;
 import { Shift                                            } from '../../domain/shift'            ;
 import { PayrollPeriod                                    } from '../../domain/payroll-period'   ;
 import { Employee                                         } from '../../domain/employee'         ;
@@ -64,6 +65,7 @@ export class HomePage {
   static homePageStatus       : any           = {startupFinished: false} ;
   homePageStatus              : any           = HomePage.homePageStatus  ;
   payrollWorkOrders           : Array<WorkOrder>                         ;
+  otherReports                : Array<ReportOther>                       ;
   hoursTotalList              : Array<any>    = []                       ;
   shifts                      : Array<Shift>  = []                       ;
   payrollPeriods              : Array<PayrollPeriod> = []                ;
@@ -122,7 +124,10 @@ export class HomePage {
       HomePage.EVENTS.unsubscribe('startup:finished', startupHandler);
       Log.l("HomePage.startupHandler(): now executing runEveryTime() function...");
       HomePage.homePageStatus.startupFinished = true;
-      caller.runEveryTime();
+      caller.translate.get('spinner_fetching_reports').subscribe(result => {
+        caller.spinnerText = result;
+        caller.runEveryTime();
+      });
     };
     if(HomePage.homePageStatus.startupFinished === false) {
       this.events.subscribe('startup:finished', startupHandler);
@@ -135,13 +140,14 @@ export class HomePage {
     // if(HomePage.homePageStatus.startupFinished) {
       Log.l("HomePage.ionViewDidEnter(): startup already finished, just continuing with runEveryTime()...");
       this.tabs.highlightTab(0);
-      this.runEveryTime();
+      // this.runEveryTime();
     // }
   }
 
   ionViewDidLoad() {
     Log.l("HomePage: ionViewDidLoad() called... not doing anything right now.");
     this.dataReady = false;
+    this.runEveryTime();
   }
 
   runEveryTime() {
@@ -153,28 +159,27 @@ export class HomePage {
       Log.l("HomePage: ionViewDidEnter() says work order array not initialized, fetching work orders.");
       this.tabs.highlightPageTab('OnSiteHome');
       // this.fixedHeight = this.mapElement.nativeElement.offsetHeight;
-      var caller = this;
-      this.translate.get('spinner_fetching_reports').subscribe((result) => {
-        caller.spinnerText = result;
-        caller.alert.showSpinner(caller.spinnerText);
-        caller.fetchTechWorkorders().then((res) => {
-          Log.l("HomePage: ionViewDidEnter() fetched work reports, maybe:\n", res);
-          caller.ud.setWorkOrderList(res);
-          // caller.ud.createShifts();
-          caller.techProfile = caller.ud.getTechProfile();
-          caller.shifts = caller.ud.getPeriodShifts();
-          caller.countHoursForShifts();
-          caller.alert.hideSpinner();
-          caller.dataReady = true;
-        }).catch((err) => {
-          Log.l("HomePage: ionViewDidEnter() got error while fetching tech work orders.");
-          Log.e(err);
-          caller.alert.hideSpinner();
-          let lang = caller.translate.instant(['error', 'alert_retrieve_reports_error'])
-          caller.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
-        });
+      this.alert.showSpinner(this.spinnerText);
+      this.fetchTechWorkorders().then((res) => {
+        // Log.l("HomePage: ionViewDidEnter() fetched work reports, maybe:\n", res);
+        // this.ud.setWorkOrderList(res);
+        // this.ud.createShifts();
+        this.techProfile = this.ud.getTechProfile();
+        this.shifts = this.ud.getPeriodShifts();
+        this.countHoursForShifts();
+        this.alert.hideSpinner();
+        this.dataReady = true;
+      }).catch((err) => {
+        Log.l("HomePage: ionViewDidEnter() got error while fetching tech work orders.");
+        Log.e(err);
+        this.alert.hideSpinner();
+        let lang = this.translate.instant(['error', 'alert_retrieve_reports_error'])
+        this.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
       });
     }
+  }
+
+  public runAfterTranslation() {
   }
 
   // runWhenReady() {
@@ -215,22 +220,42 @@ export class HomePage {
     return new Promise((resolve,reject) => {
       this.server.getReportsForTech(techid).then((res) => {
         Log.l(`HomePage: getReportsForTech(${techid}): Success! Result:\n`, res);
+        // this.techWorkOrders    = res;
         this.ud.setWorkOrderList(res);
         this.techWorkOrders    = this.ud.getWorkOrderList();
+        return this.server.getReportsOtherForTech(techid);
+      }).then(res => {
+        this.otherReports      = res;
         let tech               = this.ud.getTechProfile();
         let now                = moment();
         let payrollPeriod      = this.ud.getPayrollPeriodForDate(now);
         this.payrollPeriods    = this.ud.createPayrollPeriods(tech, this.payrollPeriodCount);
         for(let period of this.payrollPeriods) {
           for(let shift of period.shifts) {
-            let reports = this.ud.getWorkOrdersForShift(shift);
+            // let reports = this.ud.getWorkOrdersForShift(shift);
+            // let shiftDate = Math.floor(shift.start_time.toExcel());
+            let reports = new Array<WorkOrder>();
+            for(let report of this.techWorkOrders) {
+              // shift.setShiftReports(reports);
+              if(report.report_date === shift.start_time.format("YYYY-MM-DD")) {
+                reports.push(report);
+              }
+            }
+            let otherReports = new Array<ReportOther>();
+            for(let other of this.otherReports) {
+              if(other.report_date.format("YYYY-MM-DD") === shift.start_time.format("YYYY-MM-DD")) {
+                otherReports.push(other);
+              }
+            }
             shift.setShiftReports(reports);
+            shift.setOtherReports(otherReports);
           }
         }
         this.period            = this.payrollPeriods[0];
         Log.l("fetchTechWorkOrders(): Got payroll periods and all work orders:\n", this.payrollPeriods);
         Log.l(this.techWorkOrders);
-        resolve(res);
+        Log.l(this.otherReports);
+        resolve(this.techWorkOrders);
       }).catch((err) => {
         Log.l(`HomePage: getReportsForTech(${techid}): Error!`);
         Log.e(err);
