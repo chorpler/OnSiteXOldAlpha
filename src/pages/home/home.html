@@ -41,7 +41,15 @@
     <ion-list no-lines no-border class="home-card-body-list">
       <ion-item class="ion-item-button-like"  *ngFor="let shift of period.shifts; let i=index" (click)="showShiftReports(shift)">
         <ion-icon class="shft-num-icon">{{numChars[shift.shift_number]}}</ion-icon>
-        <span class="shift-text">{{shift.getNormalHours()}}&nbsp;/&nbsp;{{shift.getShiftLength()}} &nbsp;Hrs. &nbsp;&nbsp;</span>
+        <span class="shift-text" *ngIf="shift.getShiftReportsStatus().status && !shift.getShiftReportsStatus().hours">
+          {{shift.getShiftReportsStatus().code}}&nbsp;/&nbsp;{{shift.getShiftReportsStatus().code}} &nbsp;&nbsp;
+        </span>
+        <span class="shift-text" *ngIf="shift.getShiftReportsStatus().status && shift.getShiftReportsStatus().hours">
+          {{shift.getShiftReportsStatus().code}}&nbsp;+&nbsp;{{shift.getShiftReportsStatus().hours}} &nbsp;Hrs. &nbsp;&nbsp;
+        </span>
+        <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().status">
+          {{shift.getNormalHours()}}&nbsp;/&nbsp;{{shift.getShiftLength()}} &nbsp;Hrs. &nbsp;&nbsp;
+        </span>
         <span class="normal-txt">{{shift.getStartTime().format("ddd, MMM D")}}</span>
         <ion-icon item-end class="chk-box-icon" [ngClass]="shift.getShiftStatus()" [innerHTML]="getCheckboxSVG(shift) | safe: 'html'" (click)="possibleSound(shift)"></ion-icon>
       </ion-item>
@@ -68,6 +76,36 @@
         {{"travel_hours" | translate}} :
         <ion-note item-end>
           {{ period.getTravelHours() }}
+        </ion-note>
+      </ion-list-header>
+      <ion-list-header class="home-hours-other" *ngIf="period.getSpecialHours('Standby').hours">
+        {{"standby_hours" | translate}} :
+        <ion-note item-end>
+          {{ period.getSpecialHours('Standby').hours }}
+        </ion-note>
+      </ion-list-header>
+      <ion-list-header class="home-hours-other" *ngIf="period.getSpecialHours('Standby: HB Duncan').hours">
+        {{"standby_hb_duncan_hours" | translate}} :
+        <ion-note item-end>
+          {{ period.getSpecialHours('Standby: HB Duncan').hours }}
+        </ion-note>
+      </ion-list-header>
+      <ion-list-header class="home-hours-other" *ngIf="period.getSpecialHours('Sick').hours">
+        {{"sick_hours" | translate}} :
+        <ion-note item-end>
+          {{ period.getSpecialHours('Sick').hours }}
+        </ion-note>
+      </ion-list-header>
+      <ion-list-header class="home-hours-other" *ngIf="period.getSpecialHours('Vacation').hours">
+        {{"vacation_hours" | translate}} :
+        <ion-note item-end>
+          {{ period.getSpecialHours('Vacation').hours }}
+        </ion-note>
+      </ion-list-header>
+      <ion-list-header class="home-hours-other" *ngIf="period.getSpecialHours('Holiday').hours">
+        {{"holiday_hours" | translate}} :
+        <ion-note item-end>
+          {{ period.getSpecialHours('Holiday').hours }}
         </ion-note>
       </ion-list-header>
       <ion-list-header class="home-hours-total">

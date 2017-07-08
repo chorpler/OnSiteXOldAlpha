@@ -106,6 +106,7 @@
   "standby_hb_duncan": "Standby: HB Duncan",
   "sick": "Sick",
   "vacation": "Vacation",
+  "holiday": "Holiday",
   "travel_hours": "Travel Hours",
   "training_hours": "Training Hours",
   "safety": "Safety",
@@ -125,5 +126,14 @@
   "could_not_read_phone_info": "Could not read phone make and model. In your comment, please tell us what kind of phone you have.",
   "comment": "Comment",
   "send_comment": "Send Comment",
-  "spinner_app_loading": "App Loading..."
+  "spinner_app_loading": "App Loading...",
+  "all_day": "All Day",
+  "standby_hours": "Standby Hrs.",
+  "standby_hb_duncan_hours": "Standby: HB Duncan Hrs.",
+  "sick_hours": "Sick Hrs.",
+  "vacation_hours": "Vacation Hrs.",
+  "holiday_hours": "Holiday Hrs.",
+  "app_settings": "App Settings",
+  "sounds": "Sounds",
+  "attempt_to_change_existing_report_type": "The type of an existing report cannot be changed. Please delete this report and create a new one."
 }

@@ -151,15 +151,35 @@ export class ReportHistory implements OnInit {
 
   itemTapped(event, item) {
     let shiftToSend = null;
+    Log.l("itemTapped(): Now looking for report:\n", item);
+    outerloop:
     for(let shift of this.shifts) {
       let reports = shift.getShiftReports();
+      let others  = shift.getShiftOtherReports();
       for(let report of reports) {
-        if(item === report) {
+        if(report._id === item._id) {
+          Log.l(`itemTapped(): Found work report in shift:\n`, shift);
           shiftToSend = shift;
+          break outerloop;
+        }
+      }
+      for(let other of others) {
+        if(other._id === item._id) {
+          Log.l(`itemTapped(): Found ReportOther in shift:\n`, shift);
+          shiftToSend = shift;
+          break outerloop;
         }
       }
     }
-    this.tabs.goToPage('Report', {mode: 'Edit', workOrder: item, shift: shiftToSend, payroll_period: this.period});
+    if(shiftToSend) {
+      if(item['type']) {
+        this.tabs.goToPage('Report', {mode: 'Edit', reportOther: item, shift: shiftToSend, payroll_period: this.period, type: item['type']});
+      } else {
+        this.tabs.goToPage('Report', {mode: 'Edit', workOrder: item, shift: shiftToSend, payroll_period: this.period});
+      }
+    } else {
+      this.alert.showAlert("ERROR", "Report not found in any shifts.");
+    }
   }
 
   deleteWorkOrder(event, item) {
@@ -195,6 +215,42 @@ export class ReportHistory implements OnInit {
       Log.e(err);
       this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
     });
+  }
+
+  deleteOtherReport(event, other) {
+    Log.l("deleteOtherReport() clicked ...");
+    let lang = this.translate.instant(['confirm', 'delete_report', 'spinner_deleting_report', 'error', 'error_deleting_report_message']);
+    this.audio.play('deleteotherreport');
+    this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
+      if (res) {
+        this.alert.showSpinner(lang['spinner_deleting_report']);
+        Log.l("deleteOtherReport(): User confirmed deletion, deleting...");
+        let ro: ReportOther = other.clone();
+        let reportDate = ro.report_date.format("YYYY-MM-DD");
+        this.server.deleteDoc(this.prefs.DB.reports_other, ro).then((res) => {
+          Log.l("deleteOtherReport(): Success:\n", res);
+          // this.items.splice(i, 1);
+          let i = this.reports.indexOf(other);
+          this.reports.splice(i, 1);
+          i = this.filtReports[reportDate].indexOf(other);
+          this.filtReports[reportDate].splice(i, 1);
+          this.alert.hideSpinner();
+        }).catch((err) => {
+          this.alert.hideSpinner();
+          Log.l("deleteOtherReport(): Error!");
+          Log.e(err);
+          this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
+        });
+      } else {
+        Log.l("User canceled deletion.");
+      }
+    }).catch((err) => {
+      this.alert.hideSpinner();
+      Log.l("deleteOtherReport(): Error!");
+      Log.e(err);
+      this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
+    });
+
   }
 
   addNewReportForShift(shift:Shift) {

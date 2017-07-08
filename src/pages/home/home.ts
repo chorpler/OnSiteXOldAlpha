@@ -221,7 +221,6 @@ export class HomePage {
     return new Promise((resolve,reject) => {
       this.server.getReportsForTech(techid).then((res) => {
         Log.l(`HomePage: getReportsForTech(${techid}): Success! Result:\n`, res);
-        // this.techWorkOrders    = res;
         this.ud.setWorkOrderList(res);
         this.techWorkOrders    = this.ud.getWorkOrderList();
         return this.server.getReportsOtherForTech(techid);
@@ -236,11 +235,8 @@ export class HomePage {
         this.payrollPeriods    = this.ud.createPayrollPeriods(tech, this.payrollPeriodCount);
         for(let period of this.payrollPeriods) {
           for(let shift of period.shifts) {
-            // let reports = this.ud.getWorkOrdersForShift(shift);
-            // let shiftDate = Math.floor(shift.start_time.toExcel());
             let reports = new Array<WorkOrder>();
             for(let report of this.techWorkOrders) {
-              // shift.setShiftReports(reports);
               if(report.report_date === shift.start_time.format("YYYY-MM-DD")) {
                 reports.push(report);
               }
@@ -253,32 +249,31 @@ export class HomePage {
             }
             shift.setShiftReports(reports);
             shift.setOtherReports(otherReports);
-            let shiftDay = shift.start_time.isoWeekday();
-            let ppIndex  = (shiftDay + 4) % 7;
-            let sites = this.ud.getData('sites');
-            let techClient = tech.client.toUpperCase().trim();
-            let techLocation = tech.location.toUpperCase().trim();
-            let techLocID    = tech.locID.toUpperCase().trim();
+            let shiftDay     = shift.start_time.isoWeekday()      ;
+            let ppIndex      = (shiftDay + 4) % 7                 ;
+            let sites        = this.ud.getData('sites')           ;
+            let techClient   = tech.client.toUpperCase().trim()   ;
+            let techLocation = tech.location.toUpperCase().trim() ;
+            let techLocID    = tech.locID.toUpperCase().trim()    ;
             let techLoc2nd   = typeof tech.loc2nd === 'string' ? tech.loc2nd.toUpperCase().trim() : "";
             innerloop:
             for(let site of sites) {
-              let clientName   = site.client.name.toUpperCase();
-              let clientFull   = site.client.fullName.toUpperCase();
-              let locationName = site.location.name.toUpperCase();
-              let locationFull = site.location.fullName.toUpperCase();
-              let locIDName    = site.locID.name.toUpperCase();
-              let locIDFull    = site.locID.fullName.toUpperCase();
+              let clientName   = site.client.name.toUpperCase()       ;
+              let clientFull   = site.client.fullName.toUpperCase()   ;
+              let locationName = site.location.name.toUpperCase()     ;
+              let locationFull = site.location.fullName.toUpperCase() ;
+              let locIDName    = site.locID.name.toUpperCase()        ;
+              let locIDFull    = site.locID.fullName.toUpperCase()    ;
               let loc2Name     = site.loc2nd && typeof site.loc2nd === 'object' ? site.loc2nd.name.toUpperCase() : "NA";
               let loc2Full     = site.loc2nd && typeof site.loc2nd === 'object' ? site.loc2nd.fullName.toUpperCase() : "N/A";
               if((techClient === clientName || techClient === clientFull) && (techLocation === locationName || techLocation === locationFull) && (techLocID === locIDName || techLocID === locIDFull) && (techLoc2nd === loc2Name || techLoc2nd === loc2Full)) {
-                // let hours = Number(site.shiftLength);
-                Log.l("User is at site '%s', site object is:", site.getSiteName());
-                Log.l(site);
-                let times = site.getShiftStartTimes();
-                let shiftType = tech.shift;
-                let shiftRotation = tech.rotation;
-                let hoursList = site.getHoursList(shiftRotation, shiftType);
-                let shiftLengthString = hoursList[ppIndex];
+                // Log.l("User is at site '%s', site object is:", site.getSiteName());
+                // Log.l(site);
+                let times             = site.getShiftStartTimes()                   ;
+                let shiftType         = tech.shift                                  ;
+                let shiftRotation     = tech.rotation                               ;
+                let hoursList         = site.getHoursList(shiftRotation, shiftType) ;
+                let shiftLengthString = hoursList[ppIndex]                          ;
                 let shiftLength;
                 if(isNaN(Number(shiftLengthString))) {
                   shiftLength = shiftLengthString;
@@ -286,14 +281,14 @@ export class HomePage {
                   shiftLength = Number(shiftLengthString);
                 }
                 shift.setShiftLength(shiftLength);
-                let startTimeString = times[shiftType];
-                let xl = shift.shift_id;
-                let startTime = moment().fromExcel(xl);
-                let hrsMins = startTimeString.split(":");
-                let hrs = hrsMins[0];
-                let min = hrsMins[1];
-                startTime.hours(hrs).minutes(min);
-                shift.setStartTime(startTime);
+                let startTimeString = times[shiftType]            ;
+                let xl              = shift.shift_id              ;
+                let startTime       = moment().fromExcel(xl)      ;
+                let hrsMins         = startTimeString.split(":")  ;
+                let hrs             = hrsMins[0]                  ;
+                let min             = hrsMins[1]                  ;
+                startTime.hours(hrs).minutes(min)                 ;
+                shift.setStartTime(startTime)                     ;
                 break innerloop;
               }
             }
@@ -368,16 +363,21 @@ export class HomePage {
   getCheckboxSVG(shift:Shift) {
     let checkBox = '?';
     let chks = this.checkboxSVG;
-    let hours = shift.getNormalHours();
-    let total = shift.getShiftLength();
-    if (hours > total) {
-      checkBox = chks[Icons["flag-checkered"]];
-    } else if (hours < total) {
-      checkBox = chks[Icons["box-check-no"]];
+    let status = shift.getShiftReportsStatus().status;
+    if(status) {
+      return chks[Icons["box-check-yes"]];
     } else {
-      checkBox = chks[Icons["box-check-yes"]];
+      let hours = shift.getNormalHours();
+      let total = shift.getShiftLength();
+      if (hours > total) {
+        checkBox = chks[Icons["flag-checkered"]];
+      } else if (hours < total) {
+        checkBox = chks[Icons["box-check-no"]];
+      } else {
+        checkBox = chks[Icons["box-check-yes"]];
+      }
+      return checkBox;
     }
-    return checkBox;
   }
 
   getCheckbox(idx:number) {

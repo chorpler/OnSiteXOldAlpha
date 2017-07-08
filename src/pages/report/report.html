@@ -8,7 +8,7 @@
   <ion-navbar>
     <ion-title>{{title}}</ion-title>
     <ion-buttons end>
-      <button ion-button icon-only (click)="deleteWorkOrder(workOrder)" *ngIf="mode=='Edit'">
+      <button ion-button icon-only (click)="deleteReport($event, type)" *ngIf="mode=='Edit'">
         <ion-icon class="work-order-delete-button" name="ios-trash-outline"></ion-icon>
       </button>
     </ion-buttons>
@@ -33,8 +33,8 @@
       <ion-list padding>
         <ion-item>
           <ion-label>{{'report_type' | translate}}</ion-label>
-          <ion-select formControlName='type'>
-            <ion-option *ngFor='let type of selReportType' [value]='type'>{{type.name | translate}}</ion-option>
+          <ion-select formControlName="type" [disabled]="mode==='Edit'" (click)="checkPageMode()">
+            <ion-option (click)="checkPageMode()" *ngFor="let type of selReportType" [value]="type">{{type.name | translate}}</ion-option>
           </ion-select>
         </ion-item>
         <ion-item (click)="showFancySelect()" class="item item-button ion-item-button-like">
@@ -43,25 +43,26 @@
           <ion-icon item-right class="shift-date-select-icon" name="md-arrow-dropdown"></ion-icon>
         </ion-item>
       </ion-list>
+
 <!-- ******************************************************************************************************************************  -->
 <!--WORK REPORT  -->
       <ion-list *ngIf="type.name==='work_report'">
         <ion-item>
           <ion-label>{{'repair_time' | translate}}</ion-label>
-          <ion-multi-picker class="repair-hours-picker" item-content [separator]="':'" [multiPickerColumns]="chooseHours" formControlName='repair_time'></ion-multi-picker>
+          <ion-multi-picker class="repair-hours-picker" item-content [separator]="':'" [multiPickerColumns]="chooseHours" formControlName="repair_time"></ion-multi-picker>
           <ion-icon item-right class="shift-repair-time-icon" name="md-arrow-dropdown"></ion-icon>
         </ion-item>
         <ion-item>
           <ion-label floating>{{'unit_number' | translate}}</ion-label>
-          <ion-input type='text' formControlName='unit_number'></ion-input>
+          <ion-input type="text" formControlName="unit_number"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label floating>{{'work_order_number' | translate}}</ion-label>
-          <ion-input type='text' formControlName='work_order_number'></ion-input>
+          <ion-input type="text" formControlName="work_order_number"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label floating>{{'job_notes' | translate}}</ion-label>
-          <ion-textarea formControlName='notes'></ion-textarea>
+          <ion-textarea formControlName="notes"></ion-textarea>
         </ion-item>
         <ion-item *ngIf="syncError" class="alert danger">
           <div>{{'report_submit_error' | translate}}</div>
@@ -72,13 +73,13 @@
       <ion-list *ngIf="type.name==='travel'">
         <ion-item>
           <ion-label>{{'travel' | translate}} </ion-label>
-          <ion-select formControlName='travel_location'>
-            <ion-option *ngFor='let travel_location of selTravelLocation' [value]='travel_location'>{{travel_location.name | translate}}</ion-option>
+          <ion-select formControlName="travel_location">
+            <ion-option *ngFor="let travel_location of selTravelLocation" [value]="travel_location">{{travel_location.name | translate}}</ion-option>
           </ion-select>
         </ion-item>
         <ion-item>
-          <ion-label>{{'travel_hours' | translate}} </ion-label>
-          <ion-input formControlName='time'></ion-input>
+          <ion-label class="report-time-label">{{'travel_hours' | translate}} </ion-label>
+          <ion-input class="report-time-input" formControlName="time"></ion-input>
         </ion-item>
       </ion-list>
 
@@ -86,49 +87,57 @@
       <ion-list *ngIf="type.name==='training'">
         <ion-item>
           <ion-label>{{'training' | translate}}</ion-label>
-          <ion-select formControlName='training_type'>
-              <ion-option *ngFor='let training_type of selTrainingType' [value]='training_type'>{{training_type.name | translate}}</ion-option>
+          <ion-select formControlName="training_type">
+              <ion-option *ngFor="let training_type of selTrainingType" [value]="training_type">{{training_type.name | translate}}</ion-option>
           </ion-select>
         </ion-item>
         <ion-item>
-          <ion-label>{{'training_hours' | translate}}</ion-label>
-          <ion-input formControlName='time'></ion-input>
-        </ion-item>
-      </ion-list>
-
-<!-- SICK TIME  -->
-      <ion-list *ngIf="type.name==='sick'" >
-        <ion-item>
-          <ion-label>All Day</ion-label>
-          <ion-toggle formControlName='allDay' checked="true"></ion-toggle>
-        </ion-item>
-          <ion-item>
-            <ion-label floating>Sick Hrs.</ion-label>
-            <ion-input [disabled]="workOrderForm.value.allDay" formControlName='time' type="number">{{sickTime}}</ion-input>
-          </ion-item>
-      </ion-list>
-
-<!-- VACATION  -->
-      <ion-list *ngIf="type.name==='vacation'" >
-        <ion-item>
-          <ion-label>Vacation</ion-label>
-          <ion-input formControlName='time' value="8"></ion-input>
-        </ion-item>
-      </ion-list>
-
-<!-- DUNCAN STANDBY  -->
-      <ion-list *ngIf="type.name==='standby_hb_duncan'">
-        <ion-item>
-          <ion-label>Standby</ion-label>
-          <ion-input formControlName='time' value="S">{{Standby_HB_DCN}}</ion-input>
+          <ion-label class="report-time-label">{{'training_hours' | translate}}</ion-label>
+          <ion-input class="report-time-input" formControlName="time" placeholder="2"></ion-input>
         </ion-item>
       </ion-list>
 
 <!-- STANDBY (BILLABLE)  -->
       <ion-list *ngIf="type.name==='standby'">
         <ion-item>
-          <ion-label>Standby</ion-label>
-          <ion-input formControlName='time'type="number">{{Standby}}</ion-input>
+          <ion-label class="report-time-label">{{'standby' | translate}}</ion-label>
+          <ion-input class="report-time-input" formControlName="time" type="number" placeholder="8"></ion-input>
+        </ion-item>
+      </ion-list>
+
+<!-- DUNCAN STANDBY  -->
+      <ion-list *ngIf="type.name==='standby_hb_duncan'">
+        <ion-item>
+          <ion-label class="report-time-label">{{'standby_hb_duncan' | translate}}</ion-label>
+          <ion-input class="report-time-input" formControlName="time" value="S">S</ion-input>
+        </ion-item>
+      </ion-list>
+
+<!-- SICK TIME  -->
+      <ion-list *ngIf="type.name==='sick'">
+        <ion-item>
+          <ion-label>{{'all_day' | translate}}</ion-label>
+          <ion-toggle formControlName="allDay" checked="true"></ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-label class="report-time-label">{{'sick_hours' | translate}}</ion-label>
+          <ion-input class="report-time-input" [disabled]="workOrderForm.value.allDay" formControlName="time" type="number" placeholder="8"></ion-input>
+        </ion-item>
+      </ion-list>
+
+<!-- VACATION  -->
+      <ion-list *ngIf="type.name==='vacation'">
+        <ion-item>
+          <ion-label class="report-time-label">{{'vacation_hours' | translate}}</ion-label>
+          <ion-input class="report-time-input" formControlName="time" value="8"></ion-input>
+        </ion-item>
+      </ion-list>
+
+<!-- HOLIDAY  -->
+      <ion-list *ngIf="type.name==='holiday'">
+        <ion-item>
+          <ion-label class="report-time-label">{{'holiday_hours' | translate}}</ion-label>
+          <ion-input class="report-time-input" formControlName="time" value="8"></ion-input>
         </ion-item>
       </ion-list>
 

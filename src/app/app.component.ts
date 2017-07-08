@@ -167,7 +167,6 @@ export class OnSiteApp {
         reject(false);
       }
     });
-
   }
 
   showToast(text: string) {
@@ -208,8 +207,6 @@ export class OnSiteApp {
         let u = loginData['username'];
         let p = loginData['password'];
         this.ui = {u:u, p:p};
-        // let udLoginData = {"user": u, "pass": p};
-        // this.ud.storeCredentials(u, p);
         return this.server.loginToServer(u, p, '_session');
       }).then((res) => {
         Log.l("checkLogin(): Successfully logged in! Now retrieving config...");
@@ -219,7 +216,6 @@ export class OnSiteApp {
         this.tech = tech;
         return this.db.getAllConfigData();
       }).then(res => {
-        // this.ud.setLoginStatus(true);
         Log.l("checkLogin(): Successfully retrieved config data...");
         this.ud.setSesaConfig(res);
         resolve(res);
@@ -236,11 +232,14 @@ export class OnSiteApp {
   }
 
   preloadAudioFiles() {
-    this.audio.preload('overtime', 'assets/audio/nospoilers.mp3');
-    this.audio.preload('deletereport', 'assets/audio/nospoilers2.mp3');
-    this.audio.preload('help', 'assets/audio/nospoilers3.mp3');
-    this.audio.preload('dropit', 'assets/audio/nospoilers4.mp3');
-    this.audio.preload('sorry', 'assets/audio/nospoilers5.mp3');
+    this.audio.preload('overtime'         , 'assets/audio/nospoilers.mp3' )  ;
+    this.audio.preload('deletereport'     , 'assets/audio/nospoilers2.mp3')  ;
+    this.audio.preload('help'             , 'assets/audio/nospoilers3.mp3')  ;
+    this.audio.preload('dropit'           , 'assets/audio/nospoilers4.mp3')  ;
+    this.audio.preload('sorry'            , 'assets/audio/nospoilers5.mp3')  ;
+    this.audio.preload('deleteotherreport', 'assets/audio/nospoilers6.mp3')  ;
+    this.audio.preload('funny'            , 'assets/audio/nospoilers7.mp3')  ;
+
     // this.audio.preload('overtime', 'assets/audio/nospoilers.wav');
     // this.audio.preload('deletereport', 'assets/audio/nospoilers2.wav');
   }

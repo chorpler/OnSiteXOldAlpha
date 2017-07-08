@@ -42,20 +42,31 @@ export class AlertService {
     });
 
     this.loadings.push(this.loading);
-    this.loading.present().catch(() => {});
+    this.loading.present().catch((reason:any) => {Log.l("AlertService: loading.present() error:\n", reason)});
   }
 
-  hideSpinner() {
-    setTimeout(() => {
+  hideSpinner(milliseconds?:number) {
+    if(milliseconds) {
+      setTimeout(() => {
+        let load = this.loadings.pop();
+        load.dismiss().catch((reason: any) => {
+          Log.l('AlertService: loading.dismiss() error:\n', reason);
+          for(let i in this.loadings) {
+            this.loadings.pop().dismiss();
+            // oneload.dismissAll();
+          }
+        });
+      }, milliseconds);
+    } else {
       let load = this.loadings.pop();
       load.dismiss().catch((reason: any) => {
         Log.l('AlertService: loading.dismiss() error:\n', reason);
-        for(let i in this.loadings) {
+        for (let i in this.loadings) {
           this.loadings.pop().dismiss();
           // oneload.dismissAll();
         }
       });
-    });
+    }
   }
 
   showAlert(title: string, text: string) {

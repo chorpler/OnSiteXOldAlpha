@@ -61,7 +61,7 @@
                 </div>
               </ion-item>
               <ion-item-options side="right">
-                <button ion-button color="danger" (click)="deleteWorkOrder($event, report)">
+                <button ion-button color="danger" (click)="deleteOtherReport($event, report)">
                   <ion-icon name="trash"></ion-icon>
                   {{"delete" | translate}}
                 </button>
@@ -79,7 +79,86 @@
                 </div>
               </ion-item>
               <ion-item-options side="right">
-                <button ion-button color="danger" (click)="deleteWorkOrder($event, report)">
+                <button ion-button color="danger" (click)="deleteOtherReport($event, report)">
+                  <ion-icon name="trash"></ion-icon>
+                  {{"delete" | translate}}
+                </button>
+              </ion-item-options>
+            </ion-item-sliding>
+            <!--
+              // M Training and Travel
+              // T Training
+              // Q Travel
+              // S Standby for Duncan
+              // E Sick Day or Sick Hrs
+              // H Holiday
+              // V Vacation
+            -->
+            <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Standby'">
+              <ion-item class="report-history-list-item" (click)="itemTapped($event, report)">
+                <div class="report-history-report-item">
+                  <span class="report-history-report-item-header">{{'standby' | translate}}&nbsp;&nbsp;</span>
+                  <span class="report-history-report-item-data">{{report.time}}</span>
+                </div>
+              </ion-item>
+              <ion-item-options side="right">
+                <button ion-button color="danger" (click)="deleteOtherReport($event, report)">
+                  <ion-icon name="trash"></ion-icon>
+                  {{"delete" | translate}}
+                </button>
+              </ion-item-options>
+            </ion-item-sliding>
+            <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Standby: HB Duncan'">
+              <ion-item class="report-history-list-item" (click)="itemTapped($event, report)">
+                <div class="report-history-report-item">
+                  <span class="report-history-report-item-header">{{'standby_hb_duncan' | translate}}&nbsp;&nbsp;</span>
+                  <span class="report-history-report-item-data">{{report.time}}</span>
+                </div>
+              </ion-item>
+              <ion-item-options side="right">
+                <button ion-button color="danger" (click)="deleteOtherReport($event, report)">
+                  <ion-icon name="trash"></ion-icon>
+                  {{"delete" | translate}}
+                </button>
+              </ion-item-options>
+            </ion-item-sliding>
+            <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Sick'">
+              <ion-item class="report-history-list-item" (click)="itemTapped($event, report)">
+                <div class="report-history-report-item">
+                  <span class="report-history-report-item-header">{{'sick' | translate}}&nbsp;&nbsp;</span>
+                  <span class="report-history-report-item-data">{{report.time}}</span>
+                </div>
+              </ion-item>
+              <ion-item-options side="right">
+                <button ion-button color="danger" (click)="deleteOtherReport($event, report)">
+                  <ion-icon name="trash"></ion-icon>
+                  {{"delete" | translate}}
+                </button>
+              </ion-item-options>
+            </ion-item-sliding>
+            <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Vacation'">
+              <ion-item class="report-history-list-item" (click)="itemTapped($event, report)">
+                <div class="report-history-report-item">
+                  <span class="report-history-report-item-header">{{'vacation' | translate}}&nbsp;&nbsp;</span>
+                  <span class="report-history-report-item-data">{{report.time}}</span>
+                </div>
+              </ion-item>
+              <ion-item-options side="right">
+                <button ion-button color="danger" (click)="deleteOtherReport($event, report)">
+                  <ion-icon name="trash"></ion-icon>
+                  {{"delete" | translate}}
+                </button>
+              </ion-item-options>
+            </ion-item-sliding>
+            <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Holiday'">
+              <ion-item class="report-history-list-item" (click)="itemTapped($event, report)">
+                <div class="report-history-report-item">
+                  <span class="report-history-report-item-header">{{'holiday' | translate}}&nbsp;&nbsp;</span>
+                  <span class="report-history-report-item-data">{{report.time}}</span>
+                </div>
+              </ion-item>
+              <ion-item-options side="right">
+                <button ion-button color="danger" (click)="deleteOtherReport($event, report)">
                   <ion-icon name="trash"></ion-icon>
                   {{"delete" | translate}}
                 </button>

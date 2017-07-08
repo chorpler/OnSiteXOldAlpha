@@ -6,22 +6,22 @@ import { sprintf                       } from 'sprintf-js'                 ;
 const XL = moment([1900, 0, 1]);
 
 export class Shift {
-  public site_name:string;
-  public shift_id:number;
-  public shift_week_id:number;
-  public payroll_period:any;
-  public shift_week:any;
-  public shift_time:string = "AM";
-  public start_time:any;
-  public shift_length:number;
-  public shift_number:any;
-  public current_payroll_week:any;
-  public colors:any = {};
-  public XL:any;
-  public shift_serial:any;
-  public shift_hours:any;
-  public shift_reports:Array<WorkOrder> = [];
-  public other_reports:Array<ReportOther> = [];
+  public site_name           : string                        ;
+  public shift_id            : number                        ;
+  public shift_week_id       : number                        ;
+  public payroll_period      : any                           ;
+  public shift_week          : any                           ;
+  public shift_time          : string             = "AM"     ;
+  public start_time          : any                           ;
+  public shift_length        : number                        ;
+  public shift_number        : any                           ;
+  public current_payroll_week: any                           ;
+  public colors              : any                =      { } ;
+  public XL                  : any                           ;
+  public shift_serial        : any                           ;
+  public shift_hours         : any                           ;
+  public shift_reports       : Array<WorkOrder>   = []       ;
+  public other_reports       : Array<ReportOther> = []       ;
 
   constructor(site_name?, shift_week?, shift_time?, start_time?, shift_length?) {
     if(arguments.length == 1 && typeof arguments[0] == 'object') {
@@ -194,10 +194,14 @@ export class Shift {
     let day = moment(this.start_time);
     let week = moment(this.getShiftWeek());
     let nowWeek = moment(this.getCurrentPayrollWeek());
-    let nowXL = now.diff(XL, 'days') + 2;
-    let dayXL = day.diff(XL, 'days') + 2;
-    let weekXL = week.diff(XL, 'days') + 2;
-    let currentWeekXL = nowWeek.diff(XL, 'days') + 2;
+    // let nowXL = now.diff(XL, 'days') + 2;
+    // let dayXL = day.diff(XL, 'days') + 2;
+    // let weekXL = week.diff(XL, 'days') + 2;
+    // let currentWeekXL = nowWeek.diff(XL, 'days') + 2;
+    let nowXL = now.toExcel();
+    let dayXL = day.toExcel();
+    let weekXL = week.toExcel();
+    let currentWeekXL = nowWeek.toExcel();
     let nextWeekXL = weekXL + 7;
     this.shift_week_id = weekXL;
     this.payroll_period = weekXL;
@@ -231,7 +235,8 @@ export class Shift {
   getShiftStatus() {
     let hours = this.getNormalHours();
     let total = this.getShiftLength();
-    return (hours > total) ? "hoursOver" : (hours < total) ? "hoursUnder" : (hours === total) ? "hoursComplete" : "hoursUnknown";
+    let status = this.getShiftReportsStatus().status;
+    return status ? "hoursComplete" : (hours > total) ? "hoursOver" : (hours < total) ? "hoursUnder" : (hours === total) ? "hoursComplete" : "hoursUnknown";
   }
 
   getShiftColor() {
@@ -283,6 +288,10 @@ export class Shift {
 
   getShiftReports() {
     return this.shift_reports;
+  }
+
+  getShiftOtherReports() {
+    return this.other_reports;
   }
 
   getTotalShiftHours() {
@@ -375,6 +384,147 @@ export class Shift {
     return this.other_reports;
   }
 
+  getShiftReportsStatus() {
+    let others  = this.getOtherReports() ;
+    let reports = this.getShiftReports() ;
+    let output  = []                     ;
+    // let slcode  = ""                     ;
+    let data    = {status: 0, hours: 0, code: ""};
+    // let data    = {status: 0, hours: 0, code: output};
+    // M Training and Travel
+    // T Training
+    // Q Travel
+    // S Standby for Duncan
+    // E Sick Day or Sick Hrs
+    // V Vacation
+    // H Holiday
+    for(let other of others) {
+      let type = other.type;
+      if(type === 'Training') {
+        output.push("T");
+        // if(data.code === "Q") {
+        //   data.code = "M";
+        // } else {
+        //   data.code = "T";
+        // }
+
+        // let i = output.indexOf("Q");
+        // let j = output.indexOf("T");
+        // if(i > -1) {
+        //   output[i] = "M";
+        // } else if(j > -1) {
+        //   output[i] = "M";
+        // } else {
+        //   output.push("T");
+        // }
+      } else if(type === 'Travel') {
+        output.push("Q");
+        // let i = output.indexOf("T");
+        // let j = output.indexOf("Q");
+        // if(i > -1) {
+        //   output[i] = "M";
+        // } else if(j > -1) {
+        //   output[i] = "M";
+        // } else {
+        //   output.push("Q");
+        // }
+        // if(data.code === "T") {
+        //   data.code = "M";
+        // } else {
+        //   data.code = "Q";
+        // }
+      } else if(type === 'Standby') {
+
+      } else if(type === 'Standby: HB Duncan') {
+        output.push("S");
+        // if(output.indexOf("S") === -1) {
+        //   output.push("S");
+        // }
+        // data.code = "S";
+      } else if(type === 'Sick') {
+        output.push("E");
+        // if(output.indexOf("E") === -1) {
+        //   output.push("E");
+        // }
+        // data.code = "E";
+      } else if(type === 'Vacation') {
+        output.push("V");
+        // if(output.indexOf("V") === -1) {
+        //   output.push("V");
+        // }
+        // data.code = "V"
+      } else if(type === 'Holiday') {
+        output.push("H");
+        // if(output.indexOf("H") === -1) {
+        //   output.push("H");
+        // }
+        // data.code = "H";
+      }
+    }
+    if(reports.length > 0) {
+      let hrs = this.getNormalHours();
+      data.hours = hrs;
+    }
+    // Log.l("Shift: final ReportOther status is:\n", output);
+    if(output.indexOf("T") > -1 && output.indexOf("Q") > -1) {
+      data.code = "M";
+    } else if(output.indexOf("T") > -1) {
+      data.code = "T";
+    } else if(output.indexOf("Q") > -1) {
+      data.code = "Q";
+    } else if(output.indexOf("S") > -1) {
+      data.code = "S";
+    } else if(output.indexOf("E") > -1) {
+      data.code = "E";
+    } else if(output.indexOf("V") > -1) {
+      data.code = "V";
+    } else if(output.indexOf("H") > -1) {
+      data.code = "H";
+    } else {
+      data.code = "";
+    }
+    // if(output.length > 1) {
+    //   data.status++;
+    // }
+    if(data.code) {
+      data.status = 1;
+    }
+    return data;
+  }
+
+  public getSpecialHours(type?:string) {
+    let others = this.getOtherReports();
+    let total = 0;
+    let codeTotal = 0;
+    let codes = "";
+    for(let other of others) {
+      if(type) {
+        if(other.type === type) {
+          let hours = other.getTotalHours();
+          if(typeof hours === 'number') {
+            total += hours;
+          } else {
+            codes += hours;
+            if(hours === "S") {
+              total += 8;
+            }
+          }
+        }
+      } else {
+        let hours = other.getTotalHours();
+        if(typeof hours === 'number') {
+          total += hours;
+        } else {
+          codes += hours;
+          if (hours === "S") {
+            total += 8;
+          }
+        }
+      }
+    }
+    return {codes: codes, hours: total};
+  }
+
   toString(translate?:any) {
     let strOut:string = null;
     let start:string = moment(this.start_time).format("MMM DD");
@@ -385,7 +535,6 @@ export class Shift {
       payrollWeek = translate.instant('payroll_week');
     }
     strOut = `${start} (${payrollWeek} ${weekStart})`;
-    // Log.l('Shift.toString() should output:\n', strOut);
     return strOut;
   }
 

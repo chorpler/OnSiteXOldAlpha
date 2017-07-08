@@ -458,17 +458,46 @@ export class SrvrSrvcs {
   }
 
   updateDoc(doc) {
-    return SrvrSrvcs.staticRDB.put(doc);
+    // return SrvrSrvcs.staticRDB.put(doc);
+    Log.l("Server.updateDoc(): Nope.");
   }
 
-  deleteDoc(dbname, doc) {
-    Log.l(`deleteDoc(): Attempting to delete doc ${doc._id}...`);
-    let rdb1 = SrvrSrvcs.addRDB(dbname);
-    return rdb1.remove(doc._id, doc._rev).then((res) => {
-      Log.l("deleteDoc(): Success:\n", res);
-    }).catch((err) => {
-      Log.l("deleteDoc(): Error!");
-      Log.e(err);
+  deleteDoc(dbname, docToDelete) {
+    Log.l(`deleteDoc(): Attempting to delete doc:...`, docToDelete);
+    return new Promise((resolve,reject) => {
+      let rdb1 = this.addRDB(dbname);
+      rdb1.upsert(docToDelete._id, (doc) => {
+        if(doc) {
+          let rev = doc._rev;
+          doc = docToDelete;
+          doc['_deleted'] = true;
+          doc._rev = rev;
+          return doc;
+        } else {
+          doc = docToDelete;
+          doc['_deleted'] = true;
+          delete doc._rev;
+          return doc;
+        }
+      }).then((res) => {
+        if(!res.ok && !res.updated) {
+          Log.l("deleteDoc(): Error:\n", res);
+          reject(res);
+        } else {
+          Log.l("deleteDoc(): Success:\n", res);
+          resolve(res);
+        }
+      }).catch((err) => {
+        Log.l("deleteDoc(): Error!");
+        Log.e(err);
+        reject(err);
+      });
+      // rdb1.remove(doc._id, doc._rev).then((res) => {
+      //   Log.l("deleteDoc(): Success:\n", res);
+      // }).catch((err) => {
+      //   Log.l("deleteDoc(): Error!");
+      //   Log.e(err);
+      // });
     });
   }
 

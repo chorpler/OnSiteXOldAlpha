@@ -19,19 +19,21 @@ import { Preferences                                                         } f
 })
 
 export class Settings implements OnInit {
-  title: string = "App Settings" ;
-  confirmTitle:string = "";
-  logOutMsg:string = "";
-  languages:Array<any> = [];
-  selectedLanguage:any;
-  language:any = null;
-  appName:string = "SESA OnSiteX";
-  appVersion:string = "?.?.?";
-  dataReady:boolean = false;
-  // public static PREFS:any = new Preferences();
-  // public prefs:any = Settings.PREFS;
+  public title           : string     = "App Settings"    ;
+  public confirmTitle    : string     = ""                ;
+  public logOutMsg       : string     = ""                ;
+  public languages       : Array<any> = []                ;
+  public selectedLanguage: any        ;
+  public language        : any        = null              ;
+  public appName         : string     = "SESA OnSiteX"    ;
+  public appVersion      : string     = "?.?.?"           ;
+  public sounds          : boolean    = true              ;
+  public dataReady       : boolean    = false             ;
+  public static PREFS    : any        = new Preferences() ;
+  public PREFS           : any        = Settings.PREFS    ;
+  public prefs           : any        = Settings.PREFS    ;
 
-  constructor( public navCtrl: NavController, public platform: Platform,  public auth: AuthSrvcs, public alert: AlertService, public tabs: TabsComponent, public translate: TranslateService, public version: AppVersion, public prefs:Preferences, public storage:StorageService, public modalCtrl:ModalController) {
+  constructor( public navCtrl: NavController, public platform: Platform,  public auth: AuthSrvcs, public alert: AlertService, public tabs: TabsComponent, public translate: TranslateService, public version: AppVersion, public storage:StorageService, public modalCtrl:ModalController) {
     window["onsitesettings"] = this;
   }
 
@@ -56,6 +58,9 @@ export class Settings implements OnInit {
       this.translate.use('en');
       this.language = this.languages[0];
     }
+
+    this.sounds = this.prefs.USER.audio;
+
     this.version.getAppName().then(res => {
       this.appName = res;
       return this.version.getVersionNumber();
@@ -92,6 +97,9 @@ export class Settings implements OnInit {
       if(leave) {
         this.logoutOfApp();
       }
+    }).catch(err => {
+      Log.l("confirmLogout(): Error confirming logout!");
+      Log.e(err);
     })
   }
 
@@ -122,6 +130,17 @@ export class Settings implements OnInit {
       }
     });
     commentModal.present();
+  }
+
+  toggleSounds() {
+    this.prefs.USER.audio = this.sounds;
+    this.savePreferences().then(res => {
+      Log.l("toggleSounds(): Sounds turned to and preferences saved:\n", this.prefs.USER.audio);
+      Log.l(this.prefs);
+    }).catch(err => {
+      Log.l("toggleSounds(): Error saving preferences.");
+      Log.e(err);
+    })
   }
 
   public savePreferences() {

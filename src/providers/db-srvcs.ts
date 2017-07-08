@@ -1,15 +1,17 @@
-import { Injectable, NgZone } from '@angular/core'              ;
-import { Http               } from '@angular/http'              ;
-import { Log, CONSOLE       } from '../config/config.functions' ;
-import { Storage            } from '@ionic/storage'             ;
-import { NativeStorage      } from 'ionic-native'               ;
+import { Injectable, NgZone                                                                } from '@angular/core'              ;
+import { Http                                                                              } from '@angular/http'              ;
+import { Log, CONSOLE                                                                      } from '../config/config.functions' ;
+import { Storage                                                                           } from '@ionic/storage'             ;
+import { NativeStorage                                                                     } from 'ionic-native'               ;
+import { PouchDBService                                                                    } from './pouchdb-service'          ;
+import { AuthSrvcs                                                                         } from './auth-srvcs'               ;
+import { AlertService                                                                      } from './alerts'                   ;
+import { SrvrSrvcs                                                                         } from './srvr-srvcs'               ;
+import { UserData                                                                          } from './user-data'                ;
+import { Preferences                                                                       } from './preferences'              ;
+import { Employee, Jobsite, WorkOrder, ReportOther, Message, Comment, Shift, PayrollPeriod } from '../domain/domain-classes'   ;
+
 import 'rxjs/add/operator/map'                                  ;
-import { PouchDBService    } from './pouchdb-service'           ;
-import { AuthSrvcs         } from './auth-srvcs'                ;
-import { AlertService      } from './alerts'                    ;
-import { SrvrSrvcs         } from './srvr-srvcs'                ;
-import { UserData          } from './user-data'                 ;
-import { Preferences       } from './preferences'               ;
 
 export const noDD = "_\uffff";
 export const noDesign = { include_docs: true, startkey: noDD };
@@ -45,11 +47,11 @@ export class DBSrvcs {
 
     DBSrvcs.addDB(this.prefs.DB.reports);
 
-    let options = {
-      live: true,
-      retry: true,
-      continuous: false
-    };
+    // let options = {
+    //   live: true,
+    //   retry: true,
+    //   continuous: false
+    // };
   }
 
   /**
@@ -169,17 +171,30 @@ export class DBSrvcs {
     });
   }
 
-  addDoc(dbname:string, doc) {
+  addDoc(dbname:string, newDoc) {
     return new Promise((resolve, reject) => {
-      Log.l(`addDoc(): Adding document to ${dbname}:\n`, doc);
-      // let dbname = db ? db : this.prefs.DB.reports;
-      // let dbname = db ? db : this.prefs.DB.reports;
+      Log.l(`addDoc(): Adding document to ${dbname}:\n`, newDoc);
       let db1 = this.addDB(dbname);
-      // if (typeof doc._id === 'undefined') { doc._id = 'INVALID_DOC' }
-      db1.put(doc).then((res) => {
-        Log.l("addDoc(): Successfully added document.");
-        Log.l(res);
-        resolve(res);
+      // db1.put(doc).then((res) => {
+      db1.upsert(newDoc._id, (doc) => {
+        if(doc) {
+          let rev = doc._rev;
+          doc = newDoc;
+          doc._rev = rev;
+          return doc;
+        } else {
+          doc = newDoc;
+          delete doc._rev;
+          return doc;
+        }
+      }).then(res => {
+        if(!res.ok && !res.updated) {
+          reject(res);
+        } else {
+          Log.l("addDoc(): Successfully added document.");
+          Log.l(res);
+          resolve(res);
+        }
       }).catch((err) => {
         Log.l("addDoc(): Failed while trying to add document!");
         console.error(err);
@@ -202,39 +217,32 @@ export class DBSrvcs {
     });
   }
 
-  updateDoc(dbname:string, doc) {
+  updateDoc(dbname:string, newDoc) {
     return new Promise((resolve,reject) => {
       let db1 = this.addDB(dbname);
-      let newDoc = doc;
+      // let newDoc = doc;
       // return db1.put(doc);
-      db1.get(newDoc._id).then(res => {
-        Log.l("updateDoc(): 01) Found copy of doc:\n", res);
-        newDoc._rev = res._rev;
+      // db1.get(newDoc._id).then(res => {
+      db1.upsert(newDoc._id, (doc) => {
+        if(doc) {
+          let id = doc._id;
+          let rev = doc._rev;
+          doc = newDoc;
+          doc._rev = rev;
+          return doc;
+        } else {
+          doc = newDoc;
+          delete doc._rev;
+          return doc;
+        }
+      }).then(res => {
+        if(!res.ok && !res.updated) {
+          reject(res);
+        } else {
+          resolve(res);
+        }
       }).catch((err) => {
-        Log.l("updateDoc(): 02) No such document exists locally, it must be new. Hoo-ray!");
-        delete newDoc._rev;
-        return Promise.resolve();
-      }).then(() => {
-      //   return db1.remove(res);
-      // }).catch((err) => {
-      //   Log.l("addLocalDoc(): 03) Caught error removing res!");
-      //   Log.e(err);
-      //   Log.l("addLocalDoc(): 04) Now removing original doc:\n", newDoc);
-      //   return db1.remove(newDoc);
-      // }).catch((err) => {
-      //   Log.l("addLocalDoc(): 05) Caught error removing newDoc!");
-      //   Log.e(err);
-      //   Log.l("addLocalDoc(): 06) Now continuing to save doc.");
-      //   return Promise.resolve();
-      // }).then(() => {
-        Log.l(`updateDoc(): 03) doc's _rev tag is now set properly, storing:\n`, newDoc);
-        // delete newDoc._rev;
-        return db1.put(newDoc);
-      }).then((res) => {
-        Log.l(`addLocalDoc(): 04) Successfully updated document '${newDoc._id}'.`)
-        resolve(res);
-      }).catch((err) => {
-        Log.l(`addLocalDoc(): 05) Error updating document doc ${newDoc._id}.`);
+        Log.l(`updateDoc(): Error updating document doc ${newDoc._id}.`);
         Log.e(err)
         reject(err);
       });
@@ -305,6 +313,34 @@ export class DBSrvcs {
     }).catch((err) => {
       Log.l(`Error while deleting local doc ${doc._id}`);
       Log.e(err);
+    });
+  }
+
+  public saveReport(report:WorkOrder) {
+    return new Promise((resolve,reject) => {
+      let db1 = this.addDB(this.prefs.DB.reports);
+      db1.upsert(report._id, (doc) => {
+        if(doc) {
+          let rev = doc._rev;
+          doc = report;
+          doc._rev = rev;
+          return doc;
+        } else {
+          doc = report;
+          delete doc._rev;
+          return doc;
+        }
+      }).then(res => {
+        if(!res.ok && !res.updated) {
+          reject(res);
+        } else {
+          resolve(res);
+        }
+      }).catch(err => {
+        Log.l("saveReport(): Error saving report.");
+        Log.e(err);
+        reject(err);
+      });
     });
   }
 

@@ -121,16 +121,14 @@ export class WorkOrder {
     Log.l("WorkOrder.serialize(): Now serializing report...");
     let ts = moment(this.timestamp);
     Log.l("WorkOrder.serialize(): timestamp moment is now:\n", ts);
-    let XLDate = moment([1900, 0, 1]);
-    let xlStamp = ts.diff(XLDate, 'days', true) + 2;
-    this.timestamp = xlStamp;
-    let newReport = {};
-    this._id = this._id || this.genReportID(tech);
+    this.timestamp = ts.toExcel();
+    this.timestampM = ts;
+    let newReport = {_id: ""};
     let len = fields.length;
     for(let i = 0; i < len; i++) {
       let key1 = fields[i][0];
       let key2 = fields[i][1];
-      if(key1 === 'time_start' || key1 === 'time_end') {
+      if(key1 === 'time_start' || key1 === 'time_end' || key1 === 'timestampM') {
         newReport[key2] = this[key1].format();
       } else if(key1 === 'technician') {
         newReport[key2] = tech.getTechName();
@@ -139,6 +137,9 @@ export class WorkOrder {
       }
       newReport['username'] = tech['avatarName'];
     }
+    newReport._id = this._id || this.genReportID(tech);
+    // newReport["_id"] = this._id;
+    Log.l("WorkOrder.serialize(): Final serialized document is:\n", newReport);
     return newReport;
   }
 
@@ -158,6 +159,7 @@ export class WorkOrder {
   public setStartTime(time:any) {
     if (isMoment(time) || moment.isDate(time)) {
       this.time_start = moment(time);
+      this.report_date = moment(time).format("YYYY-MM-DD");
       this.checkTimeCalculations(0);
     } else {
       Log.l("WorkOrder.setStartTime(): Needs a date/moment, was given this:\n", time);

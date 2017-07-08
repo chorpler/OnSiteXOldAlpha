@@ -197,6 +197,12 @@ page-home {
       font-weight: bold;
     }
   }
+  .home-hours-other {
+    border-bottom: 1px solid #dedede;
+    ion-note {
+      color: blue;
+    }
+  }
 
 
   // ion-popover page-popover-template .scroll-content {

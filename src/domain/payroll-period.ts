@@ -1,9 +1,6 @@
 import { Shift } from './shift';
 import { Employee } from './employee';
-import { Log, isMoment } from '../config/config.functions';
-import * as moment from 'moment';
-
-export const XL = moment([1900, 0, 1]);
+import { Log, isMoment, moment, Moment } from '../config/config.functions';
 
 export class PayrollPeriod {
   public start_date:any;
@@ -16,7 +13,7 @@ export class PayrollPeriod {
   public bonus_hours:number = 0;
   public payroll_hours:number = 0;
 
-  constructor(start_date?: moment.Moment | string | number, end_date?: moment.Moment | string | number, serial_number?:number, shifts?:Array<Shift>, total_hours?:number, payroll_hours?:number) {
+  constructor(start_date?: Moment | string | number, end_date?: Moment | string | number, serial_number?:number, shifts?:Array<Shift>, total_hours?:number, payroll_hours?:number) {
     this.start_date               = start_date    || null;
     this.end_date                 = end_date      || null;
     this.serial_number            = serial_number || null;
@@ -40,7 +37,7 @@ export class PayrollPeriod {
     }
   }
 
-  setStartDate(start:moment.Moment | Date | string | number) {
+  setStartDate(start:Moment | Date | string | number) {
     if(isMoment(start) || start instanceof Date) {
       this.start_date = moment(start).startOf('day');
       this.end_date = moment(start).add(6, 'days');
@@ -63,8 +60,9 @@ export class PayrollPeriod {
       return this.serial_number;
     } else {
       let start = moment(this.start_date).startOf('day');
-      let xldate = moment(XL).startOf('day');
-      let serial = moment(this.start_date).diff(moment(XL), 'days') + 2;
+      // let xldate = moment(XL).startOf('day');
+      // let serial = moment(this.start_date).diff(moment(XL), 'days') + 2;
+      let serial = moment(this.start_date).toExcel();
       this.serial_number = serial;
       return this.serial_number;
     }
@@ -139,11 +137,12 @@ export class PayrollPeriod {
 
   public getTotalHours() {
     let total = 0;
-    total += this.getNormalHours() + this.getBonusHours() + this.getTrainingHours() + this.getTravelHours();
+    // total += this.getNormalHours() + this.getBonusHours() + this.getTrainingHours() + this.getTravelHours() + this.getSpecialHours().hours;
+    total += this.getNormalHours() + this.getBonusHours() + this.getSpecialHours().hours;
     return total;
   }
 
-  static getPayrollPeriodDateForShiftDate(date:moment.Moment | Date | string) {
+  static getPayrollPeriodDateForShiftDate(date:Moment | Date | string) {
     let scheduleStartsOnDay = 3;
     let day = null, periodStart = null;
     // return this.shift_week;
@@ -217,6 +216,18 @@ export class PayrollPeriod {
       this.shift_payroll_hours_list.push(hours);
     }
     return this.shift_payroll_hours_list;
+  }
+
+  getSpecialHours(type?:string) {
+    let total = 0;
+    let codes = "";
+    let shiftTotal = null;
+    for(let shift of this.shifts) {
+      shiftTotal = type ? shift.getSpecialHours(type) : shift.getSpecialHours();
+      total += shiftTotal.hours;
+      codes += shiftTotal.codes;
+    }
+    return {codes: codes, hours: total};
   }
 
   getPayrollPeriodBonusHours() {

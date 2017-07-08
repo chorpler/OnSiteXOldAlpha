@@ -80,4 +80,13 @@ page-report {
   .black {
     color: black;
   }
+  .report-time-label {
+    color: black !important;
+    .item-input .label-md {
+      color: black;
+    }
+  }
+  .report-time-input input {
+    text-align: right;
+  }
 }

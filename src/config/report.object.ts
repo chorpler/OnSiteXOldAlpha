@@ -107,6 +107,7 @@ export const REPORTTYPEI18N = [
   {name: "standby_hb_duncan" , value: "Standby: HB Duncan" },
   {name: "sick"              , value: "Sick"               },
   {name: "vacation"          , value: "Vacation"           },
+  {name: "holiday"           , value: "Holiday"            },
 ]
 
 export const TRAININGTYPEI18N = [
@@ -114,6 +115,7 @@ export const TRAININGTYPEI18N = [
   {name: "pec"            , value: "PEC"           , hours: 8 },
   {name: "forklift"       , value: "Forklift"      , hours: 3 },
   {name: "overhead_crane" , value: "Overhead Crane", hours: 10},
+  {name: "twenty_rules"   , value: "20 Rules"      , hours: 4 },
 ]
 
 export const JOBSITESI18N = [

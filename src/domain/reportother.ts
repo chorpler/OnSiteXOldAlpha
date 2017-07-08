@@ -17,7 +17,7 @@ export const fields = [
   "location_id",
   "location_2",
   "timestamp",
-  "timestampX",
+  "timestampM",
   "username",
   "shift_serial",
   "payroll_period",
@@ -39,7 +39,7 @@ export class ReportOther {
   public location_id      : any;
   public location_2       : any;
   public timestamp        : any;
-  public timestampX       : any;
+  public timestampM       : any;
   public username         : any;
   public shift_serial     : any;
   public payroll_period   : any;
@@ -60,7 +60,7 @@ export class ReportOther {
     this.location_2        = ""                    ;
     this.shift_serial      = ""                    ;
     this.timestamp         = ""                    ;
-    this.timestampX        = ""                    ;
+    this.timestampM        = ""                    ;
     this.username          = ""                    ;
     this.shift_serial      = ""                    ;
     this.payroll_period    = ""                    ;
@@ -75,7 +75,7 @@ export class ReportOther {
       this[key] = doc[key];
     }
     this.report_date = moment(this.report_date)    ;
-    this.timestampX  = moment(this.timestampX)     ;
+    this.timestampM  = moment(this.timestampM)     ;
     return this;
   }
 
@@ -92,8 +92,15 @@ export class ReportOther {
     if(!isNaN(hours)) {
       return hours;
     } else {
-      Log.e("ReportOther.getTotalHours(): Total hours for this report was not numberlike!\n", this.time);
-      return NaN;
+      if(this.time === "V" || this.time === "H") {
+        hours = 8;
+      } else if(this.time === "S" && this.location === "DUNCAN") {
+        hours = 8;
+      } else {
+        Log.w("ReportOther.getTotalHours(): Total hours for this ReportOther was not a number or a recognized code: '%s'", this.time);
+        return null;
+      }
+      return hours;
     }
   }
 

@@ -46,7 +46,8 @@ export class Preferences {
   public static USER: any = {
     language: 'en',
     shifts: 7,
-    payroll_periods: 2
+    payroll_periods: 2,
+    audio: true
   }
   public DB: any = Preferences.DB;
   public SERVER: any = Preferences.SERVER;
@@ -147,16 +148,17 @@ export class Preferences {
 
   reinitializePrefs() {
     Preferences.DB = {
-      'reports': 'reports_ver101100',
+      'reports'      : 'reports_ver101100',
       'reports_other': 'sesa-reports-other',
-      'employees': 'sesa-employees',
-      'config': 'sesa-config',
-      'jobsites': 'sesa-jobsites',
-      'scheduling': 'sesa-scheduling',
-      'technicians': 'sesa-technicians',
-      'messages': 'sesa-messages',
-      'comments': 'sesa-comments',
-      'login': '_session'
+      'employees'    : 'sesa-employees',
+      'config'       : 'sesa-config',
+      'jobsites'     : 'sesa-jobsites',
+      'scheduling'   : 'sesa-scheduling',
+      'technicians'  : 'sesa-technicians',
+      'messages'     : 'sesa-messages',
+      'comments'     : 'sesa-comments',
+      'login'        : '_session'
+
     };
 
     Preferences.SERVER = {
@@ -182,7 +184,8 @@ export class Preferences {
     Preferences.USER = {
       language: 'en',
       shifts: 7,
-      payroll_periods: 2
+      payroll_periods: 2,
+      audio: true
     }
   }
 
