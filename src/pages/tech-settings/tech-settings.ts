@@ -82,12 +82,11 @@ export class TechSettingsPage implements OnInit {
       Log.l("User: Got tech profile, now initFormData()...");
       this.techProfile = res;
       this.ud.setTechProfile(res);
-      return this.initFormData();
-    }).then((res2) => {
+      this.initFormData();
       Log.l("User: initFormData() done, now initializeForm()...");
-      return this.initializeForm();
-    }).then((res3) => {
+      this.initializeForm();
       Log.l("Settings screen initialized successfully.");
+      this.techSettingsReady = true;
     }).catch((err) => {
       Log.l("Error while initializing Settings screen!");
       Log.e(err);
@@ -106,7 +105,6 @@ export class TechSettingsPage implements OnInit {
       'shiftLength'   : new FormControl(this.shiftLength    , Validators.required) ,
       'shiftStartTime': new FormControl(this.shiftStartTime , Validators.required)
     });
-    this.techSettingsReady = true;
   }
 
   initFormData() {
