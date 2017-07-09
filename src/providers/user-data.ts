@@ -38,7 +38,7 @@ export class UserData {
   public static user                  : Employee             = null                    ;
   public static techProfile           : any                                            ;
   public static userLoggedIn          : boolean              = false                   ;
-  public static sesaConfig            : any                  = { }                     ;
+  public static sesaConfig            : any                  = {}                      ;
   public static data                  : any = { employee: [], sites: [], reports: [], otherReports: [], payrollPeriods: [], shifts: [], messages: [] };
   public shifts                       : Array<Shift>         = UserData.shifts         ;
   public payrollPeriods               : Array<PayrollPeriod> = UserData.payrollPeriods ;
@@ -57,6 +57,18 @@ export class UserData {
     window["UserData"] = UserData;
   }
 
+  public setHomePeriod(period:PayrollPeriod) {
+    this.sesaConfig['home_period'] = period;
+    return this.sesaConfig.home_period;
+  }
+
+  public getHomePeriod() {
+    if(this.sesaConfig.home_period) {
+      return this.sesaConfig.home_period;
+    } else {
+      return false;
+    }
+  }
   public setData(data:any) {
     if(data['sites']['length'] === undefined || data['reports']['length'] === undefined || data['otherReports']['length'] === undefined) {
       Log.e("setData(): Can't use this data to set data property. It is incomplete.\n", data);

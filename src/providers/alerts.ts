@@ -46,26 +46,34 @@ export class AlertService {
   }
 
   hideSpinner(milliseconds?:number) {
-    if(milliseconds) {
-      setTimeout(() => {
+    if(this.loadings && this.loadings.length) {
+      if(milliseconds) {
+        setTimeout(() => {
+          let load = this.loadings.pop();
+          load.dismiss().catch((reason: any) => {
+            Log.l('AlertService: loading.dismiss() error:\n', reason);
+            let len = this.loadings.length;
+            for(let i = 0; i < len; i++) {
+              this.loadings[i].dismiss();
+              // oneload.dismissAll();
+            }
+            this.loadings = [];
+          });
+        }, milliseconds);
+      } else {
         let load = this.loadings.pop();
         load.dismiss().catch((reason: any) => {
           Log.l('AlertService: loading.dismiss() error:\n', reason);
-          for(let i in this.loadings) {
-            this.loadings.pop().dismiss();
+          let len = this.loadings.length;
+          for (let i = 0; i < len; i++) {
+            this.loadings[i].dismiss();
+          // for (let i in this.loadings) {
+            // this.loadings.pop().dismiss();
             // oneload.dismissAll();
           }
+          this.loadings = [];
         });
-      }, milliseconds);
-    } else {
-      let load = this.loadings.pop();
-      load.dismiss().catch((reason: any) => {
-        Log.l('AlertService: loading.dismiss() error:\n', reason);
-        for (let i in this.loadings) {
-          this.loadings.pop().dismiss();
-          // oneload.dismissAll();
-        }
-      });
+      }
     }
   }
 

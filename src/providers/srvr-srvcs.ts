@@ -285,40 +285,58 @@ export class SrvrSrvcs {
     localProfileDoc.docID = doc._id;
     localProfileDoc._id   = localID;
     return new Promise((resolve, reject) => {
-      db1 = this.addDB('reports');
-      db1.get(localID).then((res) => {
-        Log.l("Server.saveTechProfile(): Found techProfile locally. Deleting it.");
-        let id = res._id;
-        let rev = res._rev;
-        return db1.remove(id, rev);
-      }).then((res) => {
-        Log.l("Server.saveTechProfile(): Deleted techProfile locally. Now updating it.");
-        return db1.put(localProfileDoc);
-      }).then((res) => {
-        Log.l("Server.saveTechProfile(): Saved local profile successfully!\n", res);
-        resolve(localProfileDoc);
-      }).catch((err) => {
-        Log.l("Server.saveTechProfile(): Local tech profile not found. Creating.");
-        delete localProfileDoc._rev;
-        // doc.docID = doc._id;
-        // doc._id = localID;
-        // delete doc._rev;
-        Log.l("Server.saveTechProfile(): Attempting to save local tech profile:\n", doc);
-        return db1.put(localProfileDoc);
-      }).then((res) => {
-        Log.l("Server.saveTechProfile(): Successfully saved local tech profile:\n", res);
-      //   rdb1 = this.srvr.addRDB('sesa-employees');
-      //   uid = `org.couchdb.user:${doc.username}`;
-      //   Log.l(`saveTechProfile(): Now fetching remote copy with id '${uid}'...`);
-      //   return rdb1.get(uid);
+      db1 = this.addDB(this.prefs.DB.reports);
+      db1.upsert(localProfileDoc._id, (doc) => {
+        if(doc) {
+          let rev = doc._rev;
+          doc = localProfileDoc;
+          doc._rev = rev;
+          return doc;
+        } else {
+          doc = localProfileDoc;
+          delete doc._rev;
+          return doc;
+        }
+      }).then(res => {
+        if(!res.ok && !res.updated) {
+          Log.l("saveTechProfile(): soft upsert error:\n", res);
+          reject(res);
+        } else {
+          resolve(res);
+        }
+      // db1.get(localID).then((res) => {
+      //   Log.l("Server.saveTechProfile(): Found techProfile locally. Deleting it.");
+      //   let id = res._id;
+      //   let rev = res._rev;
+      //   return db1.remove(id, rev);
       // }).then((res) => {
-      //   Log.l(`saveTechProfile(): Got remote user ${uid}:\n`, res);
-      //   newProfileDoc._id = res._id;
-      //   newProfileDoc._rev = res._rev;
-      //   return rdb1.put(newProfileDoc);
+      //   Log.l("Server.saveTechProfile(): Deleted techProfile locally. Now updating it.");
+      //   return db1.put(localProfileDoc);
       // }).then((res) => {
-      //   Log.l("saveTechProfile(): Saved updated techProfile:\n", res);
-        resolve(localProfileDoc);
+      //   Log.l("Server.saveTechProfile(): Saved local profile successfully!\n", res);
+      //   resolve(localProfileDoc);
+      // }).catch((err) => {
+      //   Log.l("Server.saveTechProfile(): Local tech profile not found. Creating.");
+      //   delete localProfileDoc._rev;
+      //   // doc.docID = doc._id;
+      //   // doc._id = localID;
+      //   // delete doc._rev;
+      //   Log.l("Server.saveTechProfile(): Attempting to save local tech profile:\n", doc);
+      //   return db1.put(localProfileDoc);
+      // }).then((res) => {
+      //   Log.l("Server.saveTechProfile(): Successfully saved local tech profile:\n", res);
+      // //   rdb1 = this.srvr.addRDB('sesa-employees');
+      // //   uid = `org.couchdb.user:${doc.username}`;
+      // //   Log.l(`saveTechProfile(): Now fetching remote copy with id '${uid}'...`);
+      // //   return rdb1.get(uid);
+      // // }).then((res) => {
+      // //   Log.l(`saveTechProfile(): Got remote user ${uid}:\n`, res);
+      // //   newProfileDoc._id = res._id;
+      // //   newProfileDoc._rev = res._rev;
+      // //   return rdb1.put(newProfileDoc);
+      // // }).then((res) => {
+      // //   Log.l("saveTechProfile(): Saved updated techProfile:\n", res);
+      //   resolve(localProfileDoc);
       }).catch((err) => {
         Log.l("Server.saveTechProfile(): Error saving to local tech profile!");
         Log.e(err);

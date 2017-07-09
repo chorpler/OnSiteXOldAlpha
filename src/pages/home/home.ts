@@ -294,7 +294,18 @@ export class HomePage {
             }
           }
         }
-        this.period            = this.payrollPeriods[0];
+        let prd = this.ud.getHomePeriod();
+        if(prd) {
+          for(let period of this.payrollPeriods) {
+            if(period.serial_number === prd.serial_number) {
+              this.period = period;
+              break;
+            }
+          }
+        } else {
+          this.period            = this.payrollPeriods[0];
+          this.ud.setHomePeriod(this.period);
+        }
         Log.l("fetchTechWorkOrders(): Got payroll periods and all work orders:\n", this.payrollPeriods);
         Log.l(this.techWorkOrders);
         Log.l(this.otherReports);
@@ -427,6 +438,7 @@ export class HomePage {
 
   changedPayrollPeriod(period:PayrollPeriod) {
     Log.l("changedPayrollPeriod(): Payroll period changed to:\n", period);
+    this.ud.setHomePeriod(this.period);
   }
 
 }

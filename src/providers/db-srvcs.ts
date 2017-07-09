@@ -249,14 +249,36 @@ export class DBSrvcs {
     });
   }
 
-  deleteDoc(dbname, doc) {
-    Log.l(`deleteDoc(): Attempting to delete doc ${doc._id}...`);
-    let db1 = this.addDB(dbname);
-    return db1.remove(doc._id, doc._rev).then((res) => {
-      Log.l("deleteDoc(): Success:\n", res);
-    }).catch((err) => {
-      Log.l("deleteDoc(): Error!");
-      Log.e(err);
+  deleteDoc(dbname, newDoc) {
+    return new Promise((resolve,reject) => {
+      Log.l(`deleteDoc(): Attempting to delete doc ${newDoc._id}...`);
+      let db1 = this.addDB(dbname);
+      return db1.upsert(newDoc._id, (doc) => {
+        if(doc) {
+          let rev = doc._rev;
+          doc = newDoc;
+          doc._rev = rev;
+          doc['_deleted'] = true;
+          return doc;
+        } else {
+          doc = newDoc;
+          doc['_deleted'] = true;
+          delete doc._rev;
+          return doc;
+        }
+      }).then((res) => {
+        if(!res.ok && !res.updated) {
+          Log.l("deleteDoc(): soft upsert error:\n", res);
+          reject(res);
+        } else {
+          Log.l("deleteDoc(): Success:\n", res);
+          resolve(res);
+        }
+      }).catch((err) => {
+        Log.l("deleteDoc(): Error!");
+        Log.e(err);
+        reject(err);
+      });
     });
   }
 

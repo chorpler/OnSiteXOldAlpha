@@ -341,7 +341,7 @@ export class ReportPage implements OnInit {
         }
         Log.l("workOrderForm: overall valueChanges, ended up with work report:\n", this.workOrder);
       } else {
-        let fields = [['notes', 'notes'], ['selected_shift', 'shift'], ['training_type', 'training_type'], ['travel_time', 'travel_time']];
+        let fields = [['notes', 'notes'], ['selected_shift', 'shift'], ['travel_time', 'travel_time']];
         let len = fields.length;
         for(let i = 0; i < len; i++) {
           let key1 = fields[i][0];
@@ -351,6 +351,7 @@ export class ReportPage implements OnInit {
           }
         }
         this.reportOther.type = value.type.value;
+        this.reportOther.training_type = value.training_type.value;
         Log.l("workOrderForm: overall valueChanges, ended up with ReportOther:\n", this.reportOther);
       }
 
