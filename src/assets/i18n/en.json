@@ -135,5 +135,11 @@
   "holiday_hours": "Holiday Hrs.",
   "app_settings": "App Settings",
   "sounds": "Sounds",
-  "attempt_to_change_existing_report_type": "The type of an existing report cannot be changed. Please delete this report and create a new one."
+  "attempt_to_change_existing_report_type": "The type of an existing report cannot be changed. Please delete this report and create a new one.",
+  "key_training": "Training",
+  "key_travel": "Travel",
+  "key_training_and_travel": "Training and Travel",
+  "key_standby_duncan": "Standby for Duncan",
+  "key_sick_day_or_hours": "Sick Day/Hrs",
+  "key_holiday": "Holiday"
 }

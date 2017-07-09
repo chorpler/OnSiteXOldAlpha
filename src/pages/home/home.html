@@ -116,13 +116,35 @@
       </ion-list-header>
     </ion-list>
   </ion-card>
-  <p>
+  <ion-grid center class="home-grid-key" *ngIf="dataReady">
+    <ion-row class="home-grid-row">
+      <ion-col col-1 class="home-grid-col1">T</ion-col>         <ion-col col-4 class="home-grid-col2">{{'key_training' | translate}}</ion-col>
+      <ion-col col-1 offset-1 class="home-grid-col1">Q</ion-col><ion-col col-4 class="home-grid-col4">{{'key_travel' | translate}}</ion-col>
+    </ion-row>
+    <ion-row class="home-grid-row">
+      <ion-col col-1 class="home-grid-col1">M</ion-col>         <ion-col col-4 class="home-grid-col2">{{'key_training_and_travel' | translate}}</ion-col>
+      <ion-col col-1 offset-1 class="home-grid-col1">S</ion-col><ion-col col-4 class="home-grid-col4">{{'key_standby_duncan' | translate}}</ion-col>
+    </ion-row>
+    <ion-row class="home-grid-row">
+      <ion-col col-1 class="home-grid-col1">E</ion-col>         <ion-col col-4 class="home-grid-col2">{{'key_sick_day_or_hours' | translate}}</ion-col>
+      <ion-col col-1 offset-1 class="home-grid-col1">H</ion-col><ion-col col-4 class="home-grid-col4">{{'key_holiday' | translate}}</ion-col>
+    </ion-row>
+  </ion-grid>
+  <!-- <ion-grid center class="home-grid-key">
+    <ion-row class="home-grid-row"><ion-col class="home-grid-col1">T</ion-col><ion-col class="home-grid-col2">Training</ion-col></ion-row>
+    <ion-row class="home-grid-row"><ion-col class="home-grid-col1">Q</ion-col><ion-col class="home-grid-col2">Travel</ion-col></ion-row>
+    <ion-row class="home-grid-row"><ion-col class="home-grid-col1">M</ion-col><ion-col class="home-grid-col2">Training and Travel</ion-col></ion-row>
+    <ion-row class="home-grid-row"><ion-col class="home-grid-col1">S</ion-col><ion-col class="home-grid-col2">Standby for Duncan</ion-col></ion-row>
+    <ion-row class="home-grid-row"><ion-col class="home-grid-col1">E</ion-col><ion-col class="home-grid-col2">Sick Day or Sick Hrs</ion-col></ion-row>
+    <ion-row class="home-grid-row"><ion-col class="home-grid-col1">H</ion-col><ion-col class="home-grid-col2">Holiday</ion-col></ion-row>
+  </ion-grid> -->
+  <!-- <p>
       T   Training <br>
       Q   Travel <br>
       M   Training and Travel <br>
       S   Standby for Duncan <br>
       E   Sick Day or Sick Hrs <br>
       H   Holiday <br>
-  </p>
+  </p> -->
 </ion-content>
 <onsite-tabs></onsite-tabs>

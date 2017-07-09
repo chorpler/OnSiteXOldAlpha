@@ -204,7 +204,27 @@ page-home {
     }
   }
 
-
+  .home-grid-key {
+    width: 70%;
+    border: 1px solid lightgrey;
+  }
+  .home-grid-row {
+  }
+  .home-grid-col1 {
+    font-family: "Courier New", monospace;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: right;
+    padding-right: 5px;
+  }
+  .home-grid-col2 {
+    text-align: left;
+    padding-top: 6px;
+  }
+  .home-grid-col4 {
+    text-align: left;
+    padding-top: 8px;
+  }
   // ion-popover page-popover-template .scroll-content {
   //   height: 300vh;
   //   button {

@@ -57,7 +57,7 @@ export class SrvrSrvcs {
     let port = Number(this.prefs.SERVER.port);
     let server = this.prefs.SERVER.server;
     let protocol = this.prefs.SERVER.protocol;
-    return port !== 443 ? `${protocol}://${server}:${port}` : `${protocol}://${server}`;
+    return port && port !== 443 ? `${protocol}://${server}:${port}` : `${protocol}://${server}`;
   }
 
   public static getInsecureLoginBaseURL(user:string, pass:string) {
@@ -138,7 +138,6 @@ export class SrvrSrvcs {
         } else {
           Log.l("loginToDatabase(): Authentication successful.");
           SrvrSrvcs.userInfo = { u: user, p: pass };
-          this.ud.storeCredentials(user, pass);
           resolve(true);
         }
       }).catch(err => {
@@ -177,6 +176,7 @@ export class SrvrSrvcs {
 					// SrvrSrvcs.userInfo = {u: user, p: pass};
           // this.ud.storeCredentials(user, pass);
           // this.ud.setLoginStatus(true);
+          this.ud.storeCredentials(user, pass);
           let rdb2 = this.addRDB(this.prefs.DB.employees);
           if(auto === undefined || auto === false) {
             let uid = `org.couchdb.user:${user}`;
@@ -341,8 +341,8 @@ export class SrvrSrvcs {
           query.selector = { $and: [{ username: { $eq: tech } }, {rprtDate: { $geq: dates['start'] }}, {rprtDate: {$leq: dates['end']}}]};
         }
       }
-      this.loginToDatabase(u, p, this.prefs.DB.reports).then((res) => {
-        if (res) {
+      // this.loginToDatabase(u, p, this.prefs.DB.reports).then((res) => {
+        // if (res) {
           let rdb1 = this.addRDB(this.prefs.DB.reports);
           // rdb1.createIndex({index: {fields: ['username']}}).then((res) => {
           //   Log.l(`getReportsForTech(): index created successfully, now running query...`);
@@ -365,15 +365,18 @@ export class SrvrSrvcs {
             Log.l(err);
             resolve(woArray);
           });
-        } else {
-          resolve(woArray);
-        }
-      }).catch((err) => {
-        Log.l("getReportsForTech(): Error logging in to server.")
-        Log.e(err);
-        resolve(woArray);
+        // } else {
+          // resolve(woArray);
+        // }
+      // }).catch((err) => {
+      //   Log.l("getReportsForTech(): Error logging in to server.");
+      //   if(err.status === 401) {
+
+      //   }
+      //   Log.e(err);
+      //   resolve(woArray);
       });
-    });
+    // });
   }
 
   getReportsOtherForTech(tech: string, dates?: any):Promise<Array<ReportOther>> {
@@ -393,10 +396,10 @@ export class SrvrSrvcs {
       }
       let woArray = new Array<ReportOther>();
       Log.l("getReportsOtherForTech(): Using database: ", this.prefs.DB.reports_other);
-      this.loginToDatabase(u, p, this.prefs.DB.reports_other).then((res) => {
-        if (res) {
+      // this.loginToDatabase(u, p, this.prefs.DB.reports_other).then((res) => {
+        // if (res) {
           let rdb1 = this.addRDB(this.prefs.DB.reports_other);
-          let query = {selector: {username: {$eq: tech}}};
+          // let query = {selector: {username: {$eq: tech}}};
           // rdb1.createIndex({index: {fields: ['username']}}).then((res) => {
           //   Log.l(`getReportsOtherForTech(): index created successfully, now running query...`);
           //   return
@@ -417,14 +420,14 @@ export class SrvrSrvcs {
             Log.l(err);
             resolve(woArray);
           });
-        } else {
-          resolve(woArray);
-        }
-      }).catch((err) => {
-        Log.l("getReportsOtherForTech(): Error logging in to server.")
-        Log.e(err);
-        resolve(woArray);
-      });
+        // } else {
+          // resolve(woArray);
+        // }
+      // }).catch((err) => {
+      //   Log.l("getReportsOtherForTech(): Error logging in to server.")
+      //   Log.e(err);
+      //   resolve(woArray);
+      // });
     });
   }
 
@@ -432,8 +435,8 @@ export class SrvrSrvcs {
     return new Promise((resolve,reject) => {
       let u = this.ud.getUsername();
       let p = this.ud.getPassword();
-      this.loginToServer(u, p, this.prefs.DB.login).then((res) => {
-      	if(res) {
+      // this.loginToServer(u, p, this.prefs.DB.login).then((res) => {
+      // 	if(res) {
       		let rdb1 = this.addRDB(this.prefs.DB.reports);
           rdb1.allDocs({include_docs: true}).then((result) => {
 		        let data = [];
@@ -446,14 +449,14 @@ export class SrvrSrvcs {
 		      	Log.e(error);
 		      	resolve([]);
 		      });
-      	} else {
-      		resolve([]);
-      	}
-      }).catch((err) => {
-				Log.l("getReports(): Error logging in to server.")
-				Log.e(err);
-				resolve([]);
-			});
+      // 	} else {
+      // 		resolve([]);
+      // 	}
+      // }).catch((err) => {
+			// 	Log.l("getReports(): Error logging in to server.")
+			// 	Log.e(err);
+			// 	resolve([]);
+			// });
 		});
   }
 
