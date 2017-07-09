@@ -434,6 +434,7 @@ export class Shift {
         //   data.code = "Q";
         // }
       } else if(type === 'Standby') {
+        output.push("S");
 
       } else if(type === 'Standby: HB Duncan') {
         output.push("S");

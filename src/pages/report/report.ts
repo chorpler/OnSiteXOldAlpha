@@ -139,7 +139,7 @@ export class ReportPage implements OnInit {
     if (this.navParams.get('reportOther') !== undefined) {
       this.reportOther = this.navParams.get('reportOther');
     } else {
-      this.reportOther = new ReportOther();
+      // this.reportOther = new ReportOther();
     }
     if(this.shiftToUse !== null) {
       this.selectedShift = this.shiftToUse;
@@ -179,26 +179,29 @@ export class ReportPage implements OnInit {
 
       }
       this.thisWorkOrderContribution = this.workOrder.getRepairHours() || 0;
-      if(!this.reportOther) {
-        this.reportOther  = new ReportOther()           ;
-        let ro            = this.reportOther            ;
-        let tech          = this.techProfile            ;
-        let now           = moment()                    ;
-        let shift         = this.selectedShift          ;
-        ro.timestampM     = now.format()                ;
-        ro.timestamp      = now.toExcel()               ;
-        ro.first_name     = tech.firstName              ;
-        ro.last_name      = tech.lastName               ;
-        ro.username       = tech.avatarName             ;
-        ro.client         = tech.client                 ;
-        ro.location       = tech.location               ;
-        ro.location_2     = tech.loc2nd                 ;
-        ro.location_id    = tech.locID                  ;
-        ro.payroll_period = shift.getPayrollPeriod()    ;
-        ro.shift_serial   = shift.getShiftSerial()      ;
-        let date          = shift.getStartTime()        ;
-        ro.report_date    = moment(date).startOf('day') ;
+      if(!this.reportOther || !this.reportOther.first_name) {
+        this.reportOther = this.createFreshOtherReport();
       }
+      // if(!this.reportOther) {
+      //   this.reportOther  = new ReportOther()           ;
+      //   let ro            = this.reportOther            ;
+      //   let tech          = this.techProfile            ;
+      //   let now           = moment()                    ;
+      //   let shift         = this.selectedShift          ;
+      //   ro.timestampM     = now.format()                ;
+      //   ro.timestamp      = now.toExcel()               ;
+      //   ro.first_name     = tech.firstName              ;
+      //   ro.last_name      = tech.lastName               ;
+      //   ro.username       = tech.avatarName             ;
+      //   ro.client         = tech.client                 ;
+      //   ro.location       = tech.location               ;
+      //   ro.location_2     = tech.loc2nd                 ;
+      //   ro.location_id    = tech.locID                  ;
+      //   ro.payroll_period = shift.getPayrollPeriod()    ;
+      //   ro.shift_serial   = shift.getShiftSerial()      ;
+      //   let date          = shift.getStartTime()        ;
+      //   ro.report_date    = moment(date).startOf('day') ;
+      // }
 
       this.initializeForm();
       this.initializeFormListeners();
@@ -287,23 +290,6 @@ export class ReportPage implements OnInit {
     });
     this._time.valueChanges.subscribe((value: any) => { this.reportOther.time = value; });
     this._allDay.valueChanges.subscribe((value: any) => { this.allDay = value; });
-    this.workOrderForm.valueChanges.debounceTime(500).subscribe((value: any) => {
-      Log.l("workOrderForm: valueChanges fired for:\n", value);
-      // let type = value.
-      let notes = value.notes;
-      let unit = value.unit_number;
-      let woNum = value.work_order_number;
-      let fields = [['notes', 'notes'], ['work_order_number', 'work_order_number'], ['unit_number', 'unit_number']];
-      let len = fields.length;
-      for (let i = 0; i < len; i++) {
-        let key1 = fields[i][0];
-        let key2 = fields[i][1];
-        if (value[key1] !== null && value[key1] !== undefined) {
-          this.workOrder[key2] = value[key1];
-        }
-      }
-      Log.l("workOrderForm: overall valueChanges, ended up with work order:\n", this.workOrder);
-    });
     this._repairHours.valueChanges.subscribe((hours: any) => {
       Log.l("workOrderForm: valueChanges fired for repair_hours: ", hours);
       let dur1 = hours.split(":");
@@ -335,6 +321,40 @@ export class ReportPage implements OnInit {
       this.workOrderForm.controls.report_date.setValue(report_date.format("YYYY-MM-DD"));
     });
 
+    this.workOrderForm.valueChanges.debounceTime(500).subscribe((value: any) => {
+      Log.l("workOrderForm: valueChanges fired for:\n", value);
+      // let type = value.
+      let notes  = value.notes;
+      let unit   = value.unit_number;
+      let woNum  = value.work_order_number;
+      let fields = [['notes', 'notes'], ['work_order_number', 'work_order_number'], ['unit_number', 'unit_number']];
+      let len    = fields.length;
+      if(value.type.name === 'work_report') {
+        for (let i = 0; i < len; i++) {
+          let key1 = fields[i][0];
+          let key2 = fields[i][1];
+          if (value[key1] !== null && value[key1] !== undefined) {
+            if(this.workOrder[key2] !== undefined) {
+              this.workOrder[key2] = value[key1];
+            }
+          }
+        }
+        Log.l("workOrderForm: overall valueChanges, ended up with work report:\n", this.workOrder);
+      } else {
+        let fields = [['notes', 'notes'], ['selected_shift', 'shift'], ['training_type', 'training_type'], ['travel_time', 'travel_time']];
+        let len = fields.length;
+        for(let i = 0; i < len; i++) {
+          let key1 = fields[i][0];
+          let key2 = fields[i][1];
+          if(this.reportOther[key2] !== undefined) {
+            this.reportOther[key2] = value[key1];
+          }
+        }
+        this.reportOther.type = value.type.value;
+        Log.l("workOrderForm: overall valueChanges, ended up with ReportOther:\n", this.reportOther);
+      }
+
+    });
   }
 
   private initializeForm() {
@@ -551,7 +571,10 @@ export class ReportPage implements OnInit {
     this.db.saveReportOther(newDoc).then(res => {
       Log.l("processAltnerateWO(): Done saving ReportOther!");
       this.alert.hideSpinner();
+      this.type = REPORTTYPEI18N[0];
       this.createFreshReport();
+      this.initializeForm();
+      this.initializeFormListeners();
       // if(this.mode === 'Add') {
       //   this.tabs.goToPage('OnSiteHome');
       // } else {
@@ -593,6 +616,7 @@ export class ReportPage implements OnInit {
     wo.shift_serial   = shift.getShiftSerial()                           ;
     wo.report_date    = moment(date).startOf('day').format("YYYY-MM-DD") ;
     this.workOrder    = wo                                               ;
+    return wo;
   }
 
   createFreshOtherReport() {
@@ -612,8 +636,9 @@ export class ReportPage implements OnInit {
     ro.location_id = tech.locID;
     ro.payroll_period = shift.getPayrollPeriod();
     ro.shift_serial = shift.getShiftSerial();
-    ro.report_date = moment(date).startOf('day').format("YYYY-MM-DD");
+    ro.report_date = moment(date).startOf('day');
     this.reportOther = ro;
+    return ro;
   }
 
   createReport() {
