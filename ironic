@@ -5,7 +5,7 @@ rm -rf www
 echo "Deleting package-lock.json..."
 rm -f package-lock.json
 echo "Running npm install for safety..."
-npm install
+#npm install
 echo "Installing new plugins (if any) ..."
 if [ ! -e plugins/cordova-plugin-app-update ]; then
   echo "Installing new plugins..."
