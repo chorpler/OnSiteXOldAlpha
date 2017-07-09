@@ -1,8 +1,8 @@
 # OnSiteX v11 Home Page
 
-M Training and Travel
 T Training
 Q Travel
+M Training and Travel
 S Standby for Duncan
 E Sick Day or Sick Hrs
 H Holiday
