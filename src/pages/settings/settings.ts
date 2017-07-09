@@ -2,7 +2,7 @@ import { Component, OnInit                                                   } f
 import { IonicPage, NavController, Platform, ModalController, ViewController } from 'ionic-angular'                   ;
 import { DBSrvcs                                                             } from '../../providers/db-srvcs'        ;
 import { Login                                                               } from '../login/login'                  ;
-import { Log                                                                 } from '../../config/config.functions'   ;
+import { Log, moment, Moment                                                 } from '../../config/config.functions'   ;
 import { AuthSrvcs                                                           } from '../../providers/auth-srvcs'      ;
 import { AlertService                                                        } from '../../providers/alerts'          ;
 import { TabsComponent                                                       } from '../../components/tabs/tabs'      ;
@@ -10,6 +10,7 @@ import { TranslateService                                                    } f
 import { AppVersion                                                          } from '@ionic-native/app-version'       ;
 import { StorageService                                                      } from '../../providers/storage-service' ;
 import { Preferences                                                         } from '../../providers/preferences'     ;
+import { UserData                                                            } from '../../providers/user-data'       ;
 
 
 @IonicPage({ name: 'Settings' })
@@ -33,7 +34,7 @@ export class Settings implements OnInit {
   public PREFS           : any        = Settings.PREFS    ;
   public prefs           : any        = Settings.PREFS    ;
 
-  constructor( public navCtrl: NavController, public platform: Platform,  public auth: AuthSrvcs, public alert: AlertService, public tabs: TabsComponent, public translate: TranslateService, public version: AppVersion, public storage:StorageService, public modalCtrl:ModalController) {
+  constructor( public navCtrl: NavController, public platform: Platform,  public auth: AuthSrvcs, public alert: AlertService, public tabs: TabsComponent, public translate: TranslateService, public version: AppVersion, public storage:StorageService, public modalCtrl:ModalController, public ud:UserData) {
     window["onsitesettings"] = this;
   }
 
@@ -61,18 +62,23 @@ export class Settings implements OnInit {
 
     this.sounds = this.prefs.USER.audio;
 
-    this.version.getAppName().then(res => {
-      this.appName = res;
-      return this.version.getVersionNumber();
-    }).then(res => {
-      this.appVersion = res;
-      Log.l(`Settings: got app name '${this.appName}' and version '${this.appVersion}'.`);
+    if(this.platform.is('cordova')) {
+      this.version.getAppName().then(res => {
+        this.appName = res;
+        return this.version.getVersionNumber();
+      }).then(res => {
+        this.appVersion = res;
+        Log.l(`Settings: got app name '${this.appName}' and version '${this.appVersion}'.`);
+        this.dataReady = true;
+      }).catch(err => {
+        Log.l(`Settings: unable to get app name and version, cordova probably not available.`);
+        Log.e(err);
+        this.dataReady = true;
+      });
+    } else {
+      this.appVersion = this.ud.appdata.version;
       this.dataReady = true;
-    }).catch(err => {
-      Log.l(`Settings: unable to get app name and version, cordova probably not available.`);
-      Log.e(err);
-      this.dataReady = true;
-    });
+    }
   }
 
   ionViewDidEnter() {

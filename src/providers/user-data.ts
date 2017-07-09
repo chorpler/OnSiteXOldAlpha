@@ -12,12 +12,9 @@ import { Log, isMoment, moment, Moment } from '../config/config.functions' ;
 import { Preferences                   } from './preferences'              ;
 import { STRINGS                       } from '../config/config.strings'   ;
 
-// import * as moment from 'moment';
-
-const XL = moment([1900, 0, 1]);
-
 @Injectable()
 export class UserData {
+  public static appdata               : any = {version: "10.11.04"}                    ;
   public static _favorites            : string[]             = []                      ;
   public static HAS_LOGGED_IN         = 'hasLoggedIn'                                  ;
   public static HAS_SEEN_TUTORIAL     = 'hasSeenTutorial'                              ;
@@ -40,6 +37,7 @@ export class UserData {
   public static userLoggedIn          : boolean              = false                   ;
   public static sesaConfig            : any                  = {}                      ;
   public static data                  : any = { employee: [], sites: [], reports: [], otherReports: [], payrollPeriods: [], shifts: [], messages: [] };
+  public appdata                      : any = UserData.appdata                         ;
   public shifts                       : Array<Shift>         = UserData.shifts         ;
   public payrollPeriods               : Array<PayrollPeriod> = UserData.payrollPeriods ;
   public reports                      : Array<WorkOrder>     = UserData.reports        ;
@@ -228,7 +226,7 @@ export class UserData {
     if(period instanceof PayrollPeriod) {
       key = period.getPayrollSerial();
     } else if(isMoment(period)) {
-      key = moment(period).diff(XL, 'days') + 2;
+      key = period.toExcel();
     } else {
       key = Number(period);
     }
@@ -376,7 +374,7 @@ export class UserData {
     }
     if(now.isValid()) {
       let week = this.getCurrentPayrollWeek(now);
-      let xlDate = moment(week).diff(XL, 'days') + 2;
+      let xlDate = moment(week).toExcel();
       return xlDate;
     } else {
       Log.l("getPayrollPeriodForDate(): Need moment, got:\n", date);

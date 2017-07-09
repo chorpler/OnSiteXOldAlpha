@@ -5,6 +5,8 @@ import { StatusBar                                   } from '@ionic-native/statu
 import { SplashScreen                                } from '@ionic-native/splash-screen'       ;
 import { Storage                                     } from '@ionic/storage'                    ;
 import { Push, PushObject, PushOptions               } from '@ionic-native/push'                ;
+import { LocalNotifications                          } from '@ionic-native/local-notifications' ;
+import { AppVersion                                  } from '@ionic-native/app-version'         ;
 import { UserData                                    } from '../providers/user-data'            ;
 import { PouchDBService                              } from '../providers/pouchdb-service'      ;
 import { DBSrvcs                                     } from '../providers/db-srvcs'             ;
@@ -15,7 +17,6 @@ import { NetworkStatus                               } from '../providers/networ
 import { GeolocService                               } from '../providers/geoloc-service'       ;
 import { Log, CONSOLE, moment, Moment                } from '../config/config.functions'        ;
 import { DOMTimeStamp, Coordinates, Position         } from '../config/geoloc'                  ;
-import { LocalNotifications                          } from '@ionic-native/local-notifications' ;
 import { HomePage                                    } from '../pages/home/home'                ;
 import { MessageService                              } from '../providers/message-service'      ;
 import { TabsComponent                               } from '../components/tabs/tabs'           ;
@@ -54,6 +55,7 @@ export class OnSiteApp {
                 public push        : Push              ,
                 public localNotify : LocalNotifications,
                 public storage     : Storage           ,
+                public version     : AppVersion        ,
                 public db          : DBSrvcs           ,
                 public ud          : UserData          ,
                 public auth        : AuthSrvcs         ,
@@ -75,7 +77,9 @@ export class OnSiteApp {
   initializeApp() {
     Log.l("AppComponent: Initializing app...");
 
-    this.platform.ready().then((res) => {
+    this.platform.ready().then(res => {
+      return this.getAppVersion();
+    }).then((res) => {
       this.platform.registerBackButtonAction(() => {
         if (this.backButtonPressedAlready) {
           this.platform.exitApp();
@@ -242,6 +246,24 @@ export class OnSiteApp {
 
     // this.audio.preload('overtime', 'assets/audio/nospoilers.wav');
     // this.audio.preload('deletereport', 'assets/audio/nospoilers2.wav');
+  }
+
+  getAppVersion() {
+    return new Promise((resolve) => {
+      if (this.platform.is('cordova')) {
+        return this.version.getVersionNumber().then(res => {
+          this.ud.appdata.version = res;
+          resolve(true);
+        }).catch(err => {
+          Log.l("Error getting app version!");
+          Log.e(err);
+          resolve(false);
+        });
+      } else {
+        this.ud.appdata.version += "(b)";
+        resolve(true);
+      }
+    });
   }
 
 }
