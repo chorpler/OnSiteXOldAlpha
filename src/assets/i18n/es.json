@@ -154,5 +154,6 @@
   "error_saving_tech_profile": "Error al guardar el perfil de usuario.",
   "spinner_loading_tab": "Cargando página...",
   "letter_code": "Significado de Letras",
-  "loading_data": "Cargando Datos"
+  "loading_data": "Cargando Datos",
+  "standby_hb_duncan_wrong_location": "Tu ubicación no está configurada para Halliburton Duncan. Defina su ubicación en la pestaña Perfil de Usuario (toque en %s en la parte inferior de la pantalla)."
 }

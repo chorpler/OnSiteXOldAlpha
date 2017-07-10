@@ -141,7 +141,7 @@ export class Settings implements OnInit {
   toggleSounds() {
     this.prefs.USER.audio = this.sounds;
     this.savePreferences().then(res => {
-      Log.l("toggleSounds(): Sounds turned to and preferences saved:\n", this.prefs.USER.audio);
+      Log.l("toggleSounds(): Sounds turned to '%s' and preferences saved:\n", this.prefs.USER.audio);
       Log.l(this.prefs);
     }).catch(err => {
       Log.l("toggleSounds(): Error saving preferences.");

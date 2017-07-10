@@ -221,4 +221,17 @@ export class TabsComponent implements OnInit {
       Log.l("terminateApp(): Error attempting to exit app.");
     });
   }
+
+  aboutPage(event:any, name:string) {
+    Log.l(`User wants info about tab '${name}'. Event:\n`, event);
+    let help = {
+      "OnSiteHome"   : "Home Page",
+      "Report"       : "Work Reports",
+      "ReportHistory": "Work Report History",
+      "User"         : "User Information",
+      "Message List" : "Messages",
+      "Settings"     : "Settings",
+    }
+    this.alert.showPopover(help[name], {}, event);
+  }
 }

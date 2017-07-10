@@ -1,3 +1,19 @@
+
+.alert-with-icon {
+  // font-size: 24px;
+  .alert-icon {
+    font-size: 24px;
+  }
+  .alert-icon::before {
+    content: "  ";
+  }
+  .alert-icon::after {
+    content: "  ";
+  }
+}
+.alert-icon {
+  font-family: "Ionicons";
+}
 ion-content {
   .scroll-content {
     overflow-y: auto;

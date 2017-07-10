@@ -329,20 +329,20 @@ export class Shift {
   }
 
   getTrainingHours() {
-    let total = 0;
+    let total:number|string = 0;
     for(let other of this.other_reports) {
       if(other.type !== undefined && other.type === 'Training') {
-        total += other.getTotalHours();
+        total += Number(other.getTotalHours());
       }
     }
     return total;
   }
 
   getTravelHours() {
-    let total = 0;
+    let total:number|string = 0;
     for(let other of this.other_reports) {
       if(other.type !== undefined && other.type === 'Travel') {
-        total += other.getTotalHours();
+        total += Number(other.getTotalHours());
       }
     }
     return total;
@@ -388,7 +388,7 @@ export class Shift {
     let reports = this.getShiftReports() ;
     let output  = []                     ;
     // let slcode  = ""                     ;
-    let data    = {status: 0, hours: 0, code: ""};
+    let data    = {status: 0, hours: 0, workHours: 0, otherReportHours: 0, code: ""};
     // let data    = {status: 0, hours: 0, code: output};
     // M Training and Travel
     // T Training
@@ -401,6 +401,7 @@ export class Shift {
       let type = other.type;
       if(type === 'Training') {
         output.push("T");
+        data.otherReportHours += other.time;
         // if(data.code === "Q") {
         //   data.code = "M";
         // } else {
@@ -418,6 +419,7 @@ export class Shift {
         // }
       } else if(type === 'Travel') {
         output.push("Q");
+        data.otherReportHours += other.time;
         // let i = output.indexOf("T");
         // let j = output.indexOf("Q");
         // if(i > -1) {
@@ -434,27 +436,32 @@ export class Shift {
         // }
       } else if(type === 'Standby') {
         output.push("S");
+        data.otherReportHours += other.time;
 
       } else if(type === 'Standby: HB Duncan') {
         output.push("S");
+        data.otherReportHours += 8;
         // if(output.indexOf("S") === -1) {
         //   output.push("S");
         // }
         // data.code = "S";
       } else if(type === 'Sick') {
         output.push("E");
+        data.otherReportHours += other.time;
         // if(output.indexOf("E") === -1) {
         //   output.push("E");
         // }
         // data.code = "E";
       } else if(type === 'Vacation') {
         output.push("V");
+        data.otherReportHours += other.time;
         // if(output.indexOf("V") === -1) {
         //   output.push("V");
         // }
         // data.code = "V"
       } else if(type === 'Holiday') {
         output.push("H");
+        data.otherReportHours += other.time;
         // if(output.indexOf("H") === -1) {
         //   output.push("H");
         // }
@@ -463,7 +470,7 @@ export class Shift {
     }
     if(reports.length > 0) {
       let hrs = this.getNormalHours();
-      data.hours = hrs;
+      data.workHours = hrs;
     }
     // Log.l("Shift: final ReportOther status is:\n", output);
     if(output.indexOf("T") > -1 && output.indexOf("Q") > -1) {
@@ -536,8 +543,26 @@ export class Shift {
   getShiftStatus() {
     let hours = this.getNormalHours();
     let total = this.getShiftLength();
-    let status = this.getShiftReportsStatus().status;
-    return status ? "hoursComplete" : (hours > total) ? "hoursOver" : (hours < total) ? "hoursUnder" : (hours === total) ? "hoursComplete" : "hoursUnknown";
+    let status = this.getShiftReportsStatus();
+
+    let retVal;
+    if(status.status && !status.workHours) {
+      retVal = "hoursComplete";
+    } else if(status.status && status.workHours) {
+      retVal = "hoursComplete";
+    } else if(!status.status) {
+      if(hours > total) {
+        retVal = "hoursOver";
+      } else if(hours < total) {
+        retVal = "hoursUnder";
+      } else if(hours === total) {
+        retVal = "hoursComplete";
+      } else {
+        retVal = "hoursUnknown";
+      }
+    }
+    return retVal;
+    // return (status && hours === status) ? "hoursComplete" : (status && hours !== status) ? "hoursUnder" : (hours > total) ? "hoursOver" : (hours < total) ? "hoursUnder" : (hours === total) ? "hoursComplete" : "hoursUnknown";
   }
 
   toString(translate?:any) {

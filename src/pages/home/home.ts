@@ -368,19 +368,17 @@ export class HomePage {
     loginPage.present();
   }
 
-  getShiftStatus(idx:number) {
-    let hours = this.hoursTotalList[idx];
-    let total = this.techProfile.shiftLength;
-    let retVal = (hours > total) ? "hoursOver" : (hours < total) ? "hoursUnder" : (hours === total) ? "hoursComplete" : "hoursUnknown";
-    return retVal;
-  }
-
   getCheckboxSVG(shift:Shift) {
     let checkBox = '?';
     let chks = this.checkboxSVG;
     let status = shift.getShiftReportsStatus().status;
     if(status) {
-      return chks[Icons["box-check-yes"]];
+      let hours = shift.getNormalHours();
+      if(hours !== status) {
+        return chks[Icons['box-check-no']];
+      } else {
+        return chks[Icons["box-check-yes"]];
+      }
     } else {
       let hours = shift.getNormalHours();
       let total = shift.getShiftLength();

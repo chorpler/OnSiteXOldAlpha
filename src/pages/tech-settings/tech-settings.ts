@@ -136,8 +136,6 @@ export class TechSettingsPage implements OnInit {
     let sesaConfig = this.ud.getSesaConfig();
     if (sizeOf(sesaConfig) > 0) {
       let keys  = ['client', 'location', 'locid', 'loc2nd', 'shift', 'shiftlength', 'shiftstarttime'];
-      // let keys2 = ['selClient', 'selLocation', 'selLocID', 'selLoc2nd', 'selShift', 'selShiftLength', 'selShiftStartTime'];
-      // let keys3 = ['client', 'location', 'locID', 'loc2nd', 'shift', 'shiftLength', 'shiftStartTime'];
       let keys2 = ['client', 'location', 'locID', 'loc2nd', 'shift', 'shiftLength', 'shiftStartTime'];
       let keys3 = ['clients', 'locations', 'locIDs', 'loc2nds', 'shiftTimes', 'shiftLengths', 'shiftStartTimes'];
       for (let i in keys) {
@@ -190,6 +188,7 @@ export class TechSettingsPage implements OnInit {
       }
     }
     Log.l("initializeSites(): New clients list is:\n", clients);
+    return clients;
   }
 
   onSubmit() {

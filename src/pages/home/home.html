@@ -41,11 +41,11 @@
     <ion-list no-lines no-border class="home-card-body-list">
       <ion-item class="ion-item-button-like"  *ngFor="let shift of period.shifts; let i=index" (click)="showShiftReports(shift)">
         <ion-icon class="shft-num-icon">{{numChars[shift.shift_number]}}</ion-icon>
-        <span class="shift-text" *ngIf="shift.getShiftReportsStatus().status && !shift.getShiftReportsStatus().hours">
+        <span class="shift-text" *ngIf="shift.getShiftReportsStatus().status && !shift.getShiftReportsStatus().workHours">
           {{shift.getShiftReportsStatus().code}}&nbsp;/&nbsp;{{shift.getShiftReportsStatus().code}} &nbsp;&nbsp;
         </span>
-        <span class="shift-text" *ngIf="shift.getShiftReportsStatus().status && shift.getShiftReportsStatus().hours">
-          {{shift.getShiftReportsStatus().code}}&nbsp;+&nbsp;{{shift.getShiftReportsStatus().hours}} &nbsp;Hrs. &nbsp;&nbsp;
+        <span class="shift-text" *ngIf="shift.getShiftReportsStatus().status && shift.getShiftReportsStatus().workHours">
+          {{shift.getShiftReportsStatus().code}}&nbsp;+&nbsp;{{shift.getShiftReportsStatus().workHours}} &nbsp;Hrs. &nbsp;&nbsp;
         </span>
         <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().status">
           {{shift.getNormalHours()}}&nbsp;/&nbsp;{{shift.getShiftLength()}} &nbsp;Hrs. &nbsp;&nbsp;

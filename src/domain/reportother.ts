@@ -89,17 +89,17 @@ export class ReportOther {
   }
 
   public getTotalHours() {
-    let hours = Number(this.time);
+    let hours:number|string = Number(this.time);
     if(!isNaN(hours)) {
       return hours;
     } else {
       if(this.time === "V" || this.time === "H") {
         hours = 8;
       } else if(this.time === "S" && this.location === "DUNCAN") {
-        hours = 8;
+        hours = "S";
       } else {
-        Log.w("ReportOther.getTotalHours(): Total hours for this ReportOther was not a number or a recognized code: '%s'", this.time);
-        return null;
+        // Log.w("ReportOther.getTotalHours(): Total hours for this ReportOther was not a number or a recognized code: '%s'", this.time);
+        hours = 0;
       }
       return hours;
     }

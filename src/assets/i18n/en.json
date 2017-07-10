@@ -153,5 +153,6 @@
   "error_saving_tech_profile": "Error saving user profile.",
   "spinner_loading_tab": "Loading page...",
   "letter_code": "Meaning of Letters",
-  "loading_data": "Loading Data"
+  "loading_data": "Loading Data",
+  "standby_hb_duncan_wrong_location": "Your location is not set to Halliburton Duncan. Please set your location in the User Profile tab below (tap on %s below)."
 }

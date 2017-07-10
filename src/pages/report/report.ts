@@ -15,13 +15,13 @@ import { WorkOrder                                             } from '../../dom
 import { Employee                                              } from '../../domain/employee'             ;
 import { ReportOther                                           } from '../../domain/reportother'          ;
 import { Status                                                } from '../../providers/status'            ;
+import { Jobsite                                               } from '../../domain/jobsite'              ;
 import { UserData                                              } from '../../providers/user-data'         ;
 import { sprintf                                               } from 'sprintf-js'                        ;
 import { STRINGS                                               } from '../../config/config.strings'       ;
 import { Preferences                                           } from '../../providers/preferences'       ;
 import { TabsComponent                                         } from '../../components/tabs/tabs'        ;
 import { TranslateService                                      } from '@ngx-translate/core'               ;
-import { REPORTTYPEI18N, TRAININGTYPEI18N, JOBSITESI18N        } from '../../config/report.object'        ;
 import 'rxjs/add/operator/debounceTime'                                                                   ;
 
 export const focusDelay = 500;
@@ -45,7 +45,7 @@ export class ReportPage implements OnInit {
   setDate                   : Date             = new Date()                 ;
   year                      : number           = this.setDate.getFullYear() ;
   mode                      : string           = 'Add'                      ;
-  type                      : any = REPORTTYPEI18N[0]                       ;
+  type                      : any                                           ;
   formValues                : any                                           ;
   workOrderForm             : FormGroup                                     ;
   workOrder                 : any                                           ;
@@ -63,6 +63,7 @@ export class ReportPage implements OnInit {
   shifts                    : Array<Shift>                                  ;
   period                    : PayrollPeriod                                 ;
   selectedShift             : Shift                                         ;
+  sites                     : Array<Jobsite>                                ;
   currentDay                : any                                           ;
   shiftsStart               : any                                           ;
   shifter                   : any                                           ;
@@ -99,15 +100,16 @@ export class ReportPage implements OnInit {
   shiftDateOptions          : any                                           ;
   dataReady                 : boolean          = false                      ;
   techWorkOrders            : Array<WorkOrder> = []                         ;
-  shiftDateInputDisabled    : boolean          = true                       ;
-  shiftDateInput2Disabled   : boolean          = false                      ;
   selectedShiftText         : string           = ""                         ;
   workOrderList             : any                                           ;
   filteredWOList            : any                                           ;
-  selReportType             : Array<any>       = REPORTTYPEI18N             ;
-  selTrainingType           : Array<any>       = TRAININGTYPEI18N           ;
+  // selReportType             : Array<any>       = REPORTTYPEI18N             ;
+  // selTrainingType           : Array<any>       = TRAININGTYPEI18N           ;
+  // selTravelLocation         : Array<any>       = JOBSITESI18N               ;
+  selReportType             : Array<any>                                    ;
+  selTrainingType           : Array<any>                                    ;
+  selTravelLocation         : Array<any>                                    ;
   training_type             : any              = null                       ;
-  selTravelLocation         : Array<any>       = JOBSITESI18N               ;
   travel_location           : any              = null                       ;
   sickTime                  : any                                           ;
   _sickTime                 : any                                           ;
@@ -166,6 +168,7 @@ export class ReportPage implements OnInit {
       'report_submit_error_message',
       'hb_work_order_number_length',
       'error_saving_report_message',
+      'standby_hb_duncan_wrong_location',
       'attempt_to_change_existing_report_type',
     ];
     this.lang = this.translate.instant(translations);
@@ -253,9 +256,21 @@ export class ReportPage implements OnInit {
     let o1 = { 'text': '00', 'value': '00' };
     this.chooseHours[1].options.push({ 'text': '00', 'value': '00' });
     this.chooseHours[1].options.push({ 'text': '30', 'value': '30' });
+    this.selReportType = this.ud.getData('report_types');
+    this.selTrainingType = this.ud.getData('training_types');
+    let sites = [];
+    this.sites = this.ud.getData('sites');
+    let siteList = this.ud.getData('sites');
+    for(let site of siteList) {
+      let name = site.getSiteID();
+      sites.push(name);
+    }
+    this.selTravelLocation = sites;
+    this.type = this.selReportType[0];
   }
 
   public initializeFormListeners() {
+    let lang              = this.lang                                      ;
     this._type            = this.workOrderForm.controls['type']            ;
     this._training_type   = this.workOrderForm.controls['training_type']   ;
     this._travel_location = this.workOrderForm.controls['travel_location'] ;
@@ -275,14 +290,14 @@ export class ReportPage implements OnInit {
       if (value.name === 'training') {
         ro.training_type = "Safety";
         ro.time = 2;
-        this._training_type.setValue(TRAININGTYPEI18N[0]);
-        this.training_type = TRAININGTYPEI18N[0];
+        this._training_type.setValue(this.selTrainingType[0]);
+        this.training_type = this.selTrainingType[0];
         this._time.setValue(2);
       } else if (value.name === 'travel') {
         ro.travel_location = "BE MDL MNSHOP";
         ro.time = 6;
-        this.travel_location = JOBSITESI18N[0];
-        this._travel_location.setValue(JOBSITESI18N[0]);
+        this.travel_location = this.selTravelLocation[0];
+        this._travel_location.setValue(this.selTravelLocation[0]);
         this._time.setValue(6);
       } else if (value.name === 'sick') {
         ro.time = 8;
@@ -294,8 +309,17 @@ export class ReportPage implements OnInit {
         ro.time = 8;
         this._time.setValue(8);
       } else if (value.name === 'standby_hb_duncan') {
-        ro.time = "S";
-        this._time.setValue("S");
+        if(this.techProfile.location !== "DUNCAN") {
+          this._type.setValue(this.selReportType[0]);
+          // let strIcon = "<ion-icon name='ios-contact-outline'></ion-icon>";
+          let strIcon = "<span class='alert-icon'>&#xf419;</span>";
+          let warnText = sprintf(lang['standby_hb_duncan_wrong_location'], strIcon)
+          let warnFont = sprintf("<span class='alert-with-icon'>%s</span>", warnText);
+          this.alert.showAlert(lang['error'], warnFont);
+        } else {
+          ro.time = "S";
+          this._time.setValue("S");
+        }
       }
     });
     this._training_type.valueChanges.subscribe((value: any) => {
@@ -362,7 +386,8 @@ export class ReportPage implements OnInit {
       let woNum  = value.work_order_number;
       let fields = [['notes', 'notes'], ['work_order_number', 'work_order_number'], ['unit_number', 'unit_number']];
       let len    = fields.length;
-      if(value.type.name === 'work_report') {
+      let type   = value.type ? value.type : this.type;
+      if(type.name === 'work_report') {
         for (let i = 0; i < len; i++) {
           let key1 = fields[i][0];
           let key2 = fields[i][1];
@@ -383,10 +408,10 @@ export class ReportPage implements OnInit {
             this.reportOther[key2] = value[key1];
           }
         }
-        if(value.type.name === 'training') {
+        if (type.name === 'training') {
           this.reportOther.training_type = value.training_type.value;
         }
-        this.reportOther.type = value.type.value;
+        this.reportOther.type = type.value;
         Log.l("workOrderForm: overall valueChanges, ended up with ReportOther:\n", this.reportOther);
       }
 
@@ -404,6 +429,7 @@ export class ReportPage implements OnInit {
     }
     // ts = moment().format();
     this.currentRepairHours = wo.getRepairHours();
+    let typeDisabled = this.mode === 'Edit' ? true : false;
     this.workOrderForm = new FormGroup({
       'selected_shift'    : new FormControl(this.selectedShift                , Validators.required) ,
       'repair_time'       : new FormControl(wo.getRepairHoursString()         , Validators.required) ,
@@ -412,7 +438,7 @@ export class ReportPage implements OnInit {
       'notes'             : new FormControl(wo.notes                          , Validators.required) ,
       'report_date'       : new FormControl(rprtDate.format("YYYY-MM-DD")     , Validators.required) ,
       // 'timestamp'         : new FormControl({ value: ts, disabled: true }     , Validators.required) ,
-      'type'              : new FormControl(this.type                         , Validators.required) ,
+      'type'              : new FormControl({value: this.type, disabled: typeDisabled} , Validators.required) ,
       'training_type'     : new FormControl(null                              , Validators.required) ,
       'travel_location'   : new FormControl(null                              , Validators.required) ,
       'time'              : new FormControl({value: null, disabled: true} , Validators.required) ,
@@ -509,8 +535,13 @@ export class ReportPage implements OnInit {
 
   getShiftHoursStatus(shift: Shift) {
     let ss = shift;
+    let total = 0;
     if (ss !== undefined && ss !== null) {
-      let total = shift.getNormalHours() + this.currentRepairHours - this.thisWorkOrderContribution;
+      if(this.mode === 'Add') {
+        total = shift.getNormalHours() + this.currentRepairHours;
+      } else {
+        total = shift.getNormalHours();
+      }
       // let target = Number(this.techProfile.shiftLength);
       let target = shift.getShiftLength();
       // Log.l(`getShiftHoursStatus(): total = ${total}, target = ${target}.`);
@@ -548,6 +579,10 @@ export class ReportPage implements OnInit {
       return result;
     } else if(type === 'wo') {
       warning_text = sprintf(lang['hb_work_order_number_length'], woLen);
+      result = await this.alert.showConfirmYesNo(lang['warning'], warning_text);
+      return result;
+    } else if(type === 'standby_hb_duncan') {
+      warning_text = lang['standby_hb_duncan_wrong_location'];
       result = await this.alert.showConfirmYesNo(lang['warning'], warning_text);
       return result;
     } else {
@@ -597,6 +632,19 @@ export class ReportPage implements OnInit {
             }
           }
         }
+      } else if(type === "standby_hb_duncan" && this.techProfile.location !== "DUNCAN") {
+        // let response = await this.showPossibleError('unit');
+        Log.l("checkForUserMistakes(): User tried to set standby_hb_duncan type but is not set to HB Duncan location.");
+        this.alert.showAlert(lang['error'], lang['standby_hb_duncan_wrong_location']);
+        return false;
+        // if (response) {
+        //   // this.unitNumberInput.setFocus();
+        //   setTimeout(() => {
+        //     // this.zone.run(() => { this.unitNumberInput.setFocus(); });
+        //     this.unitNumberInput.setFocus();
+        //   }, focusDelay);
+        //   return false;
+        // }
       }
       return true;
     } catch(err) {
@@ -710,7 +758,7 @@ export class ReportPage implements OnInit {
     this.db.saveReportOther(newDoc).then(res => {
       Log.l("processAltnerateWO(): Done saving ReportOther!");
       this.alert.hideSpinner();
-      this.type = REPORTTYPEI18N[0];
+      this.type = this.selReportType[0];
       this.createFreshReport();
       this.initializeForm();
       this.initializeFormListeners();
