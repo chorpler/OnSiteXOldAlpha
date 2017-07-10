@@ -33,10 +33,12 @@ export class DBSrvcs {
   public static rdb           : any = new Map()                                    ;
   public static ldbs          : any                                                ;
   public static rdbs          : any                                                ;
+  public static PREFS         : any = new Preferences()                            ;
+  public prefs                : any = DBSrvcs.PREFS                                ;
   // public static PREFS         : any = new Preferences()                            ;
   // public prefs                : any = DBSrvcs.PREFS                                ;
 
-  constructor(public http: Http, public zone: NgZone, private storage: Storage, private auth: AuthSrvcs, private server: SrvrSrvcs, public ud:UserData, public prefs:Preferences) {
+  constructor(public http: Http, public zone: NgZone, private storage: Storage, private auth: AuthSrvcs, private server: SrvrSrvcs, public ud:UserData) {
     DBSrvcs.StaticPouchDB = PouchDBService.PouchInit();
     this.PouchDB = DBSrvcs.StaticPouchDB;
 
@@ -379,7 +381,7 @@ export class DBSrvcs {
         Log.l("saveTechProfile(): Merged profile is:");
         Log.l(newProfileDoc);
         Log.l("saveTechProfile(): now attempting save...");
-        return this.addLocalDoc('reports', newProfileDoc);
+        return this.addLocalDoc(this.prefs.DB.reports, newProfileDoc);
       }).then((res) => {
         rdb1 = this.server.addRDB('sesa-employees');
         let name = this.ud.getUsername();
@@ -406,9 +408,9 @@ export class DBSrvcs {
   getTechProfile() {
     let documentID = "_local/techProfile";
     return new Promise((resolve, reject) => {
-      this.checkLocalDoc('reports', documentID).then((res) => {
+      this.checkLocalDoc(this.prefs.DB.reports, documentID).then((res) => {
         Log.l("techProfile exists, reading it in...");
-        return this.getDoc('reports', documentID);
+        return this.getDoc(this.prefs.DB.reports, documentID);
       }).then((res) => {
         Log.l("techProfile read successfully:");
         Log.l(res);
