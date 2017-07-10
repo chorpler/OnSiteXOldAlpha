@@ -100,17 +100,17 @@ export class DBSrvcs {
 
   syncToServer(dbname: string) {
     Log.l(`syncToServer(): About to attempt replication of '${dbname}'->remote`);
-    let ev1 = function(a) { Log.l(a.status); Log.l(a);};
+    let ev1 = (a) => { Log.l(a.status); Log.l(a);};
     let db1 = DBSrvcs.addDB(dbname);
     let db2 = DBSrvcs.addRDB(dbname);
     let done = db1.replicate.to(db2, this.prefs.SERVER.repopts)
-    .on('change'   , info => ev1)
-    .on('active'   , info => ev1)
-    .on('paused'   , info => ev1)
-    .on('denied'   , info => ev1)
-    .on('complete' , info => ev1)
-    .on('error'    , info => ev1)
-    .on('cancel'   , info => ev1);
+    .on('change'   , info => { Log.l("syncToServer(): change event fired. Status: ", info.status); Log.l(info);})
+    .on('active'   , info => { Log.l("syncToServer(): active event fired. Status: ", info.status); Log.l(info);})
+    .on('paused'   , info => { Log.l("syncToServer(): paused event fired. Status: ", info.status); Log.l(info);})
+    .on('denied'   , info => { Log.l("syncToServer(): denied event fired. Status: ", info.status); Log.l(info);})
+    .on('complete' , info => { Log.l("syncToServer(): complete event fired. Status: ", info.status); Log.l(info);})
+    .on('error'    , info => { Log.l("syncToServer(): error event fired. Status: ", info.status); Log.l(info);})
+    .on('cancel'   , info => { Log.l("syncToServer(): cancel event fired. Status: ", info.status); Log.l(info);});
     Log.l(`syncToServer(): Ran replicate, now returning cancel object.`);
     window["stat1"] = done;
     return done;
@@ -118,17 +118,17 @@ export class DBSrvcs {
 
   syncFromServer(dbname: string) {
     Log.l(`syncFromServer(): About to attempt replication of remote->'${dbname}'`);
-    let ev2 = function(b) { Log.l(b.status); Log.l(b);};
+    let ev2 = (b) => { Log.l(b.status); Log.l(b);};
     let db1 = DBSrvcs.addRDB(dbname);
     let db2 = DBSrvcs.addDB(dbname);
     let done = db1.replicate.to(db2, this.prefs.SERVER.repopts)
-    .on('change'   , info => ev2)
-    .on('active'   , info => ev2)
-    .on('paused'   , info => ev2)
-    .on('denied'   , info => ev2)
-    .on('complete' , info => ev2)
-    .on('error'    , info => ev2)
-    .on('cancel'   , info => ev2);
+      .on('change',   info => { Log.l("syncFromServer(): change event fired. Status: ", info.status); Log.l(info); })
+      .on('active',   info => { Log.l("syncFromServer(): active event fired. Status: ", info.status); Log.l(info); })
+      .on('paused',   info => { Log.l("syncFromServer(): paused event fired. Status: ", info.status); Log.l(info); })
+      .on('denied',   info => { Log.l("syncFromServer(): denied event fired. Status: ", info.status); Log.l(info); })
+      .on('complete', info => { Log.l("syncFromServer(): complete event fired. Status: ", info.status); Log.l(info); })
+      .on('error',    info => { Log.l("syncFromServer(): error event fired. Status: ", info.status); Log.l(info); })
+      .on('cancel',   info => { Log.l("syncFromServer(): cancel event fired. Status: ", info.status); Log.l(info); });
     Log.l(`syncFromServer(): Ran replicate, now returning cancel object.`);
     window["stat2"] = done;
     return done;
@@ -136,7 +136,7 @@ export class DBSrvcs {
 
   syncSquaredToServer(dbname: string) {
     Log.l(`syncSquaredToServer(): About to attempt replication of '${dbname}'->remote`);
-    let ev2 = function(b) { Log.l(b.status); Log.l(b);};
+    // let ev2 = (b) => { Log.l(b.status); Log.l(b);};
     let db1 = this.addDB(dbname);
     let db2 = this.addRDB(dbname);
     // var done = DBSrvcs.StaticPouchDB.replicate(db1, db2, DBSrvcs.repopts);
@@ -155,7 +155,7 @@ export class DBSrvcs {
 
   syncSquaredFromServer(dbname: string) {
     Log.l(`syncSquaredFromServer(): About to attempt replication of remote->'${dbname}'`);
-    let ev2 = function(b) { Log.l(b.status); Log.l(b);};
+    let ev2 = (b) => { Log.l(b.status); Log.l(b);};
     let db1 = DBSrvcs.addRDB(dbname);
     let db2 = DBSrvcs.addDB(dbname);
     return new Promise((resolve, reject) => {

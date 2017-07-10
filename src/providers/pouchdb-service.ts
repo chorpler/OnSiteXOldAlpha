@@ -7,7 +7,7 @@ import * as pdbFind from 'pouchdb-find';
 import * as pdbUpsert from 'pouchdb-upsert';
 import * as pdbAllDBs from 'pouchdb-all-dbs';
 import { Log } from '../config/config.functions';
-import { PREFS } from '../config/config.strings';
+// import { PREFS } from '../config/config.strings';
 import { Preferences } from './preferences';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class PouchDBService {
   public static initialized   : boolean       = false                                        ;
   public static pdb           : any           = new Map()                                    ;
   public static rdb           : any           = new Map()                                    ;
-  public static PREFERENCES   : any           = new PREFS()                                  ;
+  public static PREFERENCES   : any           = new Preferences()                            ;
   public prefs                : any           = PouchDBService.PREFERENCES                   ;
 
   constructor() {
@@ -26,14 +26,14 @@ export class PouchDBService {
 
   public static PouchInit() {
     if (!PouchDBService.initialized) {
-      let tmp = PouchDB;
-      tmp.plugin(pdbUpsert);
-      tmp.plugin(PDBAuth);
-      tmp.plugin(pdbFind);
-      tmp.plugin(pdbAllDBs);
+      let pouchdb = PouchDB;
+      pouchdb.plugin(pdbUpsert);
+      pouchdb.plugin(PDBAuth);
+      pouchdb.plugin(pdbFind);
+      pouchdb.plugin(pdbAllDBs);
       window["pouchdbserv"] = this;
-      window["StaticPouchDB"] = tmp;
-      PouchDBService.StaticPouchDB = tmp;
+      window["StaticPouchDB"] = pouchdb;
+      PouchDBService.StaticPouchDB = pouchdb;
       PouchDBService.initialized = true;
       return PouchDBService.StaticPouchDB;
     } else {
@@ -43,14 +43,14 @@ export class PouchDBService {
 
   public static getAuthPouchDB() {
     return new Promise((resolve, reject) => {
-      let tmp = PouchDB;
-      tmp.plugin(pdbUpsert);
-      tmp.plugin(pdbFind);
-      tmp.plugin(PDBAuth);
-      // tmp.plugin(PouchDBAuth);
+      let pouchdb = PouchDB;
+      pouchdb.plugin(pdbUpsert);
+      pouchdb.plugin(pdbFind);
+      pouchdb.plugin(PDBAuth);
+      // pouchdb.plugin(PouchDBAuth);
       window["pouchdbserv"] = this;
-      window["StaticPouchDB"] = tmp;
-      PouchDBService.StaticPouchDB = tmp;
+      window["StaticPouchDB"] = pouchdb;
+      PouchDBService.StaticPouchDB = pouchdb;
       resolve(PouchDBService.StaticPouchDB);
     });
   }
@@ -71,11 +71,11 @@ export class PouchDBService {
   static addDB(dbname: string) {
     let dbmap = PouchDBService.pdb;
     if(dbmap.has(dbname)) {
-      Log.l(`addDB(): Not adding local database ${dbname} because it already exists.`);
+      // Log.l(`addDB(): Not adding local database ${dbname} because it already exists.`);
       return dbmap.get(dbname);
     } else {
       dbmap.set(dbname, PouchDBService.StaticPouchDB(dbname, PouchDBService.PREFERENCES.SERVER.opts));
-      Log.l(`addDB(): Added local database ${dbname} to the list.`);
+      // Log.l(`addDB(): Added local database ${dbname} to the list.`);
       return dbmap.get(dbname);
     }
   }
@@ -87,13 +87,13 @@ export class PouchDBService {
   static addRDB(dbname: string) {
     let rdbmap = PouchDBService.rdb;
     let url = PouchDBService.PREFERENCES.SERVER.rdbServer.protocol + "://" + PouchDBService.PREFERENCES.SERVER.rdbServer.server + "/" + dbname;
-    Log.l(`addRDB(): Now fetching remote DB ${dbname} at ${url} ...`);
+    // Log.l(`addRDB(): Now fetching remote DB ${dbname} at ${url} ...`);
     if(rdbmap.has(dbname)) {
       return rdbmap.get(dbname);
     } else {
       let rdb1 = PouchDBService.StaticPouchDB(url, PouchDBService.PREFERENCES.SERVER.ropts);
       rdbmap.set(dbname, rdb1);
-      Log.l(`addRDB(): Added remote database ${url} to the list as ${dbname}.`);
+      // Log.l(`addRDB(): Added remote database ${url} to the list as ${dbname}.`);
       return rdbmap.get(dbname);
     }
   }

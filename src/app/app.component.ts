@@ -243,6 +243,7 @@ export class OnSiteApp {
     this.audio.preload('sorry'            , 'assets/audio/nospoilers5.mp3')  ;
     this.audio.preload('deleteotherreport', 'assets/audio/nospoilers6.mp3')  ;
     this.audio.preload('funny'            , 'assets/audio/nospoilers7.mp3')  ;
+    this.audio.preload('laugh'            , 'assets/audio/nospoilers8.mp3')  ;
 
     // this.audio.preload('overtime', 'assets/audio/nospoilers.wav');
     // this.audio.preload('deletereport', 'assets/audio/nospoilers2.wav');

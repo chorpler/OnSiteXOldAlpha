@@ -33,7 +33,6 @@ export class SrvrSrvcs {
   public static ldb           : any    = new Map()                                              ;
 	public static StaticPouchDB : any                                                             ;
   public static userInfo      : any    = {u: '', p: '' }                                        ;
-  // public static prefs         : any    = new Preferences(new StorageService())                  ;
   public static prefs         : any    = new Preferences()                                      ;
   public prefs                : any    = SrvrSrvcs.prefs                                        ;
 
@@ -110,7 +109,7 @@ export class SrvrSrvcs {
     return SrvrSrvcs.getRemoteDatabaseURL(dbname);
   }
 
-  public getgetGeolocationHeaders(user:string, pass:string) {
+  public getGeolocationHeaders(user:string, pass:string) {
     return SrvrSrvcs.getGeolocationHeaders(user, pass);
   }
 
