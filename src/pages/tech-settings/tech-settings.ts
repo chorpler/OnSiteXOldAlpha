@@ -14,7 +14,7 @@ import { DBSrvcs                                      } from '../../providers/db
 import { UserData                                     } from '../../providers/user-data'              ;
 import { AlertService                                 } from '../../providers/alerts'                 ;
 import { TabsComponent                                } from '../../components/tabs/tabs'             ;
-import { Employee                                     } from '../../domain/domain-classes'            ;
+import { Employee,Jobsite                             } from '../../domain/domain-classes'            ;
 
 @IonicPage({
   name: 'User'
@@ -164,6 +164,32 @@ export class TechSettingsPage implements OnInit {
       }
     }
     return null;
+  }
+
+  public initializeSites() {
+    let sites = this.ud.getData('sites');
+    let js = new Map();
+    let clients = new Map();
+    for(let site of sites) {
+      let client = site.client;
+      let name = client.fullName;
+      if(!clients.has(client)) {
+        clients.set(client, new Map());
+      }
+      let locations = clients.get(name);
+      let location  = site.location;
+      name = location.fullName;
+      if(!locations.has(location)) {
+        locations.set(location, new Map());
+      }
+      let locIDs = locations.get(location);
+      let locID  = site.locID;
+      name = locID.fullName;
+      if(!locIDs.has(locID)) {
+        locIDs.set(locID, locID);
+      }
+    }
+    Log.l("initializeSites(): New clients list is:\n", clients);
   }
 
   onSubmit() {

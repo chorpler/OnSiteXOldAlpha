@@ -315,7 +315,14 @@ export class ReportPage implements OnInit {
       this._time.setValue(time);
     });
     this._time.valueChanges.subscribe((value: any) => { this.reportOther.time = value; });
-    this._allDay.valueChanges.subscribe((value: any) => { this.allDay = value; });
+    this._allDay.valueChanges.subscribe((value: any) => {
+      this.allDay = value;
+      if(this.allDay) {
+        this._time.disable();
+      } else {
+        this._time.enable();
+      }
+    });
     this._repairHours.valueChanges.subscribe((hours: any) => {
       Log.l("workOrderForm: valueChanges fired for repair_hours: ", hours);
       let dur1 = hours.split(":");
@@ -376,8 +383,10 @@ export class ReportPage implements OnInit {
             this.reportOther[key2] = value[key1];
           }
         }
+        if(value.type.name === 'training') {
+          this.reportOther.training_type = value.training_type.value;
+        }
         this.reportOther.type = value.type.value;
-        this.reportOther.training_type = value.training_type.value;
         Log.l("workOrderForm: overall valueChanges, ended up with ReportOther:\n", this.reportOther);
       }
 
