@@ -10,6 +10,7 @@ export class Employee {
   public lastName            : string         ;
   public middleName          : string         ;
   public suffix              : string         ;
+  public technician          : string         ;
   public type                : any            ;
   public avtrNameAsUser      : boolean        ;
   public userClass           : any            ;
@@ -29,6 +30,7 @@ export class Employee {
   public address             : Address        ;
   public payRate             : number         ;
   public active              : boolean = true ;
+  public updated             : boolean = false;
 
   constructor(prefix?, firstName?, lastName?, middleName?, suffix?, username?, name?, type?, avatarName?, avtrNameAsUser?, userClass?, client?, location?, locID?, loc2nd?, shift?, shiftLength?, shiftStartTime?, email?, phone?, cell?) {
     this.prefix              = prefix         || null;
@@ -36,6 +38,7 @@ export class Employee {
     this.lastName            = lastName       || null;
     this.middleName          = middleName     || null;
     this.suffix              = suffix         || null;
+    this.technician          = ""                    ;
     this.username            = username       || null;
     this.name                = name           || null;
     this.type                = type           || null;
@@ -58,6 +61,7 @@ export class Employee {
     this.address             = new Address()         ;
     this.payRate             = 0                     ;
     this.active              = true                  ;
+    this.updated             = false                 ;
   }
 
   public readFromDoc(doc:any) {

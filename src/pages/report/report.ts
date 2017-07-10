@@ -650,6 +650,8 @@ export class ReportPage implements OnInit {
     // } else {
     this.alert.showSpinner(lang['spinner_saving_report']);
     let tempWO = this.createReport();
+    let newWO = new WorkOrder();
+    newWO.readFromDoc(tempWO);
     if (this.mode === 'Add' || this.mode === 'Añadir') {
       this.db.addDoc(this.prefs.DB.reports, tempWO).then((res) => {
         Log.l("processWO(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
@@ -661,7 +663,7 @@ export class ReportPage implements OnInit {
         this.createFreshReport();
         this.initializeForm();
         this.initializeFormListeners();
-        this.selectedShift.addShiftReport(tempWO);
+        this.selectedShift.addShiftReport(newWO);
       }).catch((err) => {
         Log.l("processWO(): Error saving work order to local database.");
         Log.e(err);

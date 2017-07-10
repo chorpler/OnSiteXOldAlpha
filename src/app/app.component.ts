@@ -114,7 +114,7 @@ export class OnSiteApp {
           this.translate.use(language);
         }
         var callingClass = this;
-        this.translate.get('spinner_app_loading').subscribe((result) => {
+        this.translate.get(['spinner_app_loading']).subscribe((result) => {
           this.alert.showSpinner(result['spinner_app_loading']);
         });
         this.checkLogin().then(res => {

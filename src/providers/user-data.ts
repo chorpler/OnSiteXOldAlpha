@@ -36,7 +36,7 @@ export class UserData {
   public static techProfile           : any                                            ;
   public static userLoggedIn          : boolean              = false                   ;
   public static sesaConfig            : any                  = {}                      ;
-  public static data                  : any = { employee: [], sites: [], reports: [], otherReports: [], payrollPeriods: [], shifts: [], messages: [] };
+  public static data                  : any                                            ;
   public appdata                      : any = UserData.appdata                         ;
   public shifts                       : Array<Shift>         = UserData.shifts         ;
   public payrollPeriods               : Array<PayrollPeriod> = UserData.payrollPeriods ;
@@ -54,6 +54,7 @@ export class UserData {
   constructor(public events: Events, public storage: Storage, public platform: Platform, public prefs: Preferences) {
     window["onsiteuserdata"] = this;
     window["UserData"] = UserData;
+    UserData.data = { employee: [], sites: [], reports: [], otherReports: [], payrollPeriods: [], shifts: [], messages: [], report_types: [], training_types: []};
   }
 
   public isAppLoaded() {
@@ -78,15 +79,27 @@ export class UserData {
     }
   }
   public setData(data:any) {
+    Log.l("setData(): Attempting to set UserData.data to:\n", data);
     if(data['sites']['length'] === undefined || data['reports']['length'] === undefined || data['otherReports']['length'] === undefined) {
       Log.e("setData(): Can't use this data to set data property. It is incomplete.\n", data);
       return false;
     } else {
       let keys = Object.keys(data);
       for(let key of keys) {
-        UserData.data[key] = [];
-        for(let object of data[key]) {
-          UserData.data[key].push(object);
+        if(key === 'config') {
+          this.setSesaConfig(data.config);
+          let configKeys = Object.keys(data.config);
+          for(let configKey of configKeys) {
+            UserData.data[configKey] = [];
+            for(let object of data.config[configKey]) {
+              UserData.data[configKey].push(object);
+            }
+          }
+        } else {
+          UserData.data[key] = [];
+          for(let object of data[key]) {
+            UserData.data[key].push(object);
+          }
         }
       }
       Log.l("setData(): Done. UserData.data is now:\n", UserData.data);

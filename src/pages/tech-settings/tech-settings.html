@@ -18,43 +18,43 @@
       <ion-item>
         <ion-label class="manual-float-label">{{'tech_settings_client' | translate}}</ion-label>
         <ion-select class="user-settings-select" formControlName="client">
-          <ion-option *ngFor="let client of selClient" [value]="client"> {{client.fullName.toUpperCase()}} </ion-option>
+          <ion-option *ngFor="let client of clients" [value]="client"> {{client.fullName.toUpperCase()}} </ion-option>
         </ion-select>
       </ion-item>
       <ion-item>
         <ion-label class="manual-float-label">{{'tech_settings_location' | translate}}</ion-label>
         <ion-select class="user-settings-select" formControlName="location">
-          <ion-option *ngFor="let location of selLocation" [value]="location"> {{location.fullName.toUpperCase()}} </ion-option>
+          <ion-option *ngFor="let location of locations" [value]="location"> {{location.fullName.toUpperCase()}} </ion-option>
         </ion-select>
       </ion-item>
       <ion-item>
         <ion-label class="manual-float-label">{{'tech_settings_location_id' | translate}}</ion-label>
         <ion-select class="user-settings-select" formControlName="locID">
-          <ion-option *ngFor="let locID of selLocID" [value]="locID"> {{locID.fullName.toUpperCase()}} </ion-option>
+          <ion-option *ngFor="let locID of locIDs" [value]="locID"> {{locID.fullName.toUpperCase()}} </ion-option>
         </ion-select>
       </ion-item>
       <ion-item>
         <ion-label class="manual-float-label">{{'tech_settings_auxiliary_location' | translate}}</ion-label>
         <ion-select class="user-settings-select" formControlName="loc2nd">
-          <ion-option *ngFor="let loc2nd of selLoc2nd" [value]="loc2nd"> {{loc2nd.fullName.toUpperCase()}} </ion-option>
+          <ion-option *ngFor="let loc2nd of loc2nds" [value]="loc2nd"> {{loc2nd.fullName.toUpperCase()}} </ion-option>
         </ion-select>
       </ion-item>
       <ion-item>
         <ion-label class="manual-float-label">{{'tech_settings_shift' | translate}}</ion-label>
         <ion-select class="user-settings-select" formControlName="shift">
-          <ion-option *ngFor="let shift of selShift" [value]="shift"> {{shift.fullName.toUpperCase()}} </ion-option>
+          <ion-option *ngFor="let shift of shiftTimes" [value]="shift"> {{shift.fullName.toUpperCase()}} </ion-option>
         </ion-select>
       </ion-item>
       <ion-item>
         <ion-label class="manual-float-label">{{'tech_settings_shift_length' | translate}}</ion-label>
         <ion-select class="user-settings-select" formControlName="shiftLength">
-          <ion-option *ngFor="let shiftLength of selShiftLength" [value]="shiftLength"> {{shiftLength.fullName.toUpperCase()}} </ion-option>
+          <ion-option *ngFor="let shiftLength of shiftLengths" [value]="shiftLength"> {{shiftLength.fullName.toUpperCase()}} </ion-option>
         </ion-select>
       </ion-item>
       <ion-item>
         <ion-label class="manual-float-label">{{'tech_settings_shift_start_time' | translate}}</ion-label>
         <ion-select class="user-settings-select" formControlName="shiftStartTime">
-          <ion-option *ngFor="let shiftStartTime of selShiftStartTime" [value]="shiftStartTime"> {{shiftStartTime.fullName.toUpperCase()}} </ion-option>
+          <ion-option *ngFor="let shiftStartTime of shiftStartTimes" [value]="shiftStartTime"> {{shiftStartTime.fullName.toUpperCase()}} </ion-option>
         </ion-select>
       </ion-item>
     </ion-list>

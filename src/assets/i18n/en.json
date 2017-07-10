@@ -150,6 +150,7 @@
   "no": "No",
   "ok": "OK",
   "spinner_saving_tech_profile": "Saving tech profile...",
+  "error_saving_tech_profile": "Error saving user profile.",
   "spinner_loading_tab": "Loading page...",
   "letter_code": "Meaning of Letters",
   "loading_data": "Loading Data"

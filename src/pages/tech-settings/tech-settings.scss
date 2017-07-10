@@ -8,7 +8,7 @@ page-tech-settings {
     width: 100%;
     min-width: 100%;
     max-width: 80vw;
-    min-height: 50px;
+    min-height: 30px;
     align-self: center;
     padding-left: 8px;
     padding-top: 8px;
@@ -25,8 +25,8 @@ form > ion-list > ion-item {
   align-items: flex-start;
 }
 form > ion-list > ion-item > div.item-inner > div > ion-select > div.select-text {
-  flex: 0 0 80%;
-  min-width: 80%;
+  // flex: 0 0 80%;
+  // min-width: 80%;
   color: #488aff;
 }
 ion-input {

@@ -239,16 +239,16 @@ export class SrvrSrvcs {
   public static addRDB(dbname: string) {
     let db1 = PouchDBService.rdb;
     let url = SrvrSrvcs.getRemoteDatabaseURL(dbname);
-    Log.l(`addRDB(): Now fetching remote DB '${dbname}' at '${url}' ...`);
+    // Log.l(`addRDB(): Now fetching remote DB '${dbname}' at '${url}' ...`);
     let rdb1 = null;
     if (db1.has(dbname)) {
       // return db1.get(dbname);
-      Log.l(`Found DB '${dbname}' already exists, returning...`);
+      // Log.l(`Found DB '${dbname}' already exists, returning...`);
       rdb1 = db1.get(dbname);
       // resolve(rdb1);
       return rdb1;
     } else {
-      Log.l(`DB '${dbname}' does not already exist, storing and returning...`);
+      // Log.l(`DB '${dbname}' does not already exist, storing and returning...`);
       rdb1 = PouchDBService.StaticPouchDB(url, this.prefs.SERVER.ropts);
       db1.set(dbname, rdb1);
       return rdb1;
@@ -737,9 +737,56 @@ export class SrvrSrvcs {
     });
   }
 
+  public getAllConfigData() {
+    Log.l("getAllConfigData(): Retrieving clients, locations, locIDs, loc2nd's, shiftRotations, and shiftTimes...");
+    let dbConfig = this.prefs.DB.config;
+    let rdb1 = this.addRDB(dbConfig);
+    let db1 = this.addDB(dbConfig);
+    return new Promise((resolve, reject) => {
+      // this.syncFromServer(dbConfig).then(res => {
+        // return
+        rdb1.allDocs({ keys: ['client', 'location', 'locid', 'loc2nd', 'rotation', 'shift', 'shiftlength', 'shiftstarttime', 'other_reports'], include_docs: true })
+      // })
+      .then((records) => {
+        Log.l("getAllConfigData(): Retrieved documents:\n", records);
+        let results = { client: [], location: [], locid: [], loc2nd: [], rotation: [], shift: [], shiftlength: [], shiftstarttime: [], report_types: [], training_types: [] };
+        for (let record of records.rows) {
+          let type = record.id;
+          let types = record.id + "s";
+          if (type === 'other_reports') {
+            let doc = record.doc;
+            let report_types = doc.report_types;
+            let training_types = doc.training_types;
+            results.report_types = report_types;
+            results.training_types = training_types;
+          } else {
+            let doc = record.doc;
+            if (doc) {
+              if (doc[types]) {
+                for (let result of doc[types]) {
+                  results[type].push(result);
+                }
+              } else {
+                for (let result of doc.list) {
+                  results[type].push(result);
+                }
+              }
+            }
+          }
+        }
+        Log.l("getAllConfigData(): Final config data retrieved is:\n", results);
+        resolve(results);
+      }).catch((err) => {
+        Log.l("getAllConfig(): Error getting all config docs!");
+        Log.e(err);
+        reject(err);
+      });
+    });
+  }
+
   public getAllData(tech:Employee):Promise<any> {
     return new Promise((resolve, reject) => {
-      let data = { employee: [], sites: [], reports: [], otherReports: [], payrollPeriods: [], shifts: [], messages: [] };
+      let data = { employee: [], sites: [], reports: [], otherReports: [], payrollPeriods: [], shifts: [], messages: [], config: {} };
       let username = tech.getUsername();
       data.employee.push(tech);
       this.getReportsForTech(username).then(res => {
@@ -768,6 +815,12 @@ export class SrvrSrvcs {
           let msg = new Message();
           msg.readFromDoc(doc);
           data.messages.push(msg);
+        }
+        return this.getAllConfigData();
+      }).then(res => {
+        let keys = Object.keys(res);
+        for(let key of keys) {
+          data.config[key] = res[key];
         }
         Log.l("getAllData(): Success, final data to be returned is:\n", data);
         resolve(data);

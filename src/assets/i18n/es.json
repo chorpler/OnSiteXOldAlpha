@@ -151,6 +151,7 @@
   "no": "No",
   "ok": "De Acuerdo",
   "spinner_saving_tech_profile": "Guardar perfil de usuario...",
+  "error_saving_tech_profile": "Error al guardar el perfil de usuario.",
   "spinner_loading_tab": "Cargando página...",
   "letter_code": "Significado de Letras",
   "loading_data": "Cargando Datos"

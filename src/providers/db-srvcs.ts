@@ -423,26 +423,35 @@ export class DBSrvcs {
 
   public getAllConfigData() {
     Log.l("getAllConfigData(): Retrieving clients, locations, locIDs, loc2nd's, shiftRotations, and shiftTimes...");
-    let rdb1 = this.addRDB(this.prefs.DB.config);
+    let dbConfig = this.prefs.DB.config;
+    let rdb1     = this.addRDB(dbConfig);
+    let db1      = this.addDB(dbConfig);
     return new Promise((resolve, reject) => {
-      rdb1.allDocs({ keys: ['client', 'location', 'locid', 'loc2nd', 'rotation', 'shift', 'shiftlength', 'shiftstarttime'], include_docs: true }).then((records) => {
+      this.syncSquaredFromServer(dbConfig).then(res => {
+        return db1.allDocs({ keys: ['client', 'location', 'locid', 'loc2nd', 'rotation', 'shift', 'shiftlength', 'shiftstarttime', 'other_reports'], include_docs: true })
+      }).then((records) => {
         Log.l("getAllConfigData(): Retrieved documents:\n", records);
-        let results = { client: [], location: [], locid: [], loc2nd: [], rotation: [], shift: [], shiftlength: [], shiftstarttime: [] };
+        let results = { client: [], location: [], locid: [], loc2nd: [], rotation: [], shift: [], shiftlength: [], shiftstarttime: [], report_types: [], training_types: [] };
         for (let record of records.rows) {
-          // let record = records[i];
-          let doc = record.doc;
           let type = record.id;
           let types = record.id + "s";
-          if (doc) {
-            Log.l("getAllConfigData(): Found doc, looking for type '%s'", types);
-            Log.l(doc);
-            if(doc[types]) {
-              for(let result of doc[types]) {
-                results[type].push(result);
-              }
-            } else {
-              for(let result of doc.list) {
-                results[type].push(result);
+          if(type === 'other_reports') {
+            let doc                = record.doc         ;
+            let report_types       = doc.report_types   ;
+            let training_types     = doc.training_types ;
+            results.report_types   = report_types       ;
+            results.training_types = training_types     ;
+          } else {
+            let doc = record.doc;
+            if (doc) {
+              if(doc[types]) {
+                for(let result of doc[types]) {
+                  results[type].push(result);
+                }
+              } else {
+                for(let result of doc.list) {
+                  results[type].push(result);
+                }
               }
             }
           }
@@ -452,7 +461,6 @@ export class DBSrvcs {
       }).catch((err) => {
         Log.l("getAllConfig(): Error getting all config docs!");
         Log.e(err);
-        // resolve([]);
         reject(err);
       });
     });

@@ -3,6 +3,7 @@ import { Component, OnInit                            } from '@angular/core'    
 import { FormGroup, FormControl, Validators           } from "@angular/forms"                         ;
 import { IonicPage, NavController, NavParams          } from 'ionic-angular'                          ;
 import { ViewController                               } from 'ionic-angular'                          ;
+import { TranslateService                             } from '@ngx-translate/core'                    ;
 // import { CLIENT, LOCATION, LOCID, SHIFTLENGTH         } from '../../config/config.constants.settings' ;
 // import { SHIFT, SHIFTSTARTTIME, SHIFTROTATION, LOC2ND } from '../../config/config.constants.settings' ;
 // import { REPORTHEADER, REPORTMETA                     } from '../../config/report.object'             ;
@@ -13,7 +14,7 @@ import { DBSrvcs                                      } from '../../providers/db
 import { UserData                                     } from '../../providers/user-data'              ;
 import { AlertService                                 } from '../../providers/alerts'                 ;
 import { TabsComponent                                } from '../../components/tabs/tabs'             ;
-
+import { Employee                                     } from '../../domain/domain-classes'            ;
 
 @IonicPage({
   name: 'User'
@@ -27,16 +28,33 @@ export class TechSettingsPage implements OnInit {
   // @ViewChild('ionheader') mapElement: ElementRef;
   fixedHeight       : any        = "0px"            ;
   lang              : any                           ;
+  tech              : Employee                      ;
   techProfile       : any        = {}               ;
-  techProfileDB     : any        = {}               ;
-  selClient         : string[  ] = CLIENT           ;
-  selLocation       : string[  ] = LOCATION         ;
-  selLocID          : string[  ] = LOCID            ;
-  selShift          : string[  ] = SHIFT            ;
-  selShiftLength    : number[  ] = SHIFTLENGTH      ;
-  selShiftStartTime : number[  ] = SHIFTSTARTTIME   ;
-  selShiftRotation  : string[  ] = SHIFTROTATION    ;
-  selLoc2nd         : string[  ] = LOC2ND           ;
+  clients           : Array<string>                 ;
+  locations         : Array<string>                 ;
+  locIDs            : Array<string>                 ;
+  shiftTimes        : Array<string>                 ;
+  shiftLengths      : Array<number>                 ;
+  shiftStartTimes   : Array<number>                 ;
+  shiftRotations    : Array<string>                 ;
+  loc2nds           : Array<string>                 ;
+  // selClient         : Array<string>                 ;
+  // selLocation       : Array<string>                 ;
+  // selLocID          : Array<string>                 ;
+  // selShift          : Array<string>                 ;
+  // selShiftLength    : Array<number>                 ;
+  // selShiftStartTime : Array<number>                 ;
+  // selShiftRotation  : Array<string>                 ;
+  // selLoc2nd         : Array<string>                 ;
+
+  // selClient         : string[  ] = CLIENT           ;
+  // selLocation       : string[  ] = LOCATION         ;
+  // selLocID          : string[  ] = LOCID            ;
+  // selShift          : string[  ] = SHIFT            ;
+  // selShiftLength    : number[  ] = SHIFTLENGTH      ;
+  // selShiftStartTime : number[  ] = SHIFTSTARTTIME   ;
+  // selShiftRotation  : string[  ] = SHIFTROTATION    ;
+  // selLoc2nd         : string[  ] = LOC2ND           ;
   sesaConfig        : any        = {}               ;
   techSettings      : FormGroup                     ;
   firstName         : string                        ;
@@ -51,17 +69,14 @@ export class TechSettingsPage implements OnInit {
   shiftStartTime    : string                        ;
   shiftRotation     : string                        ;
   title             : string    =  'User'           ;
-  reportHeader      : REPORTHEADER                  ;
-  rprtDate          : Date                          ;
   techProfileURL    : string = "_local/techProfile" ;
   techSettingsReady : boolean = false               ;
   reportMeta        : any = {}                      ;
   reportWaiting     : boolean = false               ;
-  navParamModal     : boolean                       ;
   mode              : string                        ;
 
   constructor( public navCtrl: NavController, public navParams    : NavParams,
-               public db     : DBSrvcs,       public reportBuilder: ReportBuildSrvc,
+               public db     : DBSrvcs      , public translate    : TranslateService,
                public tabs   : TabsComponent, public viewCtrl     : ViewController,
                public ud     : UserData     , public alert        : AlertService,
   ) {
@@ -75,7 +90,9 @@ export class TechSettingsPage implements OnInit {
   ngOnInit() {
     // this.fixedHeight = this.mapElement.nativeElement.fixed;
     let translations = [
-      'spinner_saving_tech_profile'
+      'error',
+      'spinner_saving_tech_profile',
+      'error_saving_tech_profile'
     ];
     this.lang = this.translate.instant(translations);
     if ( this.navParams.get('mode') !== undefined ) {
@@ -83,12 +100,13 @@ export class TechSettingsPage implements OnInit {
     } else {
       this.mode = 'page';
     }
-    this.rprtDate = new Date;
     Log.l("User: Now trying to get tech profile...");
     this.db.getTechProfile().then((res) => {
       Log.l("User: Got tech profile, now initFormData()...");
       this.techProfile = res;
-      this.ud.setTechProfile(res);
+      this.tech = new Employee();
+      this.tech.readFromDoc(this.techProfile);
+      this.ud.setTechProfile(this.techProfile);
       this.initFormData();
       Log.l("User: initFormData() done, now initializeForm()...");
       this.initializeForm();
@@ -117,15 +135,17 @@ export class TechSettingsPage implements OnInit {
   initFormData() {
     let sesaConfig = this.ud.getSesaConfig();
     if (sizeOf(sesaConfig) > 0) {
-      let keys = ['client', 'location', 'locid', 'loc2nd', 'shift', 'shiftlength', 'shiftstarttime'];
-      let keys2 = ['selClient', 'selLocation', 'selLocID', 'selLoc2nd', 'selShift', 'selShiftLength', 'selShiftStartTime'];
-      let keys3 = ['client', 'location', 'locID', 'loc2nd', 'shift', 'shiftLength', 'shiftStartTime'];
+      let keys  = ['client', 'location', 'locid', 'loc2nd', 'shift', 'shiftlength', 'shiftstarttime'];
+      // let keys2 = ['selClient', 'selLocation', 'selLocID', 'selLoc2nd', 'selShift', 'selShiftLength', 'selShiftStartTime'];
+      // let keys3 = ['client', 'location', 'locID', 'loc2nd', 'shift', 'shiftLength', 'shiftStartTime'];
+      let keys2 = ['client', 'location', 'locID', 'loc2nd', 'shift', 'shiftLength', 'shiftStartTime'];
+      let keys3 = ['clients', 'locations', 'locIDs', 'loc2nds', 'shiftTimes', 'shiftLengths', 'shiftStartTimes'];
       for (let i in keys) {
-        let sesaVar = keys[i];
-        let selVar = keys2[i];
-        let techVar = keys3[i];
+        let sesaVar   = keys[i];
+        let techVar   = keys2[i];
+        let selVar    = keys3[i];
         this[techVar] = this.selectMatch(this.techProfile[techVar], sesaConfig[sesaVar]);
-        this[selVar] = sesaConfig[sesaVar];
+        this[selVar]  = sesaConfig[sesaVar];
         // this[] = sesaConfig[keys[i]];
       }
     }
@@ -147,33 +167,39 @@ export class TechSettingsPage implements OnInit {
   }
 
   onSubmit() {
+    let lang = this.lang;
     this.alert.showSpinner(lang['spinner_saving_tech_profile']);
-    let rprt            = this.techSettings.value               ;
-    rprt.updated        = true                                  ;
-    rprt.technician     = rprt.lastName + ', ' + rprt.firstName ;
-    rprt.client         = rprt.client.fullName.toUpperCase()    ;
-    rprt.location       = rprt.location.fullName.toUpperCase()  ;
-    rprt.locID          = rprt.locID.name.toUpperCase()         ;
-    rprt.loc2nd         = rprt.loc2nd.name.toUpperCase()        ;
-    rprt.shift          = rprt.shift.name                       ;
-    rprt.shiftLength    = Number(rprt.shiftLength.name)         ;
-    rprt.shiftStartTime = Number(rprt.shiftStartTime.name)      ;
-
-    this.reportMeta = rprt;
+    let form            = this.techSettings.value               ;
+    let tech            = this.tech                             ;
+    tech.updated        = true                                  ;
+    tech.technician     = form.lastName + ', ' + form.firstName ;
+    tech.client         = form.client.fullName.toUpperCase()    ;
+    tech.location       = form.location.fullName.toUpperCase()  ;
+    tech.locID          = form.locID.name.toUpperCase()         ;
+    tech.loc2nd         = form.loc2nd.name.toUpperCase()        ;
+    tech.shift          = form.shift.name                       ;
+    tech.shiftLength    = Number(form.shiftLength.name)         ;
+    tech.shiftStartTime = Number(form.shiftStartTime.name)      ;
+    tech.firstName      = form.firstName                        ;
+    tech.lastName       = tech.lastName                         ;
+    this.reportMeta     = tech;
     Log.l("onSubmit(): Now attempting to save tech profile:");
     this.db.saveTechProfile(this.reportMeta).then((res) => {
       Log.l("onSubmit(): Saved techProfile successfully.");
       if ( this.mode === 'modal' ) {
         Log.l('Mode = ' + this.mode );
+        this.alert.hideSpinner();
         this.viewCtrl.dismiss();
       }
       else {
         Log.l('Mode = ' + this.mode );
+        this.alert.hideSpinner();
         this.tabs.goToPage('OnSiteHome');
       }
     }).catch((err) => {
       Log.l("onSubmit(): Error saving techProfile!");
       Log.e(err);
+      this.alert.showAlert(lang['error'], lang['error_saving_tech_profile'])
     });
   }
 }
