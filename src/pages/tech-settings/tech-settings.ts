@@ -176,7 +176,7 @@ export class TechSettingsPage implements OnInit {
       if(!clients.has(client)) {
         clients.set(client, new Map());
       }
-      let locations = clients.get(name);
+      let locations = clients.get(client);
       let location  = site.location;
       name = location.fullName;
       if(!locations.has(location)) {

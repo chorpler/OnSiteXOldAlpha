@@ -244,7 +244,7 @@ export class Jobsite {
     let match = "", oneHourList = null, singleShiftList = null;
     if(typeof shiftType === 'string') {
       match = shiftType;
-    } else if(typeof shiftType === 'object' && typeof shiftType['name'] === 'string') {
+    } else if(shiftType && typeof shiftType === 'object' && typeof shiftType['name'] === 'string') {
       match = shiftType['name'];
     }
     if(this.hoursList[match] !== undefined) {
