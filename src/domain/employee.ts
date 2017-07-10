@@ -1,5 +1,5 @@
-import { Address } from './address';
-import { Log, moment } from '../config/config.functions';
+import { Address             } from './address'                  ;
+import { Log, moment, Moment } from '../config/config.functions' ;
 
 export class Employee {
   public name                : string         ;
@@ -128,6 +128,10 @@ export class Employee {
   public getFullNameNormal() {
     let fullName = `${this.firstName} ${this.lastName}`;
     return fullName;
+  }
+
+  public getClient() {
+    return this.client && typeof this.client === 'object' && this.client.fullName ? this.client.fullName.toUpperCase() : this.client;
   }
 
   public getUsername() {

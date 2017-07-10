@@ -111,7 +111,8 @@ export class WorkOrder {
 
   public genReportID(tech:Employee) {
     let now = moment();
-    let idDateTime = now.format("dddDDMMMYYYYHHmmss");
+    // let idDateTime = now.format("dddDDMMMYYYYHHmmss");
+    let idDateTime = now.format("YYYY-MM-DD_HH-mm-ss_ZZ_ddd");
     let docID = tech.avatarName + '_' + idDateTime;
     Log.l("genReportID(): Generated ID:\n", docID);
     return docID;
@@ -218,8 +219,8 @@ export class WorkOrder {
     if(isMoment(start) && isMoment(end) && start !== null && end !== null && typeof time === 'number') {
       let check = moment(start).add(time, 'hours');
       if (!check.isSame(end)) {
-        Log.e("WO.checkTimeCalculations(): Start time plus repair hours does not equal end time!");
-        Log.e("Start: %s\nEnd: %s\nHours: %s", start.format(), end.format(), time);
+        Log.w("WO.checkTimeCalculations(): Start time plus repair hours does not equal end time!");
+        Log.w("Start: %s\nEnd: %s\nHours: %s", start.format(), end.format(), time);
         this.adjustEndTime();
       }
     } else if(isMoment(start) && typeof time === 'number') {

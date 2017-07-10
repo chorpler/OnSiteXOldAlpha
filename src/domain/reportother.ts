@@ -81,7 +81,8 @@ export class ReportOther {
 
   public genReportID(tech:Employee) {
     let now = moment();
-    let idDateTime = now.format("YYYYMMDDHHmmss_ddd");
+    // let idDateTime = now.format("YYYYMMDDHHmmss_ddd");
+    let idDateTime = now.format("YYYY-MM-DD_HH-mm-ss_ZZ_ddd");
     let docID = tech.avatarName + '_' + idDateTime;
     Log.l("genReportID(): Generated ID:\n", docID);
     return docID;

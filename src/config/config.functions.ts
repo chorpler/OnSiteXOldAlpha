@@ -1,5 +1,4 @@
 import * as momentous from 'moment';
-
 import * as parseFormat from 'moment-parseformat';
 import 'moment-recur';
 // import * as momentround from 'moment-round';
@@ -78,10 +77,26 @@ momentous.fn['floor'] = function (precision, key) {
 
 
 
-var moment2excel = function(mo?:Date|Moment|string) {
-  let value = mo ? mo : this;
+var moment2excel = function(mo?:Date|Moment|string|boolean, dayOnly?:boolean) {
+  let xlDate;
   let XLDay0 = moment([1900, 0, 1]).startOf('day');
-  let xlDate = moment(value).diff(XLDay0, 'days', true) + 2;
+  let value;
+  if(mo) {
+    if(typeof mo === 'boolean') {
+      value  = this;
+      xlDate = Math.trunc(moment(value).diff(XLDay0, 'days', true) + 2);
+    } else {
+      value = mo;
+      if(dayOnly) {
+        xlDate = Math.trunc(moment(value).diff(XLDay0, 'days', true) + 2);
+      } else {
+        xlDate = moment(value).diff(XLDay0, 'days', true) + 2;
+      }
+    }
+  } else {
+    value  = this;
+    xlDate = moment(value).diff(XLDay0, 'days', true) + 2;
+  }
   return xlDate;
 };
 

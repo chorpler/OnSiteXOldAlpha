@@ -3,14 +3,15 @@ import { Component, OnInit                            } from '@angular/core'    
 import { FormGroup, FormControl, Validators           } from "@angular/forms"                         ;
 import { IonicPage, NavController, NavParams          } from 'ionic-angular'                          ;
 import { ViewController                               } from 'ionic-angular'                          ;
-import { CLIENT, LOCATION, LOCID, SHIFTLENGTH         } from '../../config/config.constants.settings' ;
-import { SHIFT, SHIFTSTARTTIME, SHIFTROTATION, LOC2ND } from '../../config/config.constants.settings' ;
-import { REPORTHEADER, REPORTMETA                     } from '../../config/report.object'             ;
-import { Log, sizeOf, isMoment                        } from '../../config/config.functions'          ;
+// import { CLIENT, LOCATION, LOCID, SHIFTLENGTH         } from '../../config/config.constants.settings' ;
+// import { SHIFT, SHIFTSTARTTIME, SHIFTROTATION, LOC2ND } from '../../config/config.constants.settings' ;
+// import { REPORTHEADER, REPORTMETA                     } from '../../config/report.object'             ;
+import { Log, sizeOf, isMoment, moment, Moment        } from '../../config/config.functions'          ;
 import { DBSrvcs                                      } from '../../providers/db-srvcs'               ;
-import { ReportBuildSrvc                              } from '../../providers/report-build-srvc'      ;
-import { Login                                        } from '../login/login'                         ;
+// import { ReportBuildSrvc                              } from '../../providers/report-build-srvc'      ;
+// import { Login                                        } from '../login/login'                         ;
 import { UserData                                     } from '../../providers/user-data'              ;
+import { AlertService                                 } from '../../providers/alerts'                 ;
 import { TabsComponent                                } from '../../components/tabs/tabs'             ;
 
 
@@ -25,6 +26,7 @@ import { TabsComponent                                } from '../../components/t
 export class TechSettingsPage implements OnInit {
   // @ViewChild('ionheader') mapElement: ElementRef;
   fixedHeight       : any        = "0px"            ;
+  lang              : any                           ;
   techProfile       : any        = {}               ;
   techProfileDB     : any        = {}               ;
   selClient         : string[  ] = CLIENT           ;
@@ -61,7 +63,8 @@ export class TechSettingsPage implements OnInit {
   constructor( public navCtrl: NavController, public navParams    : NavParams,
                public db     : DBSrvcs,       public reportBuilder: ReportBuildSrvc,
                public tabs   : TabsComponent, public viewCtrl     : ViewController,
-               public ud     : UserData ) {
+               public ud     : UserData     , public alert        : AlertService,
+  ) {
 
     window["onsite"] = window["onsite"] || {};
     window["onsite"]["settings"] = this;
@@ -71,6 +74,10 @@ export class TechSettingsPage implements OnInit {
 
   ngOnInit() {
     // this.fixedHeight = this.mapElement.nativeElement.fixed;
+    let translations = [
+      'spinner_saving_tech_profile'
+    ];
+    this.lang = this.translate.instant(translations);
     if ( this.navParams.get('mode') !== undefined ) {
      this.mode = this.navParams.get('mode');
     } else {
@@ -140,16 +147,18 @@ export class TechSettingsPage implements OnInit {
   }
 
   onSubmit() {
-    let rprt = this.techSettings.value;
-    rprt.updated        = true;
-    rprt.technician     = rprt.lastName + ', ' + rprt.firstName;
-    rprt.client         = rprt.client.fullName.toUpperCase();
-    rprt.location       = rprt.location.fullName.toUpperCase();
-    rprt.locID          = rprt.locID.name.toUpperCase();
-    rprt.loc2nd         = rprt.loc2nd.name.toUpperCase();
-    rprt.shift          = rprt.shift.name;
-    rprt.shiftLength    = Number(rprt.shiftLength.name);
-    rprt.shiftStartTime = Number(rprt.shiftStartTime.name);
+    this.alert.showSpinner(lang['spinner_saving_tech_profile']);
+    let rprt            = this.techSettings.value               ;
+    rprt.updated        = true                                  ;
+    rprt.technician     = rprt.lastName + ', ' + rprt.firstName ;
+    rprt.client         = rprt.client.fullName.toUpperCase()    ;
+    rprt.location       = rprt.location.fullName.toUpperCase()  ;
+    rprt.locID          = rprt.locID.name.toUpperCase()         ;
+    rprt.loc2nd         = rprt.loc2nd.name.toUpperCase()        ;
+    rprt.shift          = rprt.shift.name                       ;
+    rprt.shiftLength    = Number(rprt.shiftLength.name)         ;
+    rprt.shiftStartTime = Number(rprt.shiftStartTime.name)      ;
+
     this.reportMeta = rprt;
     Log.l("onSubmit(): Now attempting to save tech profile:");
     this.db.saveTechProfile(this.reportMeta).then((res) => {

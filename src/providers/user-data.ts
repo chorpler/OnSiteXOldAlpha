@@ -14,7 +14,7 @@ import { STRINGS                       } from '../config/config.strings'   ;
 
 @Injectable()
 export class UserData {
-  public static appdata               : any = {version: "10.11.04"}                    ;
+  public static appdata               : any = {ready: false, version: "10.11.05"}      ;
   public static _favorites            : string[]             = []                      ;
   public static HAS_LOGGED_IN         = 'hasLoggedIn'                                  ;
   public static HAS_SEEN_TUTORIAL     = 'hasSeenTutorial'                              ;
@@ -47,12 +47,22 @@ export class UserData {
   public sesaConfig                   : any                  = UserData.sesaConfig     ;
   public data                         : any                  = UserData.data           ;
   public userLoggedIn                 : boolean              = UserData.userLoggedIn   ;
+  public appReady                     : boolean              = false                   ;
 
   private static loginData:any = null;
 
   constructor(public events: Events, public storage: Storage, public platform: Platform, public prefs: Preferences) {
     window["onsiteuserdata"] = this;
     window["UserData"] = UserData;
+  }
+
+  public isAppLoaded() {
+    return this.appdata.ready;
+  }
+
+  public setAppLoaded(value:boolean) {
+    this.appdata.ready = value;
+    return this.appdata.ready;
   }
 
   public setHomePeriod(period:PayrollPeriod) {

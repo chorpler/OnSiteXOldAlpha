@@ -119,7 +119,7 @@ export class HomePage {
     Log.l("HomePage: Hi, I'm the HomePage class constructor!");
     HomePage.EVENTS = events;
     var caller = this;
-    var startupHandler = function (homepage: any) {
+    var startupHandler = (homepage: any) => {
       Log.l("HomePage.startupHandler(): startup:finished event detected. Target is:\n", homepage);
       Log.l("HomePage.startupHandler(): now unsubscribing from startup:finished event...");
       HomePage.EVENTS.unsubscribe('startup:finished', startupHandler);
@@ -139,8 +139,8 @@ export class HomePage {
     Log.l("HomePage: ionViewDidEnter() called. First wait to make sure app is finished loading.");
     var caller = this;
     // if(HomePage.homePageStatus.startupFinished) {
-      Log.l("HomePage.ionViewDidEnter(): startup already finished, just continuing with runEveryTime()...");
-      this.tabs.highlightTab(0);
+    Log.l("HomePage.ionViewDidEnter(): startup already finished, just continuing with runEveryTime()...");
+    this.tabs.highlightTab(0);
       // this.runEveryTime();
     // }
   }
@@ -148,7 +148,9 @@ export class HomePage {
   ionViewDidLoad() {
     Log.l("HomePage: ionViewDidLoad() called... not doing anything right now.");
     this.dataReady = false;
-    this.runEveryTime();
+    if(this.ud.isAppLoaded()) {
+      this.runEveryTime();
+    }
   }
 
   runEveryTime() {

@@ -135,6 +135,7 @@ export class OnSiteApp {
           let badges = this.msgService.getNewMessageCount();
           this.tabs.setMessageBadge(badges);
           this.alert.hideSpinner();
+          this.ud.setAppLoaded(true);
           this.rootPage = 'OnSiteHome';
           this.events.publish('startup:finished', true);
           setTimeout(() => {

@@ -190,37 +190,25 @@ export class Shift {
   }
 
   getExcelDates() {
-    let now = moment();
-    let day = moment(this.start_time);
-    let week = moment(this.getShiftWeek());
-    let nowWeek = moment(this.getCurrentPayrollWeek());
-    // let nowXL = now.diff(XL, 'days') + 2;
-    // let dayXL = day.diff(XL, 'days') + 2;
-    // let weekXL = week.diff(XL, 'days') + 2;
-    // let currentWeekXL = nowWeek.diff(XL, 'days') + 2;
-    let nowXL = now.toExcel();
-    let dayXL = day.toExcel();
-    let weekXL = week.toExcel();
-    let currentWeekXL = nowWeek.toExcel();
-    let nextWeekXL = weekXL + 7;
-    this.shift_week_id = weekXL;
-    this.payroll_period = weekXL;
-    this.shift_id = dayXL;
-    this.XL.today_XL   = nowXL;
-    this.XL.shift_time = dayXL;
-    this.XL.shift_id   = dayXL;
-    this.XL.shift_week = weekXL;
-    this.XL.current_payroll_week = currentWeekXL;
-    this.XL.next_week_XL = nextWeekXL;
+    let now                      = moment()                             ;
+    let day                      = moment(this.start_time)              ;
+    let week                     = moment(this.getShiftWeek())          ;
+    let nowWeek                  = moment(this.getCurrentPayrollWeek()) ;
+    let nowXL                    = now.toExcel()                        ;
+    let dayXL                    = day.toExcel()                        ;
+    let weekXL                   = week.toExcel(true)                   ;
+    let currentWeekXL            = nowWeek.toExcel(true)                ;
+    let nextWeekXL               = weekXL + 7                           ;
+    this.shift_week_id           = weekXL                               ;
+    this.payroll_period          = weekXL                               ;
+    this.shift_id                = dayXL                                ;
+    this.XL.today_XL             = nowXL                                ;
+    this.XL.shift_time           = dayXL                                ;
+    this.XL.shift_id             = dayXL                                ;
+    this.XL.shift_week           = weekXL                               ;
+    this.XL.current_payroll_week = currentWeekXL                        ;
+    this.XL.next_week_XL         = nextWeekXL                           ;
     return this.XL;
-  }
-
-  getShiftHours() {
-    return this.getNormalHours();
-  }
-
-  setShiftHours(hours:number) {
-    this.shift_hours = hours;
   }
 
   getShiftLength() {
@@ -230,13 +218,6 @@ export class Shift {
   setShiftLength(hours:number) {
     this.shift_length = hours;
     return this.shift_length;
-  }
-
-  getShiftStatus() {
-    let hours = this.getNormalHours();
-    let total = this.getShiftLength();
-    let status = this.getShiftReportsStatus().status;
-    return status ? "hoursComplete" : (hours > total) ? "hoursOver" : (hours < total) ? "hoursUnder" : (hours === total) ? "hoursComplete" : "hoursUnknown";
   }
 
   getShiftColor() {
@@ -295,15 +276,7 @@ export class Shift {
   }
 
   getTotalShiftHours() {
-    let total = 0;
-    for(let report of this.shift_reports) {
-      if(report['type'] === undefined || report['type'] === 'Work Report') {
-        total += report.getRepairHours();
-      } else {
-       /* ToDo(2017-07-05): Ask Mike if miscellaneous reports should count for shift hours, or what */
-      }
-    }
-    return total;
+    return this.getNormalHours();
   }
 
   getTotalPayrollHoursForShift() {
@@ -336,7 +309,15 @@ export class Shift {
   }
 
   getNormalHours() {
-    return this.getTotalShiftHours();
+    let total = 0;
+    for (let report of this.shift_reports) {
+      if (report['type'] === undefined || report['type'] === 'Work Report') {
+        total += report.getRepairHours();
+      } else {
+        /* ToDo(2017-07-05): Ask Mike if miscellaneous reports should count for shift hours, or what */
+      }
+    }
+    return total;
   }
 
   getPayrollHours() {
@@ -383,6 +364,24 @@ export class Shift {
     this.other_reports.push(other);
     return this.other_reports;
   }
+
+  // getShiftHoursStatus() {
+    // let ss = shift;
+    // if (ss !== undefined && ss !== null) {
+    //   let total = this.shiftSavedHours + this.currentRepairHours - this.thisWorkOrderContribution;
+    //   let target = this.getShiftLength();
+    //   // Log.l(`getShiftHoursStatus(): total = ${total}, target = ${target}.`);
+    //   if (total < target) {
+    //     return 'darkred';
+    //   } else if (total > target) {
+    //     return 'red';
+    //   } else {
+    //     return 'green';
+    //   }
+    // } else {
+    //   return 'black';
+    // }
+  // }
 
   getShiftReportsStatus() {
     let others  = this.getOtherReports() ;
@@ -524,6 +523,21 @@ export class Shift {
       }
     }
     return {codes: codes, hours: total};
+  }
+
+  getShiftHours() {
+    return this.getNormalHours();
+  }
+
+  setShiftHours(hours: number) {
+    this.shift_hours = hours;
+  }
+
+  getShiftStatus() {
+    let hours = this.getNormalHours();
+    let total = this.getShiftLength();
+    let status = this.getShiftReportsStatus().status;
+    return status ? "hoursComplete" : (hours > total) ? "hoursOver" : (hours < total) ? "hoursUnder" : (hours === total) ? "hoursComplete" : "hoursUnknown";
   }
 
   toString(translate?:any) {

@@ -24,6 +24,7 @@ import { TranslateService                                      } from '@ngx-tran
 import { REPORTTYPEI18N, TRAININGTYPEI18N, JOBSITESI18N        } from '../../config/report.object'        ;
 import 'rxjs/add/operator/debounceTime'                                                                   ;
 
+export const focusDelay = 500;
 
 @IonicPage({
   name: 'Report'
@@ -34,13 +35,18 @@ import 'rxjs/add/operator/debounceTime'                                         
 })
 
 export class ReportPage implements OnInit {
+  @ViewChild('unitNumberInput') unitNumberInput;
+  @ViewChild('workOrderNumberInput') workOrderNumberInput;
+
   title                     : string           = 'Work Report'              ;
+  lang                      : any                                           ;
   static PREFS              : any              = new Preferences()          ;
   prefs                     : any              = ReportPage.PREFS           ;
   setDate                   : Date             = new Date()                 ;
   year                      : number           = this.setDate.getFullYear() ;
   mode                      : string           = 'Add'                      ;
   type                      : any = REPORTTYPEI18N[0]                       ;
+  formValues                : any                                           ;
   workOrderForm             : FormGroup                                     ;
   workOrder                 : any                                           ;
   workOrderReport           : any                                           ;
@@ -49,6 +55,7 @@ export class ReportPage implements OnInit {
   profile                   : any              = {}                         ;
   tmpReportData             : any                                           ;
   techProfile               : any                                           ;
+  tech                      : any                                           ;
   docID                     : string                                        ;
   idDate                    : string                                        ;
   idTime                    : string                                        ;
@@ -145,9 +152,27 @@ export class ReportPage implements OnInit {
       this.selectedShift = this.shiftToUse;
     }
     let mode = this.mode.toLowerCase();
-    let titleStrings = this.translate.instant([mode, 'report']);
-    let titleAdjective = titleStrings[mode];
-    let titleNoun = titleStrings['report'];
+    let translations = [
+      mode,
+      'error',
+      'report',
+      'confirm',
+      'warning',
+      'delete_report',
+      'spinner_saving_report',
+      'hb_unit_number_length',
+      'spinner_deleting_report',
+      'report_submit_error_title',
+      'report_submit_error_message',
+      'hb_work_order_number_length',
+      'error_saving_report_message',
+      'attempt_to_change_existing_report_type',
+    ];
+    this.lang = this.translate.instant(translations);
+    let lang = this.lang;
+    let titleAdjective = lang[mode];
+    let titleNoun = lang['report'];
+
     this.title = `${titleAdjective} ${titleNoun}`;
 
     this.initializeUIData();
@@ -161,6 +186,7 @@ export class ReportPage implements OnInit {
       Log.l(`ReportPage: Success getting tech profile! Result:\n`, res);
       this.techProfile = new Employee();
       this.techProfile.readFromDoc(res);
+      this.tech = this.techProfile;
       if (this.mode === 'Add' || this.mode === 'Añadir') {
         let now = moment();
         this.workOrder = new WorkOrder();
@@ -475,40 +501,137 @@ export class ReportPage implements OnInit {
   getShiftHoursStatus(shift: Shift) {
     let ss = shift;
     if (ss !== undefined && ss !== null) {
-      let total = this.shiftSavedHours + this.currentRepairHours - this.thisWorkOrderContribution;
-      let target = Number(this.techProfile.shiftLength);
+      let total = shift.getNormalHours() + this.currentRepairHours - this.thisWorkOrderContribution;
+      // let target = Number(this.techProfile.shiftLength);
+      let target = shift.getShiftLength();
       // Log.l(`getShiftHoursStatus(): total = ${total}, target = ${target}.`);
-      if (total < target) {
+      if(isNaN(target)) {
+        return 'blue';
+      } else if (total < target) {
         return 'darkred';
       } else if(total > target) {
         return 'red';
-      } else {
+      } else if(total === target) {
         return 'green';
+      } else {
+        return 'mediumaquamarine';
       }
     } else {
       return 'black';
     }
   }
 
+  public async showPossibleError(type) {
+    let lang         = this.lang                                                          ;
+    let form         = this.workOrderForm.getRawValue()                                   ;
+    let unitLen      = form.unit_number       ? String(form.unit_number).length       : 0 ;
+    let woLen        = form.work_order_number ? String(form.work_order_number).length : 0 ;
+    let result       = null                                                               ;
+    let warning_text = ""                                                                 ;
+
+    Log.l("showPossibleError(): Checking unit length and work order number length:");
+    Log.l(form.unit_number);
+    Log.l(form.work_order_number);
+
+    if(type === 'unit') {
+      warning_text = sprintf(lang['hb_unit_number_length'], unitLen);
+      result = await this.alert.showConfirmYesNo(lang['warning'], warning_text);
+      return result;
+    } else if(type === 'wo') {
+      warning_text = sprintf(lang['hb_work_order_number_length'], woLen);
+      result = await this.alert.showConfirmYesNo(lang['warning'], warning_text);
+      return result;
+    } else {
+      return new Error("showPossibleError() called without proper type!");
+    }
+  }
+
+  public async checkForUserMistakes() {
+    let lang    = this.lang                                                          ;
+    let form    = this.workOrderForm.getRawValue()                                   ;
+    let type    = form.type                                                          ;
+    let unitLen = form.unit_number       ? String(form.unit_number).length       : 0 ;
+    let woLen   = form.work_order_number ? String(form.work_order_number).length : 0 ;
+
+    Log.l("checkForUserMistakes(): Checking unit length and work order number length:");
+    Log.l(form.unit_number);
+    Log.l(form.work_order_number);
+
+    try {
+      if (type === null || type === undefined || type.name === 'work_report') {
+        if (form.repair_time === "00:00") {
+          this.audio.play('funny');
+          this.alert.showAlert(lang['report_submit_error_title'], lang['report_submit_error_message']);
+          return false;
+        }
+        if (this.tech.getClient() === 'HALLIBURTON' || this.tech.getClient() === 'HB') {
+          if(unitLen !== 8) {
+            let response = await this.showPossibleError('unit');
+            if(response) {
+              // this.unitNumberInput.setFocus();
+              setTimeout(() => {
+                // this.zone.run(() => { this.unitNumberInput.setFocus(); });
+                this.unitNumberInput.setFocus();
+              }, focusDelay);
+              return false;
+            }
+          }
+          if(woLen !== 9) {
+            let response = await this.showPossibleError('wo');
+            if(response) {
+              // this.workOrderNumberInput.setFocus();
+              setTimeout(() => {
+                // this.zone.run(() => { this.workOrderNumberInput.setFocus(); });
+                this.workOrderNumberInput.setFocus();
+              }, focusDelay);
+              return false;
+            }
+          }
+        }
+      }
+      return true;
+    } catch(err) {
+      Log.l("checkForUserMistakes(): Caught error:");
+      Log.e(err);
+      throw new Error(err);
+    }
+  }
+
+  public checkInput() {
+    return new Promise((resolve,reject) => {
+      this.formValues = this.workOrderForm.getRawValue();
+      this.checkForUserMistakes().then(res => {
+        if(res) {
+          resolve(res);
+        } else {
+          reject(res);
+        }
+      }).catch(err => {
+        reject(err);
+      });
+    });
+  }
+
   onSubmit() {
     let form = this.workOrderForm.getRawValue();
     let type = form.type;
-    if(type === null || type === undefined || type.name === 'work_report') {
-      let lang = this.translate.instant(['report_submit_error_title', 'report_submit_error_message']);
-      if (form.repair_time === "00:00") {
-        this.audio.play('funny');
-        this.alert.showAlert(lang['report_submit_error_title'], lang['report_submit_error_message']);
-      } else {
+    let lang = this.lang;
+    this.checkInput().then(res => {
+      if (type === null || type === undefined || type.name === 'work_report') {
         this.processWO();
+      } else {
+        this.processAlternateWO();
       }
-    } else {
-      this.processAlternateWO();
-    }
+    }).catch(err => {
+      Log.l("onSubmit(): Caught error:");
+      Log.e(err);
+    });
   }
 
   genReportID() {
     let now = moment();
-    let idDateTime = now.format("dddDDMMMYYYYHHmmss");
+    // let idDateTime = now.format("dddDDMMMYYYYHHmmss");
+    let idDateTime = now.format("YYYY-MM-DD_HH-mm-ss_ZZ_ddd");
     let docID = this.techProfile.avatarName + '_' + idDateTime;
     Log.l("genReportID(): Generated ID:\n", docID);
     return docID;
@@ -521,7 +644,7 @@ export class ReportPage implements OnInit {
 
   processWO() {
     let data = this.workOrderForm.getRawValue();
-    let lang = this.translate.instant(['spinner_saving_report', 'error', 'error_saving_report_message']);
+    let lang = this.lang;
     // if(!data.repair_hours) {
     //   this.alert.showAlert(lang['report_submit_error_title'], lang['report_submit_error_message']);
     // } else {
@@ -535,6 +658,10 @@ export class ReportPage implements OnInit {
         Log.l("processWO(): Successfully synchronized work order to remote.");
         this.alert.hideSpinner();
         // this.tabs.goToPage('OnSiteHome');
+        this.createFreshReport();
+        this.initializeForm();
+        this.initializeFormListeners();
+        this.selectedShift.addShiftReport(tempWO);
       }).catch((err) => {
         Log.l("processWO(): Error saving work order to local database.");
         Log.e(err);
@@ -561,7 +688,7 @@ export class ReportPage implements OnInit {
   }
 
   processAlternateWO() {
-    let lang = this.translate.instant(['spinner_saving_report', 'error', 'error_saving_report_message']);
+    let lang = this.lang;
     this.alert.showSpinner(lang['spinner_saving_report']);
     let doc = this.workOrderForm.getRawValue();
     // let newReport = new ReportOther().readFromDoc(doc);
@@ -642,6 +769,10 @@ export class ReportPage implements OnInit {
     return ro;
   }
 
+  public populateWorkOrder():WorkOrder {
+    return this.workOrder;
+  }
+
   createReport() {
     Log.l("ReportPage: createReport(): Now creating report...");
     let partialReport = this.workOrderForm.getRawValue();
@@ -674,16 +805,16 @@ export class ReportPage implements OnInit {
 
   checkPageMode() {
     Log.l("checkPageMode(): Called...");
+    let lang = this.lang;
     if(this.mode==='Edit') {
       Log.l("checkPageMode(): User trying to change type of an existing report. Not allowed.");
-      let lang = this.translate.instant(['error', 'attempt_to_change_existing_report_type']);
       this.alert.showAlert(lang['error'], lang['attempt_to_change_existing_report_type']);
     }
   }
 
   deleteWorkOrder(event) {
     Log.l("deleteWorkOrder() clicked ...");
-    let lang = this.translate.instant(['confirm', 'delete_report', 'spinner_deleting_report', 'error', 'error_deleting_report_message']);
+    let lang = this.lang;
     this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
       if (res) {
         this.alert.showSpinner(lang['spinner_deleting_report']);
@@ -722,7 +853,7 @@ export class ReportPage implements OnInit {
   deleteOtherReport(event) {
     Log.l("deleteOtherReport() clicked ...");
     let other = this.reportOther.clone();
-    let lang = this.translate.instant(['confirm', 'delete_report', 'spinner_deleting_report', 'error', 'error_deleting_report_message']);
+    let lang = this.lang;
     this.audio.play('deleteotherreport');
     this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
       if (res) {

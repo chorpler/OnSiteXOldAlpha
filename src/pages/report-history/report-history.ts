@@ -46,24 +46,24 @@ templateUrl: 'report-history.html',
 // changeDetection: ChangeDetectionStrategy.OnPush })
 })
 export class ReportHistory implements OnInit {
-  public title: string = 'Reports';
+  public title        : string           = 'Reports'                                                    ;
+  public lang         : any                                                                             ;
   public pageReady    : boolean          = false                                                        ;
   public selectedItem : any                                                                             ;
   public items        : Array<{title: string, note: string}> = new Array<{title:string, note:string}>() ;
-  public reports      : Array<WorkOrder> = []                                                           ;
-  public otherReports : Array<ReportOther> = []
-  public shifts       : Array<Shift> = []                                                               ;
+  public reports      : Array<WorkOrder>     = []                                                       ;
+  public otherReports : Array<ReportOther>   = []
+  public shifts       : Array<Shift>         = []                                                       ;
   public periods      : Array<PayrollPeriod> = []                                                       ;
   public period       : PayrollPeriod = null                                                            ;
-  public filtReports  : any = {}                                                                        ;
+  public filtReports  : any                  = {}                                                       ;
   public filterKeys   : Array<string>                                                                   ;
-  public filtOther    : any = {}                                                                        ;
   public data         : any                                                                             ;
   public loading      : any                                                                             ;
-  public static PREFS : any              = new Preferences()                                            ;
-  public prefs        : any              = ReportHistory.PREFS;
-  public shiftToUse   : Shift            = null;
-  numChars     : Array<string> = STRINGS.NUMCHARS ;
+  public static PREFS : any                  = new Preferences()                                        ;
+  public prefs        : any                  = ReportHistory.PREFS                                      ;
+  public shiftToUse   : Shift                = null                                                     ;
+  public numChars     : Array<string>        = STRINGS.NUMCHARS                                         ;
   constructor( public navCtrl  : NavController    , public navParams  : NavParams         ,
                public db       : DBSrvcs          , public alert      : AlertService      ,
                private auth    : AuthSrvcs        , public loadingCtrl: LoadingController ,
@@ -79,18 +79,40 @@ export class ReportHistory implements OnInit {
   }
 
   ionViewDidLoad() {
-    Log.l("ReportHistory: ionViewDidEnter called...");
+    Log.l("ReportHistory: ionViewDidLoad called...");
     window["onsitereporthistory"] = this;
+    if(this.ud.isAppLoaded()) {
+      this.runOnPageLoad();
+    } else {
+      this.tabs.goToPage('OnSiteHome');
+    }
+  }
+
+  public runOnPageLoad() {
     this.pageReady   = false ;
     this.reports     = []    ;
     this.filterKeys  = []    ;
-    this.filtReports = { }   ;
-    if(this.navParams.get('shift') !== undefined) { this.shiftToUse = this.navParams.get('shift');}
-    if (this.navParams.get('payroll_period') !== undefined) { this.period = this.navParams.get('payroll_period');}
+    this.filtReports = {}    ;
+
+    if (this.navParams.get('shift') !== undefined) { this.shiftToUse = this.navParams.get('shift'); }
+    if (this.navParams.get('payroll_period') !== undefined) { this.period = this.navParams.get('payroll_period'); }
     this.periods = this.ud.getPayrollPeriods();
-    let lang = this.translate.instant(['spinner_retrieving_reports', 'spinner_retrieving_reports_other', 'error', 'error_server_connect_message']);
+    let translations = [
+      'error',
+      'confirm',
+      'delete_report',
+      'spinner_deleting_report',
+      'spinner_retrieving_reports',
+      'spinner_retrieving_reports_other',
+      'error_server_connect_message',
+      'error_fetching_reports_title',
+      'error_fetching_reports_message',
+      'error_deleting_report_message'
+    ];
+    this.lang = this.translate.instant(translations);
+    let lang = this.lang;
     this.alert.showSpinner(lang['spinner_retrieving_reports']);
-    if(this.shiftToUse !== null) {
+    if (this.shiftToUse !== null) {
       Log.l("ReportHistory: Showing only shift:\n", this.shiftToUse);
       this.shifts = [this.shiftToUse];
     } else {
@@ -99,9 +121,9 @@ export class ReportHistory implements OnInit {
       this.period = this.periods[0];
       this.shifts = [];
       Log.l("ReportHistory: Got payroll periods:\n", this.periods);
-      for(let period of this.periods) {
+      for (let period of this.periods) {
         let periodShifts = period.getPayrollShifts();
-        for(let shift of periodShifts) {
+        for (let shift of periodShifts) {
           this.shifts.push(shift);
         }
       }
@@ -114,7 +136,10 @@ export class ReportHistory implements OnInit {
       // this.ud.setWorkOrderList(res);
       this.reports = unsortedReports.sort(_sortReports);
       Log.l("ReportHistory: created date-sorted report list:\n", this.reports);
+      // return
+      // this.alert.hideSpinner(0, true);
       this.alert.hideSpinner();
+    // }).then(res => {
       this.alert.showSpinner(lang['spinner_retrieving_reports_other']);
       return this.server.getReportsOtherForTech(u);
     }).then(res => {
@@ -123,7 +148,7 @@ export class ReportHistory implements OnInit {
       this.filterKeys = [];
       let reportOthers = res.sort(_sortOtherReports);
       this.otherReports = reportOthers;
-      for(let shift of this.shifts) {
+      for (let shift of this.shifts) {
         let date = shift.getStartTime().format("YYYY-MM-DD");
         this.filterKeys.push(date);
         let serial = shift.getShiftSerial();
@@ -133,18 +158,18 @@ export class ReportHistory implements OnInit {
         for (let report of oneReportSet) {
           this.filtReports[date].push(report);
         }
-        for(let other of reportOthers) {
-          if(other.report_date.format("YYYY-MM-DD") === date) {
+        for (let other of reportOthers) {
+          if (other.report_date.format("YYYY-MM-DD") === date) {
             this.filtReports[date].push(other);
           }
         }
       }
-      this.alert.hideSpinner();
+      return this.alert.hideSpinner(0, true);
+    }).then(res => {
       this.pageReady = true;
     }).catch(err => {
       Log.l("ReportHistory: Error fetching reports!");
       Log.e(err);
-      let lang = ['error_fetching_reports_title', 'error_fetching_reports_message'];
       this.alert.showAlert(lang['error_fetching_reports_title'], lang['error_fetching_reports_message']);
     });
   }
@@ -184,7 +209,7 @@ export class ReportHistory implements OnInit {
 
   deleteWorkOrder(event, item) {
     Log.l("deleteWorkOrder() clicked ...");
-    let lang = this.translate.instant(['confirm', 'delete_report', 'spinner_deleting_report', 'error', 'error_deleting_report_message']);
+    let lang = this.lang;
     this.audio.play('deletereport');
     this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
       if (res) {
@@ -219,7 +244,7 @@ export class ReportHistory implements OnInit {
 
   deleteOtherReport(event, other) {
     Log.l("deleteOtherReport() clicked ...");
-    let lang = this.translate.instant(['confirm', 'delete_report', 'spinner_deleting_report', 'error', 'error_deleting_report_message']);
+    let lang = this.lang;
     this.audio.play('deleteotherreport');
     this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
       if (res) {
@@ -254,7 +279,6 @@ export class ReportHistory implements OnInit {
   }
 
   addNewReportForShift(shift:Shift) {
-    // this.alert.showAlert("Sorry", "This is in progress.");
     this.tabs.goToPage('Report', {mode: 'Add', shift: shift});
   }
 

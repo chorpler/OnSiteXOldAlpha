@@ -142,5 +142,15 @@
   "key_standby_duncan": "Standby for Duncan",
   "key_sick_day_or_hours": "Sick Day/Hrs",
   "key_holiday": "Holiday",
-  "twenty_rules": "Twenty Rules"
+  "twenty_rules": "Twenty Rules",
+  "warning": "Warning",
+  "hb_unit_number_length": "Halliburton unit numbers are usually 8 digits, but you have %d digits. Do you need to fix it?",
+  "hb_work_order_number_length": "Halliburton work order numbers are usually 9 digits, but you have %d digits. Do you need to fix it?",
+  "yes": "Yes",
+  "no": "No",
+  "ok": "OK",
+  "spinner_saving_tech_profile": "Saving tech profile...",
+  "spinner_loading_tab": "Loading page...",
+  "letter_code": "Meaning of Letters",
+  "loading_data": "Loading Data"
 }

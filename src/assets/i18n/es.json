@@ -143,5 +143,15 @@
   "key_standby_duncan": "Espera por Duncan",
   "key_sick_day_or_hours": "Día/Horas de Enfermedad",
   "key_holiday": "Vacación Pagada",
-  "twenty_rules": "Veinte Reglas"
+  "twenty_rules": "Veinte Reglas",
+  "warning": "Alerta",
+  "hb_unit_number_length": "Los números de las unidades de Halliburton suelen ser 8 dígitos, pero tiene %d dígitos. ¿Necesitas arreglarlo?",
+  "hb_work_order_number_length": "Los números de orden de trabajo de Halliburton suelen ser de 9 dígitos, pero tiene %d dígitos. ¿Necesitas arreglarlo?",
+  "yes": "Sí",
+  "no": "No",
+  "ok": "De Acuerdo",
+  "spinner_saving_tech_profile": "Guardar perfil de usuario...",
+  "spinner_loading_tab": "Cargando página...",
+  "letter_code": "Significado de Letras",
+  "loading_data": "Cargando Datos"
 }

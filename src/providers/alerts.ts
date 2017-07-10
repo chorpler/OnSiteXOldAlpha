@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
-import { NavParams, LoadingController, PopoverController, ModalController, AlertController, ToastController } from 'ionic-angular';
-import { Log                                                     } from '../config/config.functions'           ;
+import { Injectable                                                                                         } from '@angular/core'              ;
+import { Http                                                                                               } from '@angular/http'              ;
+import { NavParams, LoadingController, PopoverController, ModalController, AlertController, ToastController } from 'ionic-angular'              ;
+import { Log                                                                                                } from '../config/config.functions' ;
+import { TranslateService                                                                                   } from '@ngx-translate/core'        ;
 import 'rxjs/add/operator/map';
 
 /*
@@ -12,78 +13,146 @@ import 'rxjs/add/operator/map';
 */
 @Injectable()
 export class AlertService {
+  public lang           : any                                            ;
+  public loading        : any                                            ;
+  public alert          : any                                            ;
+  public popover        : any                                            ;
+  public toast          : any                                            ;
+  public static ALERTS  : Array<any>              =[]                    ;
+  public static LOADINGS: Array<any>              =[]                    ;
+  public static POPOVERS: Array<any>              =[]                    ;
+  public static TOASTS  : Array<any>              =[]                    ;
+  public alerts         : any                     =AlertService.ALERTS   ;
+  public loadings       : any                     =AlertService.LOADINGS ;
+  public popovers       : any                     =AlertService.POPOVERS ;
+  public toasts         : any                     =AlertService.TOASTS   ;
+  public popoverData    : any                     =null                  ;
 
-  public loading         :any               ;
-  public alert           :any               ;
-  public popover         :any               ;
-  public toast           :any               ;
-  public static ALERTS   :Array<any> = []   ;
-  public static LOADINGS :Array<any> = []   ;
-  public static POPOVERS :Array<any> = []   ;
-  public static TOASTS   :Array<any> = []   ;
-  public alerts          :any               ;
-  public loadings        :any               ;
-  public popovers        :any               ;
-  public toasts          :any               ;
-  public popoverData     :any        = null ;
-
-  constructor(public http: Http, public loadingCtrl: LoadingController, public popoverCtrl:PopoverController, public modalCtrl:ModalController, public alertCtrl:AlertController, public toastCtrl:ToastController) {
+  constructor(public http: Http, public loadingCtrl: LoadingController, public popoverCtrl:PopoverController, public modalCtrl:ModalController, public alertCtrl:AlertController, public toastCtrl:ToastController, public translate:TranslateService) {
     Log.l('Hello AlertService Provider');
-    this.alerts = AlertService.ALERTS;
-    this.loadings = AlertService.LOADINGS;
-    this.popovers = AlertService.POPOVERS;
-    this.toasts = AlertService.TOASTS;
+    window['onsitealerts'] = this;
+    this.alerts   = AlertService.ALERTS   ;
+    this.loadings = AlertService.LOADINGS ;
+    this.popovers = AlertService.POPOVERS ;
+    this.toasts   = AlertService.TOASTS   ;
+    this.translate.get(['ok', 'cancel', 'yes', 'no']).subscribe((result) => {
+      Log.l("AlertService: translated values available!\n", result);
+      this.lang = result;
+    });
   }
 
-  showSpinner(text: string) {
+  showSpinner(text: string, returnPromise?:boolean) {
     this.loading = this.loadingCtrl.create({
       content: text,
       showBackdrop: false,
     });
-
     this.loadings.push(this.loading);
-    this.loading.present().catch((reason:any) => {Log.l("AlertService: loading.present() error:\n", reason)});
+    if(!returnPromise) {
+      this.loading.present().then(res => {
+        Log.l("showSpinner(): Showed spinner with text: ", text);
+      }).catch((reason: any) => {
+        Log.l("AlertService: loading.present() error:\n", reason);
+        // reject(res);
+      });
+    } else {
+      return new Promise((resolve,reject) => {
+        this.loading.present().then(res => {
+          Log.l("showSpinner(): Showed spinner with text: ", text);
+          resolve(res);
+        }).catch((reason:any) => {
+          Log.l("AlertService: loading.present() error:\n", reason);
+          resolve(reason);
+          // reject(res);
+        });
+      });
+    }
   }
 
-  hideSpinner(milliseconds?:number) {
-    if(this.loadings && this.loadings.length) {
-      if(milliseconds) {
-        setTimeout(() => {
+  hideSpinner(milliseconds?:number, returnPromise?:boolean) {
+    if(returnPromise) {
+      return new Promise((resolve,reject) => {
+        if(this.loadings && this.loadings.length) {
+          if(milliseconds) {
+            setTimeout(() => {
+              let load = this.loadings.pop();
+              load.dismiss().then((res) => {
+                Log.l("hideSpinner(): Finished showing spinner:\n", load);
+                resolve(res);
+              }).catch((reason: any) => {
+                Log.l("hideSpinner(): loading.dismiss() error for spinner:\n", load);
+                Log.e(reason)
+                let len = this.loadings.length;
+                for(let i = 0; i < len; i++) {
+                  this.loadings[i].dismiss();
+                  // oneload.dismissAll();
+                }
+                this.loadings = [];
+                resolve(reason);
+              });
+            }, milliseconds);
+          } else {
+            let load = this.loadings.pop();
+            load.dismiss().then(res => {
+              Log.l("hideSpinner(): Finished showing spinner:\n", load);
+              resolve(res);
+            }).catch((reason: any) => {
+              Log.l('hideSpinner(): loading.dismiss() error:\n', reason);
+              let len = this.loadings.length;
+              for (let i = 0; i < len; i++) {
+                this.loadings[i].dismiss();
+              // for (let i in this.loadings) {
+                // this.loadings.pop().dismiss();
+                // oneload.dismissAll();
+              }
+              this.loadings = [];
+              resolve(reason);
+            });
+          }
+        } else {
+          resolve("No spinners found to hide.");
+        }
+      });
+    } else {
+      if(this.loadings && this.loadings.length) {
+        if(milliseconds) {
+          setTimeout(() => {
+            let load = this.loadings.pop();
+            load.dismiss().catch((reason: any) => {
+              Log.l('hideSpinner(): loading.dismiss() error:\n', reason);
+              let len = this.loadings.length;
+              for(let i = 0; i < len; i++) {
+                this.loadings[i].dismiss();
+                // oneload.dismissAll();
+              }
+              this.loadings = [];
+            });
+          }, milliseconds);
+        } else {
           let load = this.loadings.pop();
           load.dismiss().catch((reason: any) => {
-            Log.l('AlertService: loading.dismiss() error:\n', reason);
+            Log.l('hideSpinner(): loading.dismiss() error:\n', reason);
             let len = this.loadings.length;
-            for(let i = 0; i < len; i++) {
+            for (let i = 0; i < len; i++) {
               this.loadings[i].dismiss();
+            // for (let i in this.loadings) {
+              // this.loadings.pop().dismiss();
               // oneload.dismissAll();
             }
             this.loadings = [];
           });
-        }, milliseconds);
-      } else {
-        let load = this.loadings.pop();
-        load.dismiss().catch((reason: any) => {
-          Log.l('AlertService: loading.dismiss() error:\n', reason);
-          let len = this.loadings.length;
-          for (let i = 0; i < len; i++) {
-            this.loadings[i].dismiss();
-          // for (let i in this.loadings) {
-            // this.loadings.pop().dismiss();
-            // oneload.dismissAll();
-          }
-          this.loadings = [];
-        });
+        }
       }
     }
   }
 
   showAlert(title: string, text: string) {
+    let lang = this.lang;
     return new Promise((resolve,reject) => {
       this.alert = this.alertCtrl.create({
         title: title,
         message: text,
         buttons: [
-          {text: 'OK', handler: () => {Log.l("OK clicked."); resolve(true);}}
+          {text: lang['ok'], handler: () => {Log.l("OK clicked."); resolve(true);}}
         ]
       });
       this.alert.present();
@@ -91,13 +160,14 @@ export class AlertService {
   }
 
   showConfirm(title: string, text: string) {
+    let lang = this.translate.instant(['cancel', 'ok']);
     return new Promise((resolve,reject) => {
       this.alert = this.alertCtrl.create({
         title: title,
         message: text,
         buttons: [
-          {text: 'Cancel', handler: () => {Log.l("Cancel clicked."); resolve(false);}},
-          {text: 'OK', handler: () => {Log.l("OK clicked."); resolve(true);}}
+          {text: lang['cancel'], handler: () => {Log.l("Cancel clicked."); resolve(false);}},
+          {text: lang['ok'], handler: () => {Log.l("OK clicked."); resolve(true);}}
         ]
       });
       this.alert.present();
@@ -105,13 +175,14 @@ export class AlertService {
   }
 
   showConfirmYesNo(title: string, text: string) {
+    let lang = this.translate.instant(['yes', 'no']);
     return new Promise((resolve,reject) => {
       this.alert = this.alertCtrl.create({
         title: title,
         message: text,
         buttons: [
-          {text: 'No', handler: () => {Log.l("Cancel clicked."); resolve(false);}},
-          {text: 'Yes', handler: () => {Log.l("OK clicked."); resolve(true);}}
+          {text: lang['no'], handler: () => {Log.l("No clicked."); resolve(false);}},
+          {text: lang['yes'], handler: () => {Log.l("Yes clicked."); resolve(true);}}
         ]
       });
       this.alert.present();

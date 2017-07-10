@@ -615,7 +615,7 @@ declare namespace moment {
      * @param e number or string that is an Excel-format date.
      */
     fromExcel(days: number | string): Moment;
-    toExcel(mo?: Date | Moment | string): number;
+    toExcel(mo?: Date | Moment | string | boolean, dayOnly?: boolean): number;
     round(precision: number, key: string, direction?: string): Moment;
   }
 
@@ -721,7 +721,7 @@ declare namespace moment {
    * @param e number or string that is an Excel-format date.
    */
   export function fromExcel(days: number | string): Moment;
-  export function toExcel(mo?: Date | Moment | string): number;
+  export function toExcel(mo?: Date | Moment | string | boolean, dayOnly?: boolean): number;
   export function round(precision: number, key: string, direction?: string): Moment;
 }
 

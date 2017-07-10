@@ -47,7 +47,7 @@ export class Preferences {
     language: 'en',
     shifts: 7,
     payroll_periods: 2,
-    audio: true
+    audio: false
   }
   public DB: any = Preferences.DB;
   public SERVER: any = Preferences.SERVER;
@@ -185,7 +185,7 @@ export class Preferences {
       language: 'en',
       shifts: 7,
       payroll_periods: 2,
-      audio: true
+      audio: false
     }
   }
 
