@@ -27,6 +27,7 @@ import { Preferences                                   } from '../../providers/p
 export class DeveloperPage implements OnInit {
 
   title          : string        = 'Developers'      ;
+  showingAlert   : boolean       = false             ;
   GeolocStatus   : boolean       = false             ;
   // geolocToggle   : boolean       = this.GeolocStatus ;
   onSiteTimeStamp: number                            ;
@@ -111,42 +112,55 @@ export class DeveloperPage implements OnInit {
     } else {
       Log.l("toggleBackgroundGeolocation(): This isn't going to do jack shit, because this platform is not cordova.");
       setTimeout(() => {
-        this.zone.run(() => {this.GeolocStatus = false;});
+        this.zone.run(() => {
+          this.GeolocStatus = false;
+          if(!this.showingAlert) {
+            this.developerAlert();
+          }
+        });
       });
-      let title1 = "LO SIENTO HERMANO";
-      let text1  = "A pesar de que eres un desarrollador, esta conmutación no puede hacer la mierda todo cuando no estás corriendo en Córdoba.";
-      let title2 = "PSYCH!";
-      let text2  = "Ha! You should have seen your face. We don't need to do Spanish translations in the developer page. I'll show you the real one.";
-      let title3 = "SORRY BRO";
-      let text3  = "Even though you're a developer, this toggle does fuck-all when you're not actually running on cordova.";
-      let title4 = "GOOD ONE, EH?";
-      let text4  = "Did you like how the translation of 'SORRY BRO' was 'LO SIENTO HERMANO'? And 'fuck-all' was 'mierda'? Apparently they know 'fuck-all' means the same as 'shit'. Sweet.";
-      let title5 = "THIS IS ANNOYING";
-      let text5  = "So many alerts in a row! I bet you're wondering how many more there will be.";
-      let title6 = "JUST ONE";
-      let text6  = "This is the last one.";
-      let title7 = "DOUBLE PSYCH!";
-      let text7  = "Okay, okay, this is really the last one. What a fucking waste of time.\n\nFunny, though.\n\n...quit looking at me like that. It was funny then and it's funny now!";
-
-      this.alert.showAlert(title1, text1).then(() => {
-        return this.alert.showAlert(title2, text2);
-      }).then(() => {
-        return this.alert.showAlert(title3, text3);
-      }).then(() => {
-        return this.alert.showAlert(title4, text4);
-      }).then(() => {
-        return this.alert.showAlert(title5, text5);
-      }).then(() => {
-        return this.alert.showAlert(title6, text6);
-      }).then(() => {
-        return this.alert.showAlert(title7, text7);
-      }).then(() => {
-        this.audio.playForcibly('laugh');
-      }).catch(err => {
-        Log.l("Dammit! Some kind of error showing too many alerts and playing a sound!");
-      })
-      this.alert.showAlert("SORRY BRO", "");
+      // this.alert.showAlert("SORRY BRO", "");
     }
+  }
+
+  developerAlert() {
+    this.showingAlert = true;
+    let title1 = window.atob("TE8gU0lFTlRPIEhFUk1BTk8=");
+    let text1  = window.atob("QSBwZXNhciBkZSBxdWUgZXJlcyB1biBkZXNhcnJvbGxhZG9yLCBlc3RhIGNvbm11dGFjaSZvYWN1dGU7biBubyBwdWVkZSBoYWNlciBsYSBtaWVyZGEgdG9kbyBjdWFuZG8gbm8gZXN0JmFhY3V0ZTtzIGNvcnJpZW5kbyBlbiBDJm9hY3V0ZTtyZG9iYS4=");
+    let title2 = window.atob("UFNZQ0gh");
+    let text2  = window.atob("SGEhIFlvdSBzaG91bGQgaGF2ZSBzZWVuIHlvdXIgZmFjZS4gV2UgZG9uJ3QgbmVlZCB0byBkbyBTcGFuaXNoIHRyYW5zbGF0aW9ucyBpbiB0aGUgZGV2ZWxvcGVyIHBhZ2UuIEknbGwgc2hvdyB5b3UgdGhlIHJlYWwgb25lLg==");
+    let title3 = window.atob("U09SUlkgQlJP");
+    let text3  = window.atob("RXZlbiB0aG91Z2ggeW91J3JlIGEgZGV2ZWxvcGVyLCB0aGlzIHRvZ2dsZSBkb2VzIGZ1Y2stYWxsIHdoZW4geW91J3JlIG5vdCBhY3R1YWxseSBydW5uaW5nIG9uIGNvcmRvdmEu");
+    let title4 = window.atob("R09PRCBPTkUsIEVIPw==");
+    let text4  = window.atob("RGlkIHlvdSBsaWtlIGhvdyB0aGUgdHJhbnNsYXRpb24gb2YgJ1NPUlJZIEJSTycgd2FzICdMTyBTSUVOVE8gSEVSTUFOTyc/IEFuZCAnZnVjay1hbGwnIHdhcyAnbWllcmRhJz8gQXBwYXJlbnRseSB0aGV5IGtub3cgJ2Z1Y2stYWxsJyBtZWFucyB0aGUgc2FtZSBhcyAnc2hpdCcuIFN3ZWV0Lg==");
+    let title5 = window.atob("VEhJUyBJUyBBTk5PWUlORw==");
+    let text5  = window.atob("U28gbWFueSBhbGVydHMgaW4gYSByb3chIEkgYmV0IHlvdSdyZSB3b25kZXJpbmcgaG93IG1hbnkgbW9yZSB0aGVyZSB3aWxsIGJlLiBJdCdzIGEgbXlzdGVyeSwgd3JhcHBlZCBpbiBhIHJpZGRsZSwgaW5zaWRlIGFuIGVuaWdtYS4=");
+    let title6 = window.atob("SlVTVCBPTkU=");
+    let text6  = window.atob("VGhlIGFuc3dlciBpcywgdGhpcyBpcyB0aGUgbGFzdCBvbmUu");
+    let title7 = window.atob("RE9VQkxFIFBTWUNIIQ==");
+    let text7  = window.atob("T2theSwgb2theSwgdGhpcyBpcyByZWFsbHkgdGhlIGxhc3Qgb25lLiBXaGF0IGEgZnVja2luZyB3YXN0ZSBvZiB0aW1lLjxicj48YnI+CgpGdW5ueSwgdGhvdWdoLjxicj48YnI+CgouLi5xdWl0IGxvb2tpbmcgYXQgbWUgbGlrZSB0aGF0LiBJdCB3YXMgZnVubnkgdGhlbiBhbmQgaXQncyBmdW5ueSBub3ch");
+
+    this.alert.showAlert(title1, text1).then(() => {
+      return this.alert.showAlert(title2, text2);
+    }).then(() => {
+      return this.alert.showAlert(title3, text3);
+    }).then(() => {
+      return this.alert.showAlert(title4, text4);
+    }).then(() => {
+      return this.alert.showAlert(title5, text5);
+    }).then(() => {
+      return this.alert.showAlert(title6, text6);
+    }).then(() => {
+      return this.alert.showAlert(title7, text7);
+    }).then(() => {
+      this.audio.playForcibly('laugh');
+      this.showingAlert = false;
+    }).catch(err => {
+      Log.l("Dammit! Some kind of error showing too many alerts and playing a sound!");
+      this.showingAlert = false;
+    });
+
+
   }
 
   updatePreferences() {
