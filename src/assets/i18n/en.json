@@ -154,5 +154,8 @@
   "spinner_loading_tab": "Loading page...",
   "letter_code": "Meaning of Letters",
   "loading_data": "Loading Data",
-  "standby_hb_duncan_wrong_location": "Your location is not set to Halliburton Duncan. Please set your location in the User Profile tab below (tap on %s below)."
+  "standby_hb_duncan_wrong_location": "Your location is not set to Halliburton Duncan. Please set your location in the User Profile tab below (tap on %s below).",
+  "duplicate_standby_report": "You have an existing Standby Report for this shift. Only one Standby report per shift is allowed. You can edit or delete the existing report on the Report History tab (tap %s below).",
+  "standby_report_xor_work_report_existing_standby": "You have an existing Standby Report for this shift. You cannot add a Work Report for the same shift as a Standby Report. You can edit or delete the existing report on the Report History tab (tap %s below).",
+  "standby_report_xor_work_report_existing_work_report": "You have an existing Work Report for this shift. You cannot add a Standby Report for the same shift as a Work Report. You can edit or delete the existing report on the Report History tab (tap %s below)."
 }

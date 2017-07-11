@@ -30,6 +30,7 @@ enum Icons {
   'box-check-yes'  = 1,
   'flag-blank'     = 2,
   'flag-checkered' = 3,
+  'unknown'        = 4,
 }
 
 @IonicPage({
@@ -95,7 +96,8 @@ export class HomePage {
     </svg>`,
     `<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" preserveAspectRatio="xMidYMid meet" id="flag-checkered">
       <path d="m 35.200566,6.315625 c -6.533349,0 -6.681132,-4.5234375 -14.266395,-4.5234375 -4.098888,0 -7.923605,1.53125 -9.545282,2.646875 V 0 H 7.5 v 50 h 3.888889 V 23.323437 C 13.691106,22.04375 17.181394,20.696875 20.961394,20.696875 28.124717,20.696875 29.13,25 35.513606,25 39.639717,25 42.5,22.876562 42.5,22.876562 V 4.0828125 c 0,0 -3.151934,2.2328125 -7.299434,2.2328125 z m 3.41054,8.160938 C 33.911394,17.253125 28.8325,13.945313 26.263894,12.582812 v 5.732813 l 0.0061,0.0016 c -1.471946,-0.435935 -3.198612,-0.74531 -5.308336,-0.74531 -3.848051,0 -7.213888,1.060937 -9.572499,2.092188 V 13.742228 C 15.78331,10.660977 22.17081,10.253165 26.263875,12.582852 V 6.640625 c 1.878328,1.18125 4.448893,2.8 8.93666,2.8 1.219168,0 2.3625,-0.134375 3.410562,-0.3484375 z" />
-    </svg>`
+    </svg>`,
+    `<span class="fake-svg">?</span>`,
   ];
 
   constructor(public http        : Http,
@@ -371,26 +373,35 @@ export class HomePage {
   getCheckboxSVG(shift:Shift) {
     let checkBox = '?';
     let chks = this.checkboxSVG;
-    let status = shift.getShiftReportsStatus().status;
-    if(status) {
-      let hours = shift.getNormalHours();
-      if(hours !== status) {
-        return chks[Icons['box-check-no']];
-      } else {
-        return chks[Icons["box-check-yes"]];
-      }
+    let status = shift.getShiftStatus();
+    // if(status) {
+    //   let hours = shift.getNormalHours();
+    //   if(hours !== status) {
+    //     return chks[Icons['box-check-no']];
+    //   } else {
+    //     return chks[Icons["box-check-yes"]];
+    //   }
+    // } else {
+      // let hours = shift.getNormalHours();
+      // let total = shift.getShiftLength();
+      // if (hours > total) {
+      //   checkBox = chks[Icons["flag-checkered"]];
+      // } else if (hours < total) {
+      //   checkBox = chks[Icons["box-check-no"]];
+      // } else {
+      //   checkBox = chks[Icons["box-check-yes"]];
+      // }
+    if(status === "hoursComplete") {
+      checkBox = "box-check-yes";
+    } else if(status === "hoursUnder") {
+      checkBox = "box-check-no";
+    } else if(status === "hoursOver") {
+      checkBox = "flag-checkered";
     } else {
-      let hours = shift.getNormalHours();
-      let total = shift.getShiftLength();
-      if (hours > total) {
-        checkBox = chks[Icons["flag-checkered"]];
-      } else if (hours < total) {
-        checkBox = chks[Icons["box-check-no"]];
-      } else {
-        checkBox = chks[Icons["box-check-yes"]];
-      }
-      return checkBox;
+      checkBox = "box-check-no";
     }
+    return chks[Icons[checkBox]];
+    // }
   }
 
   getCheckbox(idx:number) {

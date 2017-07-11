@@ -16,25 +16,40 @@
 </ion-header>
 
 <ion-content padding>
-  <div class="data-elements" *ngIf="dataReady">
+  <div class="data-elements" *ngIf="dataReady && selectedShift">
     <div class="work-order-payroll-hours-header">
       <span class="shift-hours-header" [ngClass]="getShiftHoursStatus(selectedShift)" *ngIf="workOrderForm && workOrderForm.value && workOrderForm.value.selected_shift">
         <span class="shift-label">{{'shift' | translate}}</span> #<span class="shift-number">{{selectedShift.updateShiftNumber()}}</span>
-      <span class="shift-label">{{'hours' | translate}}</span>:
-      <span class="shift-hours" *ngIf="mode==='Add'">{{selectedShift.getNormalHours()+currentRepairHours}}</span>
-      <span class="shift-hours" *ngIf="mode==='Edit'">{{selectedShift.getNormalHours()}}</span>
-      <!-- <span class="shift-hours" *ngIf="mode==='Edit'">{{selectedShift.getNormalHours()+currentRepairHours-thisWorkOrderContribution}}</span> -->
-      <!-- <span class="shift-hours" *ngIf="mode==='Add'">{{shiftSavedHours+currentRepairHours}}</span>
-      <span class="shift-hours" *ngIf="mode==='Edit'">{{shiftSavedHours+currentRepairHours-thisWorkOrderContribution}}</span> -->
-      <span class="shift-label">{{'of' | translate}}</span>
-      <span class="shift-hours">{{selectedShift.getShiftLength()}}</span>
+        <span class="shift-label">{{'hours' | translate}}</span>:
+        <span class="shift-hours-wrapper" *ngIf="!type || !type.name || (type && type.name && type.name === 'work_report')">
+          <span class="shift-hours" *ngIf="mode==='Add'">{{selectedShift.getNormalHours()+currentRepairHours}}</span>
+          <span class="shift-hours" *ngIf="mode==='Edit'">{{selectedShift.getNormalHours()}}</span>
+        </span>
+        <span class="shift-hours-wrapper" *ngIf="type && type.name && type.name !== 'work_report'">
+          <span class="shift-hours" *ngIf="mode==='Add'">{{selectedShift.getNormalHours()+currentOtherHours}}</span>
+          <span class="shift-hours" *ngIf="mode==='Edit'">{{selectedShift.getNormalHours()}}</span>
+        </span>
+        <!-- <span class="shift-hours" *ngIf="mode==='Edit'">{{selectedShift.getNormalHours()+currentRepairHours-thisWorkOrderContribution}}</span> -->
+        <!-- <span class="shift-hours" *ngIf="mode==='Add'">{{shiftSavedHours+currentRepairHours}}</span>
+        <span class="shift-hours" *ngIf="mode==='Edit'">{{shiftSavedHours+currentRepairHours-thisWorkOrderContribution}}</span> -->
+        <span class="shift-label">{{'of' | translate}}</span>
+        <span class="shift-length-wrapper" *ngIf="!type || !type.name || type.name === 'work_report'">
+          <span class="shift-hours" *ngIf="selectedShift.getShiftLength()==='S'">{{selectedShift.getShiftLength(currentRepairHours)}}</span>
+          <span class="shift-hours" *ngIf="selectedShift.getShiftLength()!=='S'">{{selectedShift.getShiftLength()}}</span>
+          <!-- <span class="shift-hours">{{selectedShift.getShiftLength()}}</span> -->
+        </span>
+        <span class="shift-length-wrapper" *ngIf="type && type.name && type.name !== 'work_report'">
+          <span class="shift-hours" *ngIf="selectedShift.getShiftLength()==='S'">{{selectedShift.getShiftLength(currentOtherHours)}}</span>
+          <span class="shift-hours" *ngIf="selectedShift.getShiftLength()!=='S'">{{selectedShift.getShiftLength()}}</span>
+          <!-- <span class="shift-hours">{{selectedShift.getShiftLength()}}</span> -->
+        </span>
       </span>
     </div>
 
     <form [formGroup]="workOrderForm" (ngSubmit)="onSubmit()" *ngIf="dataReady">
 
       <ion-list padding>
-        <ion-item>
+        <ion-item (tap)="checkPageMode($event)">
           <ion-label>{{'report_type' | translate}}</ion-label>
           <!-- <ion-select formControlName="type" [disabled]="mode==='Edit'" (tap)="checkPageMode()"> -->
           <ion-select formControlName="type" (tap)="checkPageMode()">
@@ -114,7 +129,7 @@
       <ion-list *ngIf="type.name==='standby_hb_duncan'">
         <ion-item>
           <ion-label class="report-time-label">{{'standby_hb_duncan' | translate}}</ion-label>
-          <ion-input class="report-time-input" formControlName="time" value="S">S</ion-input>
+          <ion-input class="report-time-input" formControlName="time" placeholder="8"></ion-input>
         </ion-item>
       </ion-list>
 
@@ -122,11 +137,11 @@
       <ion-list *ngIf="type.name==='sick'">
         <ion-item>
           <ion-label>{{'all_day' | translate}}</ion-label>
-          <ion-toggle formControlName="allDay" checked="true"></ion-toggle>
+          <ion-toggle formControlName="allDay"></ion-toggle>
         </ion-item>
         <ion-item>
           <ion-label class="report-time-label">{{'sick_hours' | translate}}</ion-label>
-          <ion-input class="report-time-input" formControlName="time" type="number" placeholder="8"></ion-input>
+          <ion-input class="report-time-input" formControlName="time" value="8"></ion-input>
         </ion-item>
       </ion-list>
 

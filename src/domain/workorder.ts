@@ -106,7 +106,38 @@ export class WorkOrder {
     }
     this.time_start = moment(this.time_start);
     this.time_end   = moment(this.time_end);
-
+    if(doc['timestampM'] || doc['timeStampM']) {
+      let t = doc['timestampM'] || doc['timeStampM'];
+      if(typeof t === 'string') {
+        this.timestampM = moment(t);
+      } else if(typeof t === 'number') {
+        this.timestampM = moment().fromExcel(t);
+      } else {
+        this.timestampM = moment();
+      }
+    } else if(doc['timestamp']) {
+      let t = doc['timestamp'];
+      if(typeof t === 'number') {
+        this.timestampM = moment().fromExcel(t);
+      } else if(typeof t === 'string') {
+        this.timestampM = moment(t);
+      } else {
+        this.timestampM = moment();
+      }
+    }
+    if(doc['timestamp'] || doc['timeStamp']) {
+      let t = doc['timestamp'] || doc['timeStamp'];
+      if(typeof t === 'string') {
+        this.timestamp = moment(t).toExcel();
+      } else if(typeof t === 'number') {
+        this.timestamp = t;
+      } else {
+        this.timestamp = moment().toExcel();
+      }
+    }
+    if(!this.technician) {
+      this.technician = this.last_name + ", " + this.first_name;
+    }
   }
 
   public genReportID(tech:Employee) {
@@ -119,11 +150,11 @@ export class WorkOrder {
   }
 
   public serialize(tech:Employee) {
-    Log.l("WorkOrder.serialize(): Now serializing report...");
-    let ts = moment(this.timestamp);
-    Log.l("WorkOrder.serialize(): timestamp moment is now:\n", ts);
-    this.timestamp = ts.toExcel();
-    this.timestampM = ts;
+    Log.l("WorkOrder.serialize(): Now serializing report from:\n", this);
+    // let ts = moment(this.timestamp);
+    // Log.l("WorkOrder.serialize(): timestamp moment is now:\n", ts);
+    // this.timestamp = ts.toExcel();
+    // this.timestampM = ts;
     let newReport = {_id: ""};
     let len = fields.length;
     for(let i = 0; i < len; i++) {

@@ -211,8 +211,29 @@ export class Shift {
     return this.XL;
   }
 
-  getShiftLength() {
-    return this.shift_length;
+  getScheduledShiftLength() {
+
+  }
+
+  getShiftLength(newHours?:number) {
+    let retVal = this.shift_length;
+    let regHours = this.getNormalHours();
+    let status = this.getShiftReportsStatus();
+    if(newHours) {
+      if(String(retVal) === 'S' || status.status) {
+        return newHours;
+      } else {
+        return regHours;
+      }
+    } else {
+      return retVal;
+    }
+
+    // if(status.status && regHours) {
+    //   return regHours;
+    // } else {
+    //   return retVal;
+    // }
   }
 
   setShiftLength(hours:number) {
@@ -265,6 +286,24 @@ export class Shift {
   addShiftReport(report:WorkOrder) {
     this.shift_reports.push(report);
     return this.shift_reports;
+  }
+
+  removeShiftReport(report:WorkOrder) {
+    let reports = this.getShiftReports();
+    let j = 0, i = -1;
+    for(let rep of reports) {
+      if(rep === report || (rep['_id'] && report['_id'] && rep['_id'] === report['_id'])) {
+        i = j;
+        break;
+      } else {
+        j++;
+      }
+    }
+    if(i > -1) {
+      Log.l(`removeShiftReport(): Removing report #${i} from shift ${this.getShiftSerial()}:\n`, reports[i])
+      window['onsitesplicedreport'] = reports.splice(i, 1)[0];
+    }
+    return reports;
   }
 
   getShiftReports() {
@@ -365,25 +404,25 @@ export class Shift {
     return this.other_reports;
   }
 
-  // getShiftHoursStatus() {
-    // let ss = shift;
-    // if (ss !== undefined && ss !== null) {
-    //   let total = this.shiftSavedHours + this.currentRepairHours - this.thisWorkOrderContribution;
-    //   let target = this.getShiftLength();
-    //   // Log.l(`getShiftHoursStatus(): total = ${total}, target = ${target}.`);
-    //   if (total < target) {
-    //     return 'darkred';
-    //   } else if (total > target) {
-    //     return 'red';
-    //   } else {
-    //     return 'green';
-    //   }
-    // } else {
-    //   return 'black';
-    // }
-  // }
+  removeOtherReport(other:ReportOther) {
+    let others = this.getShiftOtherReports();
+    let j = 0, i = -1;
+    for (let oth of others) {
+      if (other === other || (oth['_id'] && other['_id'] && oth['_id'] === other['_id'])) {
+        i = j;
+        break;
+      } else {
+        j++;
+      }
+    }
+    if (i > -1) {
+      Log.l(`removeShiftReport(): Removing report #${i} from shift ${this.getShiftSerial()}:\n`, others[i])
+      window['onsitesplicedreport'] = others.splice(i, 1)[0];
+    }
+    return others;
+  }
 
-  getShiftReportsStatus() {
+  getShiftReportsStatus(complete?:boolean) {
     let others  = this.getOtherReports() ;
     let reports = this.getShiftReports() ;
     let output  = []                     ;
@@ -435,8 +474,9 @@ export class Shift {
         //   data.code = "Q";
         // }
       } else if(type === 'Standby') {
-        output.push("S");
-        data.otherReportHours += other.time;
+        // data.otherReportHours += other.time;
+        output.push("B");
+        data.workHours += other.time;
 
       } else if(type === 'Standby: HB Duncan') {
         output.push("S");
@@ -472,23 +512,53 @@ export class Shift {
       let hrs = this.getNormalHours();
       data.workHours = hrs;
     }
-    // Log.l("Shift: final ReportOther status is:\n", output);
-    if(output.indexOf("T") > -1 && output.indexOf("Q") > -1) {
-      data.code = "M";
-    } else if(output.indexOf("T") > -1) {
-      data.code = "T";
-    } else if(output.indexOf("Q") > -1) {
-      data.code = "Q";
-    } else if(output.indexOf("S") > -1) {
-      data.code = "S";
-    } else if(output.indexOf("E") > -1) {
-      data.code = "E";
-    } else if(output.indexOf("V") > -1) {
-      data.code = "V";
-    } else if(output.indexOf("H") > -1) {
-      data.code = "H";
+    // Log.l("Shift: intermediate ReportOther status is:\n", output);
+    if(!complete) {
+      if(output.indexOf("T") > -1 && output.indexOf("Q") > -1) {
+        data.code = "M";
+      } else if(output.indexOf("T") > -1) {
+        data.code = "T";
+      } else if(output.indexOf("Q") > -1) {
+        data.code = "Q";
+      } else if(output.indexOf("S") > -1) {
+        data.code = "S";
+      } else if(output.indexOf("E") > -1) {
+        data.code = "E";
+      } else if(output.indexOf("V") > -1) {
+        data.code = "V";
+      } else if(output.indexOf("H") > -1) {
+        data.code = "H";
+      } else if(output.indexOf("B") > -1) {
+        data.code = "S";
+      } else {
+        data.code = "";
+      }
     } else {
       data.code = "";
+      if(output.indexOf("T") > -1 && output.indexOf("Q") > -1) {
+        data.code += "M";
+      }
+      if(output.indexOf("T") > -1) {
+        data.code += "T";
+      }
+      if(output.indexOf("Q") > -1) {
+        data.code += "Q";
+      }
+      if(output.indexOf("S") > -1) {
+        data.code += "S";
+      }
+      if(output.indexOf("E") > -1) {
+        data.code += "E";
+      }
+      if(output.indexOf("V") > -1) {
+        data.code += "V";
+      }
+      if(output.indexOf("H") > -1) {
+        data.code += "H";
+      }
+      if(output.indexOf("B") > -1) {
+        data.code += "S";
+      }
     }
     // if(output.length > 1) {
     //   data.status++;
@@ -500,10 +570,10 @@ export class Shift {
   }
 
   public getSpecialHours(type?:string) {
-    let others = this.getOtherReports();
-    let total = 0;
+    let others    = this.getOtherReports();
+    let total     = 0;
     let codeTotal = 0;
-    let codes = "";
+    let codes     = "";
     for(let other of others) {
       if(type) {
         if(other.type === type) {
@@ -549,6 +619,12 @@ export class Shift {
     if(status.status && !status.workHours) {
       retVal = "hoursComplete";
     } else if(status.status && status.workHours) {
+      retVal = "hoursComplete";
+    } else if(typeof total === 'string' && !status.workHours && !status.otherReportHours) {
+      retVal = "hoursUnder";
+    } else if(typeof total === 'string' && status.otherReportHours) {
+      retVal = "hoursComplete";
+    } else if(typeof total === 'string' && status.workHours) {
       retVal = "hoursComplete";
     } else if(!status.status) {
       if(hours > total) {

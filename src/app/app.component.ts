@@ -115,7 +115,7 @@ export class OnSiteApp {
         }
         var callingClass = this;
         this.translate.get(['spinner_app_loading']).subscribe((result) => {
-          this.alert.showSpinner(result['spinner_app_loading']);
+          this.alert.showSpinner(result['spinner_app_loading'], false, 15000);
         });
         this.checkLogin().then(res => {
           Log.l("OnSite.initializeApp(): User passed login check. Should be fine.");

@@ -8,7 +8,7 @@ import { SrvrSrvcs                                             } from '../../pro
 import { AuthSrvcs                                             } from '../../providers/auth-srvcs'        ;
 import { AlertService                                          } from '../../providers/alerts'            ;
 import { SmartAudio                                            } from '../../providers/smart-audio'       ;
-import { Log, moment, Moment                                   } from '../../config/config.functions'     ;
+import { Log, moment, Moment, isMoment                         } from '../../config/config.functions'     ;
 import { PayrollPeriod                                         } from '../../domain/payroll-period'       ;
 import { Shift                                                 } from '../../domain/shift'                ;
 import { WorkOrder                                             } from '../../domain/workorder'            ;
@@ -72,6 +72,7 @@ export class ReportPage implements OnInit {
   shiftTotalHours           : any              = 0                          ;
   payrollPeriodHours        : any              = 0                          ;
   currentRepairHours        : number           = 0                          ;
+  currentOtherHours         : number           = 0                          ;
   shiftHoursColor           : string           = "black"                    ;
   shiftToUse                : Shift            = null                       ;
   shiftSavedHours           : number           = 0                          ;
@@ -96,6 +97,8 @@ export class ReportPage implements OnInit {
   _training_time            : any                                           ;
   _travel_location          : any                                           ;
   _time                     : any                                           ;
+  _unit_number              : any                                           ;
+  _work_order_number        : any                                           ;
   userdata                  : any                                           ;
   shiftDateOptions          : any                                           ;
   dataReady                 : boolean          = false                      ;
@@ -144,7 +147,11 @@ export class ReportPage implements OnInit {
     if (this.navParams.get('type') !== undefined) { this.type = this.navParams.get('type'); }
     if (this.navParams.get('shift') !== undefined) { this.shiftToUse = this.navParams.get('shift'); }
     if (this.navParams.get('payroll_period') !== undefined) { this.period = this.navParams.get('payroll_period'); }
-    if (this.navParams.get('workOrder') !== undefined) { this.workOrder = this.navParams.get('workOrder'); } else { this.workOrder = new WorkOrder(); }
+    if (this.navParams.get('workOrder') !== undefined) {
+      this.workOrder = this.navParams.get('workOrder');
+    } else {
+      // this.workOrder = new WorkOrder();
+    }
     if (this.navParams.get('reportOther') !== undefined) {
       this.reportOther = this.navParams.get('reportOther');
     } else {
@@ -170,6 +177,9 @@ export class ReportPage implements OnInit {
       'error_saving_report_message',
       'standby_hb_duncan_wrong_location',
       'attempt_to_change_existing_report_type',
+      'duplicate_standby_report',
+      'standby_report_xor_work_report_existing_standby',
+      'standby_report_xor_work_report_existing_work_report',
     ];
     this.lang = this.translate.instant(translations);
     let lang = this.lang;
@@ -190,13 +200,19 @@ export class ReportPage implements OnInit {
       this.techProfile = new Employee();
       this.techProfile.readFromDoc(res);
       this.tech = this.techProfile;
-      if (this.mode === 'Add' || this.mode === 'Añadir') {
-        let now = moment();
-        this.workOrder = new WorkOrder();
-        this.workOrder.timestampM  = now.format();
-        this.workOrder.timestamp   = now.toExcel();
-      }
+      // if (this.mode === 'Add' || this.mode === 'Añadir') {
+        // let now = moment();
+        // this.workOrder = new WorkOrder();
+        // this.workOrder.timestampM  = now.format();
+        // this.workOrder.timestamp   = now.toExcel();
+      // }
       this.setupShifts();
+      if (this.mode === 'Add' || !this.workOrder || !this.workOrder.first_name) {
+        this.workOrder = this.createFreshReport();
+      }
+      if (!this.reportOther || !this.reportOther.first_name) {
+        this.reportOther = this.createFreshOtherReport();
+      }
       this.updateActiveShiftWorkOrders(this.selectedShift);
       if (this.mode === 'Add' || this.mode === 'Añadir') {
         let startTime = moment(this.selectedShift.start_time);
@@ -208,9 +224,6 @@ export class ReportPage implements OnInit {
 
       }
       this.thisWorkOrderContribution = this.workOrder.getRepairHours() || 0;
-      if(!this.reportOther || !this.reportOther.first_name) {
-        this.reportOther = this.createFreshOtherReport();
-      }
       // if(!this.reportOther) {
       //   this.reportOther  = new ReportOther()           ;
       //   let ro            = this.reportOther            ;
@@ -234,7 +247,7 @@ export class ReportPage implements OnInit {
 
       this.initializeForm();
       this.initializeFormListeners();
-      this.shiftSavedHours = this.selectedShift.getNormalHours();
+      // this.shiftSavedHours = this.selectedShift.getNormalHours();
       this.dataReady = true;
     }).catch((err) => {
       Log.l(`ReportPage: Error getting tech profile!`);
@@ -258,69 +271,150 @@ export class ReportPage implements OnInit {
     this.chooseHours[1].options.push({ 'text': '30', 'value': '30' });
     this.selReportType = this.ud.getData('report_types');
     this.selTrainingType = this.ud.getData('training_types');
-    let sites = [];
+    let sites = [], siteSelect = [];
     this.sites = this.ud.getData('sites');
     let siteList = this.ud.getData('sites');
     for(let site of siteList) {
-      let name = site.getSiteID();
-      sites.push(name);
+      let name = site.getSiteSelectName();
+      let hours = site.travel_time;
+      let oneSite = {name: name, value: name, hours: hours};
+      siteSelect.push(oneSite);
+      // sites.push(site);
     }
-    this.selTravelLocation = sites;
+    this.selTravelLocation = siteSelect;
+    // this.sites = sites;
     this.type = this.selReportType[0];
   }
 
   public initializeFormListeners() {
-    let lang              = this.lang                                      ;
-    this._type            = this.workOrderForm.controls['type']            ;
-    this._training_type   = this.workOrderForm.controls['training_type']   ;
-    this._travel_location = this.workOrderForm.controls['travel_location'] ;
-    this._time            = this.workOrderForm.controls['time']            ;
-    this._endTime         = this.workOrderForm.controls['endTime']         ;
-    this._repairHours     = this.workOrderForm.controls['repair_time']     ;
-    this._selected_shift  = this.workOrderForm.controls['selected_shift']  ;
-    this._notes           = this.workOrderForm.controls['notes']           ;
-    this._allDay          = this.workOrderForm.controls['allDay']          ;
+    let lang                = this.lang                                       ;
+    this._type              = this.workOrderForm.get('type')             ;
+    this._training_type     = this.workOrderForm.get('training_type')    ;
+    this._travel_location   = this.workOrderForm.get('travel_location')  ;
+    this._time              = this.workOrderForm.get('time')             ;
+    this._endTime           = this.workOrderForm.get('endTime')          ;
+    this._repairHours       = this.workOrderForm.get('repair_time')      ;
+    this._selected_shift    = this.workOrderForm.get('selected_shift')   ;
+    this._notes             = this.workOrderForm.get('notes')            ;
+    this._unit_number       = this.workOrderForm.get('unit_number')      ;
+    this._work_order_number = this.workOrderForm.get('work_order_number');
+    this._allDay            = this.workOrderForm.get('allDay')           ;
 
-    this._type.valueChanges.subscribe((value: any) => {
-      this.type = value;
-      let ro = this.reportOther;
-      if (value.name !== 'work_report') {
-        ro.type = value.value;
-      }
-      if (value.name === 'training') {
-        ro.training_type = "Safety";
-        ro.time = 2;
-        this._training_type.setValue(this.selTrainingType[0]);
-        this.training_type = this.selTrainingType[0];
-        this._time.setValue(2);
-      } else if (value.name === 'travel') {
-        ro.travel_location = "BE MDL MNSHOP";
-        ro.time = 6;
-        this.travel_location = this.selTravelLocation[0];
-        this._travel_location.setValue(this.selTravelLocation[0]);
-        this._time.setValue(6);
-      } else if (value.name === 'sick') {
-        ro.time = 8;
-        this._time.setValue(8);
-      } else if (value.name === 'vacation') {
-        ro.time = 8;
-        this._time.setValue(8);
-      } else if (value.name === 'standby') {
-        ro.time = 8;
-        this._time.setValue(8);
-      } else if (value.name === 'standby_hb_duncan') {
-        if(this.techProfile.location !== "DUNCAN") {
-          this._type.setValue(this.selReportType[0]);
-          // let strIcon = "<ion-icon name='ios-contact-outline'></ion-icon>";
-          let strIcon = "<span class='alert-icon'>&#xf419;</span>";
-          let warnText = sprintf(lang['standby_hb_duncan_wrong_location'], strIcon)
-          let warnFont = sprintf("<span class='alert-with-icon'>%s</span>", warnText);
-          this.alert.showAlert(lang['error'], warnFont);
-        } else {
-          ro.time = "S";
-          this._time.setValue("S");
+    // this._type            = this.workOrderForm.controls['type']            ;
+    // this._training_type   = this.workOrderForm.controls['training_type']   ;
+    // this._travel_location = this.workOrderForm.controls['travel_location'] ;
+    // this._time            = this.workOrderForm.controls['time']            ;
+    // this._endTime         = this.workOrderForm.controls['endTime']         ;
+    // this._repairHours     = this.workOrderForm.controls['repair_time']     ;
+    // this._selected_shift  = this.workOrderForm.controls['selected_shift']  ;
+    // this._notes           = this.workOrderForm.controls['notes']           ;
+    // this._unit_number     = this.workOrderForm.controls['unit_number']     ;
+    // this._work_order_number = this.workOrderForm.controls['work_order_number'];
+    // this._allDay          = this.workOrderForm.controls['allDay']          ;
+
+    this._type.valueChanges.subscribe((value:any) => {
+      // setTimeout(() => {
+        let oldType = this.type;
+        let oldVal = oldType.value;
+        let ro = this.reportOther;
+        this._time.enable(true);
+        if (value.name === 'training') {
+          ro.training_type = "Safety";
+          ro.time = 2;
+          this._training_type.setValue(this.selTrainingType[0]);
+          this.training_type = this.selTrainingType[0];
+          this._time.setValue(2);
+          this.type = value;
+        } else if (value.name === 'travel') {
+          ro.travel_location = "BE MDL MNSHOP";
+          ro.time = 6;
+          this.travel_location = this.selTravelLocation[0];
+          this._travel_location.setValue(this.selTravelLocation[0]);
+          this._time.setValue(6);
+          this.type = value;
+        } else if (value.name === 'sick') {
+          ro.time = 8;
+          this._time.setValue(8);
+          this.type = value;
+          if(this.allDay) {
+            this._time.disable(true);
+          } else {
+            this._time.enable(true);
+          }
+        } else if (value.name === 'vacation') {
+          ro.time = 8;
+          this._time.setValue(8);
+          this.type = value;
+        } else if (value.name === 'standby') {
+          let shift = this.selectedShift;
+          let status = shift.getShiftReportsStatus(true).code;
+          let hours  = shift.getNormalHours();
+          if(status.indexOf("B") > -1 || status.indexOf("S") > -1) {
+            Log.w("User attempted to create duplicate standby report.");
+            let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
+            let warningText = sprintf(lang['duplicate_standby_report'], warnIcon);
+            this.alert.showAlert(lang['error'], warningText).then(res => {
+              this.type = oldType;
+              this._type.setValue(oldType);
+            });
+          } else if(hours > 0) {
+            Log.w("User attempted to create a standby report in the same shift as an existing work report.");
+            let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
+            let warningText = sprintf(lang['standby_report_xor_work_report_existing_work_report'], warnIcon);
+            this.alert.showAlert(lang['error'], warningText).then(res => {
+              this.type = oldType;
+              this._type.setValue(oldType);
+            });
+          } else {
+            ro.time = 8;
+            this._time.setValue(8);
+            ro.type = value.value;
+            this.type = value;
+          }
+        } else if (value.name === 'standby_hb_duncan') {
+          let status = this.selectedShift.getShiftReportsStatus(true).code;
+          let i = status.indexOf("B");
+          let j = status.indexOf("S");
+          if(this.techProfile.location !== "DUNCAN") {
+            Log.w("User attempted to create Standby: HB Duncan report without being set to Duncan location.");
+            let strIcon = "<span class='alert-icon'>&#xf419;</span>";
+            let warnText = sprintf(lang['standby_hb_duncan_wrong_location'], strIcon)
+            let warnFont = sprintf("<span class='alert-with-icon'>%s</span>", warnText);
+            // this.alert.showAlert(lang['error'], warnFont);
+            // this._type.setValue(oldType);
+            this.type = oldType;
+            this._type.setValue(oldType);
+            this.alert.showAlert(lang['error'], warnFont);
+            // .then(res => {
+            // });
+          } else if(i > -1 || j > -1) {
+            Log.w("User attempted to create duplicate standby report.");
+            let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
+            let warningText = sprintf(lang['duplicate_standby_report'], warnIcon);
+            // this._type.setValue(oldType);
+            // this.alert.showAlert(lang['error'], warningText);
+            this.type = oldType;
+            this._type.setValue(oldType);
+            this.alert.showAlert(lang['error'], warningText);
+            // .then(res => {
+            // });
+          } else if(this.selectedShift.getNormalHours() > 0) {
+            Log.w("User attempted to create a standby report in the same shift as an existing work report.");
+            let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
+            let warningText = sprintf(lang['standby_report_xor_work_report_existing_work_report'], warnIcon);
+            this.type = oldType;
+            this._type.setValue(oldType);
+            this.alert.showAlert(lang['error'], warningText);
+            // .then(res => {
+            // });
+          } else {
+            ro.time = 8;
+            this._time.setValue(8);
+            ro.type = value.value;
+            this.type = value;
+          }
         }
-      }
+      // });
     });
     this._training_type.valueChanges.subscribe((value: any) => {
       let ro = this.reportOther;
@@ -338,88 +432,127 @@ export class ReportPage implements OnInit {
       ro.time = time;
       this._time.setValue(time);
     });
-    this._time.valueChanges.subscribe((value: any) => { this.reportOther.time = value; });
+    this._time.valueChanges.subscribe((value: any) => {
+      let ro = this.reportOther;
+      ro.time = !isNaN(Number(value)) ? Number(value) : 0;
+      this.currentOtherHours = ro.time;
+    });
     this._allDay.valueChanges.subscribe((value: any) => {
+      Log.l("_allDay value changed to:\n", value);
       this.allDay = value;
       if(this.allDay) {
-        this._time.disable();
+        this._time.disable(true);
       } else {
-        this._time.enable();
+        this._time.enable(true);
       }
     });
     this._repairHours.valueChanges.subscribe((hours: any) => {
       Log.l("workOrderForm: valueChanges fired for repair_hours: ", hours);
-      let dur1 = hours.split(":");
-      let hrs = Number(dur1[0]);
-      let min = Number(dur1[1]);
-      let iDur = hrs + (min / 60);
-      this.currentRepairHours = iDur;
-      let total = this.selectedShift.getNormalHours() + this.currentRepairHours - this.thisWorkOrderContribution;
-      Log.l("ReportForm: currentRepairHours changed to %s:%s, value %f, so total is now %f", hrs, min, iDur, total);
-      this.workOrder.setRepairHours(iDur);
-      if (this.selectedShift !== undefined && this.selectedShift !== null) {
-        this.shiftHoursColor = this.getShiftHoursStatus(this.selectedShift);
+      let wo = this.workOrder;
+      let oldHours = this.workOrderForm.value.repair_hours;
+      let oldType = this.type;
+      let shift = this.selectedShift;
+      let status = shift.getShiftReportsStatus(true).code;
+      if (status.indexOf("B") > -1 || status.indexOf("S") > -1) {
+        Log.w("User attempted to add work order when standby report already exists for shift..");
+        let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
+        let warningText = sprintf(lang['standby_report_xor_work_report_existing_standby_report'], warnIcon);
+        this.alert.showAlert(lang['error'], warningText).then(res => {
+          this._repairHours.setValue(oldHours);
+        });
       } else {
-        this.shiftHoursColor = this.getShiftHoursStatus(this.shifts[0]);
+        let dur1 = hours.split(":");
+        let hrs = Number(dur1[0]);
+        let min = Number(dur1[1]);
+        let iDur = hrs + (min / 60);
+        this.currentRepairHours = iDur;
+        let total = this.selectedShift.getNormalHours() + this.currentRepairHours - this.thisWorkOrderContribution;
+        Log.l("ReportForm: currentRepairHours changed to %s:%s, value %f, so total is now %f", hrs, min, iDur, total);
+        this.workOrder.setRepairHours(iDur);
+        if (this.selectedShift !== undefined && this.selectedShift !== null) {
+          this.shiftHoursColor = this.getShiftHoursStatus(this.selectedShift);
+        } else {
+          this.shiftHoursColor = this.getShiftHoursStatus(this.shifts[0]);
+        }
       }
-    })
+    });
     this._selected_shift.valueChanges.subscribe((shift: any) => {
       Log.l("workOrderForm: valueChanges fired for selected_shift:\n", shift);
-      let ss = shift;
+      let ss                       = shift                                                   ;
       this.updateActiveShiftWorkOrders(shift);
-      let report_date = moment(shift.getStartTime());
-      let woHoursSoFar = shift.getShiftHours();
-      let woStart = moment(shift.getStartTime()).add(woHoursSoFar, 'hours');
+      let report_date              = moment(shift.getStartTime())                            ;
+      let woHoursSoFar             = shift.getShiftHours()                                   ;
+      let woStart                  = moment(shift.getStartTime()).add(woHoursSoFar, 'hours') ;
       this.workOrder.setStartTime(woStart);
-      let reportDateString = report_date.format("YYYY-MM-DD");
-      this.reportOther.report_date = reportDateString;
-      this.workOrder.report_date = reportDateString;
+      let reportDateString         = report_date.format("YYYY-MM-DD")                        ;
+      this.reportOther.report_date = reportDateString                                        ;
+      this.workOrder.report_date   = reportDateString                                        ;
+      this.selectedShift           = shift                                                   ;
 
       this.workOrderForm.controls.report_date.setValue(report_date.format("YYYY-MM-DD"));
     });
 
-    this.workOrderForm.valueChanges.debounceTime(500).subscribe((value: any) => {
-      Log.l("workOrderForm: valueChanges fired for:\n", value);
-      // let type = value.
-      let notes  = value.notes;
-      let unit   = value.unit_number;
-      let woNum  = value.work_order_number;
-      let fields = [['notes', 'notes'], ['work_order_number', 'work_order_number'], ['unit_number', 'unit_number']];
-      let len    = fields.length;
-      let type   = value.type ? value.type : this.type;
-      if(type.name === 'work_report') {
-        for (let i = 0; i < len; i++) {
-          let key1 = fields[i][0];
-          let key2 = fields[i][1];
-          if (value[key1] !== null && value[key1] !== undefined) {
-            if(this.workOrder[key2] !== undefined) {
-              this.workOrder[key2] = value[key1];
-            }
-          }
-        }
-        Log.l("workOrderForm: overall valueChanges, ended up with work report:\n", this.workOrder);
-      } else {
-        let fields = [['notes', 'notes'], ['selected_shift', 'shift'], ['travel_time', 'travel_time']];
-        let len = fields.length;
-        for(let i = 0; i < len; i++) {
-          let key1 = fields[i][0];
-          let key2 = fields[i][1];
-          if(this.reportOther[key2] !== undefined) {
-            this.reportOther[key2] = value[key1];
-          }
-        }
-        if (type.name === 'training') {
-          this.reportOther.training_type = value.training_type.value;
-        }
-        this.reportOther.type = type.value;
-        Log.l("workOrderForm: overall valueChanges, ended up with ReportOther:\n", this.reportOther);
-      }
-
+    this._notes.valueChanges.debounceTime(400).subscribe((value:any) => {
+      Log.l("workOrderForm: valueChanges fired for _notes:\n", value);
+      let wo    = this.workOrder ;
+      wo.notes  = value          ;
     });
+
+    this._unit_number.valueChanges.debounceTime(400).subscribe((value:any) => {
+      Log.l("workOrderForm: valueChanges fired for _unit_number:\n", value);
+      let wo          = this.workOrder ;
+      wo.unit_number  = value          ;
+    });
+
+    this._work_order_number.valueChanges.debounceTime(400).subscribe((value:any) => {
+      Log.l("workOrderForm: valueChanges fired for _work_order_number:\n", value);
+      let wo                = this.workOrder ;
+      wo.work_order_number  = value          ;
+    });
+
+    // this.workOrderForm.valueChanges.debounceTime(500).subscribe((value: any) => {
+    //   Log.l("workOrderForm: valueChanges fired for:\n", value);
+    //   // let type = value.
+    //   let notes  = value.notes;
+    //   let unit   = value.unit_number;
+    //   let woNum  = value.work_order_number;
+    //   let fields = [['notes', 'notes'], ['work_order_number', 'work_order_number'], ['unit_number', 'unit_number']];
+    //   let len    = fields.length;
+    //   let type   = value.type ? value.type : this.type;
+    //   if(type.name === 'work_report') {
+    //     for (let i = 0; i < len; i++) {
+    //       let key1 = fields[i][0];
+    //       let key2 = fields[i][1];
+    //       if (value[key1] !== null && value[key1] !== undefined) {
+    //         if(this.workOrder[key2] !== undefined) {
+    //           this.workOrder[key2] = value[key1];
+    //         }
+    //       }
+    //     }
+    //     Log.l("workOrderForm: overall valueChanges, ended up with work report:\n", this.workOrder);
+    //   } else {
+    //     let fields = [['notes', 'notes'], ['selected_shift', 'shift'], ['travel_time', 'travel_time']];
+    //     let len = fields.length;
+    //     for(let i = 0; i < len; i++) {
+    //       let key1 = fields[i][0];
+    //       let key2 = fields[i][1];
+    //       if(this.reportOther[key2] !== undefined) {
+    //         this.reportOther[key2] = value[key1];
+    //       }
+    //     }
+    //     // if (type.name === 'training') {
+    //       // this.reportOther.training_type = value.training_type.value;
+    //     // }
+    //     // this.reportOther.type = type.value;
+    //     Log.l("workOrderForm: overall valueChanges, ended up with ReportOther:\n", this.reportOther);
+    //   }
+
+    // });
   }
 
   private initializeForm() {
     let wo = this.workOrder;
+    let ro = this.reportOther;
     let ts, rprtDate;
     if (this.mode === 'Add' || this.mode === 'Añadir') {
       rprtDate = moment(this.selectedShift.getStartTime());
@@ -429,6 +562,8 @@ export class ReportPage implements OnInit {
     }
     // ts = moment().format();
     this.currentRepairHours = wo.getRepairHours();
+    let crh = Number(ro.getTotalHours());
+    this.currentOtherHours  = !isNaN(crh) ? crh : 0;
     let typeDisabled = this.mode === 'Edit' ? true : false;
     this.workOrderForm = new FormGroup({
       'selected_shift'    : new FormControl(this.selectedShift                , Validators.required) ,
@@ -438,30 +573,41 @@ export class ReportPage implements OnInit {
       'notes'             : new FormControl(wo.notes                          , Validators.required) ,
       'report_date'       : new FormControl(rprtDate.format("YYYY-MM-DD")     , Validators.required) ,
       // 'timestamp'         : new FormControl({ value: ts, disabled: true }     , Validators.required) ,
-      'type'              : new FormControl({value: this.type, disabled: typeDisabled} , Validators.required) ,
+      'type'              : new FormControl(this.type                         , Validators.required) ,
       'training_type'     : new FormControl(null                              , Validators.required) ,
       'travel_location'   : new FormControl(null                              , Validators.required) ,
-      'time'              : new FormControl({value: null, disabled: true} , Validators.required) ,
-      'allDay'            : new FormControl(this.allDay                       , Validators.required) ,
-      'sickTime'          : new FormControl(8                                 , Validators.required) ,
-      'vacation'          : new FormControl(8                                 , Validators.required) ,
-      'Standby_HB_DCN'    : new FormControl("S"                               , Validators.required) ,
-      'Standby'           : new FormControl(0                                 , Validators.required) ,
+      'time'              : new FormControl(this.currentOtherHours) ,
+      'allDay'            : new FormControl(this.allDay) ,
+      // 'sickTime'          : new FormControl(8) ,
+      // 'vacation'          : new FormControl(8                                 , Validators.required) ,
+      // 'Standby_HB_DCN'    : new FormControl("S"                               , Validators.required) ,
+      // 'Standby'           : new FormControl(0                                 , Validators.required) ,
     });
   }
 
   public updateActiveShiftWorkOrders(shift: Shift) {
     let ss = shift;
+    let oldShift = this.selectedShift;
     let shift_time = moment(ss.start_time);
     let shift_serial = ss.getShiftSerial();
     let payroll_period = ss.getPayrollPeriod();
     this.workOrder.shift_serial = shift_serial;
     this.workOrder.payroll_period = payroll_period;
+    this.reportOther.shift_serial = shift_serial;
+    this.reportOther.payroll_period = payroll_period;
     Log.l("workOrderForm: setting shift_serial to: ", shift_serial);
-    let shiftHours = this.techProfile.shiftLength;
-    let shiftStartsAt = this.techProfile.shiftStartTime;
+    // let shiftHours = this.techProfile.shiftLength;
+
+    // let shiftStartsAt = this.techProfile.shiftStartTime;
     this.shiftHoursColor = this.getShiftHoursStatus(ss);
     this.selectedShift = shift;
+    if(this.type === 'work_report') {
+      oldShift.removeShiftReport(this.workOrder);
+      shift.addShiftReport(this.workOrder);
+    } else {
+      oldShift.removeOtherReport(this.reportOther);
+      shift.addOtherReport(this.reportOther);
+    }
   }
 
   public setupWorkOrderList() {
@@ -505,6 +651,15 @@ export class ReportPage implements OnInit {
     }
   }
 
+  public checkShiftChange(event:any, shift:Shift) {
+    let oldShift = this.selectedShift;
+    if(this.mode === 'Edit') {
+
+    } else {
+
+    }
+  }
+
   public showFancySelect() {
     Log.l("showFancySelect(): Called!");
     let options = [];
@@ -537,6 +692,7 @@ export class ReportPage implements OnInit {
     let ss = shift;
     let total = 0;
     if (ss !== undefined && ss !== null) {
+      let status = shift.getShiftReportsStatus();
       if(this.mode === 'Add') {
         total = shift.getNormalHours() + this.currentRepairHours;
       } else {
@@ -546,7 +702,13 @@ export class ReportPage implements OnInit {
       let target = shift.getShiftLength();
       // Log.l(`getShiftHoursStatus(): total = ${total}, target = ${target}.`);
       if(isNaN(target)) {
-        return 'blue';
+        if(total) {
+          return 'green';
+        } else if(status.status) {
+          return 'green';
+        } else {
+          return 'darkred';
+        }
       } else if (total < target) {
         return 'darkred';
       } else if(total > target) {
@@ -790,7 +952,7 @@ export class ReportPage implements OnInit {
     let date  = shift.getStartTime() ;
     // if(this.workOrderForm.value.type === 'work_report') {
     let wo            = new WorkOrder()                                  ;
-    wo.timestampM     = now.format()                                     ;
+    wo.timestampM     = now                                              ;
     wo.timestamp      = now.toExcel()                                    ;
     wo.first_name     = tech.firstName                                   ;
     wo.last_name      = tech.lastName                                    ;
@@ -802,6 +964,7 @@ export class ReportPage implements OnInit {
     wo.payroll_period = shift.getPayrollPeriod()                         ;
     wo.shift_serial   = shift.getShiftSerial()                           ;
     wo.report_date    = moment(date).startOf('day').format("YYYY-MM-DD") ;
+    wo.technician     = tech.getTechnician
     this.workOrder    = wo                                               ;
     return wo;
   }
@@ -833,14 +996,33 @@ export class ReportPage implements OnInit {
   }
 
   createReport() {
-    Log.l("ReportPage: createReport(): Now creating report...");
+    // Log.l("ReportPage: createReport(): Now creating report...");
     let partialReport = this.workOrderForm.getRawValue();
-    let ts = moment(partialReport.timeStamp);
+    Log.l("ReportPage: createReport(): Now creating report from form and workOrder...\n", partialReport);
+    Log.l(this.workOrder);
+    // let ts = moment(partialReport.timeStamp);
+    let ts;
+    if(this.workOrder && this.workOrder.timestamp) {
+      let ts2 = this.workOrder.timestamp;
+      if(ts2 && isMoment(ts2)) {
+        ts = moment(ts2);
+      } else if(ts2 && typeof ts2 === 'number') {
+        ts = moment().fromExcel(ts2);
+      } else if(ts2 && typeof ts2 === 'string') {
+        ts = moment(ts2);
+      }
+    } else {
+      ts = moment();
+      this.workOrder.timestampM = moment(ts);
+      this.workOrder.timestamp  = moment(ts).toExcel();
+    }
     let wo = this.workOrder;
     Log.l("createReport(): timestamp moment is now:\n", ts);
-    let XLDate = moment([1900, 0, 1]);
-    let xlStamp = ts.diff(XLDate, 'days', true) + 2;
+    // let XLDate = moment([1900, 0, 1]);
+    // let xlStamp = ts.diff(XLDate, 'days', true) + 2;
+    let xlStamp = ts.toExcel();
     partialReport.timeStamp = xlStamp;
+
     console.log("processWO() has initial partialReport:");
     console.log(partialReport);
     let newReport: any = {};
@@ -862,8 +1044,8 @@ export class ReportPage implements OnInit {
     }
   }
 
-  checkPageMode() {
-    Log.l("checkPageMode(): Called...");
+  checkPageMode(event:any) {
+    Log.l("checkPageMode(): Called with event:\n", event);
     let lang = this.lang;
     if(this.mode==='Edit') {
       Log.l("checkPageMode(): User trying to change type of an existing report. Not allowed.");

@@ -41,7 +41,13 @@ export class AlertService {
     });
   }
 
-  showSpinner(text: string, returnPromise?:boolean) {
+  showSpinner(text: string, returnPromise?:boolean, milliseconds?:number) {
+    let options;
+    if(milliseconds) {
+      options = { content: text, duration: milliseconds, showBackdrop: false};
+    } else {
+      options = { content: text, showBackdrop: false};
+    }
     this.loading = this.loadingCtrl.create({
       content: text,
       showBackdrop: false,

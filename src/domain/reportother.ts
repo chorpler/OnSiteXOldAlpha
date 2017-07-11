@@ -1,7 +1,6 @@
-import * as moment from 'moment';
-import { Log, isMoment } from '../config/config.functions';
-import { sprintf } from 'sprintf-js';
-import { Employee } from './employee';
+import { Log, isMoment, moment, Moment } from '../config/config.functions' ;
+import { sprintf                       } from 'sprintf-js'                 ;
+import { Employee                      } from './employee'                 ;
 
 export const fields = [
   "type",
@@ -130,13 +129,18 @@ export class ReportOther {
       }
       newReport['username'] = tech['avatarName'];
     }
+    let hrs = Number(newReport['time']);
+    if(!isNaN(hrs)) {
+      newReport['time'] = hrs;
+    }
+    newReport['notes'] = newReport['type'] + "";
     return newReport;
   }
 
   public clone() {
     let newWO = new ReportOther();
     for(let key of fields) {
-      if(moment.isMoment(this[key])) {
+      if(isMoment(this[key])) {
         newWO[key] = moment(this[key]);
       } else if(typeof this[key] === 'object') {
         newWO[key] = Object.assign({}, this[key]);

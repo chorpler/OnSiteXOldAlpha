@@ -140,6 +140,30 @@ export class Jobsite {
     return siteName;
   }
 
+  public getSiteSelectName() {
+    // let cli = this.client.fullName.toUpperCase();
+    let cli = this.client.name.toUpperCase();
+    let loc = this.location.fullName.toUpperCase();
+    let lid = this.locID.name.toUpperCase();
+    let l2d = '';
+    let laux = "NA";
+    if (this.loc2nd && this.loc2nd.name) { laux = this.loc2nd.name; }
+    if (laux !== "NA" && laux !== "N/A") {
+      l2d = this.loc2nd.fullName.toUpperCase();
+    }
+
+    let siteName = `${cli}`;
+    siteName    += ` ${loc}`;
+
+    if (laux !== "NA" && laux !== "N/A") {
+      siteName += ` ${l2d}`;
+    }
+
+    siteName += ` ${lid}`;
+    return siteName;
+
+  }
+
   public getScheduleName() {
     return this.schedule_name;
   }

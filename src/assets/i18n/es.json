@@ -27,7 +27,6 @@
   "add": "Añadir",
   "edit": "Editar",
   "work_order": "Orden de trabajo",
-  "unit": "unidad",
   "notes": "notas",
   "report_label_wo_number": "No. OT",
   "report_label_unit_number": "Unidad",
@@ -155,5 +154,8 @@
   "spinner_loading_tab": "Cargando página...",
   "letter_code": "Significado de Letras",
   "loading_data": "Cargando Datos",
-  "standby_hb_duncan_wrong_location": "Tu ubicación no está configurada para Halliburton Duncan. Defina su ubicación en la pestaña Perfil de Usuario (toque en %s en la parte inferior de la pantalla)."
+  "standby_hb_duncan_wrong_location": "Tu ubicación no está configurada para Halliburton Duncan. Defina su ubicación en la pestaña Perfil de Usuario (toque en %s en la parte inferior de la pantalla).",
+  "duplicate_standby_report": "Tiene un Reporte Espera para este turno. Sólo se permite un Reporte Espera por turno. Puede editar o eliminar el reporte existente en la página Reportes de Trabajo (toque %s de abajo)",
+  "standby_report_xor_work_report_existing_standby": "Tiene un Reporte Espera para este turno. No puede agregar un Reporte de Trabajo para el mismo turno que un Reporte Espera. Puede editar o eliminar el reporte existente en la página Reportes de Trabajo (toque %s de abajo).",
+  "standby_report_xor_work_report_existing_work_report": "Tiene un Reporte de Trabajo para este turno. No puede agregar un Reporte Espera para el mismo turno que un Reporte de Trabajo. Puede editar o eliminar el reporte existente en la página Reportes de Trabajo (toque %s de abajo)."
 }
