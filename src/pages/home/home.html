@@ -18,8 +18,10 @@
 </ion-header>
 
 <div #fixed ion-fixed></div>
-<ion-content padding [ngStyle]="{'margin-top': fixedHeight}">
-  <div class="waiting-clock" *ngIf="!(dataReady && ud.isHomePageReady())"><clock></clock></div>
+<div class="waiting-clock" *ngIf="!(dataReady && ud.isHomePageReady())">
+  <clock></clock>
+</div>
+<ion-content padding [ngStyle]="{'margin-top': fixedHeight}" *ngIf="dataReady && ud.isHomePageReady()">
   <p class="home-welcome">{{ud.getTechName()}}</p>
   <p class="home-date">{{today.format('dddd MMM DD YYYY')}} </p>
   <!-- <ion-card no-lines class="shift-summary" *ngIf="dataReady"> -->
