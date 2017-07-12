@@ -19,9 +19,11 @@
 
 <div #fixed ion-fixed></div>
 <ion-content padding [ngStyle]="{'margin-top': fixedHeight}">
+  <div class="waiting-clock" *ngIf="!(dataReady && ud.isHomePageReady())"><clock></clock></div>
   <p class="home-welcome">{{ud.getTechName()}}</p>
   <p class="home-date">{{today.format('dddd MMM DD YYYY')}} </p>
-  <ion-card no-lines class="shift-summary" *ngIf="dataReady">
+  <!-- <ion-card no-lines class="shift-summary" *ngIf="dataReady"> -->
+   <ion-card no-lines class="shift-summary" *ngIf="dataReady && ud.isHomePageReady()">
     <ion-card-header class="home-card-header-payroll-period">
       <ion-item class="home-card-header-payroll-period-label-item">
         <ion-label class="home-card-header-payroll-period-label-label">{{'payroll_period' | translate}}</ion-label>
@@ -116,8 +118,8 @@
       </ion-list-header>
     </ion-list>
   </ion-card>
-  <p class="home-grid-key-caption" *ngIf="dataReady">{{'letter_code' | translate}}</p>
-  <ion-grid center class="home-grid-key" *ngIf="dataReady">
+  <p class="home-grid-key-caption" *ngIf="dataReady && ud.isHomePageReady()">{{'letter_code' | translate}}</p>
+  <ion-grid center class="home-grid-key" *ngIf="dataReady && ud.isHomePageReady()">
     <!-- <ion-row class="home-grid-header-row">
       <ion-col class="" -->
     <ion-row class="home-grid-row">

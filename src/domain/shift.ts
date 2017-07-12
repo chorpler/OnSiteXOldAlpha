@@ -476,11 +476,11 @@ export class Shift {
       } else if(type === 'Standby') {
         // data.otherReportHours += other.time;
         output.push("B");
-        data.workHours += other.time;
+        // data.workHours += other.time;
+        data.otherReportHours += other.time;
 
       } else if(type === 'Standby: HB Duncan') {
         output.push("S");
-        data.otherReportHours += 8;
         // if(output.indexOf("S") === -1) {
         //   output.push("S");
         // }

@@ -40,66 +40,124 @@ enum Icons {
   templateUrl: 'home.html',
 })
 export class HomePage {
-  // @ViewChild('fixed') mapElement: ElementRef;
-  fixedHeight                 : any           = "0px"                    ;
-  moment                      : any           = moment                   ;
-  today                       : any           = moment()                 ;
-  loginData                   : any           = null                     ;
-  username                    : string        = "unknown"                ;
-  userLoggedIn                : boolean                                  ;
-  title                       : string        = 'OnSite Home'            ;
-  numChars                    : Array<string> = STRINGS.NUMCHARS         ;
-  chkBxBool                   : boolean                                  ;
-  chkBx                       : string                                   ;
   static PREFS                : any           = new Preferences()        ;
-  PREFS                       : any           = HomePage.PREFS           ;
-  shftHrs                     : number                                   ;
-  hrsSubmitted                : number                                   ;
-  dataReady                   : boolean       = false                    ;
-  spinnerText                 : string        = ""                       ;
   static EVENTS               : Events                                   ;
-  techProfile                 : any                                      ;
-  techWorkOrders              : Array<WorkOrder>                         ;
-  shiftWorkOrders             : Array<WorkOrder>                         ;
+  static startupHandler       : any                                      ;
   static pageLoadedPreviously : boolean       = false                    ;
   static homePageStatus       : any           = {startupFinished: false} ;
-  homePageStatus              : any           = HomePage.homePageStatus  ;
-  payrollWorkOrders           : Array<WorkOrder>                         ;
-  otherReports                : Array<ReportOther>                       ;
-  hoursTotalList              : Array<any>    = []                       ;
-  shifts                      : Array<Shift>  = []                       ;
-  payrollPeriods              : Array<PayrollPeriod> = []                ;
-  period                      : PayrollPeriod = null                     ;
-  tech                        : Employee                                 ;
-  payrollPeriodCount          : number        = 2                        ;
-  payrollPeriodHoursTotal     : number        = 0                        ;
-  payrollPeriodHours          : number        = 0                        ;
-  payrollPeriodBonusHours     : number        = 0                        ;
-  databases                                   = this.PREFS.DB            ;
+  static lang                        : any                                      ;
+  static fixedHeight                 : any           = "0px"                    ;
+  static moment                      : any           = moment                   ;
+  static today                       : any           = moment()                 ;
+  static loginData                   : any           = null                     ;
+  static username                    : string        = "unknown"                ;
+  static userLoggedIn                : boolean                                  ;
+  static title                       : string        = 'OnSite Home'            ;
+  static numChars                    : Array<string> = STRINGS.NUMCHARS         ;
+  static chkBxBool                   : boolean                                  ;
+  static chkBx                       : string                                   ;
+  static shftHrs                     : number                                   ;
+  static hrsSubmitted                : number                                   ;
+  static dataReady                   : boolean       = false                    ;
+  static spinnerText                 : string        = ""                       ;
+  static techProfile                 : any                                      ;
+  static techWorkOrders              : Array<WorkOrder>   = []                  ;
+  static shiftWorkOrders             : Array<WorkOrder>   = []                  ;
+  static payrollWorkOrders           : Array<WorkOrder>   = []                  ;
+  static otherReports                : Array<ReportOther> = []                  ;
+  static hoursTotalList              : Array<any>    = []                       ;
+  static shifts                      : Array<Shift>  = []                       ;
+  static payrollPeriods              : Array<PayrollPeriod> = []                ;
+  static period                      : PayrollPeriod = null                     ;
+  static tech                        : Employee                                 ;
+  static payrollPeriodCount          : number        = 2                        ;
+  static payrollPeriodHoursTotal     : number        = 0                        ;
+  static payrollPeriodHours          : number        = 0                        ;
+  static payrollPeriodBonusHours     : number        = 0                        ;
+  static pageError                   : boolean       = false                    ;
+  static databases                   : any           = HomePage.PREFS.DB        ;
+  static checkboxSVG                 : any           = UserData.getSVGData()    ;
 
-  checkboxes                  : any           = [
-    '../../assets/images/box-check-yes.svg',
-    '../../assets/images/box-check-no.svg',
-    '../../assets/images/flag-blank.svg',
-    '../../assets/images/flag-checkered.svg'
-  ];
-  checkboxSVG  : any = [
-    `<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" version="1.1" preserveAspectRatio="xMidYMid meet" id="box-check-no">
-      <path d="M 45.833333,4.166667 V 45.833333 H 4.1666667 V 4.166667 Z M 50,0 H 0 v 50 h 50 z m -12.5,34.454167 -9.566667,-9.475 9.470834,-9.55625 -2.95,-2.922917 -9.46875,9.560417 L 15.427083,12.595833 12.5,15.522917 22.06875,25.00625 12.595833,34.572917 15.522917,37.5 25.0125,27.925 l 9.564583,9.479167 z" />
-    </svg>`,
-    `<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" version="1.1" preserveAspectRatio="xMidYMid meet" id="box-check-yes">
-      <path d="M 22.916667,35.416667 12.5,24.377083 l 2.914583,-2.979166 7.445834,7.783333 13.691666,-14.597917 3.03125,2.922917 z m 22.916666,-31.25 V 45.833333 H 4.1666667 V 4.166667 Z M 50,0 H 0 v 50 h 50 z" />
-    </svg>`,
-    `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="50" viewBox="0 0 40 50" version="1.1" preserveAspectRatio="xMidYMid meet" id="flag-blank">
-      <path d="m 31.657777,6.790993 c -7.466667,0 -7.635555,-4.863905 -16.304444,-4.863905 -4.684444,0 -9.055555,1.646505 -10.9088886,2.846103 V 0 H 0 V 50 H 4.4444444 V 25.078958 C 7.075555,23.702948 11.064444,22.25471 15.384444,22.25471 c 8.186667,0 9.335555,4.62702 16.631111,4.62702 C 36.731111,26.88173 40,24.598447 40,24.598447 V 4.390126 c 0,0 -3.602223,2.400867 -8.342223,2.400867 z m 3.897778,16.034942 c -0.888889,0.347799 -2.131111,0.695571 -3.54,0.695571 -2.16,0 -3.328889,-0.60988 -5.268889,-1.619632 -2.435555,-1.26848 -5.768889,-3.007387 -11.362222,-3.007387 -4.397778,0 -8.244444,1.140786 -10.9399996,2.249668 V 8.56351 C 6.708889,7.048057 10.811111,5.288976 15.353333,5.288976 c 2.962222,0 4.208889,0.737577 6.091111,1.853162 2.146667,1.270155 5.084444,3.010744 10.213333,3.010744 1.393334,0 2.700001,-0.144488 3.897778,-0.374645 z" />
-    </svg>`,
-    `<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" preserveAspectRatio="xMidYMid meet" id="flag-checkered">
-      <path d="m 35.200566,6.315625 c -6.533349,0 -6.681132,-4.5234375 -14.266395,-4.5234375 -4.098888,0 -7.923605,1.53125 -9.545282,2.646875 V 0 H 7.5 v 50 h 3.888889 V 23.323437 C 13.691106,22.04375 17.181394,20.696875 20.961394,20.696875 28.124717,20.696875 29.13,25 35.513606,25 39.639717,25 42.5,22.876562 42.5,22.876562 V 4.0828125 c 0,0 -3.151934,2.2328125 -7.299434,2.2328125 z m 3.41054,8.160938 C 33.911394,17.253125 28.8325,13.945313 26.263894,12.582812 v 5.732813 l 0.0061,0.0016 c -1.471946,-0.435935 -3.198612,-0.74531 -5.308336,-0.74531 -3.848051,0 -7.213888,1.060937 -9.572499,2.092188 V 13.742228 C 15.78331,10.660977 22.17081,10.253165 26.263875,12.582852 V 6.640625 c 1.878328,1.18125 4.448893,2.8 8.93666,2.8 1.219168,0 2.3625,-0.134375 3.410562,-0.3484375 z" />
-    </svg>`,
-    `<span class="fake-svg">?</span>`,
-  ];
+  PREFS                       : any                 = HomePage.PREFS           ;
+  prefs                       : any                 = HomePage.PREFS           ;
+  EVENTS                      : Events              = HomePage.EVENTS;
+  startupHandler              : any                 = HomePage.startupHandler;
+  pageLoadedPreviously        : boolean             = HomePage.pageLoadedPreviously;
+  homePageStatus              : any                 = HomePage.homePageStatus;
+  lang                        : any                 = HomePage.lang;
+  fixedHeight                 : any                 = HomePage.fixedHeight;
+  moment                      : any                 = HomePage.moment;
+  today                       : any                 = HomePage.today;
+  loginData                   : any                 = HomePage.loginData;
+  username                    : string              = HomePage.username;
+  userLoggedIn                : boolean             = HomePage.userLoggedIn;
+  title                       : string              = HomePage.title;
+  numChars                    : Array<string>       = HomePage.numChars;
+  chkBxBool                   : boolean             = HomePage.chkBxBool;
+  chkBx                       : string              = HomePage.chkBx;
+  shftHrs                     : number              = HomePage.shftHrs;
+  hrsSubmitted                : number              = HomePage.hrsSubmitted;
+  dataReady                   : boolean             = HomePage.dataReady;
+  spinnerText                 : string              = HomePage.spinnerText;
+  techProfile                 : any                 = HomePage.techProfile;
+  techWorkOrders              : Array<WorkOrder>    = HomePage.techWorkOrders;
+  shiftWorkOrders             : Array<WorkOrder>    = HomePage.shiftWorkOrders;
+  payrollWorkOrders           : Array<WorkOrder>    = HomePage.payrollWorkOrders;
+  otherReports                : Array<ReportOther>  = HomePage.otherReports;
+  hoursTotalList              : Array<any>    = []  = HomePage.hoursTotalList;
+  shifts                      : Array<Shift>  = []  = HomePage.shifts;
+  payrollPeriods              : Array<PayrollPeriod>= HomePage.payrollPeriods;
+  period                      : PayrollPeriod       = HomePage.period;
+  tech                        : Employee            = HomePage.tech;
+  payrollPeriodCount          : number              = HomePage.payrollPeriodCount;
+  payrollPeriodHoursTotal     : number              = HomePage.payrollPeriodHoursTotal;
+  payrollPeriodHours          : number              = HomePage.payrollPeriodHours;
+  payrollPeriodBonusHours     : number              = HomePage.payrollPeriodBonusHours;
+  pageError                   : boolean             = HomePage.pageError;
+  databases                   : any                 = this.PREFS.DB            ;
+  checkboxSVG                 : any                 = UserData.getSVGData()    ;
+
+  // static PREFS                : any           = new Preferences()        ;
+  // static EVENTS               : Events                                   ;
+  // static startupHandler       : any                                      ;
+  // static pageLoadedPreviously : boolean       = false                    ;
+  // static homePageStatus       : any           = {startupFinished: false} ;
+  // lang                        : any                                      ;
+  // fixedHeight                 : any           = "0px"                    ;
+  // moment                      : any           = moment                   ;
+  // today                       : any           = moment()                 ;
+  // loginData                   : any           = null                     ;
+  // username                    : string        = "unknown"                ;
+  // userLoggedIn                : boolean                                  ;
+  // title                       : string        = 'OnSite Home'            ;
+  // numChars                    : Array<string> = STRINGS.NUMCHARS         ;
+  // chkBxBool                   : boolean                                  ;
+  // chkBx                       : string                                   ;
+  // shftHrs                     : number                                   ;
+  // hrsSubmitted                : number                                   ;
+  // dataReady                   : boolean       = false                    ;
+  // spinnerText                 : string        = ""                       ;
+  // techProfile                 : any                                      ;
+  // techWorkOrders              : Array<WorkOrder>                         ;
+  // shiftWorkOrders             : Array<WorkOrder>                         ;
+  // payrollWorkOrders           : Array<WorkOrder>                         ;
+  // otherReports                : Array<ReportOther>                       ;
+  // hoursTotalList              : Array<any>    = []                       ;
+  // shifts                      : Array<Shift>  = []                       ;
+  // payrollPeriods              : Array<PayrollPeriod> = []                ;
+  // period                      : PayrollPeriod = null                     ;
+  // tech                        : Employee                                 ;
+  // payrollPeriodCount          : number        = 2                        ;
+  // payrollPeriodHoursTotal     : number        = 0                        ;
+  // payrollPeriodHours          : number        = 0                        ;
+  // payrollPeriodBonusHours     : number        = 0                        ;
+  // pageError                   : boolean       = false                    ;
+  // PREFS                       : any           = HomePage.PREFS           ;
+  // databases                   : any           = this.PREFS.DB            ;
+  // checkboxSVG                 : any           = UserData.getSVGData()    ;
 
   constructor(public http        : Http,
+              public platform    : Platform,
               public navCtrl     : NavController,
               public modalCtrl   : ModalController,
               public viewCtrl    : ViewController ,
@@ -116,80 +174,169 @@ export class HomePage {
               public translate   : TranslateService,
               public audio       : SmartAudio )
   {
-    window["onsitehome"] = this;
+    window["onsitehome"] = window["onsitehome"] ? window["onsitehome"] : this;
     Log.l("HomePage: Hi, I'm the HomePage class constructor!");
     HomePage.EVENTS = events;
     var caller = this;
-    var startupHandler = (homepage: any) => {
-      Log.l("HomePage.startupHandler(): startup:finished event detected. Target is:\n", homepage);
-      Log.l("HomePage.startupHandler(): now unsubscribing from startup:finished event...");
-      HomePage.EVENTS.unsubscribe('startup:finished', startupHandler);
-      Log.l("HomePage.startupHandler(): now executing runEveryTime() function...");
-      HomePage.homePageStatus.startupFinished = true;
-      caller.translate.get('spinner_fetching_reports').subscribe(result => {
-        caller.spinnerText = result;
-        caller.runEveryTime();
-      });
-    };
-    if(HomePage.homePageStatus.startupFinished === false) {
-      this.events.subscribe('startup:finished', startupHandler);
+    this.dataReady = false;
+    if(!this.ud.isAppLoaded()) {
+      Log.l("HOMEPAGE SAYS DON'T LOAD ME YET, D-BAG!");
     }
+    if(HomePage.startupHandler === undefined || HomePage.startupHandler === null) {
+      HomePage.startupHandler = (homepage: any) => {
+        Log.l("HomePage.startupHandler(): startup:finished event detected. Target is:\n", homepage);
+        Log.l("HomePage.startupHandler(): now unsubscribing from startup:finished event...");
+        HomePage.EVENTS.unsubscribe('startup:finished', HomePage.startupHandler);
+        HomePage.homePageStatus.startupFinished = true;
+        Log.l("HomePage.startupHandler(): now executing runEveryTime() function...");
+        if(!this.ud.isHomePageReady()) {
+          if(!this.ud.isHomePageLoading()) {
+            Log.l("HomePage: Loading from ");
+            this.runEveryTime();
+          } else {
+            Log.l("HomePage: Stop trying to dual-load!");
+          }
+        } else {
+          // this.dataReady = true;
+          Log.l("HomePage: stop trying to load prematurely!")
+        }
+        // caller.translate.get().subscribe(result => {
+        //   caller.spinnerText = result;
+        //   caller.runEveryTime();
+        // });
+      };
+    }
+    if(HomePage.homePageStatus.startupFinished === false) {
+      this.events.subscribe('startup:finished', HomePage.startupHandler);
+    }
+    let translations = [
+      'error',
+      'alet_retrieve_reports_error',
+      'spinner_fetching_reports'
+    ];
+    // this.lang = this.translate.instant(translations);
+    this.translate.get(translations).subscribe((result:any) => {
+      this.lang = result;
+    });
   }
 
   ionViewDidEnter() {
     Log.l("HomePage: ionViewDidEnter() called. First wait to make sure app is finished loading.");
     var caller = this;
     // if(HomePage.homePageStatus.startupFinished) {
-    Log.l("HomePage.ionViewDidEnter(): startup already finished, just continuing with runEveryTime()...");
-    this.tabs.highlightTab(0);
+    // Log.l("HomePage.ionViewDidEnter(): startup already finished, just continuing with runEveryTime()...");
+    this.tabs.highlightPageTab('OnSiteHome');
     let loaded = this.ud.isAppLoaded();
     let ready = this.ud.isHomePageReady();
-    if(loaded && !ready) {
-      this.runEveryTime();
-    } else if(ready) {
-      this.dataReady = true;
+    let loading = this.ud.isHomePageLoading();
+    let attempts = this.ud.getLoadAttempts();
+    if (!this.ud.isAppLoaded()) {
+      Log.l("HOMEPAGE.ionViewDidEnter() SAYS DON'T LOAD ME YET, D-BAG!");
     } else {
-      Log.l("HomePage.ionViewDidEnter(): EXTRA LARGE LOAD DETECTED");
+      this.runEveryTime();
     }
+    if(loaded) {
+      // if(!ready && !loading) {
+        // this.runEveryTime();
+      // } else {
+        // this.dataReady = true;
+      // }
+      // else {
+      //   if (!this.pageError && attempts < 20) {
+      //     setTimeout(() => {
+      //       Log.l("HomePage attempting reload attempt %d.", attempts);
+      //       this.ud.setLoadAttempts(attempts + 1);
+      //       this.ionViewDidEnter();
+      //     }, 1500);
+      //   } else {
+      //     this.pageError = true;
+      //   }
+
+      // }
+    } else {
+      // Log.l("HomePage.ionViewDidEnter(): PREMATURE ELOADULATION DETECTED!");
+      // if(!this.pageError && attempts < 20) {
+      //   setTimeout(() => {
+      //     Log.l("HomePage attempting reload attempt %d.", attempts);
+      //     this.ud.setLoadAttempts(attempts+1);
+      //     this.ionViewDidEnter();
+      //   }, 1500);
+      // } else {
+      //   this.alert.showAlert(this.lang['error'], this.lang['alet_retrieve_reports_error'])
+      // }
+    }
+    //  else if(loaded && ready) {
+    //   // this.dataReady = true;
+    // } else {
+      // Log.l("HomePage.ionViewDidEnter(): EXTRA LARGE LOAD DETECTED");
+    // }
     // this.runEveryTime();
     // }
   }
 
-  // ionViewDidLoad() {
-  //   Log.l("HomePage: ionViewDidLoad() called... not doing anything right now.");
-  //   this.dataReady = false;
-  //   if(this.ud.isAppLoaded()) {
-  //     this.runEveryTime();
-  //   }
-  // }
+  ionViewDidLoad() {
+    Log.l("HomePage: ionViewDidLoad() called... not doing anything right now.");
+    // this.dataReady = false;
+    // if(this.ud.isAppLoaded()) {
+    //   this.runEveryTime();
+    // }
+    // this.
+  }
 
   runEveryTime() {
-    if (this.ud.getLoginStatus() === false) {
-      Log.l("HomePage.ionViewDidEnter(): User not logged in, showing login modal.");
-      this.presentLoginModal();
-    } else {
-      Log.l("HomePage: ionViewDidEnter() says work order array not initialized, fetching work orders.");
-      this.tabs.highlightPageTab('OnSiteHome');
-      // this.fixedHeight = this.mapElement.nativeElement.offsetHeight;
-      this.alert.showSpinner(this.spinnerText);
-      this.fetchTechWorkorders().then((res) => {
-        // Log.l("HomePage: ionViewDidEnter() fetched work reports, maybe:\n", res);
-        // this.ud.setWorkOrderList(res);
-        // this.ud.createShifts();
-        this.techProfile = this.ud.getTechProfile();
-        this.shifts = this.ud.getPeriodShifts();
-        this.countHoursForShifts();
-        this.alert.hideSpinner();
-        this.ud.setHomePageReady(true);
-        HomePage.homePageStatus.startupFinished = true;
-        this.dataReady = true;
-      }).catch((err) => {
-        Log.l("HomePage: ionViewDidEnter() got error while fetching tech work orders.");
+    // try {
+      // let lang = this.translate.instant(['error', 'alert_retrieve_reports_error'])
+      this.dataReady = false;
+      this.ud.setHomePageLoading(true);
+      this.ud.setHomePageReady(true);
+      let lang = this.lang;
+      if (this.ud.getLoginStatus() === false) {
+        Log.l("HomePage.runEveryTime(): User not logged in, showing login modal.");
+        this.presentLoginModal();
+      } else {
+        this.ud.setHomePageLoading(true);
+        Log.l("HomePage.runEveryTime(): Fetching work orders.");
+        // this.fixedHeight = this.mapElement.nativeElement.offsetHeight;
+        this.alert.showSpinner(lang['spinner_fetching_reports']);
+        this.fetchTechWorkorders().then((res) => {
+          this.techProfile = this.ud.getTechProfile();
+          this.shifts = this.ud.getPeriodShifts();
+          this.countHoursForShifts();
+          HomePage.homePageStatus.startupFinished = true;
+          this.ud.setHomePageReady(true);
+          this.dataReady = true;
+          this.alert.hideSpinner(0, true).then(res => {
+            this.ud.setHomePageReady(true);
+            HomePage.homePageStatus.startupFinished = true;
+            this.dataReady = true;
+          }).catch(err => {
+            Log.l("Error hiding spinner!");
+            HomePage.homePageStatus.startupFinished = true;
+            this.ud.setHomePageReady(true);
+            this.dataReady = true;
+        }).catch((err) => {
+          Log.l("HomePage: ionViewDidEnter() got error while fetching tech work orders.");
+          Log.e(err);
+          this.pageError = true;
+          this.alert.hideSpinner(0, true).then(res => {
+            this.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
+          }).catch(err => {
+            Log.l("Error hiding spinner again!");
+            Log.e(err);
+            this.pageError = true;
+          });
+        });
+      }).catch(err => {
+        Log.l("Error fetching tech work orders!");
         Log.e(err);
         this.alert.hideSpinner();
-        let lang = this.translate.instant(['error', 'alert_retrieve_reports_error'])
         this.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
       });
+    // } catch(err) {
+    //   this.alert.hideSpinner();
+    //   let lang = this.translate.instant(['error', 'alert_retrieve_reports_error'])
+    //   this.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
+    // }
     }
   }
 
@@ -246,6 +393,7 @@ export class HomePage {
         let now                = moment();
         let payrollPeriod      = this.ud.getPayrollPeriodForDate(now);
         this.payrollPeriods    = this.ud.createPayrollPeriods(tech, this.payrollPeriodCount);
+        Log.l("fetchTechWorkorders(): Payroll periods created as:\n", this.payrollPeriods);
         for(let period of this.payrollPeriods) {
           for(let shift of period.shifts) {
             let reports = new Array<WorkOrder>();
@@ -311,13 +459,24 @@ export class HomePage {
         }
         let prd = this.ud.getHomePeriod();
         if(prd) {
-          for(let period of this.payrollPeriods) {
-            if(period.serial_number === prd.serial_number) {
-              this.period = period;
-              break;
-            }
+          let i = this.payrollPeriods.indexOf(prd);
+          if(i > -1) {
+            Log.l("fetchTechWorkOrders(): Found payroll period at index %d.", i);
+            this.period = this.payrollPeriods[i];
+            this.ud.setHomePeriod(this.period);
+          } else {
+            Log.l("fetchTechWorkOrders(): Payroll periods not found.");
+            this.period = prd;
+            this.ud.setHomePeriod(this.period);
           }
+          // for(let period of this.payrollPeriods) {
+          //   if(period.serial_number === prd.serial_number) {
+          //     this.period = period;
+          //     break;
+          //   }
+          // }
         } else {
+          Log.l("fetchTechWorkOrders(): HomePage payroll period will be:\n", this.payrollPeriods[0]);
           this.period            = this.payrollPeriods[0];
           this.ud.setHomePeriod(this.period);
         }

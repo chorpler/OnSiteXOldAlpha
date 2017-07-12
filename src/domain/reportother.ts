@@ -117,7 +117,15 @@ export class ReportOther {
     for(let i = 0; i < len; i++) {
       let key = fields[i];
       if(key === 'report_date') {
-        newReport[key] = this[key].format("YYYY-MM-DD");
+        let date = this[key];
+        if(isMoment(date)) {
+          newReport[key] = this[key].format("YYYY-MM-DD");
+        } else if(typeof date === 'string') {
+          newReport[key] = this[key];
+        } else {
+          Log.w("ReportOther.serialize() called with 'report_date' that isn't a Moment or a string:\n", this);
+          newReport[key] = this[key];
+        }
       } else if(key === 'technician') {
         newReport[key] = tech.getTechName();
       } else {

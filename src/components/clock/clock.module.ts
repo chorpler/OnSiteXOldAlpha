@@ -1,20 +1,18 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { ClockComponentModule } from '../clock/clock.module';
-import { TabsComponent } from './tabs';
+import { ClockComponent } from './clock';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
-    TabsComponent,
+    ClockComponent,
   ],
   imports: [
-    IonicPageModule.forChild(TabsComponent),
+    IonicPageModule.forChild(ClockComponent),
     TranslateModule.forChild(),
-    ClockComponentModule,
   ],
   exports: [
-    TabsComponent
+    ClockComponent
   ]
 })
-export class TabsComponentModule {}
+export class ClockComponentModule { }

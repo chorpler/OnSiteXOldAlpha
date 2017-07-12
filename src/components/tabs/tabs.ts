@@ -58,14 +58,19 @@ export class TabsComponent implements OnInit {
 
   ngOnInit() {
     window['onSiteTabs'] = this;
-    if (this.onSitePage === 'Login') { this.setTabDisable(true); }
-    if(this.isDeveloper()) {
-      if(this.tabInfo[this.tabInfo.length - 1].name !== 'DevPage') {
-        this.tabInfo.push(this.developerTab);
+    this.platform.ready().then(res => {
+      if(this.ud.isAppLoaded()) {
+        if (this.onSitePage === 'Login') { this.setTabDisable(true); } else {
+          if(this.isDeveloper()) {
+            if(this.tabInfo[this.tabInfo.length - 1].name !== 'DevPage') {
+              this.tabInfo.push(this.developerTab);
+            }
+          } else if(this.tabInfo[this.tabInfo.length - 1].name === 'DevPage') {
+            this.tabInfo.pop();
+          }
+        }
       }
-    } else if(this.tabInfo[this.tabInfo.length - 1].name === 'DevPage') {
-      this.tabInfo.pop();
-    }
+    });
   }
 
   getActiveNav() {

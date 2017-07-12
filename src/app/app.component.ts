@@ -39,8 +39,10 @@ export class OnSiteApp {
   public rootPage                : any                         ;
   public pouchOptions            : any     = { }               ;
   public backButtonPressedAlready: boolean = false             ;
+  public static status           : any     = {bootError: false};
   public static PREFS            : any     = new Preferences() ;
   public prefs                   : any     = OnSiteApp.PREFS   ;
+  public status                  : any     = OnSiteApp.status  ;
   public network                 : any                         ;
   public data                    : any                         ;
   private ui                     : any                         ;
@@ -78,6 +80,7 @@ export class OnSiteApp {
     Log.l("AppComponent: Initializing app...");
 
     this.platform.ready().then(res => {
+      Log.l("OnSite: platform ready returned:\n", res);
       return this.getAppVersion();
     }).then((res) => {
       this.platform.registerBackButtonAction(() => {
@@ -89,7 +92,6 @@ export class OnSiteApp {
           setTimeout(() => { this.backButtonPressedAlready = false; }, 2000)
         }
       });
-      Log.l("Platform Ready was fired.\n", res);
       this.translate.setDefaultLang('en');
       this.statusBar.styleDefault();
       this.splashScreen.hide();
@@ -107,55 +109,95 @@ export class OnSiteApp {
       window[ 'c1'     ] = CONSOLE.c1;
       this.preloadAudioFiles();
 
+      let callingClass = this;
+      this.translate.get(['spinner_app_loading']).subscribe((result) => {
+        let lang = result;
+        if(!callingClass.ud.isBootError()) {
+          callingClass.alert.showSpinner(lang['spinner_app_loading'], false, 15000);
+          callingClass.bootApp().then(res =>{
+            Log.l("OnSite.initializeApp(): bootApp() returned successfully!");
+
+            callingClass.alert.hideSpinner(0, true).then(res => {
+              callingClass.ud.setAppLoaded(true);
+              callingClass.rootPage = 'OnSiteHome';
+              setTimeout(() => {
+                Log.l("OnSite.bootApp(): Publishing startup event after timeout!");
+                callingClass.events.publish('startup:finished', true);
+              }, 50);
+            })
+          }).catch(err => {
+            Log.l("OnSite.initializeApp(): bootApp() returned error.");
+            Log.e(err);
+            callingClass.ud.setAppLoaded(true);
+            callingClass.rootPage = 'Login';
+            setTimeout(() => {
+              // Log.l("OnSite.bootApp(): Publishing startup event after timeout!");
+              // callingClass.events.publish('startup:finished', true);
+            }, 50);
+            // callingClass.rootPage = 'Login';
+          });
+        } else {
+          Log.w("OnSite.initializeApp(): app boot error has been thrown.");
+          callingClass.ud.setAppLoaded(true);
+          setTimeout(() => {
+            callingClass.rootPage = 'Login';
+          }, 500);
+          // setTimeout(() => {
+          //   Log.l("OnSite.bootApp(): Publishing startup event after timeout!");
+          //   callingClass.events.publish('startup:finished', true);
+          // }, 50);
+        }
+      });
+    });
+  }
+
+  bootApp() {
+    return new Promise((resolve,reject) => {
+      let callingClass = this;
+      Log.l("OnSite.bootApp(): Called.")
       this.checkPreferences().then(() => {
         Log.l("OnSite.initializeApp(): Done messing with preferences, now checking login...");
         let language = this.prefs.USER.language;
-        if(language !== 'en') {
+        if (language !== 'en') {
           this.translate.use(language);
         }
-        var callingClass = this;
-        this.translate.get(['spinner_app_loading']).subscribe((result) => {
-          this.alert.showSpinner(result['spinner_app_loading'], false, 15000);
-        });
-        this.checkLogin().then(res => {
-          Log.l("OnSite.initializeApp(): User passed login check. Should be fine.");
-          // this.finishStartup().then(() => {
-          //   Log.l("Done with finishStartup.");
-          // this.rootPage = 'OnSiteHome';
-          // }).then(() => {
-          // Log.l("OnSite.initializeApp(): Publishing startup event!");
 
-          return this.server.getAllData(this.tech);
-        }).then(res => {
-          this.data = res;
-          this.ud.setData(this.data);
-          return this.msgService.getMessages();
-        }).then(res => {
-          Log.l("OnSite.initializeApp(): Got new messages.");
-          let badges = this.msgService.getNewMessageCount();
-          this.tabs.setMessageBadge(badges);
-          this.alert.hideSpinner();
-          this.ud.setAppLoaded(true);
-          this.rootPage = 'OnSiteHome';
-          this.events.publish('startup:finished', true);
-          setTimeout(() => {
-            Log.l("OnSite.initializeApp(): Publishing startup event after timeout!");
-            callingClass.events.publish('startup:finished', true);
-          }, 100);
+        return this.checkLogin();
+      }).then(res => {
+        Log.l("OnSite.bootApp(): User passed login check. Should be fine.");
+        // this.finishStartup().then(() => {
+        //   Log.l("Done with finishStartup.");
+        // this.rootPage = 'OnSiteHome';
+        // }).then(() => {
+        // Log.l("OnSite.initializeApp(): Publishing startup event!");
+
+        return this.server.getAllData(this.tech);
+      }).then(res => {
+        this.data = res;
+        this.ud.setData(this.data);
+        return this.msgService.getMessages();
+      }).then(res => {
+        Log.l("OnSite.bootApp(): Got new messages.");
+        let badges = this.msgService.getNewMessageCount();
+        this.tabs.setMessageBadge(badges);
+        this.alert.hideSpinner(0, true).then(res => {
+          resolve(true);
         }).catch(err => {
-          Log.l("OnSite.initializeApp(): Error with login or with publishing startup:finished event!");
+          Log.l("Error hiding spinner!");
           Log.e(err);
-          this.alert.hideSpinner();
-          this.rootPage = 'Login';
+          resolve(true);
         });
-      // }).catch(err => {
-        //   Log.l("OnSite.initializeApp(): User failed login check. Sending to login.");
-        //   this.rootPage = 'Login';
-        // });
-      }).catch((err) => {
-        Log.l("OnSite.initializeApp(): Preferences check failed. Sending to login.");
-        this.alert.hideSpinner();
-        this.rootPage = 'Login';
+      }).catch(err => {
+        Log.l("OnSite.bootApp(): Error with login or with publishing startup:finished event!");
+        Log.e(err);
+        this.alert.hideSpinner(0, true).then(res => {
+          reject(false);
+        }).catch(err => {
+          Log.l("Error hiding spinner!");
+          Log.e(err);
+          // this.rootPage = 'Login';
+          reject(false);
+        });
       });
     });
   }

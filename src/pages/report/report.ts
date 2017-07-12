@@ -145,7 +145,7 @@ export class ReportPage implements OnInit {
     Log.l("Report.ngOnInit(): navParams are:\n", this.navParams);
     if (this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
     if (this.navParams.get('type') !== undefined) { this.type = this.navParams.get('type'); }
-    if (this.navParams.get('shift') !== undefined) { this.shiftToUse = this.navParams.get('shift'); }
+    if (this.navParams.get('shift') !== undefined) { this.shiftToUse = this.selectedShift = this.navParams.get('shift'); }
     if (this.navParams.get('payroll_period') !== undefined) { this.period = this.navParams.get('payroll_period'); }
     if (this.navParams.get('workOrder') !== undefined) {
       this.workOrder = this.navParams.get('workOrder');
@@ -224,30 +224,9 @@ export class ReportPage implements OnInit {
 
       }
       this.thisWorkOrderContribution = this.workOrder.getRepairHours() || 0;
-      // if(!this.reportOther) {
-      //   this.reportOther  = new ReportOther()           ;
-      //   let ro            = this.reportOther            ;
-      //   let tech          = this.techProfile            ;
-      //   let now           = moment()                    ;
-      //   let shift         = this.selectedShift          ;
-      //   ro.timestampM     = now.format()                ;
-      //   ro.timestamp      = now.toExcel()               ;
-      //   ro.first_name     = tech.firstName              ;
-      //   ro.last_name      = tech.lastName               ;
-      //   ro.username       = tech.avatarName             ;
-      //   ro.client         = tech.client                 ;
-      //   ro.location       = tech.location               ;
-      //   ro.location_2     = tech.loc2nd                 ;
-      //   ro.location_id    = tech.locID                  ;
-      //   ro.payroll_period = shift.getPayrollPeriod()    ;
-      //   ro.shift_serial   = shift.getShiftSerial()      ;
-      //   let date          = shift.getStartTime()        ;
-      //   ro.report_date    = moment(date).startOf('day') ;
-      // }
 
       this.initializeForm();
       this.initializeFormListeners();
-      // this.shiftSavedHours = this.selectedShift.getNormalHours();
       this.dataReady = true;
     }).catch((err) => {
       Log.l(`ReportPage: Error getting tech profile!`);
@@ -315,10 +294,12 @@ export class ReportPage implements OnInit {
     this._type.valueChanges.subscribe((value:any) => {
       Log.l("Field 'type' fired valueChanges for:\n", value);
       // setTimeout(() => {
-      let oldType = this.selReportType[this.selReportType.indexOf(value)];
+      // let oldType = this.selReportType[this.selReportType.indexOf(value)];
+      this.oldType = this.selReportType[0];
       // this.type   = value;
       // let oldVal  = oldType.value;
       let ro      = this.reportOther;
+      let error   = false;
       // this._time.enable(true);
       if (value.name === 'training') {
         ro.training_type = "Safety";
@@ -351,6 +332,11 @@ export class ReportPage implements OnInit {
         this._time.setValue(8);
         ro.type = value.value;
         this.type = value;
+      } else if (value.name === 'holiday') {
+        ro.time = 8;
+        this._time.setValue(8);
+        ro.type = value.value;
+        this.type = value;
       } else if (value.name === 'standby') {
         let shift = this.selectedShift;
         let status = shift.getShiftReportsStatus(true).code;
@@ -362,13 +348,17 @@ export class ReportPage implements OnInit {
           // this.type = oldType;
           // this._type.setValue(oldType);
           // this.alert.showAlert(lang['error'], warningText);
-          this.alert.showAlert(lang['error'], warningText).then(res => {
+          // this.alert.showAlert(lang['error'], warningText).then(res => {
             // this.type = oldType;
-            setTimeout(() => {
-              this._type.setValue(oldType);
-            }, 500);
-          });
-        } else if(hours > 0) {
+            // setTimeout(() => {
+              // this._type.setValue(oldType);
+              // error = true;
+            // this.zone.run(() => { this._type.setValue(this.oldType); });
+            // }, 500);
+          // });
+          this._type.setValue(this.selReportType[0]);
+          setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
+        } else if(hours >   0) {
           Log.w("User attempted to create a standby report in the same shift as an existing work report.");
           let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
           let warningText = sprintf(lang['standby_report_xor_work_report_existing_work_report'], warnIcon);
@@ -376,13 +366,17 @@ export class ReportPage implements OnInit {
           // this._type.setValue(oldType);
           // this.alert.showAlert(lang['error'], warningText);
           // });
-          this.alert.showAlert(lang['error'], warningText).then(res => {
+          // this.alert.showAlert(lang['error'], warningText).then(res => {
             // this.type = oldType;
             // this._type.setValue(oldType);
-            setTimeout(() => {
-              this._type.setValue(oldType);
-            }, 500);
-          });
+            // setTimeout(() => {
+              // this._type.setValue(oldType);
+              // this.zone.run(() => {this._type.setValue(this.oldType);});
+              // error = true;
+            // }, 500);
+          // });
+          this._type.setValue(this.selReportType[0]);
+          setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
         } else {
           ro.time = 8;
           this._time.setValue(8);
@@ -401,10 +395,14 @@ export class ReportPage implements OnInit {
           // this.alert.showAlert(lang['error'], warnFont);
           // this._type.setValue(oldType);
           // this.type = oldType;
-          this._type.setValue(oldType);
-          this.alert.showAlert(lang['error'], warnFont);
-          // .then(res => {
+          // this._type.setValue(oldType);
+          // this.alert.showAlert(lang['error'], warnFont);
+          // this.alert.showAlert(lang['error'], warnFont).then(res => {
+          //   Log.l("Resetting form.type to:\n", this.selReportType[0])
+          //   this._type.setValue(this.selReportType[0]);
           // });
+          this._type.setValue(this.selReportType[0]);
+          setTimeout(() => { this.alert.showAlert(lang['error'], warnFont); });
         } else if(i > -1 || j > -1) {
           Log.w("User attempted to create duplicate standby report.");
           let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
@@ -412,13 +410,16 @@ export class ReportPage implements OnInit {
           // this._type.setValue(oldType);
           // this.alert.showAlert(lang['error'], warningText);
           // this.type = oldType;
-          // this._type.setValue(oldType);
+          // this._type.setValue(this.oldType);
           // this.alert.showAlert(lang['error'], warningText);
-          this.alert.showAlert(lang['error'], warningText).then(res => {
-            setTimeout(() => {
-              this._type.setValue(oldType);
-            }, 500);
-          });
+          // this.alert.showAlert(lang['error'], warningText).then(res => {
+            // setTimeout(() => {
+              // this._type.setValue(this.oldType);
+            // }, 500);
+            // this.zone.run(() => { this._type.setValue(this.oldType); });
+          this._type.setValue(this.selReportType[0]);
+          setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
+          // });
         } else if(this.selectedShift.getNormalHours() > 0) {
           Log.w("User attempted to create a standby report in the same shift as an existing work report.");
           let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
@@ -426,21 +427,27 @@ export class ReportPage implements OnInit {
           // this.type = oldType;
           // this._type.setValue(oldType);
           // this.alert.showAlert(lang['error'], warningText);
-          this.alert.showAlert(lang['error'], warningText).then(res => {
-            setTimeout(() => {
-              this._type.setValue(oldType);
-            }, 500);
-          });
+          // this.alert.showAlert(lang['error'], warningText).then(res => {
+            // setTimeout(() => {
+              // this._type.setValue(oldType);
+            // }, 500);
+            // this.zone.run(() => { this._type.setValue(this.oldType); });
+          // });
+          this._type.setValue(this.selReportType[0]);
+          setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
         } else {
           ro.time = 8;
           this._time.setValue(8);
           ro.type = value.value;
           this.type = value;
         }
+      } else if(value.name === 'work_report') {
+        Log.l("type.valueChange(): This seems proper.");
+        this.type = value;
+        // ro.type = value.value;
       } else {
         Log.l("type.valueChange(): GETTING TO THIS BRANCH SHOULD NOT BE POSSIBLE! Type is:\n", value);
       }
-      // });
     });
     this._training_type.valueChanges.subscribe((value: any) => {
       let ro = this.reportOther;
@@ -511,7 +518,7 @@ export class ReportPage implements OnInit {
       let woStart                  = moment(shift.getStartTime()).add(woHoursSoFar, 'hours') ;
       this.workOrder.setStartTime(woStart);
       let reportDateString         = report_date.format("YYYY-MM-DD")                        ;
-      this.reportOther.report_date = reportDateString                                        ;
+      this.reportOther.report_date = report_date                                             ;
       this.workOrder.report_date   = reportDateString                                        ;
       this.selectedShift           = shift                                                   ;
 
@@ -665,16 +672,18 @@ export class ReportPage implements OnInit {
       } else {
         this.selectedShift = this.shifts[0];
       }
-    } else {
-      let woShiftSerial = this.workOrder.shift_serial;
-      for (let shift of this.shifts) {
-        if (shift.getShiftSerial() === woShiftSerial) {
-          this.selectedShift = shift;
-          Log.l("EditWorkOrder: setting active shift to:\n", shift);
-          break;
-        }
-      }
     }
+    //  else {
+      // let woShiftSerial = this.workOrder.shift_serial;
+      // for (let shift of this.shifts) {
+      //   if (shift.getShiftSerial() === woShiftSerial) {
+      //     this.selectedShift = shift;
+      //     Log.l("EditWorkOrder: setting active shift to:\n", shift);
+      //     break;
+      //   }
+      // }
+      // this.selectedShift =
+    // }
   }
 
   public checkShiftChange(event:any, shift:Shift) {
@@ -1010,24 +1019,25 @@ export class ReportPage implements OnInit {
   }
 
   createFreshOtherReport() {
-    let tech  = this.techProfile     ;
-    let now   = moment()             ;
-    let shift = this.selectedShift   ;
-    let date  = shift.getStartTime() ;
-    let ro = new ReportOther();
-    ro.timestampM = now.format();
-    ro.timestamp = now.toExcel();
-    ro.first_name = tech.firstName;
-    ro.last_name = tech.lastName;
-    ro.username = tech.avatarName;
-    ro.client = tech.client;
-    ro.location = tech.location;
-    ro.location_2 = tech.loc2nd;
-    ro.location_id = tech.locID;
-    ro.payroll_period = shift.getPayrollPeriod();
-    ro.shift_serial = shift.getShiftSerial();
-    ro.report_date = moment(date).startOf('day');
-    this.reportOther = ro;
+    let tech          = this.techProfile            ;
+    let now           = moment()                    ;
+    let shift         = this.selectedShift          ;
+    let date          = shift.getStartTime()        ;
+    let ro            = new ReportOther()           ;
+    ro.timestampM     = now.format()                ;
+    ro.timestamp      = now.toExcel()               ;
+    ro.first_name     = tech.firstName              ;
+    ro.last_name      = tech.lastName               ;
+    ro.username       = tech.avatarName             ;
+    ro.client         = tech.client                 ;
+    ro.location       = tech.location               ;
+    ro.location_2     = tech.loc2nd                 ;
+    ro.location_id    = tech.locID                  ;
+    ro.payroll_period = shift.getPayrollPeriod()    ;
+    ro.shift_serial   = shift.getShiftSerial()      ;
+    ro.report_date    = moment(date).startOf('day') ;
+    this.reportOther  = ro                          ;
+
     return ro;
   }
 

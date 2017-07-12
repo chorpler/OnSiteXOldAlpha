@@ -2,6 +2,7 @@ import { NgModule                         } from '@angular/core'                
 import { HomePage                         } from './home'                             ;
 import { IonicPageModule                  } from 'ionic-angular'                      ;
 import { Http                             } from '@angular/http'                      ;
+import { ClockComponentModule             } from '../../components/clock/clock.module';
 import { TabsComponentModule              } from '../../components/tabs/tabs.module'  ;
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core'                ;
 import { TranslateHttpLoader              } from '@ngx-translate/http-loader'         ;
@@ -14,6 +15,7 @@ import { PipesModule                      } from '../../pipes/pipes.module'     
     IonicPageModule.forChild(HomePage),
     PipesModule,
     TabsComponentModule,
+    ClockComponentModule,
     TranslateModule.forChild({
       loader: {
         provide: TranslateLoader,
