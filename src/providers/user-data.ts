@@ -14,7 +14,7 @@ import { STRINGS                       } from '../config/config.strings'   ;
 
 @Injectable()
 export class UserData {
-  public static appdata               : any = {ready: false, version: "10.11.05", homeLoading:false, attempts: 0, homeReady:false, bootError: false};
+  public static appdata               : any = {ready: false, version: "10.11.05", homeLoading:false, attempts: 0, homeReady:false, bootError: false, user: "", name: "", lang: {}};
   public static _favorites            : string[]             = []                      ;
   public static HAS_LOGGED_IN         = 'hasLoggedIn'                                  ;
   public static HAS_SEEN_TUTORIAL     = 'hasSeenTutorial'                              ;
@@ -35,6 +35,7 @@ export class UserData {
   public static userLoggedIn          : boolean              = false                   ;
   public static sesaConfig            : any                  = {}                      ;
   public static data                  : any                                            ;
+  public static hands                 : any = {hours: 0, minutes: 0, seconds: 0}       ;
   public appdata                      : any = UserData.appdata                         ;
   public shifts                       : Array<Shift>         = UserData.shifts         ;
   public payrollPeriods               : Array<PayrollPeriod> = UserData.payrollPeriods ;
@@ -46,13 +47,14 @@ export class UserData {
   public data                         : any                  = UserData.data           ;
   public userLoggedIn                 : boolean              = UserData.userLoggedIn   ;
   public appReady                     : boolean              = false                   ;
+  public hands                        : any                  = UserData.hands          ;
 
   private static loginData:any = null;
 
   constructor(public events: Events, public storage: Storage, public platform: Platform, public prefs: Preferences) {
     window["onsiteuserdata"] = this;
     window["UserData"] = UserData;
-    UserData.data = { employee: [], sites: [], reports: [], otherReports: [], payrollPeriods: [], shifts: [], messages: [], report_types: [], training_types: []};
+    UserData.data = UserData.data || { employee: [], sites: [], reports: [], otherReports: [], payrollPeriods: [], shifts: [], messages: [], report_types: [], training_types: []};
   }
 
   public isBootError() {
@@ -80,6 +82,28 @@ export class UserData {
   public setHomePageReady(value:boolean) {
     UserData.appdata.homeReady = value;
     return UserData.appdata.homeReady;
+  }
+
+  public getTranslations() {
+    return UserData.appdata.lang;
+  }
+
+  public setTranslations(translations:any) {
+    if(translations && typeof translations === 'object') {
+      let trans = translations;
+      let keys = Object.keys(trans);
+      for(let i18n of keys) {
+        let strings = Object.keys(translations[i18n]);
+        UserData.appdata.lang[i18n] = UserData.appdata.lang[i18n] || {};
+        for(let str of strings) {
+          UserData.appdata.lang[i18n][str] = translations[i18n][str];
+        }
+      }
+      return UserData.appdata.lang;
+    } else {
+      Log.w("setTranslations(): must be an object of 2-letter language keys, each of which is a bunch of string keys with translated values:\n", translations);
+      return null;
+    }
   }
 
   public isAppLoaded() {
@@ -208,7 +232,7 @@ export class UserData {
     return UserData.sesaConfig;
   }
   public setSesaConfig(config:any) {
-  return UserData.setSesaConfig(config);
+    return UserData.setSesaConfig(config);
   }
 
   public static startupFinished() {
@@ -241,7 +265,7 @@ export class UserData {
     if(tp) {
       return `${tp.avatarName} (${tp.firstName} ${tp.lastName})`;
     } else {
-      return '(unknown)';
+      return '';
     }
   }
 
@@ -431,9 +455,11 @@ export class UserData {
       now = moment(date);
     }
     if(now.isValid()) {
-      let week = this.getCurrentPayrollWeek(now);
-      let xlDate = moment(week).toExcel();
-      return xlDate;
+      if(this.payrollPeriods) {
+        let week = this.getCurrentPayrollWeek(now);
+        let xlDate = moment(week).toExcel();
+         return xlDate;
+      }
     } else {
       Log.l("getPayrollPeriodForDate(): Need moment, got:\n", date);
       return -1;
@@ -443,6 +469,11 @@ export class UserData {
   createPayrollPeriods(tech:Employee, count?:number):Array<PayrollPeriod> {
     let now = moment().startOf('day');
     UserData.payrollPeriods = [];
+    let payp = UserData.payrollPeriods;
+    let len  = payp.length;
+    let tmp1 = payp;
+    UserData.payrollPeriods = payp.splice(0,len);
+
     let periodCount = count || 2;
     for(let i = 0; i < periodCount; i++) {
       let start = PayrollPeriod.getPayrollPeriodDateForShiftDate(moment(now).subtract(i, 'weeks'));
@@ -460,7 +491,7 @@ export class UserData {
 
   createShifts() {
     let now = moment();
-    UserData.shifts = [];
+    UserData.shifts = UserData.shifts;
     let tp = UserData.techProfile;
     if(tp !== undefined && tp !== null) {
       for (let i = 0; i < STRINGS.NUMBER_OF_SHIFTS; i++) {
@@ -506,7 +537,7 @@ export class UserData {
     audio.play();
   }
 
-  static getSVGData() {
+  public static getSVGData() {
     let svgs = [
       `<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" version="1.1" preserveAspectRatio="xMidYMid meet" id="box-check-no">
       <path d="M 45.833333,4.166667 V 45.833333 H 4.1666667 V 4.166667 Z M 50,0 H 0 v 50 h 50 z m -12.5,34.454167 -9.566667,-9.475 9.470834,-9.55625 -2.95,-2.922917 -9.46875,9.560417 L 15.427083,12.595833 12.5,15.522917 22.06875,25.00625 12.595833,34.572917 15.522917,37.5 25.0125,27.925 l 9.564583,9.479167 z" />
@@ -525,8 +556,99 @@ export class UserData {
     return svgs;
   }
 
-  getSVGData() {
+  public getSVGData() {
     return UserData.getSVGData();
+  }
+
+  public static getClockHands(time?:Moment|Date|string|number) {
+    let tiempo;
+    let hands = UserData.hands;
+    if(!time) {
+      return hands;
+    }
+    if(isMoment(time) || time instanceof Date) {
+      tiempo = moment(time);
+    } else if(typeof time === 'string') {
+      tiempo = moment(time);
+    } else if(typeof time === 'number') {
+      tiempo = moment.fromExcel(time);
+    } else {
+      Log.w("getClockHands(): Parameter must be Moment|Date|string|number, type is %s.", typeof time);
+      Log.w(time);
+      return hands;
+    }
+    return hands;
+  }
+
+  public getClockHands(time?:Moment|Date|string|number) {
+    return UserData.getClockHands(time);
+  }
+
+  public getClockHand(hand: string) {
+    let hnd = typeof hand === 'string' ? hand.toLowerCase() : hand;
+    let h = hnd[0];
+    if (h === 'h') {
+      hnd = 'hours';
+    } else if (h === 'm') {
+      hnd = 'minutes';
+    } else if (h === 's') {
+      hnd = 'seconds';
+    } else {
+      Log.w("getClockHand() called without a parameter of 'hours', 'minutes', or 'seconds'. Just setting hour hand.");
+      hnd = 'hours';
+    }
+    return this.hands[hnd];
+  }
+
+  public setClockHand(hand:string, degrees:number) {
+    let hnd = typeof hand === 'string' ? hand.toLowerCase() : hand;
+    let h = hnd[0];
+    if(degrees < -360 || degrees > 360) {
+      Log.w("setHourHand() called with degrees outside range (-360<deg<360): %s", degrees);
+      return null;
+    } else if(h === 'h') {
+      hnd = 'hours';
+    } else if(h === 'm') {
+      hnd = 'minutes';
+    } else if(h === 's') {
+      hnd = 'seconds';
+    } else {
+      Log.w("setHourHand() called without a parameter of 'hours', 'minutes', or 'seconds'. Just setting hour hand.");
+      hnd = 'hours';
+    }
+    this.hands[hnd] = degrees;
+  }
+
+  public setClockHands(hands:any) {
+    let error = false;
+    if(hands && typeof hands === 'object') {
+      let keys = Object.keys(hands);
+
+      for (let keyString of keys) {
+        let key = keyString.toLowerCase().trim();
+        if (key !== 'hours' && key !== 'minutes' && key !== 'seconds') {
+          Log.e("setClockHands() requires an object of type {hours: x, minutes:y, seconds: z} where x, y, and z are the number of degrees to set the hand to.");
+          error = true;
+        } else {
+          if(!(typeof hands[key] === 'number' && (hands[key] <= 360 || hands[key] >= -360))) {
+            error = true;
+            break;
+          }
+        }
+      }
+      if(error) {
+        Log.e("setClockHands() requires an object of type {hours: x, minutes:y, seconds: z} where x, y, and z are the number of degrees to set the hand to (-360 <= deg <= 360).");
+        return null;
+      } else {
+        for(let key of keys) {
+          this.hands[key] = hands[key];
+        }
+      }
+    } else {
+      Log.e("setClockHands() requires an object of type {hours: x, minutes:y, seconds: z} where x, y, and z are the number of degrees to set the hand to (-360 <= deg <= 360).");
+      return null;
+    }
+    return this.hands;
   }
 
 }

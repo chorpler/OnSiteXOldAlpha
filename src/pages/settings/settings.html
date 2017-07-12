@@ -37,7 +37,10 @@
     <ion-item-group>
       <ion-item-divider color="light">{{'app_functions' | translate}} </ion-item-divider>
       <ion-item>
-        <button ion-item color="secondary" class="logout-button" (click)="confirmLogout()">{{'logout' | translate}}</button>
+        <button ion-item color="danger" class="logout-button" (click)="confirmLogout()">{{'logout' | translate}}</button>
+      </ion-item>
+      <ion-item>
+        <button ion-item color="danger" class="restart-app-button" (click)="confirmAppReload()">{{'restart_app' | translate}}</button>
       </ion-item>
       <ion-item>
         <button ion-item color="secondary" class="help-button" (click)="sendComment()">{{'comment_button' | translate}}</button>

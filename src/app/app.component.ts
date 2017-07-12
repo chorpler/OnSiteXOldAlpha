@@ -30,6 +30,7 @@ import { Employee                                    } from '../domain/employee'
 import { Shift                                       } from '../domain/shift'                   ;
 import { PayrollPeriod                               } from '../domain/payroll-period'          ;
 import { Message                                     } from '../domain/message'                 ;
+import * as rxjs from 'rxjs';
 
 @Component({ templateUrl: 'app.html' })
 export class OnSiteApp {
@@ -47,6 +48,7 @@ export class OnSiteApp {
   public data                    : any                         ;
   private ui                     : any                         ;
   public tech                    : Employee                    ;
+  public appLanguages            : Array<string> = ['en','es'] ;
 
   constructor(
                 public platform    : Platform          ,
@@ -73,6 +75,7 @@ export class OnSiteApp {
   ) {
     window['onsiteapp'] = this;
     window['moment'] = moment;
+    window['rxjs'] = rxjs;
     this.initializeApp();
   }
 
@@ -110,44 +113,58 @@ export class OnSiteApp {
       this.preloadAudioFiles();
 
       let callingClass = this;
-      this.translate.get(['spinner_app_loading']).subscribe((result) => {
-        let lang = result;
-        if(!callingClass.ud.isBootError()) {
-          callingClass.alert.showSpinner(lang['spinner_app_loading'], false, 15000);
-          callingClass.bootApp().then(res =>{
-            Log.l("OnSite.initializeApp(): bootApp() returned successfully!");
-
-            callingClass.alert.hideSpinner(0, true).then(res => {
-              callingClass.ud.setAppLoaded(true);
-              callingClass.rootPage = 'OnSiteHome';
-              setTimeout(() => {
-                Log.l("OnSite.bootApp(): Publishing startup event after timeout!");
-                callingClass.events.publish('startup:finished', true);
-              }, 50);
-            })
-          }).catch(err => {
-            Log.l("OnSite.initializeApp(): bootApp() returned error.");
-            Log.e(err);
-            callingClass.ud.setAppLoaded(true);
-            callingClass.rootPage = 'Login';
-            setTimeout(() => {
-              // Log.l("OnSite.bootApp(): Publishing startup event after timeout!");
-              // callingClass.events.publish('startup:finished', true);
-            }, 50);
-            // callingClass.rootPage = 'Login';
-          });
-        } else {
-          Log.w("OnSite.initializeApp(): app boot error has been thrown.");
-          callingClass.ud.setAppLoaded(true);
-          setTimeout(() => {
-            callingClass.rootPage = 'Login';
-          }, 500);
-          // setTimeout(() => {
-          //   Log.l("OnSite.bootApp(): Publishing startup event after timeout!");
-          //   callingClass.events.publish('startup:finished', true);
-          // }, 50);
+      this.checkPreferences().then(() => {
+        Log.l("OnSite.initializeApp(): Done messing with preferences, now checking login...");
+        let language = this.prefs.USER.language;
+        this.translate.addLangs(this.appLanguages);
+        if (language !== 'en') {
+          this.translate.use(language);
         }
+        this.translate.get(['spinner_app_loading']).subscribe((result) => {
+          let lang = result;
+          if(!callingClass.ud.isBootError()) {
+            callingClass.alert.showSpinner(lang['spinner_app_loading'], false, 15000);
+            callingClass.bootApp().then(res =>{
+              Log.l("OnSite.initializeApp(): bootApp() returned successfully!");
+
+              callingClass.alert.hideSpinner(0, true).then(res => {
+                callingClass.ud.setAppLoaded(true);
+                callingClass.rootPage = 'OnSiteHome';
+                setTimeout(() => {
+                  Log.l("OnSite.bootApp(): Publishing startup event after timeout!");
+                  callingClass.events.publish('startup:finished', true);
+                }, 50);
+              })
+            }).catch(err => {
+              Log.l("OnSite.initializeApp(): bootApp() returned error.");
+              Log.e(err);
+              callingClass.ud.setAppLoaded(true);
+              callingClass.rootPage = 'Login';
+              setTimeout(() => {
+                // Log.l("OnSite.bootApp(): Publishing startup event after timeout!");
+                // callingClass.events.publish('startup:finished', true);
+              }, 50);
+              // callingClass.rootPage = 'Login';
+            });
+          } else {
+            Log.w("OnSite.initializeApp(): app boot error has been thrown.");
+            callingClass.ud.setAppLoaded(true);
+            setTimeout(() => {
+              callingClass.rootPage = 'Login';
+            }, 500);
+            // setTimeout(() => {
+            //   Log.l("OnSite.bootApp(): Publishing startup event after timeout!");
+            //   callingClass.events.publish('startup:finished', true);
+            // }, 50);
+          }
+        });
+      }).catch(err => {
+        Log.l("initializeApp(): Error in checkPreferences or translate.get or something!");
+        Log.e(err);
       });
+    }).catch(err => {
+      Log.l("initializeApp(): Error with getAppVersion() or platform.ready()! That's bad!");
+      Log.e(err);
     });
   }
 
@@ -180,6 +197,7 @@ export class OnSiteApp {
         Log.l("OnSite.bootApp(): Got new messages.");
         let badges = this.msgService.getNewMessageCount();
         this.tabs.setMessageBadge(badges);
+        let pp = this.ud.createPayrollPeriods(this.data.employee[0], 2);
         this.alert.hideSpinner(0, true).then(res => {
           resolve(true);
         }).catch(err => {

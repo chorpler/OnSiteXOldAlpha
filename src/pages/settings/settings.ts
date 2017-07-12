@@ -21,6 +21,7 @@ import { UserData                                                            } f
 
 export class Settings implements OnInit {
   public title           : string     = "App Settings"    ;
+  public lang            : any                            ;
   public confirmTitle    : string     = ""                ;
   public logOutMsg       : string     = ""                ;
   public languages       : Array<any> = []                ;
@@ -41,13 +42,16 @@ export class Settings implements OnInit {
 
   ngOnInit() {
     Log.l("Settings: ngOnInit() called");
-    let eng = { value: 'en', display: 'English' };
-    let esp = { value: 'es', display: 'Español' };
-    // this.languages = [eng, esp];
-    this.languages = [
-      { value: 'en', display: 'English' },
-      { value: 'es', display: 'Español' }
-    ];
+    let translations = [
+      'confirm_logout_title',
+      'confirm_logout_message',
+      'confirm_app_restart_title',
+      'confirm_app_restart_text',
+    ]
+    this.lang = this.translate.instant(translations);
+    let en = { value: 'en', display: 'English' };
+    let es = { value: 'es', display: 'Español' };
+    this.languages = [ en, es ];
     let currentLang = this.translate.currentLang;
     for(let language of this.languages) {
       if(currentLang === language.value) {
@@ -97,9 +101,9 @@ export class Settings implements OnInit {
   }
 
   confirmLogout() {
-    let confirmStrings = this.translate.instant(['confirm_logout_title', 'confirm_logout_message']);
-    let title = confirmStrings['confirm_logout_title'];
-    let text  = confirmStrings['confirm_logout_message'];
+    let lang = this.lang;
+    let title = lang['confirm_logout_title'];
+    let text  = lang['confirm_logout_message'];
     this.alert.showConfirm(title, text).then((leave) => {
       if(leave) {
         this.logoutOfApp();
@@ -107,7 +111,7 @@ export class Settings implements OnInit {
     }).catch(err => {
       Log.l("confirmLogout(): Error confirming logout!");
       Log.e(err);
-    })
+    });
   }
 
   updateLanguage(language:any) {
@@ -173,6 +177,26 @@ export class Settings implements OnInit {
         Log.e(err);
         reject(err);
       });
+    });
+  }
+
+  public reloadApp() {
+    // window.location.reload
+  }
+
+  public confirmAppReload() {
+    let lang = this.lang;
+    let title = lang['confirm_app_restart_title'];
+    let text = lang['confirm_app_restart_text'];
+    let msg   = sprintf("%s<br>\n<br>\n%s", text, window.location.href)
+    this.alert.showConfirm(title, msg).then((restart) => {
+      if (restart) {
+        Log.l("RELOADING ONSITEX....");
+        this.reloadApp();
+      }
+    }).catch(err => {
+      Log.l("confirmLogout(): Error confirming logout!");
+      Log.e(err);
     });
   }
 

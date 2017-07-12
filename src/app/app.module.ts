@@ -1,8 +1,7 @@
 import 'intl'                                                                                                    ;
 import 'intl/locale-data/jsonp/en'                                                                               ;
 import { BrowserModule                                           } from '@angular/platform-browser'              ;
-// import { BrowserAnimationsModule                                 } from '@angular/platform-browser/animations'   ;
-// import { MultiPickerModule, BrowserModule                        } from 'ion-multi-picker'                       ;
+import { BrowserAnimationsModule                                 } from '@angular/platform-browser/animations'   ;
 import { MultiPickerModule                                       } from 'ion-multi-picker'                       ;
 import { HttpModule,Http                                         } from '@angular/http'                          ;
 import { ErrorHandler, NgModule                                  } from '@angular/core'                          ;

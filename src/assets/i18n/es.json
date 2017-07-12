@@ -159,5 +159,8 @@
   "standby_report_xor_work_report_existing_standby": "Tiene un Reporte Espera para este turno. No puede agregar un Reporte de Trabajo para el mismo turno que un Reporte Espera. Puede editar o eliminar el reporte existente en la página Reportes de Trabajo (toque %s de abajo).",
   "standby_report_xor_work_report_existing_work_report": "Tiene un Reporte de Trabajo para este turno. No puede agregar un Reporte Espera para el mismo turno que un Reporte de Trabajo. Puede editar o eliminar el reporte existente en la página Reportes de Trabajo (toque %s de abajo).",
   "stay_in_reports": "Permanecer en Reporte",
-  "stay_in_reports_help": "Si esta opción está activada, la página Reporte de Trabajo (pestaña <span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>) no pasa al Historial de Reportes después de guardar un reporte."
+  "stay_in_reports_help": "Si esta opción está activada, la página Reporte de Trabajo (pestaña <span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>) no pasa al Historial de Reportes después de guardar un reporte.",
+  "restart_app": "Reiniciar la Aplicación",
+  "confirm_app_restart_title": "Reiniciar OnSiteX?",
+  "confirm_app_restart_text": "¿Desea reiniciar la aplicación? Esto actualizará todos los datos como si acabas de iniciar la aplicación después de matarla o después de reiniciar el teléfono. No se perderán datos."
 }

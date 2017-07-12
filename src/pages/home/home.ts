@@ -1,6 +1,7 @@
 // import { Component, OnInit, NgZone, ViewChild, ElementRef } from '@angular/core'                 ;
-import { Component, OnInit, NgZone                        } from '@angular/core'                 ;
+import { Component, OnInit, Input, NgZone, ViewChild      } from '@angular/core'                 ;
 import { Http                                             } from '@angular/http'                 ;
+import { trigger, state, style, animate, transition       } from '@angular/animations'           ;
 import { Platform, IonicPage, NavParams, Events           } from 'ionic-angular'                 ;
 import { NavController, ToastController                   } from 'ionic-angular'                 ;
 import { ModalController,ViewController,PopoverController } from 'ionic-angular'                 ;
@@ -77,45 +78,49 @@ export class HomePage {
   static pageError                   : boolean       = false                    ;
   static databases                   : any           = HomePage.PREFS.DB        ;
   static checkboxSVG                 : any           = UserData.getSVGData()    ;
+  static hands                       : any        = UserData.getClockHands()    ;
+  static translations                : Array<string> = []                       ;
 
-  PREFS                       : any                 = HomePage.PREFS           ;
-  prefs                       : any                 = HomePage.PREFS           ;
-  EVENTS                      : Events              = HomePage.EVENTS;
-  startupHandler              : any                 = HomePage.startupHandler;
-  pageLoadedPreviously        : boolean             = HomePage.pageLoadedPreviously;
-  homePageStatus              : any                 = HomePage.homePageStatus;
-  lang                        : any                 = HomePage.lang;
-  fixedHeight                 : any                 = HomePage.fixedHeight;
-  moment                      : any                 = HomePage.moment;
-  today                       : any                 = HomePage.today;
-  loginData                   : any                 = HomePage.loginData;
-  username                    : string              = HomePage.username;
-  userLoggedIn                : boolean             = HomePage.userLoggedIn;
-  title                       : string              = HomePage.title;
-  numChars                    : Array<string>       = HomePage.numChars;
-  chkBxBool                   : boolean             = HomePage.chkBxBool;
-  chkBx                       : string              = HomePage.chkBx;
-  shftHrs                     : number              = HomePage.shftHrs;
-  hrsSubmitted                : number              = HomePage.hrsSubmitted;
-  dataReady                   : boolean             = HomePage.dataReady;
-  spinnerText                 : string              = HomePage.spinnerText;
-  techProfile                 : any                 = HomePage.techProfile;
-  techWorkOrders              : Array<WorkOrder>    = HomePage.techWorkOrders;
-  shiftWorkOrders             : Array<WorkOrder>    = HomePage.shiftWorkOrders;
-  payrollWorkOrders           : Array<WorkOrder>    = HomePage.payrollWorkOrders;
-  otherReports                : Array<ReportOther>  = HomePage.otherReports;
-  hoursTotalList              : Array<any>    = []  = HomePage.hoursTotalList;
-  shifts                      : Array<Shift>  = []  = HomePage.shifts;
-  payrollPeriods              : Array<PayrollPeriod>= HomePage.payrollPeriods;
-  period                      : PayrollPeriod       = HomePage.period;
-  tech                        : Employee            = HomePage.tech;
-  payrollPeriodCount          : number              = HomePage.payrollPeriodCount;
-  payrollPeriodHoursTotal     : number              = HomePage.payrollPeriodHoursTotal;
-  payrollPeriodHours          : number              = HomePage.payrollPeriodHours;
-  payrollPeriodBonusHours     : number              = HomePage.payrollPeriodBonusHours;
-  pageError                   : boolean             = HomePage.pageError;
-  databases                   : any                 = this.PREFS.DB            ;
-  checkboxSVG                 : any                 = UserData.getSVGData()    ;
+  public PREFS                       : any                 = HomePage.PREFS           ;
+  public prefs                       : any                 = HomePage.PREFS           ;
+  public EVENTS                      : Events              = HomePage.EVENTS;
+  public startupHandler              : any                 = HomePage.startupHandler;
+  public pageLoadedPreviously        : boolean             = HomePage.pageLoadedPreviously;
+  public homePageStatus              : any                 = HomePage.homePageStatus;
+  public lang                        : any                 = HomePage.lang;
+  public fixedHeight                 : any                 = HomePage.fixedHeight;
+  public moment                      : any                 = HomePage.moment;
+  public today                       : any                 = HomePage.today;
+  public loginData                   : any                 = HomePage.loginData;
+  public username                    : string              = HomePage.username;
+  public userLoggedIn                : boolean             = HomePage.userLoggedIn;
+  public title                       : string              = HomePage.title;
+  public numChars                    : Array<string>       = HomePage.numChars;
+  public chkBxBool                   : boolean             = HomePage.chkBxBool;
+  public chkBx                       : string              = HomePage.chkBx;
+  public shftHrs                     : number              = HomePage.shftHrs;
+  public hrsSubmitted                : number              = HomePage.hrsSubmitted;
+  public dataReady                   : boolean             = HomePage.dataReady;
+  public spinnerText                 : string              = HomePage.spinnerText;
+  public techProfile                 : any                 = HomePage.techProfile;
+  public techWorkOrders              : Array<WorkOrder>    = HomePage.techWorkOrders;
+  public shiftWorkOrders             : Array<WorkOrder>    = HomePage.shiftWorkOrders;
+  public payrollWorkOrders           : Array<WorkOrder>    = HomePage.payrollWorkOrders;
+  public otherReports                : Array<ReportOther>  = HomePage.otherReports;
+  public hoursTotalList              : Array<any>    = []  = HomePage.hoursTotalList;
+  public shifts                      : Array<Shift>  = []  = HomePage.shifts;
+  public payrollPeriods              : Array<PayrollPeriod>= HomePage.payrollPeriods;
+  public period                      : PayrollPeriod       = HomePage.period;
+  public tech                        : Employee            = HomePage.tech;
+  public payrollPeriodCount          : number              = HomePage.payrollPeriodCount;
+  public payrollPeriodHoursTotal     : number              = HomePage.payrollPeriodHoursTotal;
+  public payrollPeriodHours          : number              = HomePage.payrollPeriodHours;
+  public payrollPeriodBonusHours     : number              = HomePage.payrollPeriodBonusHours;
+  public pageError                   : boolean             = HomePage.pageError;
+  public databases                   : any                 = this.PREFS.DB            ;
+  public checkboxSVG                 : any                 = UserData.getSVGData()    ;
+  public hands                       : any                 = HomePage.hands  ;
+  public translations                : Array<string>       = HomePage.translations;
 
   // static PREFS                : any           = new Preferences()        ;
   // static EVENTS               : Events                                   ;
@@ -176,9 +181,30 @@ export class HomePage {
   {
     window["onsitehome"] = window["onsitehome"] ? window["onsitehome"] : this;
     Log.l("HomePage: Hi, I'm the HomePage class constructor!");
+    let translations = [
+      'error',
+      'alet_retrieve_reports_error',
+      'spinner_fetching_reports'
+    ];
+    HomePage.translations = translations;
+    this.translations = HomePage.translations;
+    // this.lang = this.translate.instant(translations);
+    if(!this.lang) {
+      this.translate.get(this.translations).subscribe((result: any) => {
+        this.lang = result;
+      });
+    }
     HomePage.EVENTS = events;
     var caller = this;
     this.dataReady = false;
+    let now = moment();
+    /* Convert hours, minutes, and seconds for current time into degrees of a circle, with the simpler but more confusing math */
+    let h = (now.hour() % 12) * 30;
+    let m = now.minute() * 6;
+    let s = now.second() * 6;
+    let hands = {'hours': h, 'minutes': m, 'seconds': s};
+    Log.l("Setting clock hands to:\n", hands);
+    this.ud.setClockHands(hands);
     if(!this.ud.isAppLoaded()) {
       Log.l("HOMEPAGE SAYS DON'T LOAD ME YET, D-BAG!");
     }
@@ -209,15 +235,6 @@ export class HomePage {
     if(HomePage.homePageStatus.startupFinished === false) {
       this.events.subscribe('startup:finished', HomePage.startupHandler);
     }
-    let translations = [
-      'error',
-      'alet_retrieve_reports_error',
-      'spinner_fetching_reports'
-    ];
-    // this.lang = this.translate.instant(translations);
-    this.translate.get(translations).subscribe((result:any) => {
-      this.lang = result;
-    });
   }
 
   ionViewDidEnter() {
@@ -391,8 +408,9 @@ export class HomePage {
         tech.readFromDoc(profile);
         this.tech              = tech;
         let now                = moment();
-        let payrollPeriod      = this.ud.getPayrollPeriodForDate(now);
-        this.payrollPeriods    = this.ud.createPayrollPeriods(tech, this.payrollPeriodCount);
+        // let payrollPeriod      = this.ud.getPayrollPeriodForDate(now);
+        // this.payrollPeriods    = this.ud.createPayrollPeriods(tech, this.payrollPeriodCount);
+        this.payrollPeriods    = this.ud.getPayrollPeriods();
         Log.l("fetchTechWorkorders(): Payroll periods created as:\n", this.payrollPeriods);
         for(let period of this.payrollPeriods) {
           for(let shift of period.shifts) {
@@ -621,5 +639,7 @@ export class HomePage {
     Log.l("changedPayrollPeriod(): Payroll period changed to:\n", period);
     this.ud.setHomePeriod(this.period);
   }
+
+
 
 }

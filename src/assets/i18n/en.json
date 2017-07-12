@@ -159,5 +159,8 @@
   "standby_report_xor_work_report_existing_standby": "You have an existing Standby Report for this shift. You cannot add a Work Report for the same shift as a Standby Report. You can edit or delete the existing report on the Report History tab (tap %s below).",
   "standby_report_xor_work_report_existing_work_report": "You have an existing Work Report for this shift. You cannot add a Standby Report for the same shift as a Work Report. You can edit or delete the existing report on the Report History tab (tap %s below).",
   "stay_in_reports": "Stay in Reports",
-  "stay_in_reports_help": "If this toggle is set, the Work Report page (<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span> tab) does not go to Report History after you save a report."
+  "stay_in_reports_help": "If this toggle is set, the Work Report page (<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span> tab) does not go to Report History after you save a report.",
+  "restart_app": "Restart App",
+  "confirm_app_restart_title": "Restart OnSiteX?",
+  "confirm_app_restart_text": "Do you want to restart the app? This will refresh all data as if you had just started the app after killing it or after rebooting your phone. No data will be lost."
 }

@@ -4,7 +4,12 @@
       <ion-icon class="startSingleIcon" name="ion-home"></ion-icon>
     </button>
     <ion-title>
-      {{"home_title" | translate}}
+      <span class="title-and-user" *ngIf="!ud.getTechName()"><span class="app-title">{{"home_title" | translate}}</span></span>
+      <span class="title-and-user" *ngIf="ud.getTechName()">
+        <span class="app-title">{{"home_title" | translate}}</span>
+        &nbsp;
+        <span class="app-user">{{ud.getTechName()}}</span>
+      </span>
     </ion-title>
     <ion-buttons right>
       <button ion-button color="primary" icon-only (click)="showHelp($event)">
@@ -18,12 +23,14 @@
 </ion-header>
 
 <div #fixed ion-fixed></div>
-<div class="waiting-clock" *ngIf="!(dataReady && ud.isHomePageReady())">
-  <clock></clock>
-</div>
-<ion-content padding [ngStyle]="{'margin-top': fixedHeight}" *ngIf="dataReady && ud.isHomePageReady()">
-  <p class="home-welcome">{{ud.getTechName()}}</p>
-  <p class="home-date">{{today.format('dddd MMM DD YYYY')}} </p>
+<ion-content padding [ngStyle]="{'margin-top': fixedHeight}">
+  <div class="waiting-clock" *ngIf="!(dataReady && ud.isHomePageReady())">
+    <clock></clock>
+  </div>
+  <div class="home-header-container" *ngIf="dataReady && ud.isHomePageReady()">
+    <p class="home-welcome">{{ud.getTechName()}}</p>
+    <p class="home-date">{{today.format('dddd MMM DD YYYY')}} </p>
+  </div>
   <!-- <ion-card no-lines class="shift-summary" *ngIf="dataReady"> -->
    <ion-card no-lines class="shift-summary" *ngIf="dataReady && ud.isHomePageReady()">
     <ion-card-header class="home-card-header-payroll-period">
@@ -31,9 +38,9 @@
         <ion-label class="home-card-header-payroll-period-label-label">{{'payroll_period' | translate}}</ion-label>
       </ion-item>
         <ion-list radio-group [(ngModel)]="period">
-          <ion-item *ngFor="let period of payrollPeriods">
-            <ion-label>{{period.getPayrollPeriodDescription()}}</ion-label>
-            <ion-radio [value]="period" checked="period" (ionSelect)="changedPayrollPeriod(period)"></ion-radio>
+          <ion-item *ngFor="let payperiod of payrollPeriods">
+            <ion-label>{{payperiod.getPayrollPeriodDescription()}}</ion-label>
+            <ion-radio [value]="payperiod" (ionSelect)="changedPayrollPeriod(payperiod)"></ion-radio>
           </ion-item>
         </ion-list>
       <!-- <ion-item class="home-card-header-payroll-period-data-item"> -->

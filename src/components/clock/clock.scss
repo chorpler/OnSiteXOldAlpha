@@ -6,6 +6,37 @@ clock {
   width: 50%;
   margin-left: auto;
   margin-right: auto;
+  .containerSeconds {
+    min-width: 350px;
+    min-height: 350px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: transparent;
+    z-index: 48;
+    transform: rotate(120deg);
+  }
+  .containerMinutes {
+    transform: rotate(042deg);
+    min-width: 350px;
+    min-height: 350px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: transparent;
+    z-index: 47;
+  }
+  .containerHours {
+    // transform: rotate(240deg);
+    transform: rotate(270deg);
+    min-width: 350px;
+    min-height: 350px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: transparent;
+    z-index: 46;
+  }
   .rotateGears {
     -webkit-animation-name: rotate1;
     animation-name: rotate1;

@@ -22,6 +22,7 @@ import * as timer from 'moment-timer';
 var _emptyFunc = function () { };
 
 export type Moment = momentous.Moment;
+var mom = momentous;
 // export moment;
 momentous['parseFormat'] = parseFormat;
 momentous['timer'] = timer;
@@ -131,10 +132,11 @@ var excel2moment = function(days:number|string) {
 momentous.fn['toExcel'] = moment2excel;
 // momentous['fromExcel'] = excel2moment;
 momentous.fn['fromExcel'] = excel2moment;
+mom['fromExcel'] = excel2moment;
 // moment2excel.bind(moments);
 // excel2moment.bind(moments);
 // export type Moment = Momentous;
-export var moment = momentous;
+export var moment = mom;
 
 export const isMoment = function (val: any) { return (moment.isMoment(val) && moment(val).isValid()); }
 export const sizeOf = function (val: any) {
