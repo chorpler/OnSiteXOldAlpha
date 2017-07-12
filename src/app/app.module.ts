@@ -47,10 +47,12 @@ import { Preferences                                             } from '../prov
 import { SmartAudio                                              } from '../providers/smart-audio'               ;
 import { MessageService                                          } from '../providers/message-service'           ;
 import { CommentService                                          } from '../providers/comment-service'           ;
+import { ClockComponent } from '../components/clock/clock';
 
 @NgModule({
   declarations   : [
                       OnSiteApp,
+    ClockComponent,
                    ],
   entryComponents: [  OnSiteApp                      ],
 
