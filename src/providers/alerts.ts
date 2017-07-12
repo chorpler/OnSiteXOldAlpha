@@ -48,21 +48,19 @@ export class AlertService {
     } else {
       options = { content: text, showBackdrop: false};
     }
-    this.loading = this.loadingCtrl.create({
-      content: text,
-      showBackdrop: false,
-    });
-    this.loadings.push(this.loading);
+    let loading = this.loadingCtrl.create(options);
+    this.loadings.push(loading);
     if(!returnPromise) {
-      this.loading.present().then(res => {
+      loading.present().then(res => {
         Log.l("showSpinner(): Showed spinner with text: ", text);
+        Log.l(this.loading);
       }).catch((reason: any) => {
         Log.l("AlertService: loading.present() error:\n", reason);
         // reject(res);
       });
     } else {
       return new Promise((resolve,reject) => {
-        this.loading.present().then(res => {
+        loading.present().then(res => {
           Log.l("showSpinner(): Showed spinner with text: ", text);
           resolve(res);
         }).catch((reason:any) => {

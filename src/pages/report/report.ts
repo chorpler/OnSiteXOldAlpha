@@ -114,10 +114,10 @@ export class ReportPage implements OnInit {
   selTravelLocation         : Array<any>                                    ;
   training_type             : any              = null                       ;
   travel_location           : any              = null                       ;
-  sickTime                  : any                                           ;
-  _sickTime                 : any                                           ;
-  allDay                    : boolean            = false                    ;
+  allDay                    : boolean          = false                      ;
   _allDay                   : any                                           ;
+  previousEndTime           : any                                           ;
+  oldType                   : any                                           ;
 
   constructor(
     public navCtrl      : NavController,
@@ -313,107 +313,133 @@ export class ReportPage implements OnInit {
     // this._allDay          = this.workOrderForm.controls['allDay']          ;
 
     this._type.valueChanges.subscribe((value:any) => {
+      Log.l("Field 'type' fired valueChanges for:\n", value);
       // setTimeout(() => {
-        let oldType = this.type;
-        let oldVal = oldType.value;
-        let ro = this.reportOther;
-        this._time.enable(true);
-        if (value.name === 'training') {
-          ro.training_type = "Safety";
-          ro.time = 2;
-          this._training_type.setValue(this.selTrainingType[0]);
-          this.training_type = this.selTrainingType[0];
-          this._time.setValue(2);
-          this.type = value;
-        } else if (value.name === 'travel') {
-          ro.travel_location = "BE MDL MNSHOP";
-          ro.time = 6;
-          this.travel_location = this.selTravelLocation[0];
-          this._travel_location.setValue(this.selTravelLocation[0]);
-          this._time.setValue(6);
-          this.type = value;
-        } else if (value.name === 'sick') {
-          ro.time = 8;
-          this._time.setValue(8);
-          this.type = value;
-          if(this.allDay) {
-            this._time.disable(true);
-          } else {
-            this._time.enable(true);
-          }
-        } else if (value.name === 'vacation') {
-          ro.time = 8;
-          this._time.setValue(8);
-          this.type = value;
-        } else if (value.name === 'standby') {
-          let shift = this.selectedShift;
-          let status = shift.getShiftReportsStatus(true).code;
-          let hours  = shift.getNormalHours();
-          if(status.indexOf("B") > -1 || status.indexOf("S") > -1) {
-            Log.w("User attempted to create duplicate standby report.");
-            let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
-            let warningText = sprintf(lang['duplicate_standby_report'], warnIcon);
-            this.alert.showAlert(lang['error'], warningText).then(res => {
-              this.type = oldType;
-              this._type.setValue(oldType);
-            });
-          } else if(hours > 0) {
-            Log.w("User attempted to create a standby report in the same shift as an existing work report.");
-            let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
-            let warningText = sprintf(lang['standby_report_xor_work_report_existing_work_report'], warnIcon);
-            this.alert.showAlert(lang['error'], warningText).then(res => {
-              this.type = oldType;
-              this._type.setValue(oldType);
-            });
-          } else {
-            ro.time = 8;
-            this._time.setValue(8);
-            ro.type = value.value;
-            this.type = value;
-          }
-        } else if (value.name === 'standby_hb_duncan') {
-          let status = this.selectedShift.getShiftReportsStatus(true).code;
-          let i = status.indexOf("B");
-          let j = status.indexOf("S");
-          if(this.techProfile.location !== "DUNCAN") {
-            Log.w("User attempted to create Standby: HB Duncan report without being set to Duncan location.");
-            let strIcon = "<span class='alert-icon'>&#xf419;</span>";
-            let warnText = sprintf(lang['standby_hb_duncan_wrong_location'], strIcon)
-            let warnFont = sprintf("<span class='alert-with-icon'>%s</span>", warnText);
-            // this.alert.showAlert(lang['error'], warnFont);
-            // this._type.setValue(oldType);
-            this.type = oldType;
-            this._type.setValue(oldType);
-            this.alert.showAlert(lang['error'], warnFont);
-            // .then(res => {
-            // });
-          } else if(i > -1 || j > -1) {
-            Log.w("User attempted to create duplicate standby report.");
-            let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
-            let warningText = sprintf(lang['duplicate_standby_report'], warnIcon);
-            // this._type.setValue(oldType);
-            // this.alert.showAlert(lang['error'], warningText);
-            this.type = oldType;
-            this._type.setValue(oldType);
-            this.alert.showAlert(lang['error'], warningText);
-            // .then(res => {
-            // });
-          } else if(this.selectedShift.getNormalHours() > 0) {
-            Log.w("User attempted to create a standby report in the same shift as an existing work report.");
-            let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
-            let warningText = sprintf(lang['standby_report_xor_work_report_existing_work_report'], warnIcon);
-            this.type = oldType;
-            this._type.setValue(oldType);
-            this.alert.showAlert(lang['error'], warningText);
-            // .then(res => {
-            // });
-          } else {
-            ro.time = 8;
-            this._time.setValue(8);
-            ro.type = value.value;
-            this.type = value;
-          }
+      let oldType = this.selReportType[this.selReportType.indexOf(value)];
+      // this.type   = value;
+      // let oldVal  = oldType.value;
+      let ro      = this.reportOther;
+      // this._time.enable(true);
+      if (value.name === 'training') {
+        ro.training_type = "Safety";
+        ro.time = 2;
+        ro.type = value.value;
+        this._training_type.setValue(this.selTrainingType[0]);
+        this.training_type = this.selTrainingType[0];
+        this._time.setValue(2);
+        this.type = value;
+      } else if (value.name === 'travel') {
+        ro.travel_location = "BE MDL MNSHOP";
+        ro.time = 6;
+        ro.type = value.value;
+        this.travel_location = this.selTravelLocation[0];
+        this._travel_location.setValue(this.selTravelLocation[0]);
+        this._time.setValue(6);
+        this.type = value;
+      } else if (value.name === 'sick') {
+        ro.time = 8;
+        this._time.setValue(8);
+        ro.type = value.value;
+        if(this.allDay) {
+          this._time.disable(true);
+        } else {
+          this._time.enable(true);
         }
+        this.type = value;
+      } else if (value.name === 'vacation') {
+        ro.time = 8;
+        this._time.setValue(8);
+        ro.type = value.value;
+        this.type = value;
+      } else if (value.name === 'standby') {
+        let shift = this.selectedShift;
+        let status = shift.getShiftReportsStatus(true).code;
+        let hours  = shift.getNormalHours();
+        if(status.indexOf("B") > -1 || status.indexOf("S") > -1) {
+          Log.w("User attempted to create duplicate standby report.");
+          let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
+          let warningText = sprintf(lang['duplicate_standby_report'], warnIcon);
+          // this.type = oldType;
+          // this._type.setValue(oldType);
+          // this.alert.showAlert(lang['error'], warningText);
+          this.alert.showAlert(lang['error'], warningText).then(res => {
+            // this.type = oldType;
+            setTimeout(() => {
+              this._type.setValue(oldType);
+            }, 500);
+          });
+        } else if(hours > 0) {
+          Log.w("User attempted to create a standby report in the same shift as an existing work report.");
+          let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
+          let warningText = sprintf(lang['standby_report_xor_work_report_existing_work_report'], warnIcon);
+          // this.type = oldType;
+          // this._type.setValue(oldType);
+          // this.alert.showAlert(lang['error'], warningText);
+          // });
+          this.alert.showAlert(lang['error'], warningText).then(res => {
+            // this.type = oldType;
+            // this._type.setValue(oldType);
+            setTimeout(() => {
+              this._type.setValue(oldType);
+            }, 500);
+          });
+        } else {
+          ro.time = 8;
+          this._time.setValue(8);
+          ro.type = value.value;
+          this.type = value;
+        }
+      } else if (value.name === 'standby_hb_duncan') {
+        let status = this.selectedShift.getShiftReportsStatus(true).code;
+        let i = status.indexOf("B");
+        let j = status.indexOf("S");
+        if(this.techProfile.location !== "DUNCAN") {
+          Log.w("User attempted to create Standby: HB Duncan report without being set to Duncan location.");
+          let strIcon = "<span class='alert-icon'>&#xf419;</span>";
+          let warnText = sprintf(lang['standby_hb_duncan_wrong_location'], strIcon)
+          let warnFont = sprintf("<span class='alert-with-icon'>%s</span>", warnText);
+          // this.alert.showAlert(lang['error'], warnFont);
+          // this._type.setValue(oldType);
+          // this.type = oldType;
+          this._type.setValue(oldType);
+          this.alert.showAlert(lang['error'], warnFont);
+          // .then(res => {
+          // });
+        } else if(i > -1 || j > -1) {
+          Log.w("User attempted to create duplicate standby report.");
+          let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
+          let warningText = sprintf(lang['duplicate_standby_report'], warnIcon);
+          // this._type.setValue(oldType);
+          // this.alert.showAlert(lang['error'], warningText);
+          // this.type = oldType;
+          // this._type.setValue(oldType);
+          // this.alert.showAlert(lang['error'], warningText);
+          this.alert.showAlert(lang['error'], warningText).then(res => {
+            setTimeout(() => {
+              this._type.setValue(oldType);
+            }, 500);
+          });
+        } else if(this.selectedShift.getNormalHours() > 0) {
+          Log.w("User attempted to create a standby report in the same shift as an existing work report.");
+          let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
+          let warningText = sprintf(lang['standby_report_xor_work_report_existing_work_report'], warnIcon);
+          // this.type = oldType;
+          // this._type.setValue(oldType);
+          // this.alert.showAlert(lang['error'], warningText);
+          this.alert.showAlert(lang['error'], warningText).then(res => {
+            setTimeout(() => {
+              this._type.setValue(oldType);
+            }, 500);
+          });
+        } else {
+          ro.time = 8;
+          this._time.setValue(8);
+          ro.type = value.value;
+          this.type = value;
+        }
+      } else {
+        Log.l("type.valueChange(): GETTING TO THIS BRANCH SHOULD NOT BE POSSIBLE! Type is:\n", value);
+      }
       // });
     });
     this._training_type.valueChanges.subscribe((value: any) => {
@@ -879,10 +905,15 @@ export class ReportPage implements OnInit {
         Log.l("processWO(): Successfully synchronized work order to remote.");
         this.alert.hideSpinner();
         // this.tabs.goToPage('OnSiteHome');
-        this.createFreshReport();
-        this.initializeForm();
-        this.initializeFormListeners();
-        this.selectedShift.addShiftReport(newWO);
+        this.previousEndTime = moment(newWO.time_start);
+        if(this.prefs.USER.stayInReports) {
+          this.createFreshReport();
+          this.initializeForm();
+          this.initializeFormListeners();
+          this.selectedShift.addShiftReport(newWO);
+        } else {
+          this.tabs.goToPage('ReportHistory');
+        }
       }).catch((err) => {
         Log.l("processWO(): Error saving work order to local database.");
         Log.e(err);
@@ -920,10 +951,14 @@ export class ReportPage implements OnInit {
     this.db.saveReportOther(newDoc).then(res => {
       Log.l("processAltnerateWO(): Done saving ReportOther!");
       this.alert.hideSpinner();
-      this.type = this.selReportType[0];
-      this.createFreshReport();
-      this.initializeForm();
-      this.initializeFormListeners();
+      if(this.prefs.USER.stayInReports) {
+        this.type = this.selReportType[0];
+        this.createFreshReport();
+        this.initializeForm();
+        this.initializeFormListeners();
+      } else {
+        this.tabs.goToPage('ReportHistory');
+      }
       // if(this.mode === 'Add') {
       //   this.tabs.goToPage('OnSiteHome');
       // } else {
@@ -951,11 +986,16 @@ export class ReportPage implements OnInit {
     let shift = this.selectedShift   ;
     let date  = shift.getStartTime() ;
     // if(this.workOrderForm.value.type === 'work_report') {
+    let start = shift.getStartTime();
+    let hours = shift.getNormalHours();
+    let end = this.previousEndTime;
+    let shiftLatest = moment(start).add(hours, 'hours');
     let wo            = new WorkOrder()                                  ;
     wo.timestampM     = now                                              ;
     wo.timestamp      = now.toExcel()                                    ;
     wo.first_name     = tech.firstName                                   ;
     wo.last_name      = tech.lastName                                    ;
+    wo.time_start     = end ? moment(end) : shiftLatest                  ;
     wo.username       = tech.avatarName                                  ;
     wo.client         = tech.client                                      ;
     wo.location       = tech.location                                    ;
@@ -964,7 +1004,7 @@ export class ReportPage implements OnInit {
     wo.payroll_period = shift.getPayrollPeriod()                         ;
     wo.shift_serial   = shift.getShiftSerial()                           ;
     wo.report_date    = moment(date).startOf('day').format("YYYY-MM-DD") ;
-    wo.technician     = tech.getTechnician
+    wo.technician     = tech.getTechnician                               ;
     this.workOrder    = wo                                               ;
     return wo;
   }

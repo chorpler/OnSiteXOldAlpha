@@ -4,7 +4,7 @@ import { Http                                             } from '@angular/http'
 import { Platform, IonicPage, NavParams, Events           } from 'ionic-angular'                 ;
 import { NavController, ToastController                   } from 'ionic-angular'                 ;
 import { ModalController,ViewController,PopoverController } from 'ionic-angular'                 ;
-import { Log                                              } from '../../config/config.functions' ;
+import { Log, moment, isMoment, Moment                    } from '../../config/config.functions' ;
 import { DBSrvcs                                          } from '../../providers/db-srvcs'      ;
 import { AuthSrvcs                                        } from '../../providers/auth-srvcs'    ;
 import { SrvrSrvcs                                        } from '../../providers/srvr-srvcs'    ;
@@ -15,7 +15,6 @@ import { ReportOther                                      } from '../../domain/r
 import { Shift                                            } from '../../domain/shift'            ;
 import { PayrollPeriod                                    } from '../../domain/payroll-period'   ;
 import { Employee                                         } from '../../domain/employee'         ;
-import * as moment from 'moment'                                                                 ;
 import { TabsComponent                                    } from '../../components/tabs/tabs'    ;
 import { STRINGS                                          } from '../../config/config.strings'   ;
 import { Preferences                                      } from '../../providers/preferences'   ;
@@ -143,22 +142,30 @@ export class HomePage {
     // if(HomePage.homePageStatus.startupFinished) {
     Log.l("HomePage.ionViewDidEnter(): startup already finished, just continuing with runEveryTime()...");
     this.tabs.highlightTab(0);
-      // this.runEveryTime();
+    let loaded = this.ud.isAppLoaded();
+    let ready = this.ud.isHomePageReady();
+    if(loaded && !ready) {
+      this.runEveryTime();
+    } else if(ready) {
+      this.dataReady = true;
+    } else {
+      Log.l("HomePage.ionViewDidEnter(): EXTRA LARGE LOAD DETECTED");
+    }
+    // this.runEveryTime();
     // }
   }
 
-  ionViewDidLoad() {
-    Log.l("HomePage: ionViewDidLoad() called... not doing anything right now.");
-    this.dataReady = false;
-    if(this.ud.isAppLoaded()) {
-      this.runEveryTime();
-    }
-  }
+  // ionViewDidLoad() {
+  //   Log.l("HomePage: ionViewDidLoad() called... not doing anything right now.");
+  //   this.dataReady = false;
+  //   if(this.ud.isAppLoaded()) {
+  //     this.runEveryTime();
+  //   }
+  // }
 
   runEveryTime() {
     if (this.ud.getLoginStatus() === false) {
       Log.l("HomePage.ionViewDidEnter(): User not logged in, showing login modal.");
-      HomePage.homePageStatus.startupFinished = true;
       this.presentLoginModal();
     } else {
       Log.l("HomePage: ionViewDidEnter() says work order array not initialized, fetching work orders.");
@@ -173,6 +180,8 @@ export class HomePage {
         this.shifts = this.ud.getPeriodShifts();
         this.countHoursForShifts();
         this.alert.hideSpinner();
+        this.ud.setHomePageReady(true);
+        HomePage.homePageStatus.startupFinished = true;
         this.dataReady = true;
       }).catch((err) => {
         Log.l("HomePage: ionViewDidEnter() got error while fetching tech work orders.");

@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
-// import { StorageService } from './storage-service';
 import { Log } from '../config/config.functions';
 import 'rxjs/add/operator/map';
 
@@ -47,7 +46,8 @@ export class Preferences {
     language: 'en',
     shifts: 7,
     payroll_periods: 2,
-    audio: false
+    audio: false,
+    stayInReports: false,
   }
   public DB: any = Preferences.DB;
   public SERVER: any = Preferences.SERVER;
@@ -185,7 +185,8 @@ export class Preferences {
       language: 'en',
       shifts: 7,
       payroll_periods: 2,
-      audio: false
+      audio: false,
+      stayInReports: false,
     }
   }
 

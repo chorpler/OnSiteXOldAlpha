@@ -14,15 +14,13 @@ import { STRINGS                       } from '../config/config.strings'   ;
 
 @Injectable()
 export class UserData {
-  public static appdata               : any = {ready: false, version: "10.11.05"}      ;
+  public static appdata               : any = {ready: false, version: "10.11.05", homeReady:false};
   public static _favorites            : string[]             = []                      ;
   public static HAS_LOGGED_IN         = 'hasLoggedIn'                                  ;
   public static HAS_SEEN_TUTORIAL     = 'hasSeenTutorial'                              ;
   public static BOOT_STATUS           : any                  =   {finished: false }    ;
   public BOOT_STATUS                  : any                  = UserData.BOOT_STATUS    ;
   public static shift                 : Shift                                          ;
-  // public static PREFS              : any                  = new Preferences()       ;
-  // public prefs                     : any                  = UserData.PREFS          ;
   public static workOrderList         : Array<WorkOrder>     = []                      ;
   public static current_shift_hours   : any                                            ;
   public static circled_numbers       : Array<string>                                  ;
@@ -57,6 +55,15 @@ export class UserData {
     UserData.data = { employee: [], sites: [], reports: [], otherReports: [], payrollPeriods: [], shifts: [], messages: [], report_types: [], training_types: []};
   }
 
+  public isHomePageReady() {
+    return this.appdata.homeReady;
+  }
+
+  public setHomePageReady(value:boolean) {
+    this.appdata.homeReady = value;
+    return this.appdata.ready;
+  }
+
   public isAppLoaded() {
     return this.appdata.ready;
   }
@@ -78,6 +85,7 @@ export class UserData {
       return false;
     }
   }
+
   public setData(data:any) {
     Log.l("setData(): Attempting to set UserData.data to:\n", data);
     if(data['sites']['length'] === undefined || data['reports']['length'] === undefined || data['otherReports']['length'] === undefined) {

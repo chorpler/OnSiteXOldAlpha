@@ -29,6 +29,10 @@
         <ion-label>{{'sounds' | translate}}</ion-label>
         <ion-toggle [(ngModel)]="sounds" (ngModelChange)="toggleSounds()"></ion-toggle>
       </ion-item>
+      <ion-item>
+        <ion-label>{{'stay_in_reports' | translate}}</ion-label>
+        <ion-toggle [(ngModel)]="stayInReports" (ngModelChange)="toggleStayInReports()"></ion-toggle>
+      </ion-item>
     </ion-item-group>
     <ion-item-group>
       <ion-item-divider color="light">{{'app_functions' | translate}} </ion-item-divider>

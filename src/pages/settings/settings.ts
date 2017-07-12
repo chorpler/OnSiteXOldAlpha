@@ -28,7 +28,8 @@ export class Settings implements OnInit {
   public language        : any        = null              ;
   public appName         : string     = "SESA OnSiteX"    ;
   public appVersion      : string     = "?.?.?"           ;
-  public sounds          : boolean    = true              ;
+  public sounds          : boolean    = false             ;
+  public stayInReports   : boolean    = true              ;
   public dataReady       : boolean    = false             ;
   public static PREFS    : any        = new Preferences() ;
   public PREFS           : any        = Settings.PREFS    ;
@@ -146,7 +147,19 @@ export class Settings implements OnInit {
     }).catch(err => {
       Log.l("toggleSounds(): Error saving preferences.");
       Log.e(err);
-    })
+    });
+  }
+
+  toggleStayInReports() {
+    Log.l("toggleStayInReports(): set to '%s'", this.stayInReports);
+    this.prefs.USER.stayInReports = this.stayInReports;
+    this.savePreferences().then(res => {
+      Log.l("toggleSounds(): Sounds turned to '%s' and preferences saved:\n", this.prefs.USER.audio);
+      Log.l(this.prefs);
+    }).catch(err => {
+      Log.l("toggleSounds(): Error saving preferences.");
+      Log.e(err);
+    });
   }
 
   public savePreferences() {
