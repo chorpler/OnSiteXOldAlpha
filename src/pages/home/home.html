@@ -12,7 +12,12 @@
       </span>
     </ion-title>
     <ion-buttons right>
-      <button ion-button color="primary" icon-only (click)="showHelp($event)">
+      <button ion-button color="primary" icon-only (tap)="toggleClock()" (press)="ud.updatePerfectlyNormalEvent($event)">
+        <!-- <ion-icon class="header-clock-button" name="ion-clock"></ion-icon> -->
+        <!-- <span class="header-clock-button">&#xf26e;</span> -->
+        <ion-icon class="header-clock-icon" name="ios-clock-outline"></ion-icon>
+      </button>
+      <button ion-button color="primary" icon-only (tap)="showHelp($event)">
         <ion-icon class="header-help-button" name="help-circle"></ion-icon>
       </button>
       <!-- <button ion-button color="dark" icon-only (click)="tabs.terminateApp()">
@@ -24,7 +29,7 @@
 
 <div #fixed ion-fixed></div>
 <ion-content padding [ngStyle]="{'margin-top': fixedHeight}">
-  <div class="waiting-clock" *ngIf="!(dataReady && ud.isHomePageReady())">
+  <div class="waiting-clock" *ngIf="!(dataReady && ud.isHomePageReady())" (tap)="toggleClock()">
     <clock></clock>
   </div>
   <div class="home-header-container" *ngIf="dataReady && ud.isHomePageReady()">

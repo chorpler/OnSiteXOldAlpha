@@ -638,6 +638,10 @@ export class HomePage {
     this.ud.setHomePeriod(this.period);
   }
 
-
+  toggleClock() {
+    this.dataReady = !this.dataReady;
+    let hpr = this.ud.isHomePageReady();
+    this.ud.setHomePageReady(!hpr);
+  }
 
 }

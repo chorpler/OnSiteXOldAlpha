@@ -20,7 +20,7 @@ if not exist plugins\cordova-plugin-nativestorage (
   ionic serve --lab
 REM ) else if not exist node_modules\uuid (
   REM echo Installing new plugins. Should script stop running, just run "ironic" again or double-click your icon again.
-  REM npm install uuid --save & npm install @types/uuid --save
+  npm install uuid --save & npm install @types/uuid --save
 ) else (
   echo No new plugins required!
   echo Starting ionic serve completely seriously, if anyone from any government agency is listening...
