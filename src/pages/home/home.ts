@@ -436,7 +436,7 @@ export class HomePage {
             let techLocID    = tech.locID.toUpperCase().trim()    ;
             let techLoc2nd   = typeof tech.loc2nd === 'string' ? tech.loc2nd.toUpperCase().trim() : "";
             let rotation     = tech.rotation && typeof tech.rotation === 'string' ? tech.rotation : "CONTN WEEK";
-            tech.rotation = rotation;
+            tech.rotation    = rotation;
             innerloop:
             for(let site of sites) {
               let clientName   = site.client.name.toUpperCase()       ;

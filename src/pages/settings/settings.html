@@ -1,7 +1,7 @@
 <ion-header>
   <ion-navbar>
     <ion-buttons start>
-      <button ion-button color="light" icon-only (click)="navBacktoHome()">
+      <button ion-button color="light" icon-only (tap)="navBacktoHome()">
         <ion-icon name="home"></ion-icon>
       </button>
     </ion-buttons>
@@ -10,6 +10,9 @@
 </ion-header>
 
 <ion-content padding>
+  <div class="waiting-clock" *ngIf="!dataReady" (tap)="toggleClock()">
+    <clock></clock>
+  </div>
   <ion-list *ngIf="dataReady">
     <ion-item-group>
       <ion-item-divider color="light">{{'app_info' | translate}} </ion-item-divider>
@@ -29,21 +32,24 @@
         <ion-label>{{'sounds' | translate}}</ion-label>
         <ion-toggle [(ngModel)]="sounds" (ngModelChange)="toggleSounds()"></ion-toggle>
       </ion-item>
-      <ion-item>
+      <!-- <ion-item>
         <ion-label>{{'stay_in_reports' | translate}}</ion-label>
         <ion-toggle [(ngModel)]="stayInReports" (ngModelChange)="toggleStayInReports()"></ion-toggle>
-      </ion-item>
+      </ion-item> -->
     </ion-item-group>
     <ion-item-group>
       <ion-item-divider color="light">{{'app_functions' | translate}} </ion-item-divider>
       <ion-item>
-        <button ion-item color="danger" class="logout-button" (click)="confirmLogout()">{{'logout' | translate}}</button>
+        <button ion-item color="danger" class="logout-button" (tap)="confirmLogout()">{{'logout' | translate}}</button>
       </ion-item>
       <ion-item>
-        <button ion-item color="danger" class="restart-app-button" (click)="confirmAppReload()">{{'restart_app' | translate}}</button>
+        <button ion-item color="danger" class="restart-app-button" (tap)="confirmAppReload()">{{'restart_app' | translate}}</button>
       </ion-item>
       <ion-item>
-        <button ion-item color="secondary" class="help-button" (click)="sendComment()">{{'comment_button' | translate}}</button>
+        <button ion-item color="secondary" class="help-button" (tap)="sendComment()">{{'comment_button' | translate}}</button>
+      </ion-item>
+      <ion-item>
+        <button ion-item color="secondary" class="clock-button" (tap)="toggleClock()" (press)="clockHelp()">{{'show_clock' | translate}}</button>
       </ion-item>
     </ion-item-group>
   </ion-list>

@@ -1,6 +1,6 @@
 import { NgModule                         } from '@angular/core'                      ;
 import { HomePage                         } from './home'                             ;
-import { BrowserAnimationsModule                                 } from '@angular/platform-browser/animations'   ;
+import { BrowserAnimationsModule          } from '@angular/platform-browser/animations'   ;
 import { IonicPageModule                  } from 'ionic-angular'                      ;
 import { Http                             } from '@angular/http'                      ;
 import { ClockComponentModule             } from '../../components/clock/clock.module';

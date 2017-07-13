@@ -1,9 +1,6 @@
-import { WorkOrder                     } from './workorder'                ;
-import { ReportOther                   } from './reportother'              ;
-import { Log, isMoment, moment, Moment } from '../config/config.functions' ;
-import { sprintf                       } from 'sprintf-js'                 ;
-
-const XL = moment([1900, 0, 1]);
+import { Log, isMoment, moment, Moment   } from '../config/config.functions' ;
+import { sprintf                         } from 'sprintf-js'                 ;
+import { WorkOrder, ReportOther, Jobsite } from './domain-classes'         ;
 
 export class Shift {
   public site_name           : string                        ;
@@ -22,22 +19,26 @@ export class Shift {
   public shift_hours         : any                           ;
   public shift_reports       : Array<WorkOrder>   = []       ;
   public other_reports       : Array<ReportOther> = []       ;
+  public site                : Jobsite                       ;
 
   constructor(site_name?, shift_week?, shift_time?, start_time?, shift_length?) {
     if(arguments.length == 1 && typeof arguments[0] == 'object') {
       this.readFromDoc(arguments[0]);
     } else {
-      this.site_name      = site_name    || ''   ;
-      this.shift_week     = shift_week   || ''   ;
-      this.shift_time     = shift_time   || 'AM' ;
-      this.start_time     = start_time   || ''   ;
-      this.shift_length   = shift_length || -1   ;
-      this.shift_id       = -1                   ;
-      this.shift_number   = -1                   ;
-      this.shift_week_id  = -1                   ;
-      this.payroll_period = null                 ;
-      this.shift_serial   = null                 ;
-      this.shift_hours    = 0                    ;
+      this.site_name      = site_name    || ''       ;
+      this.shift_week     = shift_week   || ''       ;
+      this.shift_time     = shift_time   || 'AM'     ;
+      this.start_time     = start_time   || ''       ;
+      this.shift_length   = shift_length || -1       ;
+      this.shift_id       = -1                       ;
+      this.shift_number   = -1                       ;
+      this.shift_week_id  = -1                       ;
+      this.payroll_period = null                     ;
+      this.shift_serial   = null                     ;
+      this.shift_hours    = 0                        ;
+      this.shift_reports  = this.shift_reports || [] ;
+      this.other_reports  = this.other_reports || [] ;
+      this.site           = null                     ;
       this.updateShiftNumber();
       this.colors = {'red': false, 'green': false, 'blue': false};
       this.XL = { 'shift_time': null, 'shift_week': null, 'current_payroll_week': null};
@@ -88,6 +89,15 @@ export class Shift {
       this.start_time = start;
     }
     return this.start_time;
+  }
+
+  public setJobsite(site:Jobsite) {
+    this.site = site;
+    return this.site;
+  }
+
+  public getJobsite():Jobsite {
+    return this.site;
   }
 
   public getShiftWeek() {
@@ -156,7 +166,8 @@ export class Shift {
     let shift_week_number = -1;
     // let start_date = moment(XL);
     if(moment.isMoment(this.shift_week)) {
-      shift_week_number = this.shift_week.diff(XL, 'days') + 2;
+      // shift_week_number = this.shift_week.diff(XL, 'days') + 2;
+      shift_week_number = moment(this.shift_week).toExcel(true);
     }
     return shift_week_number;
   }
@@ -169,9 +180,9 @@ export class Shift {
     let now = moment();
     let day = moment(this.start_time);
     let week = moment(this.shift_week);
-    let nowXL = now.diff(XL, 'days') + 1;
-    let dayXL = day.diff(XL, 'days');
-    let weekXL = week.diff(XL, 'days');
+    let nowXL = moment(now).toExcel();
+    let dayXL = moment(now).toExcel(true);
+    let weekXL = moment(week).toExcel(true);
     let nextWeekXL = weekXL + 7;
     if(dayXL >= weekXL && dayXL < nextWeekXL) {
       return true;

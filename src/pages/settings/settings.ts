@@ -47,6 +47,8 @@ export class Settings implements OnInit {
       'confirm_logout_message',
       'confirm_app_restart_title',
       'confirm_app_restart_text',
+      'show_clock',
+      'show_clock_help'
     ]
     this.lang = this.translate.instant(translations);
     let en = { value: 'en', display: 'English' };
@@ -181,7 +183,23 @@ export class Settings implements OnInit {
   }
 
   public reloadApp() {
+    let loc = window.location;
+    let origin = loc.origin;
+    let path = loc.pathname;
+    let url = origin + path;
+    window.location.href = url;
+    window.location.reload();
+    // let url = window.location.
     // window.location.reload
+  }
+
+  public toggleClock() {
+    this.dataReady = !this.dataReady;
+  }
+
+  public clockHelp() {
+    let lang = this.lang;
+    this.alert.showAlert(lang['show_clock'], lang['show_clock_help']);
   }
 
   public confirmAppReload() {

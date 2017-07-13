@@ -1,17 +1,17 @@
-import { Shift } from './shift';
-import { Employee } from './employee';
 import { Log, isMoment, moment, Moment } from '../config/config.functions';
+import { Shift, Employee, Jobsite      } from './domain-classes'          ;
 
 export class PayrollPeriod {
-  public start_date:any;
-  public end_date:any;
-  public serial_number:number;
-  public shifts:Array<Shift> = [];
-  public shift_hours_list:Array<number> = [];
-  public shift_payroll_hours_list:Array<number> = [];
-  public total_hours:number = 0;
-  public bonus_hours:number = 0;
-  public payroll_hours:number = 0;
+  public start_date              : any                ;
+  public end_date                : any                ;
+  public serial_number           : number             ;
+  public shifts                  : Array<Shift>  = [] ;
+  public shift_hours_list        : Array<number> = [] ;
+  public shift_payroll_hours_list: Array<number> = [] ;
+  public total_hours             : number        = 0  ;
+  public bonus_hours             : number        = 0  ;
+  public payroll_hours           : number        = 0  ;
+  public site                    : Jobsite            ;
 
   constructor(start_date?: Moment | string | number, end_date?: Moment | string | number, serial_number?:number, shifts?:Array<Shift>, total_hours?:number, payroll_hours?:number) {
     this.start_date               = start_date    || null;
@@ -23,7 +23,7 @@ export class PayrollPeriod {
     this.bonus_hours              =                  0   ;
     this.shift_hours_list         = []                   ;
     this.shift_payroll_hours_list = []                   ;
-
+    this.site                     = null                 ;
   }
 
   readFromDoc(doc:any) {
@@ -169,24 +169,28 @@ export class PayrollPeriod {
     return output;
   }
 
-  createPayrollPeriodShiftsForTech(tech:Employee) {
+  createPayrollPeriodShiftsForTech(tech:Employee, site:Jobsite) {
     let day = moment(this.end_date).startOf('day');
     let today = moment().startOf('day');
     let tp = tech;
     if (tp !== undefined && tp !== null) {
-      let shifts  = [];
+      let rotation = tp.rotation;
+      let shifts = new Array<Shift>();
       for (let i = 0; i < 7; i++) {
         let tmpDay = moment(day).subtract(i, 'days');
         if(tmpDay.isAfter(today)) {
           continue;
         } else {
-          let shift_day = tmpDay.startOf('day');
-          let tmpStart = tp.shiftStartTime;
-          let shift_start_time = moment(shift_day).add(tmpStart, 'hours');
-          let client = tp.client || "SITENAME";
-          let type = tp.shift;
-          let length = tp.shiftLength;
-          let thisShift = new Shift(client, null, type, shift_start_time, length);
+          let ampm             = tech.shift.toUpperCase().trim()                         ;
+          let rotation         = tech.rotation.toUpperCase().trim()                      ;
+          let shift_day        = tmpDay.startOf('day')                                   ;
+          let tmpStart         = tp.shiftStartTime                                       ;
+          let shift_start_time = moment(shift_day).add(tmpStart, 'hours')                ;
+          let client           = tp.client                                               || "SITENAME" ;
+          let type             = tp.shift                                                ;
+          let length           = tp.shiftLength                                          ;
+          let thisShift        = new Shift(client, null, type, shift_start_time, length) ;
+
           thisShift.updateShiftWeek();
           thisShift.updateShiftNumber();
           thisShift.getExcelDates();

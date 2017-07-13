@@ -21,30 +21,39 @@ export class SmartAudio {
   }
 
   preload(key, asset) {
-
     if (this.audioType === 'html5') {
-
       let audio = {
         key: key,
         asset: asset,
         type: 'html5'
       };
-
-      this.sounds.push(audio);
-
+      let found = false;
+      for(let file of this.sounds) {
+        if(audio.key === file.key) {
+          found = true;
+        }
+      }
+      if(!found) {
+        this.sounds.push(audio);
+      }
     } else {
-
-      this.nativeAudio.preloadSimple(key, asset);
-
       let audio = {
         key: key,
-        asset: key,
+        asset: asset,
         type: 'native'
       };
-
+      let found = false;
+      for (let file of this.sounds) {
+        if (audio.key === file.key) {
+          found = true;
+        }
+      }
+      if (!found) {
+        this.sounds.push(audio);
+        this.nativeAudio.preloadSimple(key, asset);
+      }
       this.sounds.push(audio);
     }
-
   }
 
   play(key) {

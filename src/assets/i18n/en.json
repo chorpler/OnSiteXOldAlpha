@@ -162,5 +162,7 @@
   "stay_in_reports_help": "If this toggle is set, the Work Report page (<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span> tab) does not go to Report History after you save a report.",
   "restart_app": "Restart App",
   "confirm_app_restart_title": "Restart OnSiteX?",
-  "confirm_app_restart_text": "Do you want to restart the app? This will refresh all data as if you had just started the app after killing it or after rebooting your phone. No data will be lost."
+  "confirm_app_restart_text": "Do you want to restart the app? This will refresh all data as if you had just started the app after killing it or after rebooting your phone. No data will be lost.",
+  "show_clock": "Show Pocketwatch",
+  "show_clock_help": "Shows the animated clock, in case people want to see it. Tap the screen again to bring back the app."
 }

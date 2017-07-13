@@ -14,7 +14,7 @@ import { STRINGS                       } from '../config/config.strings'   ;
 
 @Injectable()
 export class UserData {
-  public static appdata               : any = {ready: false, version: "10.11.05", homeLoading:false, attempts: 0, homeReady:false, bootError: false, user: "", name: "", lang: {}};
+  public static appdata               : any = {ready: false, version: "10.11.05", homeLoading:false, attempts: 0, homeReady:false, bootError: false, user: "", name: "", developer: false, lang: {}};
   public static _favorites            : string[]             = []                      ;
   public static HAS_LOGGED_IN         = 'hasLoggedIn'                                  ;
   public static HAS_SEEN_TUTORIAL     = 'hasSeenTutorial'                              ;
@@ -56,6 +56,23 @@ export class UserData {
     window["UserData"] = UserData;
     UserData.data = UserData.data || { employee: [], sites: [], reports: [], otherReports: [], payrollPeriods: [], shifts: [], messages: [], report_types: [], training_types: []};
   }
+
+  // <ion-input
+  //   type="number"
+  //   [ngModel]="progress"
+  //   (ngModelChange)="progress = convertToNumber($event)">
+  // </ion-input>
+
+  public isSpecialDeveloper() {
+    return this.appdata.developer;
+  }
+
+  public setSpecialDeveloper(value:boolean) {
+    this.appdata.developer = value;
+    return this.appdata.developer;
+  }
+
+  public convertToNumber(event): number { return +event; }
 
   public isBootError() {
     return UserData.appdata.bootError;
@@ -473,16 +490,47 @@ export class UserData {
     let len  = payp.length;
     let tmp1 = payp;
     UserData.payrollPeriods = payp.splice(0,len);
-
-    let periodCount = count || 2;
-    for(let i = 0; i < periodCount; i++) {
-      let start = PayrollPeriod.getPayrollPeriodDateForShiftDate(moment(now).subtract(i, 'weeks'));
-      let pp = new PayrollPeriod();
-      pp.setStartDate(start);
-      pp.createPayrollPeriodShiftsForTech(tech);
-      UserData.payrollPeriods.push(pp);
+    let sites = this.getData('sites');
+    let cli = tech.client.toUpperCase();
+    let loc = tech.location.toUpperCase();
+    let lid = tech.locID.toUpperCase();
+    let lc2 = typeof tech.loc2nd === 'string' && tech.loc2nd !== "NA" && tech.loc2nd !== "N/A" ? tech.loc2nd.toUpperCase() : "";
+    let site = null;
+    for(let js of sites) {
+      let jscli1 = js.client.name.toUpperCase();
+      let jscli2 = js.client.fullName.toUpperCase();
+      let jsloc1 = js.location.name.toUpperCase();
+      let jsloc2 = js.location.fullName.toUpperCase();
+      let jslid1 = js.locID.name.toUpperCase();
+      let jslid2 = js.locID.fullName.toUpperCase();
+      let jslc21, jslc22;
+      if(js.loc2nd) {
+        jslc21 = js.loc2nd.name.toUpperCase();
+        jslc22 = js.loc2nd.fullName.toUpperCase();
+      }
+      let loc2ndBool = lc2 ? (lc2 === jslc21 || lc2 === jslc22) : true;
+      if ((cli === jscli1 || cli === jscli2) && (loc === jsloc1 || loc === jsloc2) && (lid === jslid1 || lid === jslid2) && (loc === jsloc1 || loc === jsloc2) && loc2ndBool) {
+        site = js;
+        break;
+      }
     }
-    return UserData.payrollPeriods;
+    if(site) {
+      let periodCount = count || 2;
+      for(let i = 0; i < periodCount; i++) {
+        let start = PayrollPeriod.getPayrollPeriodDateForShiftDate(moment(now).subtract(i, 'weeks'));
+        let pp = new PayrollPeriod();
+        pp.setStartDate(start);
+        pp.createPayrollPeriodShiftsForTech(tech, site);
+        UserData.payrollPeriods.push(pp);
+      }
+      return UserData.payrollPeriods;
+    } else {
+      Log.e("createPayrollPeriods(): Could not find tech at any jobsites:\n", tech);
+      Log.e(sites);
+      return [];
+    }
+
+
   }
 
   getPayrollPeriods() {

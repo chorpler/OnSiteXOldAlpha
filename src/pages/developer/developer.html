@@ -11,11 +11,21 @@
 </ion-header>
 
 <ion-content padding>
+  <button ion-button block color="primary" (click)="updatePreferences()">Save</button>
+  <button ion-button block color="light" type="button" (click)="cancel()">Cancel</button>
   <ion-item-group>
     <ion-item-divider color="light">Developer Controls</ion-item-divider>
     <ion-item>
       <ion-label>Background Geolocation</ion-label>
       <ion-toggle [(ngModel)]="GeolocStatus" (ionChange)="toggleBackgroundGeolocation()"></ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-label>Show _id</ion-label>
+      <ion-toggle [(ngModel)]="showID" (ionChange)="toggleShowID()"></ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-label>Show _rev</ion-label>
+      <ion-toggle [(ngModel)]="showRev" (ionChange)="toggleShowRev()"></ion-toggle>
     </ion-item>
   </ion-item-group>
   <ion-item-group>
@@ -36,11 +46,6 @@
         <ion-label>Protocol</ion-label><ion-input class="developer-input-protocol" type="text" [(ngModel)]="prefs.getServer().protocol"></ion-input>
       </ion-item>
     </ion-item-group>
-  </ion-item-group>
-  <ion-item-group>
-    <ion-item-divider color="light">Language</ion-item-divider>
-    <ion-label>Use Spanish</ion-label>
-    <ion-toggle [checked]="spanishDefault" [(ngModel)]="useSpanish" (ionChange)="toggleLanguage()"></ion-toggle>
   </ion-item-group>
   <ion-item-group>
     <ion-item-divider color="light">Time Stamp Test</ion-item-divider>

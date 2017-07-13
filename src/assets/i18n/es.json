@@ -162,5 +162,7 @@
   "stay_in_reports_help": "Si esta opción está activada, la página Reporte de Trabajo (pestaña <span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>) no pasa al Historial de Reportes después de guardar un reporte.",
   "restart_app": "Reiniciar la Aplicación",
   "confirm_app_restart_title": "Reiniciar OnSiteX?",
-  "confirm_app_restart_text": "¿Desea reiniciar la aplicación? Esto actualizará todos los datos como si acabas de iniciar la aplicación después de matarla o después de reiniciar el teléfono. No se perderán datos."
+  "confirm_app_restart_text": "¿Desea reiniciar la aplicación? Esto actualizará todos los datos como si acabas de iniciar la aplicación después de matarla o después de reiniciar el teléfono. No se perderán datos.",
+  "show_clock": "Mostrar el Enlace de Bolsillo",
+  "show_clock_help": "Muestra el reloj animado, en caso de que quiera verlo. Vuelve a tocar la pantalla para volver a traer la aplicación."
 }

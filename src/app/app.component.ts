@@ -197,6 +197,7 @@ export class OnSiteApp {
         Log.l("OnSite.bootApp(): Got new messages.");
         let badges = this.msgService.getNewMessageCount();
         this.tabs.setMessageBadge(badges);
+        let tech = this.ud.getData('employee')[0];
         let pp = this.ud.createPayrollPeriods(this.data.employee[0], 2);
         this.alert.hideSpinner(0, true).then(res => {
           resolve(true);

@@ -111,14 +111,14 @@ export class WorkOrder {
       if(typeof t === 'string') {
         this.timestampM = moment(t);
       } else if(typeof t === 'number') {
-        this.timestampM = moment().fromExcel(t);
+        this.timestampM = moment.fromExcel(t);
       } else {
         this.timestampM = moment();
       }
-    } else if(doc['timestamp']) {
-      let t = doc['timestamp'];
+    } else if(doc['timestamp'] || doc['timeStamp']) {
+      let t = doc['timestamp'] || doc['timeStamp'];
       if(typeof t === 'number') {
-        this.timestampM = moment().fromExcel(t);
+        this.timestampM = moment.fromExcel(t);
       } else if(typeof t === 'string') {
         this.timestampM = moment(t);
       } else {

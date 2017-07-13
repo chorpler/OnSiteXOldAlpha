@@ -48,10 +48,16 @@ export class Preferences {
     payroll_periods: 2,
     audio: false,
     stayInReports: false,
+    spinnerSpeed: 10,
+  }
+  public static DEVELOPER:any = {
+    showDocID: false,
+    showDocRev: false,
   }
   public DB: any = Preferences.DB;
   public SERVER: any = Preferences.SERVER;
   public USER:any = Preferences.USER;
+  public DEVELOPER:any = Preferences.DEVELOPER;
   constructor() {
     window["onsiteprefs"] = this;
   }
@@ -187,6 +193,12 @@ export class Preferences {
       payroll_periods: 2,
       audio: false,
       stayInReports: false,
+      spinnerSpeed: 10,
+    }
+
+    Preferences.DEVELOPER = {
+      showDocID: false,
+      showDocRev: false,
     }
   }
 

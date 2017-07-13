@@ -242,35 +242,4 @@ page-home {
   //   }
   // }
 
-  .waiting-clock {
-    display: flex;
-    --widthA: 350px;
-    width: 40vw;
-    height: 40vh;
-    margin-left: auto;
-    margin-right: auto;
-    min-width: var(--widthA);
-    min-height: var(--widthA);
-    align-items: center;
-    justify-content: space-around;
-
-    clock {
-      flex: 1 1 auto;
-      height: 100%;
-    }
-    // margin-left: auto;
-    // margin-right: auto;
-
-    // margin-top: calc(50vh - (350px / 1.5));
-    // zoom: 0.75;
-    // clock {
-      // top: -175px;
-      // left: -175px;
-      // position: absolute;
-    // }
-    // margin-left: calc(50vw - (350px / 2));
-    // margin-top: calc(50vh - (350px /3));
-    // padding-left;
-    // zoom: calc(var(--widthA) / 700);
-  }
 }

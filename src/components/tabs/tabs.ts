@@ -43,11 +43,11 @@ export class TabsComponent implements OnInit {
   public static tab:any = {
     'OnSiteHome': {}
   };
-  public onSitePage: any;
-  public userLoggedIn: boolean;
-  public userIsDeveloper:boolean = false;
-  public enumPages:any;
-  public enumPagesDef:any;
+  public onSitePage     : any     ;
+  public userLoggedIn   : boolean ;
+  public userIsDeveloper: boolean =false ;
+  public enumPages      : any     ;
+  public enumPagesDef   : any     ;
 
   constructor( public app: App, public platform: Platform, public zone: NgZone, public translate: TranslateService, public ud:UserData, public alert:AlertService) {
     this.getActiveNav();
@@ -172,6 +172,9 @@ export class TabsComponent implements OnInit {
   isDeveloper() {
     let un = this.ud.getUsername();
     if( un === 'Chorpler' || un === 'Hachero' || un === 'mike' || un === 'admin' ) {
+      this.userIsDeveloper = true;
+      return true;
+    } else if(this.ud.isSpecialDeveloper()) {
       this.userIsDeveloper = true;
       return true;
     } else {

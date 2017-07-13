@@ -26,17 +26,17 @@ import { Preferences                                   } from '../../providers/p
 })
 export class DeveloperPage implements OnInit {
 
-  title          : string        = 'Developers'      ;
-  showingAlert   : boolean       = false             ;
-  GeolocStatus   : boolean       = false             ;
-  // geolocToggle   : boolean       = this.GeolocStatus ;
-  onSiteTimeStamp: number                            ;
-  // testDatabases  : boolean       = false             ;
-  databaseNames  : Array<string> = []                ;
-  // prefs       : any           = PREFS             ;
-  // useSpanish     : boolean       = false             ;
-  spanishDefault : boolean       = false             ;
-  unicodeChars   : string        = ""                ;
+  title          : string        = 'Developers'       ;
+  static PREFS   : any           = new Preferences()  ;
+  public prefs   : any           = DeveloperPage.PREFS;
+  showingAlert   : boolean       = false              ;
+  GeolocStatus   : boolean       = false              ;
+  onSiteTimeStamp: number                             ;
+  databaseNames  : Array<string> = []                 ;
+  spanishDefault : boolean       = false              ;
+  unicodeChars   : string        = ""                 ;
+  showID         : boolean       = false              ;
+  showRev        : boolean       = false              ;
 
   constructor(public navCtrl   : NavController    ,
               public navParams : NavParams        ,
@@ -49,10 +49,7 @@ export class DeveloperPage implements OnInit {
               public timeSrvc  : TimeSrvc         ,
               public translate : TranslateService ,
               public tabs      : TabsComponent    ,
-              public prefs     : Preferences      ,
   ) {
-    // this.spanishDefault = this.translate.currentLang === 'es' ? true : false;
-    // this.useSpanish = this.spanishDefault;
     window['onsitedev'] = this;
     if(this.platform.is('cordova') && this.geoloc.isEnabled()) {
       this.GeolocStatus = true;
@@ -121,6 +118,18 @@ export class DeveloperPage implements OnInit {
       });
       // this.alert.showAlert("SORRY BRO", "");
     }
+  }
+
+  toggleShowID(value:boolean) {
+    let val = this.showID;
+    Log.l("togleShowID(): ID view set to: %s", val);
+    this.prefs.DEVELOPER.showDocID = val;
+  }
+
+  toggleShowRev(value:boolean) {
+    let val = this.showRev;
+    Log.l("togleShowRev(): Rev view set to: %s", val);
+    this.prefs.DEVELOPER.showDocRev = val;
   }
 
   developerAlert() {
