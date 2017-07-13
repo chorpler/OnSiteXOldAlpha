@@ -195,14 +195,6 @@ export class HomePage {
     HomePage.EVENTS = events;
     var caller = this;
     this.dataReady = false;
-    let now = moment();
-    /* Convert hours, minutes, and seconds for current time into degrees of a circle, with the simpler but more confusing math */
-    let h = (now.hour() % 12) * 30;
-    let m = now.minute() * 6;
-    let s = now.second() * 6;
-    let hands = {'hours': h, 'minutes': m, 'seconds': s};
-    Log.l("Setting clock hands to:\n", hands);
-    this.ud.setClockHands(hands);
     if(!this.ud.isAppLoaded()) {
       Log.l("HOMEPAGE SAYS DON'T LOAD ME YET, D-BAG!");
     }
@@ -639,6 +631,8 @@ export class HomePage {
   }
 
   toggleClock() {
+    let now = moment();
+    this.ud.updateClock(now);
     this.dataReady = !this.dataReady;
     let hpr = this.ud.isHomePageReady();
     this.ud.setHomePageReady(!hpr);

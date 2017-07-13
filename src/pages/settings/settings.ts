@@ -35,7 +35,7 @@ export class Settings implements OnInit {
   public static PREFS    : any        = new Preferences() ;
   public prefs           : any        = Settings.PREFS    ;
 
-  constructor( public navCtrl: NavController, public platform: Platform,  public auth: AuthSrvcs, public alert: AlertService, public tabs: TabsComponent, public translate: TranslateService, public version: AppVersion, public storage:StorageService, public modalCtrl:ModalController, public ud:UserData) {
+  constructor( public navCtrl: NavController, public platform: Platform,  public auth: AuthSrvcs, public alert: AlertService, public tabs: TabsComponent, public translate: TranslateService, public version:AppVersion, public storage:StorageService, public modalCtrl:ModalController, public ud:UserData) {
     window["onsitesettings"] = this;
   }
 

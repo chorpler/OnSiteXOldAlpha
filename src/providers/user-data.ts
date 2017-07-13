@@ -17,7 +17,7 @@ import { Employee                      } from '../domain/employee'             ;
 
 @Injectable()
 export class UserData {
-  public static appdata               : any = {ready: false, version: "10.11.07", homeLoading:false, attempts: 0, homeReady:false, bootError: false, user: "", name: "", developer: false, lang: {}};
+  public static appdata               : any = {ready: false, version: "10.11.07", homeLoading:false, attempts: 0, homeReady:false, bootError: false, user: "", name: "", developer: false, devtix: 0, lang: {}};
   public static phonedata             : any = {appName: null }                         ;
   public static _favorites            : string[]             = []                      ;
   public static HAS_LOGGED_IN         = 'hasLoggedIn'                                  ;
@@ -704,6 +704,17 @@ export class UserData {
     return this.hands;
   }
 
+  public updateClock(time:Moment|Date) {
+    let now = time ? moment(time) : moment();
+    /* Convert hours, minutes, and seconds for current time into degrees of a circle, with the simpler but more confusing math */
+    let h = (now.hour() % 12) * 30;
+    let m = now.minute() * 6;
+    let s = now.second() * 6;
+    let hands = { 'hours': h, 'minutes': m, 'seconds': 0 };
+    Log.l("Setting clock hands to:\n", hands);
+    this.setClockHands(hands);
+  }
+
   public reloadApp() {
     Log.l("Reloading app.");
     let loc              = window.location ;
@@ -712,6 +723,17 @@ export class UserData {
     let url              = origin + path   ;
     window.location.href = url;
     window.location.reload();
+  }
+
+  updatePerfectlyNormalEvent(event?:any) {
+    Log.l("Now updating perfectly normal event, with event:\n", event);
+    if(UserData.appdata.devtix >= 3) {
+      UserData.appdata.devtix = 0;
+      UserData.appdata.developer = !UserData.appdata.developer;
+    } else {
+      setTimeout
+
+    }
   }
 
   public checkPhoneInfo() {

@@ -111,7 +111,7 @@ export class ReportHistory implements OnInit {
     ];
     this.lang = this.translate.instant(translations);
     let lang = this.lang;
-    this.alert.showSpinner(lang['spinner_retrieving_reports']);
+    // this.alert.showSpinner(lang['spinner_retrieving_reports']);
     if (this.shiftToUse !== null) {
       Log.l("ReportHistory: Showing only shift:\n", this.shiftToUse);
       this.shifts = [this.shiftToUse];
@@ -140,7 +140,7 @@ export class ReportHistory implements OnInit {
       // this.alert.hideSpinner(0, true);
       this.alert.hideSpinner();
     // }).then(res => {
-      this.alert.showSpinner(lang['spinner_retrieving_reports_other']);
+      // this.alert.showSpinner(lang['spinner_retrieving_reports_other']);
       return this.server.getReportsOtherForTech(u);
     }).then(res => {
       Log.l("ReportHistory: pulled ReportOther for tech:\n", res);
