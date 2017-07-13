@@ -13,7 +13,7 @@ clock {
     top: 0;
     left: 0;
     background: transparent;
-    z-index: 48;
+    z-index: 47;
     transform: rotate(120deg);
   }
   .containerMinutes {
@@ -24,7 +24,7 @@ clock {
     top: 0;
     left: 0;
     background: transparent;
-    z-index: 47;
+    z-index: 48;
   }
   .containerHours {
     // transform: rotate(240deg);
@@ -35,7 +35,7 @@ clock {
     top: 0;
     left: 0;
     background: transparent;
-    z-index: 46;
+    z-index: 49;
   }
   .rotateGears {
     -webkit-animation-name: rotate1;
@@ -166,7 +166,7 @@ clock {
     box-sizing: border-box !important;
     margin: 0px !important;
     padding: 0px !important;
-    background: url("/assets/images/clock/g9-16.png");
+    background: url("/assets/images/clock/g4-7.png");
     background-origin: border-box !important;
     background-repeat: no-repeat;
     background-position: center;
@@ -179,22 +179,22 @@ clock {
   }
   .g5 {
     z-index: 6!important;
-    border-radius: 43.5px !important;
-    width: 87px !important;
-    height: 87px !important;
+    border-radius: 60px !important;
+    width: 120px !important;
+    height: 120px !important;
     box-sizing: border-box !important;
     margin: 0px !important;
     padding: 0px !important;
-    background: url("/assets/images/clock/g5-8.png");
+    background: url("/assets/images/clock/gear1.png");
     background-origin: border-box !important;
     background-repeat: no-repeat;
     background-position: center;
-    background-size: 87px 87px !important;
-    -webkit-animation-duration: 645ms !important;
-    animation-duration: 645ms !important;
+    background-size: 120px 120px !important;
+    -webkit-animation-duration: 2000ms !important;
+    animation-duration: 2000ms !important;
     position: absolute !important;
-    top: 207px !important;
-    left: 97px !important;
+    top: 195px !important;
+    left: 109px !important;
   }
   .g6 {
     z-index: 9!important;
@@ -209,8 +209,8 @@ clock {
     background-repeat: no-repeat;
     background-position: center;
     background-size: 130px 130px !important;
-    -webkit-animation-duration: 700ms !important;
-    animation-duration: 700ms !important;
+    -webkit-animation-duration: 1700ms !important;
+    animation-duration: 1700ms !important;
     position: absolute !important;
     top: 144px !important;
     left: 167px !important;
@@ -414,7 +414,26 @@ clock {
     background-repeat: no-repeat;
     background-position: center;
     background-size: 350px 350px !important;
-    z-index: 49 !important;
+    z-index: 50 !important;
+  }
+  .clock2 {
+    // top: 50px;
+    // left: 50px;
+    // position: relative;
+    position: absolute;
+    top: 0px;
+    border-radius: 175px !important;
+    width: 350px !important;
+    height: 350px !important;
+    box-sizing: border-box !important;
+    margin: 0px !important;
+    padding: 0px !important;
+    background: url("/assets/images/clock/clock2.png");
+    background-origin: border-box !important;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 350px 350px !important;
+    z-index: 45 !important;
   }
   .secondsHnd {
     position: absolute;
@@ -430,7 +449,7 @@ clock {
     background-repeat: no-repeat;
     background-position: center;
     background-size: 350px 350px !important;
-    z-index: 48 !important;
+    z-index: 47 !important;
   }
   .minutesHnd {
     position: absolute;
@@ -446,7 +465,7 @@ clock {
     background-repeat: no-repeat;
     background-position: center;
     background-size: 350px 350px !important;
-    z-index: 47 !important;
+    z-index: 48 !important;
   }
   .hoursHnd {
     position: absolute;
@@ -462,7 +481,7 @@ clock {
     background-repeat: no-repeat;
     background-position: center;
     background-size: 350px 350px !important;
-    z-index: 46 !important;
+    z-index: 49 !important;
   }
   @keyframes rotate1 {
     0% {
