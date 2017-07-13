@@ -314,7 +314,7 @@ export class HomePage {
         this.ud.setHomePageLoading(true);
         Log.l("HomePage.runEveryTime(): Fetching work orders.");
         // this.fixedHeight = this.mapElement.nativeElement.offsetHeight;
-        this.alert.showSpinner(lang['spinner_fetching_reports']);
+        // this.alert.showSpinner(lang['spinner_fetching_reports']);
         this.fetchTechWorkorders().then((res) => {
           this.techProfile = this.ud.getTechProfile();
           this.shifts = this.ud.getPeriodShifts();

@@ -182,17 +182,6 @@ export class Settings implements OnInit {
     });
   }
 
-  public reloadApp() {
-    let loc = window.location;
-    let origin = loc.origin;
-    let path = loc.pathname;
-    let url = origin + path;
-    window.location.href = url;
-    window.location.reload();
-    // let url = window.location.
-    // window.location.reload
-  }
-
   public toggleClock() {
     this.dataReady = !this.dataReady;
   }
@@ -206,11 +195,11 @@ export class Settings implements OnInit {
     let lang = this.lang;
     let title = lang['confirm_app_restart_title'];
     let text = lang['confirm_app_restart_text'];
-    let msg   = sprintf("%s<br>\n<br>\n%s", text, window.location.href)
-    this.alert.showConfirm(title, msg).then((restart) => {
+    // let msg   = sprintf("%s<br>\n<br>\n%s", text, window.location.href)
+    this.alert.showConfirm(title, text).then((restart) => {
       if (restart) {
         Log.l("RELOADING ONSITEX....");
-        this.reloadApp();
+        this.ud.reloadApp();
       }
     }).catch(err => {
       Log.l("confirmLogout(): Error confirming logout!");

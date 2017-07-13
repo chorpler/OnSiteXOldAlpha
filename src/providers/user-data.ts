@@ -1,20 +1,24 @@
-import { Injectable                    } from '@angular/core'              ;
-import { Events, Platform              } from 'ionic-angular'              ;
-import { Storage                       } from '@ionic/storage'             ;
-import { NativeStorage                 } from 'ionic-native'               ;
-import { DBSrvcs                       } from './db-srvcs'                 ;
-import { Shift                         } from '../domain/shift'            ;
-import { PayrollPeriod                 } from '../domain/payroll-period'   ;
-import { WorkOrder                     } from '../domain/workorder'        ;
-import { ReportOther                   } from '../domain/reportother'      ;
-import { Employee                      } from '../domain/employee'         ;
-import { Log, isMoment, moment, Moment } from '../config/config.functions' ;
-import { Preferences                   } from './preferences'              ;
-import { STRINGS                       } from '../config/config.strings'   ;
+import { Injectable                    } from '@angular/core'                  ;
+import { Events, Platform, App         } from 'ionic-angular'                  ;
+import { Storage                       } from '@ionic/storage'                 ;
+import { NativeStorage                 } from 'ionic-native/native-storage'    ;
+import { Device                        } from '@ionic-native/device'           ;
+import { AppVersion                    } from '@ionic-native/app-version'      ;
+import { UniqueDeviceID                } from '@ionic-native/unique-device-id' ;
+import { Log, isMoment, moment, Moment } from '../config/config.functions'     ;
+import { STRINGS                       } from '../config/config.strings'       ;
+import { DBSrvcs                       } from './db-srvcs'                     ;
+import { Preferences                   } from './preferences'                  ;
+import { Shift                         } from '../domain/shift'                ;
+import { PayrollPeriod                 } from '../domain/payroll-period'       ;
+import { WorkOrder                     } from '../domain/workorder'            ;
+import { ReportOther                   } from '../domain/reportother'          ;
+import { Employee                      } from '../domain/employee'             ;
 
 @Injectable()
 export class UserData {
-  public static appdata               : any = {ready: false, version: "10.11.05", homeLoading:false, attempts: 0, homeReady:false, bootError: false, user: "", name: "", developer: false, lang: {}};
+  public static appdata               : any = {ready: false, version: "10.11.07", homeLoading:false, attempts: 0, homeReady:false, bootError: false, user: "", name: "", developer: false, lang: {}};
+  public static phonedata             : any = {appName: null }                         ;
   public static _favorites            : string[]             = []                      ;
   public static HAS_LOGGED_IN         = 'hasLoggedIn'                                  ;
   public static HAS_SEEN_TUTORIAL     = 'hasSeenTutorial'                              ;
@@ -36,6 +40,7 @@ export class UserData {
   public static sesaConfig            : any                  = {}                      ;
   public static data                  : any                                            ;
   public static hands                 : any = {hours: 0, minutes: 0, seconds: 0}       ;
+  public phonedata                    : any = UserData.phonedata                       ;
   public appdata                      : any = UserData.appdata                         ;
   public shifts                       : Array<Shift>         = UserData.shifts         ;
   public payrollPeriods               : Array<PayrollPeriod> = UserData.payrollPeriods ;
@@ -51,7 +56,7 @@ export class UserData {
 
   private static loginData:any = null;
 
-  constructor(public events: Events, public storage: Storage, public platform: Platform, public prefs: Preferences) {
+  constructor(public events: Events, public storage: Storage, public platform: Platform, public prefs: Preferences, public device: Device, public unique: UniqueDeviceID, public version: AppVersion) {
     window["onsiteuserdata"] = this;
     window["UserData"] = UserData;
     UserData.data = UserData.data || { employee: [], sites: [], reports: [], otherReports: [], payrollPeriods: [], shifts: [], messages: [], report_types: [], training_types: []};
@@ -698,5 +703,96 @@ export class UserData {
     }
     return this.hands;
   }
+
+  public reloadApp() {
+    Log.l("Reloading app.");
+    let loc              = window.location ;
+    let origin           = loc.origin      ;
+    let path             = loc.pathname    ;
+    let url              = origin + path   ;
+    window.location.href = url;
+    window.location.reload();
+  }
+
+  public checkPhoneInfo() {
+    // let profile = this.getTechProfile();
+    // let tech = new Employee();
+    // tech.readFromDoc(profile);
+    // this.user = tech;
+    // let techname = tech.getFullNameNormal();
+    this.readPhoneInfo().then(res => {
+      return this.getAppVersion();
+    }).then(res => {
+      Log.l("checkPhoneInfo(): Phone info is fine.");
+    }).catch(err => {
+      Log.l("checkPhoneInfo(): Nope.");
+      Log.e(err);
+      // this.alert.showAlert(lang['error'], lang['could_not_read_phone_info']);
+    });
+  }
+
+  public getPhoneInfo() {
+    return this.phonedata;
+  }
+
+  public setPhoneInfo(value:any) {
+    UserData.phonedata = value;
+    this.phonedata = value;
+    return this.phonedata;
+  }
+
+  public readPhoneInfo() {
+    return new Promise((resolve, reject) => {
+      let cordova = this.device.cordova;
+      let model = this.device.model;
+      let platform = this.device.platform;
+      let uuid = this.device.uuid;
+      let version = this.device.version;
+      let manufacturer = this.device.manufacturer;
+      let virtual = this.device.isVirtual;
+      let serial = this.device.serial;
+      let uniqueID = "";
+      this.unique.get().then(res => {
+        uniqueID = res;
+        let phoneinfo = {
+          cordova: cordova,
+          model: model,
+          platform: platform,
+          uuid: uuid,
+          version: version,
+          manufacturer: manufacturer,
+          virtual: virtual,
+          serial: serial,
+          uniqueID: uniqueID,
+        };
+        UserData.phonedata = phoneinfo;
+        this.phonedata = UserData.phonedata;
+        Log.l("readPhoneInfo(): Got phone data:\n", this.phonedata);
+        resolve(phoneinfo);
+      }).catch(err => {
+        Log.l("readPhoneInfo(): Error reading phone info!");
+        Log.e(err);
+        resolve(this.phonedata);
+      });
+    });
+  }
+
+  public getAppVersion() {
+    return new Promise((resolve, reject) => {
+      this.version.getAppName().then(res => {
+        this.phonedata.appName = res;
+        return this.version.getVersionNumber();
+      }).then(res => {
+        this.phonedata.appVersion = res;
+        resolve({ appName: this.phonedata.appName, appVersion: this.phonedata.appVersion });
+      }).catch(err => {
+        Log.l("Error getting app version.");
+        Log.e(err);
+        resolve(false);
+      });
+    });
+  }
+
+
 
 }

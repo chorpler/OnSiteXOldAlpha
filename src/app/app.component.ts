@@ -123,7 +123,7 @@ export class OnSiteApp {
         this.translate.get(['spinner_app_loading']).subscribe((result) => {
           let lang = result;
           if(!callingClass.ud.isBootError()) {
-            callingClass.alert.showSpinner(lang['spinner_app_loading'], false, 15000);
+            // callingClass.alert.showSpinner(lang['spinner_app_loading'], false, 15000);
             callingClass.bootApp().then(res =>{
               Log.l("OnSite.initializeApp(): bootApp() returned successfully!");
 
