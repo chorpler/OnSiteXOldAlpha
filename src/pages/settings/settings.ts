@@ -97,8 +97,9 @@ export class Settings implements OnInit {
   logoutOfApp() {
     Log.l("User clicked logout button.");
     this.auth.logout().then((res) => {
-      Log.l("Done logging out.");
-      this.tabs.goToPage('Login', {mode: 'page'});
+      Log.l("Done logging out. Reloading app.");
+      this.ud.reloadApp();
+      // this.tabs.goToPage('Login', {mode: 'page'});
     });
   }
 

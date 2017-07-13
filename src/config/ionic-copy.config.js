@@ -61,6 +61,10 @@ module.exports = {
     src: ['{{SRC}}/assets/i18n/*.json'],
     dest: '{{WWW}}/assets/i18n'
   },
+  copyClockImages: {
+    src: ['{{SRC}}/assets/images/clock/**/*'],
+    dest: '{{WWW}}/assets/images/clock'
+  },
   copyImages: {
     src: ['{{SRC}}/assets/images/**/*'],
     dest: '{{WWW}}/assets/images'

@@ -60,7 +60,6 @@ export class HomePage {
   static shftHrs                     : number                                   ;
   static hrsSubmitted                : number                                   ;
   static dataReady                   : boolean       = false                    ;
-  static spinnerText                 : string        = ""                       ;
   static techProfile                 : any                                      ;
   static techWorkOrders              : Array<WorkOrder>   = []                  ;
   static shiftWorkOrders             : Array<WorkOrder>   = []                  ;
@@ -101,7 +100,6 @@ export class HomePage {
   public shftHrs                     : number              = HomePage.shftHrs;
   public hrsSubmitted                : number              = HomePage.hrsSubmitted;
   public dataReady                   : boolean             = HomePage.dataReady;
-  public spinnerText                 : string              = HomePage.spinnerText;
   public techProfile                 : any                 = HomePage.techProfile;
   public techWorkOrders              : Array<WorkOrder>    = HomePage.techWorkOrders;
   public shiftWorkOrders             : Array<WorkOrder>    = HomePage.shiftWorkOrders;
@@ -322,31 +320,31 @@ export class HomePage {
           HomePage.homePageStatus.startupFinished = true;
           this.ud.setHomePageReady(true);
           this.dataReady = true;
-          this.alert.hideSpinner(0, true).then(res => {
+          // this.alert.hideSpinner(0, true).then(res => {
             this.ud.setHomePageReady(true);
             HomePage.homePageStatus.startupFinished = true;
             this.dataReady = true;
-          }).catch(err => {
-            Log.l("Error hiding spinner!");
-            HomePage.homePageStatus.startupFinished = true;
-            this.ud.setHomePageReady(true);
-            this.dataReady = true;
-        }).catch((err) => {
-          Log.l("HomePage: ionViewDidEnter() got error while fetching tech work orders.");
-          Log.e(err);
-          this.pageError = true;
-          this.alert.hideSpinner(0, true).then(res => {
-            this.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
-          }).catch(err => {
-            Log.l("Error hiding spinner again!");
-            Log.e(err);
-            this.pageError = true;
-          });
-        });
+          // }).catch(err => {
+          //   Log.l("Error hiding spinner!");
+          //   HomePage.homePageStatus.startupFinished = true;
+          //   this.ud.setHomePageReady(true);
+          //   this.dataReady = true;
+        // }).catch((err) => {
+        //   Log.l("HomePage: ionViewDidEnter() got error while fetching tech work orders.");
+        //   Log.e(err);
+        //   this.pageError = true;
+        //   this.alert.hideSpinner(0, true).then(res => {
+        //     this.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
+        //   }).catch(err => {
+        //     Log.l("Error hiding spinner again!");
+        //     Log.e(err);
+        //     this.pageError = true;
+        //   });
+        // });
       }).catch(err => {
         Log.l("Error fetching tech work orders!");
         Log.e(err);
-        this.alert.hideSpinner();
+        // this.alert.hideSpinner();
         this.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
       });
     // } catch(err) {
