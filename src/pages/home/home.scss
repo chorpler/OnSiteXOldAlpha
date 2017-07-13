@@ -247,6 +247,8 @@ page-home {
     --widthA: 350px;
     width: 40vw;
     height: 40vh;
+    margin-left: auto;
+    margin-right: auto;
     min-width: var(--widthA);
     min-height: var(--widthA);
     align-items: center;
