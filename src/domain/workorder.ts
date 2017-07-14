@@ -188,6 +188,23 @@ export class WorkOrder {
     return out;
   }
 
+  public getReportID() {
+    if(this._id) {
+      return this._id;
+    } else {
+      return "";
+    }
+  }
+
+  public getReportDate(asString?:boolean):Moment|string {
+    let date = this.report_date;
+    if(asString) {
+      return date.format("YYYY-MM-DD");
+    } else {
+      return date;
+    }
+  }
+
   public setStartTime(time:any) {
     if (isMoment(time) || moment.isDate(time)) {
       this.time_start = moment(time);

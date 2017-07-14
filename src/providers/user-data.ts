@@ -17,7 +17,18 @@ import { Employee                      } from '../domain/employee'             ;
 
 @Injectable()
 export class UserData {
-  public static appdata               : any = {ready: false, version: "10.11.07", homeLoading:false, attempts: 0, homeReady:false, bootError: false, user: "", name: "", developer: false, devtix: 0, lang: {}};
+  public static appdata               : any = {ready: false,
+    version: "10.11.07",
+    homeLoading: false,
+    attempts: 0,
+    homeReady:false,
+    bootError: false,
+    user: "",
+    name: "",
+    developer: false,
+    devtix: 0,
+    lang: {}
+  };
   public static phonedata             : any = {appName: null }                         ;
   public static _favorites            : string[]             = []                      ;
   public static HAS_LOGGED_IN         = 'hasLoggedIn'                                  ;
@@ -38,8 +49,22 @@ export class UserData {
   public static techProfile           : any                                            ;
   public static userLoggedIn          : boolean              = false                   ;
   public static sesaConfig            : any                  = {}                      ;
-  public static data                  : any                                            ;
-  public static hands                 : any = {hours: 0, minutes: 0, seconds: 0}       ;
+  public static data                  : any                  = {
+    employee: [],
+    sites: [],
+    reports: [],
+    otherReports: [],
+    payrollPeriods: [],
+    shifts: [],
+    messages: [],
+    report_types: [],
+    training_types: []
+  };
+  public static hands                 : any = {
+    hours  : 0,
+    minutes: 0,
+    seconds: 0,
+  };
   public phonedata                    : any = UserData.phonedata                       ;
   public appdata                      : any = UserData.appdata                         ;
   public shifts                       : Array<Shift>         = UserData.shifts         ;
@@ -56,17 +81,29 @@ export class UserData {
 
   private static loginData:any = null;
 
-  constructor(public events: Events, public storage: Storage, public platform: Platform, public prefs: Preferences, public device: Device, public unique: UniqueDeviceID, public version: AppVersion) {
+  constructor(public events: Events,
+    public storage: Storage,
+    public platform: Platform,
+    public prefs: Preferences,
+    public device: Device,
+    public unique: UniqueDeviceID,
+    public version: AppVersion
+  ) {
     window["onsiteuserdata"] = this;
     window["UserData"] = UserData;
-    UserData.data = UserData.data || { employee: [], sites: [], reports: [], otherReports: [], payrollPeriods: [], shifts: [], messages: [], report_types: [], training_types: []};
-  }
+    UserData.data = UserData.data || {
+      employee      : [],
+      sites         : [],
+      reports       : [],
+      otherReports  : [],
+      payrollPeriods: [],
+      shifts        : [],
+      messages      : [],
+      report_types  : [],
+      training_types: []
+    };
 
-  // <ion-input
-  //   type="number"
-  //   [ngModel]="progress"
-  //   (ngModelChange)="progress = convertToNumber($event)">
-  // </ion-input>
+  }
 
   public isSpecialDeveloper() {
     return this.appdata.developer;
@@ -160,9 +197,11 @@ export class UserData {
   }
 
   public setData(data:any) {
-    Log.l("setData(): Attempting to set UserData.data to:\n", data);
+    Log.l("setData(): Attempting to set UserData.data to:\n",
+    data);
     if(data['sites']['length'] === undefined || data['reports']['length'] === undefined || data['otherReports']['length'] === undefined) {
-      Log.e("setData(): Can't use this data to set data property. It is incomplete.\n", data);
+      Log.e("setData(): Can't use this data to set data property. It is incomplete.\n",
+    data);
       return false;
     } else {
       let keys = Object.keys(data);
@@ -183,7 +222,8 @@ export class UserData {
           }
         }
       }
-      Log.l("setData(): Done. UserData.data is now:\n", UserData.data);
+      Log.l("setData(): Done. UserData.data is now:\n",
+    UserData.data);
       this.data = UserData.data;
       return UserData.data;
     }
@@ -366,7 +406,10 @@ export class UserData {
     for(let shift of shifts) {
       if(shift.getShiftWeekID() === period) {
         let shiftReports = this.getWorkOrdersForShift(shift.getShiftSerial());
-        let shiftTotal = 0, countsForBonusHours = 0, count = 0, bonushours = 0;
+        let shiftTotal = 0,
+    countsForBonusHours = 0,
+    count = 0,
+    bonushours = 0;
         for(let report of shiftReports) {
           let subtotal = report.getRepairHours();
           shiftTotal += subtotal;
@@ -380,28 +423,12 @@ export class UserData {
         } else if(countsForBonusHours > 11) {
           bonushours = 3 + (countsForBonusHours - 11);
         }
-        Log.l("getPayrollHoursForPayrollPeriod(): For shift %s, %d reports, %f hours, and %f count for bonus hours, so bonus hours = %f.", shift.getShiftSerial(), count, shiftTotal, countsForBonusHours, bonushours);
+        Log.l(`getPayrollHoursForPayrollPeriod(): For shift %s, %d reports, %f hours, and %f count for bonus hours, so bonus hours = %f.`, shift.getShiftSerial(), count, shiftTotal, countsForBonusHours, bonushours);
         shiftTotal += bonushours;
         payPeriodTotal += shiftTotal;
       }
     }
     return payPeriodTotal;
-    // let filtered = this.getWorkOrdersForPayrollPeriod(period);
-    // let total = 0;
-    // for(let wo of filtered) {
-    //   let subtotal = wo.getRepairHours();
-    //   let bonushours = 0;
-    //   if(wo.location !== 'WESLACO' && wo.location !== 'LAS CUATAS') {
-    //     if(subtotal >= 8 && subtotal <= 11) {
-    //       bonushours = 3;
-    //     } else if(subtotal > 11) {
-    //       bonushours = ((subtotal - 11)*2)+3;
-    //     }
-    //   }
-    //   subtotal += bonushours;
-    //   total += subtotal;
-    // }
-    // return total;
   }
 
   getUsername() {
@@ -416,21 +443,28 @@ export class UserData {
     return UserData.loginData;
   }
 
-  storeCredentials(loginData:any, pass?:any) {
+  storeCredentials(loginData:any,
+    pass?:any) {
     if(typeof loginData == 'object') {
       UserData.loginData = loginData;
       // UserData.userLoggedIn = true;
     } else if(typeof loginData == 'string' && typeof pass == 'string') {
-      UserData.loginData = {user: loginData, pass: pass};
+      UserData.loginData = {user: loginData,
+    pass: pass};
       // UserData.userLoggedIn = true;
     } else {
-      Log.l("UserData.storeCredentials(): Invalid login data provided:\n", loginData);
+      Log.l("UserData.storeCredentials(): Invalid login data provided:\n",
+    loginData);
     }
   }
 
   getLoginStatus() {
-    Log.l("UD.getLoginStatus(): login status is:\n", UserData.userLoggedIn);
-    Log.l("UD.getLoginStatus(): creds are: ", UserData.userLoggedIn, "\n", UserData.loginData);
+    Log.l("UD.getLoginStatus(): login status is:\n",
+    UserData.userLoggedIn);
+    Log.l("UD.getLoginStatus(): creds are: ",
+    UserData.userLoggedIn,
+    "\n",
+    UserData.loginData);
     return UserData.userLoggedIn;
   }
 
@@ -466,7 +500,8 @@ export class UserData {
     if (now.isoWeekday() >= scheduleStartsOnDay) {
       cpw = now.isoWeekday(scheduleStartsOnDay);
     } else {
-      cpw = moment(now).subtract(1, 'weeks').isoWeekday(scheduleStartsOnDay).startOf('day');
+      cpw = moment(now).subtract(1,
+    'weeks').isoWeekday(scheduleStartsOnDay).startOf('day');
     }
     return cpw;
   }
@@ -488,7 +523,54 @@ export class UserData {
     }
   }
 
-  createPayrollPeriods(tech:Employee, count?:number):Array<PayrollPeriod> {
+  updateShifts() {
+    let periods = UserData.payrollPeriods;
+    let others = UserData.otherReports;
+    let reports = this.getWorkOrderList();
+    for(let period of periods) {
+      let shifts = period.getPayrollShifts();
+      for(let shift of shifts) {
+        // let shiftReports = shift.getShiftReports();
+        let shiftDate = shift.getShiftDate().format("YYYY-MM-DD");
+        let shiftReports = new Array<WorkOrder>();
+        let shiftOtherReports = new Array<ReportOther>();
+        for(let report of reports) {
+          let reportDate = report.report_date;
+          if(shiftDate === reportDate) {
+            shiftReports.push(report);
+          }
+        }
+        for(let other of others) {
+          let otherDate = other.report_date;
+          if(shiftDate === otherDate) {
+            shiftOtherReports.push(other);
+          }
+        }
+        shift.setShiftReports(shiftReports);
+        shift.setOtherReports(shiftOtherReports);
+      }
+    }
+  }
+
+  public addNewReport(newReport:WorkOrder) {
+    let reports = this.getWorkOrderList();
+    let id = newReport.getReportID();
+    let exists = false;
+    for(let report of reports) {
+      let reportID = report.getReportID;
+      if(id === reportID) {
+        exists = true;
+        break;
+      }
+    }
+    if(!exists) {
+      reports.push(newReport);
+    }
+    UserData.reports = reports;
+  }
+
+  createPayrollPeriods(tech:Employee,
+    count?:number):Array<PayrollPeriod> {
     let now = moment().startOf('day');
     UserData.payrollPeriods = [];
     let payp = UserData.payrollPeriods;
@@ -508,7 +590,8 @@ export class UserData {
       let jsloc2 = js.location.fullName.toUpperCase();
       let jslid1 = js.locID.name.toUpperCase();
       let jslid2 = js.locID.fullName.toUpperCase();
-      let jslc21, jslc22;
+      let jslc21,
+    jslc22;
       if(js.loc2nd) {
         jslc21 = js.loc2nd.name.toUpperCase();
         jslc22 = js.loc2nd.fullName.toUpperCase();
@@ -522,15 +605,18 @@ export class UserData {
     if(site) {
       let periodCount = count || 2;
       for(let i = 0; i < periodCount; i++) {
-        let start = PayrollPeriod.getPayrollPeriodDateForShiftDate(moment(now).subtract(i, 'weeks'));
+        let start = PayrollPeriod.getPayrollPeriodDateForShiftDate(moment(now).subtract(i,
+    'weeks'));
         let pp = new PayrollPeriod();
         pp.setStartDate(start);
-        pp.createPayrollPeriodShiftsForTech(tech, site);
+        pp.createPayrollPeriodShiftsForTech(tech,
+    site);
         UserData.payrollPeriods.push(pp);
       }
       return UserData.payrollPeriods;
     } else {
-      Log.e("createPayrollPeriods(): Could not find tech at any jobsites:\n", tech);
+      Log.e("createPayrollPeriods(): Could not find tech at any jobsites:\n",
+    tech);
       Log.e(sites);
       return [];
     }
@@ -556,7 +642,11 @@ export class UserData {
         let client = UserData.techProfile.client || "SITENAME";
         let type = UserData.techProfile.shift;
         let length = UserData.techProfile.shiftLength;
-        let thisShift = new Shift(client, null, type, shift_start_time, length);
+        let thisShift = new Shift(client,
+    null,
+    type,
+    shift_start_time,
+    length);
         thisShift.updateShiftWeek();
         thisShift.updateShiftNumber();
         thisShift.getExcelDates();
@@ -583,9 +673,11 @@ export class UserData {
   playSoundClip(index?:number) {
     let i = index ? index : 0;
     let prefix = '/assets/audio/';
-    let audioclips = ['nospoilers.wav', 'nospoilers2.wav'];
+    let audioclips = ['nospoilers.wav',
+    'nospoilers2.wav'];
     let fullurl = prefix + audioclips[i];
-    Log.l("playSoundClip(): Attempting to play sound file '%s' ...", fullurl);
+    Log.l("playSoundClip(): Attempting to play sound file '%s' ...",
+    fullurl);
     let audio = new Audio(fullurl);
     audio.play();
   }
@@ -653,11 +745,13 @@ export class UserData {
     return this.hands[hnd];
   }
 
-  public setClockHand(hand:string, degrees:number) {
+  public setClockHand(hand:string,
+    degrees:number) {
     let hnd = typeof hand === 'string' ? hand.toLowerCase() : hand;
     let h = hnd[0];
     if(degrees < -360 || degrees > 360) {
-      Log.w("setHourHand() called with degrees outside range (-360<deg<360): %s", degrees);
+      Log.w("setHourHand() called with degrees outside range (-360<deg<360): %s",
+    degrees);
       return null;
     } else if(h === 'h') {
       hnd = 'hours';
@@ -710,8 +804,11 @@ export class UserData {
     let h = (now.hour() % 12) * 30;
     let m = now.minute() * 6;
     let s = now.second() * 6;
-    let hands = { 'hours': h, 'minutes': m, 'seconds': 0 };
-    Log.l("Setting clock hands to:\n", hands);
+    let hands = { 'hours': h,
+    'minutes': m,
+    'seconds': 0 };
+    Log.l("Setting clock hands to:\n",
+    hands);
     this.setClockHands(hands);
   }
 
@@ -729,10 +826,13 @@ export class UserData {
     Log.l("Now updating perfectly normal event, with event:\n", event);
     if(UserData.appdata.devtix >= 3) {
       UserData.appdata.devtix = 0;
-      UserData.appdata.developer = !UserData.appdata.developer;
+      this.setSpecialDeveloper(!this.isSpecialDeveloper());
     } else {
-      setTimeout
-
+      if(UserData.appdata.devtix++ === 0) {
+        setTimeout(() => {
+          UserData.appdata.devtix = 0;
+        }, 5000);
+      }
     }
   }
 
@@ -742,15 +842,19 @@ export class UserData {
     // tech.readFromDoc(profile);
     // this.user = tech;
     // let techname = tech.getFullNameNormal();
-    this.readPhoneInfo().then(res => {
-      return this.getAppVersion();
-    }).then(res => {
-      Log.l("checkPhoneInfo(): Phone info is fine.");
-    }).catch(err => {
-      Log.l("checkPhoneInfo(): Nope.");
-      Log.e(err);
-      // this.alert.showAlert(lang['error'], lang['could_not_read_phone_info']);
-    });
+    return new Promise((resolve,reject) => {
+      this.readPhoneInfo().then(res => {
+        return this.getAppVersion();
+      }).then(res => {
+        Log.l("checkPhoneInfo(): Phone info is:\n", UserData.phonedata);
+        resolve(UserData.phonedata);
+      }).catch(err => {
+        Log.l("checkPhoneInfo(): Nope.");
+        Log.e(err);
+        reject(err);
+        // this.alert.showAlert(lang['error'], lang['could_not_read_phone_info']);
+      });
+   });
   }
 
   public getPhoneInfo() {
@@ -777,15 +881,15 @@ export class UserData {
       this.unique.get().then(res => {
         uniqueID = res;
         let phoneinfo = {
-          cordova: cordova,
-          model: model,
-          platform: platform,
-          uuid: uuid,
-          version: version,
+          cordova     : cordova,
+          model       : model,
+          platform    : platform,
+          uuid        : uuid,
+          version     : version,
           manufacturer: manufacturer,
-          virtual: virtual,
-          serial: serial,
-          uniqueID: uniqueID,
+          virtual     : virtual,
+          serial      : serial,
+          uniqueID    : uniqueID,
         };
         UserData.phonedata = phoneinfo;
         this.phonedata = UserData.phonedata;
@@ -814,7 +918,4 @@ export class UserData {
       });
     });
   }
-
-
-
 }

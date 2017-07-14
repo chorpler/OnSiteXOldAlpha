@@ -1,4 +1,4 @@
-import { Component, OnInit                                                   } from '@angular/core'                   ;
+import { Component, OnInit, NgZone                                           } from '@angular/core'                   ;
 import { IonicPage, NavController, Platform, ModalController, ViewController } from 'ionic-angular'                   ;
 import { DBSrvcs                                                             } from '../../providers/db-srvcs'        ;
 import { Login                                                               } from '../login/login'                  ;
@@ -11,6 +11,7 @@ import { AppVersion                                                          } f
 import { StorageService                                                      } from '../../providers/storage-service' ;
 import { Preferences                                                         } from '../../providers/preferences'     ;
 import { UserData                                                            } from '../../providers/user-data'       ;
+import { IonDigitKeyboardCmp, IonDigitKeyboardOptions                        } from '../components/ion-digit-keyboard/';
 
 
 @IonicPage({ name: 'Settings' })
@@ -34,9 +35,11 @@ export class Settings implements OnInit {
   public dataReady       : boolean    = false             ;
   public static PREFS    : any        = new Preferences() ;
   public prefs           : any        = Settings.PREFS    ;
+  public keysetup        : any                            ;
 
-  constructor( public navCtrl: NavController, public platform: Platform,  public auth: AuthSrvcs, public alert: AlertService, public tabs: TabsComponent, public translate: TranslateService, public version:AppVersion, public storage:StorageService, public modalCtrl:ModalController, public ud:UserData) {
+  constructor( public navCtrl: NavController, public platform: Platform,  public auth: AuthSrvcs, public alert: AlertService, public tabs: TabsComponent, public translate: TranslateService, public version:AppVersion, public storage:StorageService, public modalCtrl:ModalController, public ud:UserData, public zone:NgZone) {
     window["onsitesettings"] = this;
+    this.keysetup = { visible: false, width: '100%', swipeToHide: true };
   }
 
   ngOnInit() {

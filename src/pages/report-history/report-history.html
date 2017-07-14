@@ -11,13 +11,6 @@
   <div class="waiting-clock" *ngIf="!pageReady">
     <clock></clock>
   </div>
-  <div class="report-history-container data-not-ready" *ngIf="!pageReady">
-    <ion-list class="reportList data-not-ready">
-      <ion-item class="report-history-list-item data-not-ready">
-        <p>{{'loading_data' | translate}}...</p>
-      </ion-item>
-    </ion-list>
-  </div>
   <div class="report-history-container" *ngIf="pageReady">
     <ion-list class="reportList">
       <ion-item-group class="report-history-group-date" *ngFor="let shift of shifts; let i=index">

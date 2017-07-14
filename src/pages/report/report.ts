@@ -655,35 +655,40 @@ export class ReportPage implements OnInit {
   setupShifts() {
     let endDay = 2;
 
-    this.payrollPeriods = this.ud.getPayrollPeriods();
-    if(this.period) {
-      for(let pp of this.payrollPeriods) {
-        if(this.period === pp) {
-          this.shifts = pp.getPayrollShifts();
+    let p = this.ud.getPayrollPeriods();
+    if(!p) {
+      this.tabs.goToPage('OnSiteHome');
+    } else {
+      this.payrollPeriods = this.ud.getPayrollPeriods();
+      if(this.period) {
+        for(let pp of this.payrollPeriods) {
+          if(this.period === pp) {
+            this.shifts = pp.getPayrollShifts();
+          }
+        }
+      } else {
+        this.period = this.payrollPeriods[0];
+        this.shifts = this.period.getPayrollShifts();
+      }
+      if (this.mode === 'Add' || this.mode === 'Añadir') {
+        if(this.shiftToUse !== null) {
+          this.selectedShift = this.shiftToUse;
+        } else {
+          this.selectedShift = this.shifts[0];
         }
       }
-    } else {
-      this.period = this.payrollPeriods[0];
-      this.shifts = this.period.getPayrollShifts();
-    }
-    if (this.mode === 'Add' || this.mode === 'Añadir') {
-      if(this.shiftToUse !== null) {
-        this.selectedShift = this.shiftToUse;
-      } else {
-        this.selectedShift = this.shifts[0];
-      }
-    }
-    //  else {
-      // let woShiftSerial = this.workOrder.shift_serial;
-      // for (let shift of this.shifts) {
-      //   if (shift.getShiftSerial() === woShiftSerial) {
-      //     this.selectedShift = shift;
-      //     Log.l("EditWorkOrder: setting active shift to:\n", shift);
-      //     break;
-      //   }
+      //  else {
+        // let woShiftSerial = this.workOrder.shift_serial;
+        // for (let shift of this.shifts) {
+        //   if (shift.getShiftSerial() === woShiftSerial) {
+        //     this.selectedShift = shift;
+        //     Log.l("EditWorkOrder: setting active shift to:\n", shift);
+        //     break;
+        //   }
+        // }
+        // this.selectedShift =
       // }
-      // this.selectedShift =
-    // }
+    }
   }
 
   public checkShiftChange(event:any, shift:Shift) {
@@ -782,6 +787,11 @@ export class ReportPage implements OnInit {
       warning_text = lang['standby_hb_duncan_wrong_location'];
       result = await this.alert.showConfirmYesNo(lang['warning'], warning_text);
       return result;
+    } else if(type === 'date_mismatch') {
+      // warning_text = lang['standby_hb_duncan_wrong_location'];
+      warning_text = sprintf("The report date (%s) does not match the shift start date (%s).", this.workOrder.report_date, this.workOrder.getStartTime().format("YYYY-MM-DD"));
+      result = await this.alert.showAlert("ERROR", warning_text);
+      return true;
     } else {
       return new Error("showPossibleError() called without proper type!");
     }

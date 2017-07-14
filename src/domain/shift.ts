@@ -100,6 +100,20 @@ export class Shift {
     return this.site;
   }
 
+  public getShiftID() {
+    return this.shift_id;
+  }
+
+  public setShiftID(value:any) {
+    this.shift_id = value;
+    return this.shift_id;
+  }
+
+  public getShiftDate():Moment {
+    let date = moment.fromExcel(this.getShiftID());
+    return date;
+  }
+
   public getShiftWeek() {
     let scheduleStartsOnDay = 3;
     let day = moment(this.start_time);
@@ -114,7 +128,7 @@ export class Shift {
   public getShiftNumber() {
     this.getShiftWeek();
     this.getExcelDates();
-    let shiftNumber = this.XL.shift_time - this.XL.shift_week + 1;
+    let shiftNumber = Math.trunc(this.XL.shift_time - this.XL.shift_week + 1);
     this.shift_number = shiftNumber;
     return shiftNumber;
   }
@@ -206,7 +220,7 @@ export class Shift {
     let week                     = moment(this.getShiftWeek())          ;
     let nowWeek                  = moment(this.getCurrentPayrollWeek()) ;
     let nowXL                    = now.toExcel()                        ;
-    let dayXL                    = day.toExcel()                        ;
+    let dayXL                    = day.toExcel(true)                    ;
     let weekXL                   = week.toExcel(true)                   ;
     let currentWeekXL            = nowWeek.toExcel(true)                ;
     let nextWeekXL               = weekXL + 7                           ;

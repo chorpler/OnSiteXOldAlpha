@@ -1,35 +1,37 @@
-import { Http                                        } from '@angular/http'                     ;
-import { Component, ViewChild                        } from '@angular/core'                     ;
-import { Platform, Nav, ToastController, Events, App } from 'ionic-angular'                     ;
-import { StatusBar                                   } from '@ionic-native/status-bar'          ;
-import { SplashScreen                                } from '@ionic-native/splash-screen'       ;
-import { Storage                                     } from '@ionic/storage'                    ;
-import { Push, PushObject, PushOptions               } from '@ionic-native/push'                ;
-import { LocalNotifications                          } from '@ionic-native/local-notifications' ;
-import { AppVersion                                  } from '@ionic-native/app-version'         ;
-import { UserData                                    } from '../providers/user-data'            ;
-import { PouchDBService                              } from '../providers/pouchdb-service'      ;
-import { DBSrvcs                                     } from '../providers/db-srvcs'             ;
-import { SrvrSrvcs                                   } from '../providers/srvr-srvcs'           ;
-import { AuthSrvcs                                   } from '../providers/auth-srvcs'           ;
-import { AlertService                                } from '../providers/alerts'               ;
-import { NetworkStatus                               } from '../providers/network-status'       ;
-import { GeolocService                               } from '../providers/geoloc-service'       ;
-import { Log, CONSOLE, moment, Moment                } from '../config/config.functions'        ;
-import { DOMTimeStamp, Coordinates, Position         } from '../config/geoloc'                  ;
-import { HomePage                                    } from '../pages/home/home'                ;
-import { MessageService                              } from '../providers/message-service'      ;
-import { TabsComponent                               } from '../components/tabs/tabs'           ;
-import { Preferences                                 } from '../providers/preferences'          ;
-import { TranslateService                            } from '@ngx-translate/core'               ;
-import { SmartAudio                                  } from '../providers/smart-audio'          ;
-import { Jobsite                                     } from '../domain/jobsite'                 ;
-import { ReportOther                                 } from '../domain/reportother'             ;
-import { WorkOrder                                   } from '../domain/workorder'               ;
-import { Employee                                    } from '../domain/employee'                ;
-import { Shift                                       } from '../domain/shift'                   ;
-import { PayrollPeriod                               } from '../domain/payroll-period'          ;
-import { Message                                     } from '../domain/message'                 ;
+import { Http                                         } from '@angular/http'                     ;
+import { Component, ViewChild                         } from '@angular/core'                     ;
+import { Platform, Nav, ToastController, Events, App  } from 'ionic-angular'                     ;
+import { StatusBar                                    } from '@ionic-native/status-bar'          ;
+import { SplashScreen                                 } from '@ionic-native/splash-screen'       ;
+import { Storage                                      } from '@ionic/storage'                    ;
+import { Push, PushObject, PushOptions                } from '@ionic-native/push'                ;
+import { LocalNotifications                           } from '@ionic-native/local-notifications' ;
+import { AppVersion                                   } from '@ionic-native/app-version'         ;
+import { UserData                                     } from '../providers/user-data'            ;
+import { PouchDBService                               } from '../providers/pouchdb-service'      ;
+import { DBSrvcs                                      } from '../providers/db-srvcs'             ;
+import { SrvrSrvcs                                    } from '../providers/srvr-srvcs'           ;
+import { AuthSrvcs                                    } from '../providers/auth-srvcs'           ;
+import { AlertService                                 } from '../providers/alerts'               ;
+import { NetworkStatus                                } from '../providers/network-status'       ;
+import { GeolocService                                } from '../providers/geoloc-service'       ;
+import { Log, CONSOLE, moment, Moment                 } from '../config/config.functions'        ;
+import { DOMTimeStamp, Coordinates, Position          } from '../config/geoloc'                  ;
+import { HomePage                                     } from '../pages/home/home'                ;
+import { MessageService                               } from '../providers/message-service'      ;
+import { TabsComponent                                } from '../components/tabs/tabs'           ;
+import { Preferences                                  } from '../providers/preferences'          ;
+import { TranslateService                             } from '@ngx-translate/core'               ;
+import { SmartAudio                                   } from '../providers/smart-audio'          ;
+import { Jobsite                                      } from '../domain/jobsite'                 ;
+import { ReportOther                                  } from '../domain/reportother'             ;
+import { WorkOrder                                    } from '../domain/workorder'               ;
+import { Employee                                     } from '../domain/employee'                ;
+import { Shift                                        } from '../domain/shift'                   ;
+import { PayrollPeriod                                } from '../domain/payroll-period'          ;
+import { Message                                      } from '../domain/message'                 ;
+import { IonDigitKeyboardCmp, IonDigitKeyboardOptions } from '../components/ion-digit-keyboard/'  ;
+
 import * as rxjs from 'rxjs';
 
 @Component({ templateUrl: 'app.html' })
@@ -49,6 +51,7 @@ export class OnSiteApp {
   private ui                     : any                         ;
   public tech                    : Employee                    ;
   public appLanguages            : Array<string> = ['en','es'] ;
+  public keysetup                : any                         ;
 
   constructor(
                 public platform    : Platform          ,
@@ -81,6 +84,7 @@ export class OnSiteApp {
 
   initializeApp() {
     Log.l("AppComponent: Initializing app...");
+    this.keysetup = {visible: false, width: '100%', swipeToHide: true};
 
     this.platform.ready().then(res => {
       Log.l("OnSite: platform ready returned:\n", res);
@@ -328,6 +332,8 @@ export class OnSiteApp {
       }
     });
   }
+
+
 
 }
 

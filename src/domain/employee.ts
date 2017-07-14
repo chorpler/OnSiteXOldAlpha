@@ -1,7 +1,39 @@
 import { Address             } from './address'                  ;
 import { Log, moment, Moment } from '../config/config.functions' ;
 
-export class Employee {
+export interface IFEmployee {
+  name                : string         ,
+  username            : string         ;
+  avatarName          : string         ;
+  prefix              : string         ;
+  firstName           : string         ;
+  lastName            : string         ;
+  middleName          : string         ;
+  suffix              : string         ;
+  technician          : string         ;
+  type                : any            ;
+  avtrNameAsUser      : boolean        ;
+  userClass           : any            ;
+  client              : any            ;
+  location            : any            ;
+  locID               : any            ;
+  loc2nd              : any            ;
+  shift               : any            ;
+  shiftLength         : any            ;
+  shiftStartTime      : any            ;
+  shiftStartTimeMoment: any            ;
+  shiftStartTimeHour  : string         ;
+  rotation            : string         ;
+  email               : Array<string>  ;
+  phone               : any            ;
+  cell                : any            ;
+  address             : Address        ;
+  payRate             : number         ;
+  active              : boolean        ;
+  updated             : boolean        ;
+}
+
+export class Employee implements IFEmployee {
   public name                : string         ;
   public username            : string         ;
   public avatarName          : string         ;

@@ -9,14 +9,19 @@ page-settings {
   .perfectly-normal-divider {
     .item-inner {
       .input-wrapper {
+        ion-label {
+          flex-direction: row;
+          justify-content: flex-start;
+          align-content: space-between;
+        }
       }
     }
   }
 
-  .perfectly-normal-button {
-    background: transparent;
-    box-shadow: 0;
-
+  .perfectly-normal-button, .perfectly-normal-button:active {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
   }
   .perfectly-normal-icon {
 

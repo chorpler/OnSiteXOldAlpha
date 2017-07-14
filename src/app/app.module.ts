@@ -47,8 +47,7 @@ import { SmartAudio                                              } from '../prov
 import { MessageService                                          } from '../providers/message-service'                               ;
 import { CommentService                                          } from '../providers/comment-service'                               ;
 import { IonDigitKeyboard                                        } from '../components/ion-digit-keyboard/ion-digit-keyboard.module' ;
-
-// import { ClockComponentModule                                    } from '../components/clock/clock.module'       ;
+import { ClockComponentModule                                    } from '../components/clock/clock.module'                           ;
 
 @NgModule({
   declarations   : [
@@ -76,7 +75,8 @@ import { IonDigitKeyboard                                        } from '../comp
                       }),
                       // MultiPickerModule,
                       IonDigitKeyboard,
-                      PipesModule
+                      PipesModule,
+                      ClockComponentModule,
                    ],
 
   providers      : [
