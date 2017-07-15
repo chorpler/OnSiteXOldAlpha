@@ -37,6 +37,7 @@ export class Login implements OnInit {
   private formPass      : any                            ;
   private submitAttempt : boolean = false                ;
   public mode           : string = "page"                ;
+  public dataReady      : boolean = false                ;
   // public static PREFS   : any = new Preferences()        ;
   // public prefs          : any = Login.PREFS              ;
 
@@ -63,13 +64,22 @@ export class Login implements OnInit {
   }
 
   ngOnInit() {
-    Log.l("Starting login page...");
-    if(this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
-    this.initializeForm();
+    if (!(this.ud.isAppLoaded())) {
+      this.tabs.goToPage('OnSiteHome');
+    } else {
+      this.runFromInit();
+    }
     // if(NetworkStatus.isConnected()) {
     // } else {
     //   this.alerter.showAlert('OFFLINE', "There is no Internet connection. Login will not work right now.");
     // }
+  }
+
+  public runFromInit() {
+    Log.l("Starting login page...");
+    if(this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
+    this.initializeForm();
+    this.dataReady = true;
   }
 
   private initializeForm() {
@@ -115,13 +125,14 @@ export class Login implements OnInit {
         this.alert.hideSpinner();
         this.events.publish('startup:finished', true);
         this.events.publish('login:finished', true);
-        if(this.mode === 'modal') {
-          this.tabs.setTabDisable(false);
-          this.viewCtrl.dismiss(creds);
-        } else {
-          this.tabs.setTabDisable(false);
-          this.tabs.goToPage('OnSiteHome');
-        }
+        this.ud.reloadApp();
+        // if(this.mode === 'modal') {
+        //   this.tabs.setTabDisable(false);
+        //   this.viewCtrl.dismiss(creds);
+        // } else {
+        //   this.tabs.setTabDisable(false);
+        //   this.tabs.goToPage('OnSiteHome');
+        // }
       }).catch((err) => {
         Log.l("loginAttempt(): Error validating and saving user info.");
         Log.l(err);

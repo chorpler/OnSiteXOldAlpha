@@ -44,6 +44,18 @@ export class Settings implements OnInit {
 
   ngOnInit() {
     Log.l("Settings: ngOnInit() called");
+    if (!(this.ud.isAppLoaded() && this.ud.isHomePageReady())) {
+      this.tabs.goToPage('OnSiteHome');
+    } else {
+      this.runFromInit();
+    }
+  }
+
+  ionViewDidEnter() {
+    Log.l("Settings: ionViewDidEnter() called");
+  }
+
+  runFromInit() {
     let translations = [
       'confirm_logout_title',
       'confirm_logout_message',
@@ -55,23 +67,23 @@ export class Settings implements OnInit {
     this.lang = this.translate.instant(translations);
     let en = { value: 'en', display: 'English' };
     let es = { value: 'es', display: 'Español' };
-    this.languages = [ en, es ];
+    this.languages = [en, es];
     let currentLang = this.translate.currentLang;
-    for(let language of this.languages) {
-      if(currentLang === language.value) {
+    for (let language of this.languages) {
+      if (currentLang === language.value) {
         this.selectedLanguage = language;
         this.language = language;
         break;
       }
     }
-    if(this.language === null) {
+    if (this.language === null) {
       this.translate.use('en');
       this.language = this.languages[0];
     }
 
     this.sounds = this.prefs.USER.audio;
 
-    if(this.platform.is('cordova')) {
+    if (this.platform.is('cordova')) {
       this.version.getAppName().then(res => {
         this.appName = res;
         return this.version.getVersionNumber();
@@ -88,10 +100,6 @@ export class Settings implements OnInit {
       this.appVersion = this.ud.appdata.version;
       this.dataReady = true;
     }
-  }
-
-  ionViewDidEnter() {
-    Log.l("Settings: ionViewDidEnter() called");
   }
 
   terminateApp() { this.platform.exitApp(); }
@@ -202,10 +210,11 @@ export class Settings implements OnInit {
     this.alert.showConfirm(title, text).then((restart) => {
       if (restart) {
         Log.l("RELOADING ONSITEX....");
+        this.dataReady = false;
         this.ud.reloadApp();
       }
     }).catch(err => {
-      Log.l("confirmLogout(): Error confirming logout!");
+      Log.l("confirmAppReload(): Error confirming reload!");
       Log.e(err);
     });
   }

@@ -164,5 +164,7 @@
   "confirm_app_restart_title": "Restart OnSiteX?",
   "confirm_app_restart_text": "Do you want to restart the app? This will refresh all data as if you had just started the app after killing it or after rebooting your phone. No data will be lost.",
   "show_clock": "Show Pocketwatch",
-  "show_clock_help": "Shows the animated clock, in case people want to see it. Tap the screen again to bring back the app."
+  "show_clock_help": "Shows the animated clock, in case people want to see it. Tap the screen again to bring back the app.",
+  "error_blank_item": "Form item '%s' is empty.",
+  "error_report_not_found": "Report was not found in list. You should not ever see this. Please send a comment from the Settings page (<span class='alert-with-icon'><span class='alert-icon'>&#xf20d;</span></span>) telling us."
 }

@@ -38,23 +38,6 @@ export class TechSettingsPage implements OnInit {
   shiftStartTimes   : Array<number>                 ;
   shiftRotations    : Array<string>                 ;
   loc2nds           : Array<string>                 ;
-  // selClient         : Array<string>                 ;
-  // selLocation       : Array<string>                 ;
-  // selLocID          : Array<string>                 ;
-  // selShift          : Array<string>                 ;
-  // selShiftLength    : Array<number>                 ;
-  // selShiftStartTime : Array<number>                 ;
-  // selShiftRotation  : Array<string>                 ;
-  // selLoc2nd         : Array<string>                 ;
-
-  // selClient         : string[  ] = CLIENT           ;
-  // selLocation       : string[  ] = LOCATION         ;
-  // selLocID          : string[  ] = LOCID            ;
-  // selShift          : string[  ] = SHIFT            ;
-  // selShiftLength    : number[  ] = SHIFTLENGTH      ;
-  // selShiftStartTime : number[  ] = SHIFTSTARTTIME   ;
-  // selShiftRotation  : string[  ] = SHIFTROTATION    ;
-  // selLoc2nd         : string[  ] = LOC2ND           ;
   sesaConfig        : any        = {}               ;
   techSettings      : FormGroup                     ;
   firstName         : string                        ;
@@ -92,7 +75,8 @@ export class TechSettingsPage implements OnInit {
     let translations = [
       'error',
       'spinner_saving_tech_profile',
-      'error_saving_tech_profile'
+      'error_saving_tech_profile',
+      'error_blank_item'
     ];
     this.lang = this.translate.instant(translations);
     if ( this.navParams.get('mode') !== undefined ) {
@@ -193,38 +177,60 @@ export class TechSettingsPage implements OnInit {
 
   onSubmit() {
     let lang = this.lang;
-    this.alert.showSpinner(lang['spinner_saving_tech_profile']);
     let form            = this.techSettings.value               ;
     let tech            = this.tech                             ;
-    tech.updated        = true                                  ;
-    tech.technician     = form.lastName + ', ' + form.firstName ;
-    tech.client         = form.client.fullName.toUpperCase()    ;
-    tech.location       = form.location.fullName.toUpperCase()  ;
-    tech.locID          = form.locID.name.toUpperCase()         ;
-    tech.loc2nd         = form.loc2nd.name.toUpperCase()        ;
-    tech.shift          = form.shift.name                       ;
-    tech.shiftLength    = Number(form.shiftLength.name)         ;
-    tech.shiftStartTime = Number(form.shiftStartTime.name)      ;
-    tech.firstName      = form.firstName                        ;
-    tech.lastName       = tech.lastName                         ;
-    this.reportMeta     = tech;
-    Log.l("onSubmit(): Now attempting to save tech profile:");
-    this.db.saveTechProfile(this.reportMeta).then((res) => {
-      Log.l("onSubmit(): Saved techProfile successfully.");
-      if ( this.mode === 'modal' ) {
-        Log.l('Mode = ' + this.mode );
-        this.alert.hideSpinner();
-        this.viewCtrl.dismiss();
+    let keys = Object.keys(form);
+    let error = false;
+    let errorKey = "";
+    for(let key of keys) {
+      if(error) {break};
+      let value = form[key];
+      if(!value) {
+        error = true;
+        errorKey = key;
       }
-      else {
-        Log.l('Mode = ' + this.mode );
-        this.alert.hideSpinner();
-        this.tabs.goToPage('OnSiteHome');
-      }
-    }).catch((err) => {
-      Log.l("onSubmit(): Error saving techProfile!");
-      Log.e(err);
-      this.alert.showAlert(lang['error'], lang['error_saving_tech_profile'])
-    });
+    }
+    if(!error) {
+      this.alert.showSpinner(lang['spinner_saving_tech_profile']);
+      tech.updated        = true                                  ;
+      tech.technician     = form.lastName + ', ' + form.firstName ;
+      tech.client         = form.client.fullName.toUpperCase()    ;
+      tech.location       = form.location.fullName.toUpperCase()  ;
+      tech.locID          = form.locID.name.toUpperCase()         ;
+      tech.loc2nd         = form.loc2nd.name.toUpperCase()        ;
+      tech.shift          = form.shift.name                       ;
+      tech.shiftLength    = Number(form.shiftLength.name)         ;
+      tech.shiftStartTime = Number(form.shiftStartTime.name)      ;
+      tech.firstName      = form.firstName                        ;
+      tech.lastName       = tech.lastName                         ;
+      this.reportMeta     = tech;
+      Log.l("onSubmit(): Now attempting to save tech profile:");
+      this.db.saveTechProfile(this.reportMeta).then((res) => {
+        Log.l("onSubmit(): Saved techProfile successfully.");
+        if ( this.mode === 'modal' ) {
+          Log.l('Mode = ' + this.mode );
+          this.alert.hideSpinner();
+          this.viewCtrl.dismiss();
+        }
+        else {
+          Log.l('Mode = ' + this.mode );
+          this.alert.hideSpinner();
+          this.tabs.goToPage('OnSiteHome');
+        }
+      }).catch((err) => {
+        Log.l("onSubmit(): Error saving techProfile!");
+        Log.e(err);
+        this.alert.showAlert(lang['error'], lang['error_saving_tech_profile'])
+      });
+    } else {
+      let title = lang['error'];
+      let text = sprintf(lang['error_blank_item'], errorKey);
+      Log.l("onSubmit(): User left form item '%s' blank.", errorKey);
+      this.alert.showAlert(title, text).catch(err => {
+        Log.l("onSubmit(): Error showing alert to user!");
+        Log.e(err);
+      });
+
+    }
   }
 }

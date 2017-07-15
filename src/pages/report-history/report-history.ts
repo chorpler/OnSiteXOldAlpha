@@ -78,13 +78,13 @@ export class ReportHistory implements OnInit {
     Log.l("ReportHistory: ngOnInit called...");
   }
 
-  ionViewDidLoad() {
-    Log.l("ReportHistory: ionViewDidLoad called...");
+  ionViewDidEnter() {
+    Log.l("ReportHistory: ionViewDidEnter called...");
     window["onsitereporthistory"] = this;
-    if(this.ud.isAppLoaded()) {
-      this.runOnPageLoad();
-    } else {
+    if(!(this.ud.isAppLoaded() && this.ud.isHomePageReady())) {
       this.tabs.goToPage('OnSiteHome');
+    } else {
+      this.runOnPageLoad();
     }
   }
 
@@ -101,6 +101,7 @@ export class ReportHistory implements OnInit {
       'error',
       'confirm',
       'delete_report',
+      'error_report_not_found',
       'spinner_deleting_report',
       'spinner_retrieving_reports',
       'spinner_retrieving_reports_other',
@@ -131,9 +132,12 @@ export class ReportHistory implements OnInit {
     }
     let u = this.ud.getUsername();
     Log.l("ReportHistory: pulling reports...");
-    this.server.getReportsForTech(u).then((res) => {
-      let unsortedReports = res;
+    // this.server.getReportsForTech(u).then((res) => {
+
+      // let unsortedReports = res;
       // this.ud.setWorkOrderList(res);
+
+      let unsortedReports = this.ud.getWorkOrderList();
       this.reports = unsortedReports.sort(_sortReports);
       Log.l("ReportHistory: created date-sorted report list:\n", this.reports);
       // return
@@ -141,12 +145,17 @@ export class ReportHistory implements OnInit {
       this.alert.hideSpinner();
     // }).then(res => {
       // this.alert.showSpinner(lang['spinner_retrieving_reports_other']);
-      return this.server.getReportsOtherForTech(u);
-    }).then(res => {
-      Log.l("ReportHistory: pulled ReportOther for tech:\n", res);
+      // return
+      // this.server.getReportsOtherForTech(u)
+      // ;
+    // })
+    // .then(res => {
+      // Log.l("ReportHistory: pulled ReportOther for tech:\n", res);
       this.filtReports = {};
       this.filterKeys = [];
-      let reportOthers = res.sort(_sortOtherReports);
+      // let reportOthers = res.sort(_sortOtherReports);
+      let reportOthers = this.ud.getReportOtherList();
+      reportOthers.sort(_sortOtherReports);
       this.otherReports = reportOthers;
       for (let shift of this.shifts) {
         let date = shift.getStartTime().format("YYYY-MM-DD");
@@ -164,46 +173,96 @@ export class ReportHistory implements OnInit {
           }
         }
       }
-      return this.alert.hideSpinner(0, true);
-    }).then(res => {
+      // return
+       this.alert.hideSpinner(0, true);
+    // }).then(res => {
       this.pageReady = true;
-    }).catch(err => {
-      Log.l("ReportHistory: Error fetching reports!");
-      Log.e(err);
-      this.alert.showAlert(lang['error_fetching_reports_title'], lang['error_fetching_reports_message']);
-    });
+    // }).catch(err => {
+    //   Log.l("ReportHistory: Error fetching reports!");
+    //   Log.e(err);
+    //   this.alert.showAlert(lang['error_fetching_reports_title'], lang['error_fetching_reports_message']);
+    // });
   }
 
   itemTapped(event, item) {
     let shiftToSend = null;
+    let lang = this.lang;
     Log.l("itemTapped(): Now looking for report:\n", item);
-    outerloop:
-    for(let shift of this.shifts) {
-      let reports = shift.getShiftReports();
-      let others  = shift.getShiftOtherReports();
-      for(let report of reports) {
-        if(report._id === item._id) {
-          Log.l(`itemTapped(): Found work report in shift:\n`, shift);
+    let report = item;
+    if(report instanceof WorkOrder) {
+      Log.l("itemTapped(): Report was a WorkOrder:\n", item);
+      outerloop:
+      for(let shift of this.shifts) {
+        let list = shift.getShiftReports();
+        let i = list.indexOf(report);
+        if(i > -1) {
           shiftToSend = shift;
-          break outerloop;
+          break;
+        } else {
+          let rptid1 = report._id;
+          for (let rprt of list) {
+            let rptid2 = rprt._id;
+            if (rptid1 === rptid2) {
+              shiftToSend = shift;
+              break outerloop;
+            }
+          }
         }
       }
-      for(let other of others) {
-        if(other._id === item._id) {
-          Log.l(`itemTapped(): Found ReportOther in shift:\n`, shift);
+    } else if(report instanceof ReportOther) {
+      Log.l("itemTapped(): Report was a ReportOther:\n", item);
+      outerloop:
+      for(let shift of this.shifts) {
+        let list = shift.getShiftOtherReports();
+        let i = list.indexOf(report);
+        if(i > -1) {
           shiftToSend = shift;
           break outerloop;
+        } else {
+          let rptid1 = report._id;
+          for(let rprt of list) {
+            let rptid2 = rprt._id;
+            if(rptid1 === rptid2) {
+              shiftToSend = shift;
+              break outerloop;
+            }
+          }
         }
-      }
-    }
-    if(shiftToSend) {
-      if(item['type']) {
-        this.tabs.goToPage('Report', {mode: 'Edit', reportOther: item, shift: shiftToSend, payroll_period: this.period, type: item['type']});
-      } else {
-        this.tabs.goToPage('Report', {mode: 'Edit', workOrder: item, shift: shiftToSend, payroll_period: this.period});
       }
     } else {
-      this.alert.showAlert("ERROR", "Report not found in any shifts.");
+      Log.l("itemTapped(): Report was not a recognized type!!!!");
+    }
+    // outerloop:
+    // for(let shift of this.shifts) {
+    //   let reports = shift.getShiftReports();
+    //   let others  = shift.getShiftOtherReports();
+    //   for(let report of reports) {
+    //     if(report._id === item._id) {
+    //       Log.l(`itemTapped(): Found work report in shift:\n`, shift);
+    //       shiftToSend = shift;
+    //       break outerloop;
+    //     }
+    //   }
+    //   for(let other of others) {
+    //     if(other._id === item._id) {
+    //       Log.l(`itemTapped(): Found ReportOther in shift:\n`, shift);
+    //       shiftToSend = shift;
+    //       break outerloop;
+    //     }
+    //   }
+    // }
+    if(shiftToSend) {
+      Log.l("itemTapped(): Got shift to send:\n", shiftToSend);
+      if(item['type']) {
+        this.tabs.goToPage('Report', {mode: 'Edit', reportOther: item, shift: shiftToSend, payroll_period: this.period, type: item['type']});
+      } else if(item instanceof WorkOrder) {
+        this.tabs.goToPage('Report', {mode: 'Edit', workOrder: item, shift: shiftToSend, payroll_period: this.period});
+      } else {
+        this.alert.showAlert(lang['error'] + " PEBCAK-002", lang['error_report_not_found']);
+
+      }
+    } else {
+      this.alert.showAlert(lang['error'], lang['error_report_not_found']);
     }
   }
 
@@ -223,7 +282,8 @@ export class ReportHistory implements OnInit {
           let i = this.reports.indexOf(item);
           this.reports.splice(i, 1);
           i = this.filtReports[reportDate].indexOf(item);
-          this.filtReports[reportDate].splice(i, 1);
+          let tmpReport = this.filtReports[reportDate].splice(i, 1)[0];
+          this.ud.removeReport(tmpReport);
           this.alert.hideSpinner();
         }).catch((err) => {
           this.alert.hideSpinner();
@@ -259,6 +319,8 @@ export class ReportHistory implements OnInit {
           this.reports.splice(i, 1);
           i = this.filtReports[reportDate].indexOf(other);
           this.filtReports[reportDate].splice(i, 1);
+          let tmpReport = this.filtReports[reportDate].splice(i, 1)[0];
+          this.ud.removeOtherReport(tmpReport);
           this.alert.hideSpinner();
         }).catch((err) => {
           this.alert.hideSpinner();

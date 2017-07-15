@@ -170,17 +170,7 @@ export class TabsComponent implements OnInit {
   }
 
   isDeveloper() {
-    let un = this.ud.getUsername();
-    if( un === 'Chorpler' || un === 'Hachero' || un === 'mike' || un === 'admin' ) {
-      this.userIsDeveloper = true;
-      return true;
-    } else if(this.ud.isSpecialDeveloper()) {
-      this.userIsDeveloper = true;
-      return true;
-    } else {
-      this.userIsDeveloper = false;
-      return false;
-    }
+    return this.ud.isDeveloper();
   }
 
   setMessageBadge(count:number) {

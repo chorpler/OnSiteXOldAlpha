@@ -832,4 +832,34 @@ export class SrvrSrvcs {
     });
   }
 
+  public savePhoneInfo(tech:Employee, data:any) {
+    return new Promise((resolve,reject) => {
+      let rdb1 = this.addRDB(this.prefs.DB.config);
+      let userid = tech.getUsername();
+      rdb1.upsert('techPhones', (doc) => {
+        if(doc) {
+          let rev = doc._rev;
+          doc[userid] = data;
+          return doc;
+        } else {
+          doc = {"_id": "techPhones"};
+          doc[userid] = data;
+          return doc;
+        }
+      }).then(res => {
+        if(!res.ok && !res.updated) {
+          Log.l("savePhoneInfo(): Error updating user phone info!");
+          reject(res);
+        } else {
+          Log.l("savePhoneInfo(): Successfully updated user phone info!");
+          resolve(res);
+        }
+      }).catch(err => {
+        Log.l("savePhoneInfo(): Error updating user phone info!");
+        Log.e(err);
+        reject(err);
+      })
+    });
+  }
+
 }

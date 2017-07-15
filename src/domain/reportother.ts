@@ -78,6 +78,10 @@ export class ReportOther {
     return this;
   }
 
+  public getReportID() {
+    return this._id ? this._id : "";
+  }
+
   public genReportID(tech:Employee) {
     let now = moment();
     // let idDateTime = now.format("YYYYMMDDHHmmss_ddd");

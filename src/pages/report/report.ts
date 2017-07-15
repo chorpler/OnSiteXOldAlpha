@@ -143,6 +143,9 @@ export class ReportPage implements OnInit {
 
   ngOnInit() {
     Log.l("Report.ngOnInit(): navParams are:\n", this.navParams);
+    if (!(this.ud.isAppLoaded() && this.ud.isHomePageReady())) {
+      this.tabs.goToPage('OnSiteHome');
+    }
     if (this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
     if (this.navParams.get('type') !== undefined) { this.type = this.navParams.get('type'); }
     if (this.navParams.get('shift') !== undefined) { this.shiftToUse = this.selectedShift = this.navParams.get('shift'); }
@@ -213,7 +216,7 @@ export class ReportPage implements OnInit {
       if (!this.reportOther || !this.reportOther.first_name) {
         this.reportOther = this.createFreshOtherReport();
       }
-      this.updateActiveShiftWorkOrders(this.selectedShift);
+      // this.updateActiveShiftWorkOrders(this.selectedShift);
       if (this.mode === 'Add' || this.mode === 'Añadir') {
         let startTime = moment(this.selectedShift.start_time);
         let addTime = this.selectedShift.getShiftHours();
@@ -512,7 +515,7 @@ export class ReportPage implements OnInit {
     this._selected_shift.valueChanges.subscribe((shift: any) => {
       Log.l("workOrderForm: valueChanges fired for selected_shift:\n", shift);
       let ss                       = shift                                                   ;
-      this.updateActiveShiftWorkOrders(shift);
+      // this.updateActiveShiftWorkOrders(shift);
       let report_date              = moment(shift.getStartTime())                            ;
       let woHoursSoFar             = shift.getShiftHours()                                   ;
       let woStart                  = moment(shift.getStartTime()).add(woHoursSoFar, 'hours') ;
@@ -618,30 +621,30 @@ export class ReportPage implements OnInit {
     });
   }
 
-  public updateActiveShiftWorkOrders(shift: Shift) {
-    let ss = shift;
-    let oldShift = this.selectedShift;
-    let shift_time = moment(ss.start_time);
-    let shift_serial = ss.getShiftSerial();
-    let payroll_period = ss.getPayrollPeriod();
-    this.workOrder.shift_serial = shift_serial;
-    this.workOrder.payroll_period = payroll_period;
-    this.reportOther.shift_serial = shift_serial;
-    this.reportOther.payroll_period = payroll_period;
-    Log.l("workOrderForm: setting shift_serial to: ", shift_serial);
-    // let shiftHours = this.techProfile.shiftLength;
+  // public updateActiveShiftWorkOrders(shift: Shift) {
+  //   let ss = shift;
+  //   let oldShift = this.selectedShift;
+  //   let shift_time = moment(ss.start_time);
+  //   let shift_serial = ss.getShiftSerial();
+  //   let payroll_period = ss.getPayrollPeriod();
+  //   this.workOrder.shift_serial = shift_serial;
+  //   this.workOrder.payroll_period = payroll_period;
+  //   this.reportOther.shift_serial = shift_serial;
+  //   this.reportOther.payroll_period = payroll_period;
+  //   Log.l("workOrderForm: setting shift_serial to: ", shift_serial);
+  //   // let shiftHours = this.techProfile.shiftLength;
 
-    // let shiftStartsAt = this.techProfile.shiftStartTime;
-    this.shiftHoursColor = this.getShiftHoursStatus(ss);
-    this.selectedShift = shift;
-    if(this.type === 'work_report') {
-      oldShift.removeShiftReport(this.workOrder);
-      shift.addShiftReport(this.workOrder);
-    } else {
-      oldShift.removeOtherReport(this.reportOther);
-      shift.addOtherReport(this.reportOther);
-    }
-  }
+  //   // let shiftStartsAt = this.techProfile.shiftStartTime;
+  //   this.shiftHoursColor = this.getShiftHoursStatus(ss);
+  //   this.selectedShift = shift;
+  //   if(this.type === 'work_report') {
+  //     oldShift.removeShiftReport(this.workOrder);
+  //     shift.addShiftReport(this.workOrder);
+  //   } else {
+  //     oldShift.removeOtherReport(this.reportOther);
+  //     shift.addOtherReport(this.reportOther);
+  //   }
+  // }
 
   public setupWorkOrderList() {
     let tmpWOL = new Array<WorkOrder>();
@@ -925,11 +928,13 @@ export class ReportPage implements OnInit {
         this.alert.hideSpinner();
         // this.tabs.goToPage('OnSiteHome');
         this.previousEndTime = moment(newWO.time_start);
+        this.ud.addNewReport(newWO);
+        this.currentRepairHours = 0;
+        // this.ud.updateShifts();
         if(this.prefs.USER.stayInReports) {
           this.createFreshReport();
           this.initializeForm();
           this.initializeFormListeners();
-          this.selectedShift.addShiftReport(newWO);
         } else {
           this.tabs.goToPage('ReportHistory');
         }
@@ -948,6 +953,9 @@ export class ReportPage implements OnInit {
       }).then((res) => {
         Log.l("processWO(): Successfully synchronized work order to remote.");
         this.alert.hideSpinner();
+        this.ud.addNewReport(newWO);
+        // this.ud.updateShifts();
+        this.currentRepairHours = 0;
         this.tabs.goToPage('ReportHistory');
       }).catch((err) => {
         Log.l("processWO(): Error saving work order to local database.");
@@ -969,6 +977,9 @@ export class ReportPage implements OnInit {
     Log.l("processAlternateWO(): Serialized ReportOther to:\n", newDoc);
     this.db.saveReportOther(newDoc).then(res => {
       Log.l("processAltnerateWO(): Done saving ReportOther!");
+      this.ud.addNewOtherReport(newReport);
+      // this.ud.updateShifts();
+      this.currentOtherHours = 0;
       this.alert.hideSpinner();
       if(this.prefs.USER.stayInReports) {
         this.type = this.selReportType[0];
@@ -1126,7 +1137,8 @@ export class ReportPage implements OnInit {
         this.server.deleteDoc(this.prefs.DB.reports, wo).then((res) => {
           Log.l("deleteWorkOrder(): Success:\n", res);
           Log.l("Going to delete work order %d in the list.", i);
-          reports.splice(i, 1);
+          let tmpReport = reports.splice(i, 1)[0];
+          this.ud.removeReport(tmpReport);
           if (this.mode === 'Add' || this.mode === 'Añadir') {
             this.alert.hideSpinner();
             this.tabs.goToPage('OnSiteHome');
@@ -1168,7 +1180,8 @@ export class ReportPage implements OnInit {
           Log.l("deleteOtherReport(): Success:\n", res);
           // this.items.splice(i, 1);
           let i = others.indexOf(other);
-          others.splice(i, 1);
+          let tmpReport = others.splice(i, 1)[0];
+          this.ud.removeOtherReport(tmpReport);
           // i = this.filtReports[reportDate].indexOf(other);
           // this.filtReports[reportDate].splice(i, 1);
           this.alert.hideSpinner();

@@ -177,7 +177,7 @@ export class OnSiteApp {
       let callingClass = this;
       Log.l("OnSite.bootApp(): Called.")
       this.checkPreferences().then(() => {
-        Log.l("OnSite.initializeApp(): Done messing with preferences, now checking login...");
+        Log.l("OnSite.bootApp(): Done messing with preferences, now checking login...");
         let language = this.prefs.USER.language;
         if (language !== 'en') {
           this.translate.use(language);
@@ -201,26 +201,38 @@ export class OnSiteApp {
         Log.l("OnSite.bootApp(): Got new messages.");
         let badges = this.msgService.getNewMessageCount();
         this.tabs.setMessageBadge(badges);
+        return this.ud.checkPhoneInfo();
+      }).then(res => {
         let tech = this.ud.getData('employee')[0];
         let pp = this.ud.createPayrollPeriods(this.data.employee[0], 2);
-        this.alert.hideSpinner(0, true).then(res => {
+        if(res) {
+          this.server.savePhoneInfo(tech, res).then(res => {
+            resolve(true);
+          }).catch(err => {
+            Log.l("OnSite.bootApp(): Error saving phone info to server!");
+            Log.e(err);
+            reject(err);
+          });
+        } else {
           resolve(true);
-        }).catch(err => {
-          Log.l("Error hiding spinner!");
-          Log.e(err);
-          resolve(true);
-        });
+        }
+        // this.alert.hideSpinner(0, true).then(res => {
+        // }).catch(err => {
+        //   Log.l("Error hiding spinner!");
+        //   Log.e(err);
+        //   resolve(true);
+        // });
       }).catch(err => {
         Log.l("OnSite.bootApp(): Error with login or with publishing startup:finished event!");
         Log.e(err);
-        this.alert.hideSpinner(0, true).then(res => {
-          reject(false);
-        }).catch(err => {
-          Log.l("Error hiding spinner!");
-          Log.e(err);
-          // this.rootPage = 'Login';
-          reject(false);
-        });
+        // this.alert.hideSpinner(0, true).then(res => {
+        reject(false);
+        // }).catch(err => {
+        //   Log.l("Error hiding spinner!");
+        //   Log.e(err);
+        //   // this.rootPage = 'Login';
+        //   reject(false);
+        // });
       });
     });
   }

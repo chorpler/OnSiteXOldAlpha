@@ -308,7 +308,7 @@ export class HomePage {
         this.fetchTechWorkorders().then((res) => {
           this.techProfile = this.ud.getTechProfile();
           this.shifts = this.ud.getPeriodShifts();
-          this.countHoursForShifts();
+          // this.countHoursForShifts();
           HomePage.homePageStatus.startupFinished = true;
           this.ud.setHomePageReady(true);
           this.dataReady = true;
@@ -519,18 +519,18 @@ export class HomePage {
     return loggedin;
   }
 
-  countHoursForShifts() {
-    if(this.shifts && this.shifts.length) {
-      this.hoursTotalList = [];
-      for(let shift of this.shifts) {
-        let hours = this.ud.getTotalHoursForShift(shift.getShiftSerial());
-        this.hoursTotalList.push(hours);
-      }
-    }
-    let thisPayPeriod = this.ud.getPayrollPeriodForDate(moment());
-    this.payrollPeriodHours = this.ud.getTotalHoursForPayrollPeriod(thisPayPeriod);
-    this.payrollPeriodBonusHours = this.ud.getPayrollHoursForPayrollPeriod(thisPayPeriod);
-  }
+  // countHoursForShifts() {
+  //   if(this.shifts && this.shifts.length) {
+  //     this.hoursTotalList = [];
+  //     for(let shift of this.shifts) {
+  //       let hours = this.ud.getTotalHoursForShift(shift.getShiftSerial());
+  //       this.hoursTotalList.push(hours);
+  //     }
+  //   }
+  //   let thisPayPeriod = this.ud.getPayrollPeriodForDate(moment());
+  //   this.payrollPeriodHours = this.ud.getTotalHoursForPayrollPeriod(thisPayPeriod);
+  //   this.payrollPeriodBonusHours = this.ud.getPayrollHoursForPayrollPeriod(thisPayPeriod);
+  // }
 
   presentLoginModal() {
     let loginPage = this.modalCtrl.create('Login', {user: '', pass: ''}, { enableBackdropDismiss: false, cssClass: 'login-modal'});
@@ -611,11 +611,16 @@ export class HomePage {
   }
 
   showShiftReports(shift:Shift) {
-    if(this.ud.getWorkOrdersForShift(shift.getShiftSerial()).length > 0) {
+    if(shift.getShiftReports().length > 0) {
       this.tabs.goToPage('ReportHistory', {mode: 'Shift', shift: shift, payroll_period: this.period});
     } else {
       this.tabs.goToPage('Report', {mode: 'Add', shift: shift, payroll_period: this.period});
     }
+    // if(this.ud.getWorkOrdersForShift(shift.getShiftSerial()).length > 0) {
+    //   this.tabs.goToPage('ReportHistory', {mode: 'Shift', shift: shift, payroll_period: this.period});
+    // } else {
+    //   this.tabs.goToPage('Report', {mode: 'Add', shift: shift, payroll_period: this.period});
+    // }
   }
 
   possibleSound(shift:Shift) {

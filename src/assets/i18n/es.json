@@ -164,5 +164,7 @@
   "confirm_app_restart_title": "Reiniciar OnSiteX?",
   "confirm_app_restart_text": "¿Desea reiniciar la aplicación? Esto actualizará todos los datos como si acabas de iniciar la aplicación después de matarla o después de reiniciar el teléfono. No se perderán datos.",
   "show_clock": "Mostrar el Enlace de Bolsillo",
-  "show_clock_help": "Muestra el reloj animado, en caso de que quiera verlo. Vuelve a tocar la pantalla para volver a traer la aplicación."
+  "show_clock_help": "Muestra el reloj animado, en caso de que quiera verlo. Vuelve a tocar la pantalla para volver a traer la aplicación.",
+  "error_blank_item": "El elemento del formulario '%s' está vacío.",
+  "error_report_not_found": "El informe no se encontró en la lista. No deberías ver esto. Envía un comentario desde la página de configuración (<span class='alert-with-icon'><span class='alert-icon'>&#xf20d;</span></span>) que nos indica."
 }
