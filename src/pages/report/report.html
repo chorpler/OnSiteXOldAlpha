@@ -19,7 +19,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content>
   <div class="data-elements" *ngIf="dataReady && selectedShift">
     <div class="work-order-payroll-hours-header">
       <span class="shift-hours-header" [ngClass]="getShiftHoursStatus(selectedShift)" *ngIf="workOrderForm && workOrderForm.value && workOrderForm.value.selected_shift">
@@ -46,13 +46,13 @@
     </div>
 
     <form [formGroup]="workOrderForm" (ngSubmit)="onSubmit()" *ngIf="dataReady">
-      <ion-list padding>
+      <ion-list>
         <ion-item (tap)="checkPageMode($event)">
           <ion-label>{{'report_type' | translate}}</ion-label>
           <!-- <ion-select formControlName="type" [disabled]="mode==='Edit'" (tap)="checkPageMode()"> -->
           <ion-select formControlName="type">
             <ion-option *ngFor="let type of selReportType" [value]="type">{{type.name | translate}}</ion-option>
-          </ion-select>xcsx
+          </ion-select>
         </ion-item>
         <ion-item (tap)="showFancySelect()" class="item item-button ion-item-button-like">
           <ion-label>{{'shift_date' | translate}}</ion-label>

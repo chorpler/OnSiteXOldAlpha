@@ -16,7 +16,7 @@
       <button ion-button color="primary" icon-only (tap)="showHelp($event)">
         <ion-icon class="header-help-button" name="help-circle"></ion-icon>
       </button>
-      <!-- <button ion-button color="dark" icon-only (click)="tabs.terminateApp()">
+      <!-- <button ion-button color="dark" icon-only (tap)="tabs.terminateApp()">
         <ion-icon class="header-close-button" name="close"></ion-icon>
       </button> -->
     </ion-buttons>
@@ -51,7 +51,7 @@
       <!-- </ion-item> -->
     </ion-card-header>
     <ion-list no-lines no-border class="home-card-body-list">
-      <ion-item class="ion-item-button-like"  *ngFor="let shift of period.shifts; let i=index" (click)="showShiftReports(shift)">
+      <ion-item class="ion-item-button-like"  *ngFor="let shift of period.shifts; let i=index" (tap)="showShiftReports(shift)">
         <ion-icon class="shft-num-icon">{{numChars[shift.shift_number]}}</ion-icon>
         <span class="shift-text" *ngIf="shift.getShiftReportsStatus().status && !shift.getShiftReportsStatus().workHours">
           {{shift.getShiftReportsStatus().code}}&nbsp;/&nbsp;{{shift.getShiftReportsStatus().code}} &nbsp;&nbsp;
@@ -63,7 +63,7 @@
           {{shift.getNormalHours()}}&nbsp;/&nbsp;{{shift.getShiftLength()}} &nbsp;Hrs. &nbsp;&nbsp;
         </span>
         <span class="normal-txt">{{shift.getStartTime().format("ddd, MMM D")}}</span>
-        <ion-icon item-end class="chk-box-icon" [ngClass]="shift.getShiftStatus()" [innerHTML]="getCheckboxSVG(shift) | safe: 'html'" (click)="possibleSound(shift)"></ion-icon>
+        <ion-icon item-end class="chk-box-icon" [ngClass]="shift.getShiftStatus()" [innerHTML]="getCheckboxSVG(shift) | safe: 'html'" (tap)="possibleSound(shift)"></ion-icon>
       </ion-item>
       <ion-list-header class="blank-list-header" ></ion-list-header>
       <ion-list-header class="home-hours-submitted">

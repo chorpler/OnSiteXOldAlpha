@@ -26,10 +26,12 @@
           <ion-icon class="ionic-icon-outline" name='ios-document-outline' color="primary"></ion-icon>
           </button>
         </ion-item-divider>
-        <div class="report-history-reports-subcontainer" *ngIf="filtReports[filterKeys[i]].length">
-          <div class="report-and-reportother-container" *ngFor="let report of filtReports[filterKeys[i]]">
+        <!-- <div class="report-history-reports-subcontainer" *ngIf="filtReports[filterKeys[i]].length">
+          <div class="report-and-reportother-container" *ngFor="let report of filtReports[filterKeys[i]]"> -->
+        <div class="report-history-reports-subcontainer" *ngIf="shift.getAllShiftReports()">
+          <div class="report-and-reportother-container" *ngFor="let report of shift.getAllShiftReports()">
             <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type===undefined || report.type==='Work Report'">
-              <ion-item class="report-history-list-item" (tap)="itemTapped($event, report)" *ngIf="report['type']===undefined || report['type']==='Work Report'">
+              <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
                 <div class="report-history-report-item item-group-id" *ngIf="ud.showID()">
                   <span class="report-history-report-item-header item-id-label">ID</span>
                   <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
@@ -58,14 +60,14 @@
                 </div>
               </ion-item>
               <ion-item-options side="right">
-                <button ion-button color="danger" (tap)="deleteWorkOrder($event, report)">
+                <button ion-button color="danger" (tap)="deleteWorkOrder($event, report, shift)">
                   <ion-icon name="trash"></ion-icon>
                   {{"delete" | translate}}
                 </button>
               </ion-item-options>
             </ion-item-sliding>
             <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Travel'">
-              <ion-item class="report-history-list-item" (tap)="itemTapped($event, report)">
+              <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
                 <div class="report-history-report-item item-group-id" *ngIf="ud.showID()">
                   <span class="report-history-report-item-header item-id-label">ID</span>
                   <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
@@ -84,14 +86,14 @@
                 </div>
               </ion-item>
               <ion-item-options side="right">
-                <button ion-button color="danger" (tap)="deleteOtherReport($event, report)">
+                <button ion-button color="danger" (tap)="deleteOtherReport($event, report, shift)">
                   <ion-icon name="trash"></ion-icon>
                   {{"delete" | translate}}
                 </button>
               </ion-item-options>
             </ion-item-sliding>
             <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Training'">
-              <ion-item class="report-history-list-item" (tap)="itemTapped($event, report)">
+              <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
                 <div class="report-history-report-item item-group-id" *ngIf="ud.showID()">
                   <span class="report-history-report-item-header item-id-label">ID</span>
                   <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
@@ -110,7 +112,7 @@
                 </div>
               </ion-item>
               <ion-item-options side="right">
-                <button ion-button color="danger" (tap)="deleteOtherReport($event, report)">
+                <button ion-button color="danger" (tap)="deleteOtherReport($event, report, shift)">
                   <ion-icon name="trash"></ion-icon>
                   {{"delete" | translate}}
                 </button>
@@ -126,7 +128,7 @@
               // V Vacation
             -->
             <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Standby'">
-              <ion-item class="report-history-list-item" (tap)="itemTapped($event, report)">
+              <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
                 <div class="report-history-report-item item-group-id" *ngIf="ud.showID()">
                   <span class="report-history-report-item-header item-id-label">ID</span>
                   <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
@@ -141,14 +143,14 @@
                 </div>
               </ion-item>
               <ion-item-options side="right">
-                <button ion-button color="danger" (tap)="deleteOtherReport($event, report)">
+                <button ion-button color="danger" (tap)="deleteOtherReport($event, report, shift)">
                   <ion-icon name="trash"></ion-icon>
                   {{"delete" | translate}}
                 </button>
               </ion-item-options>
             </ion-item-sliding>
             <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Standby: HB Duncan'">
-              <ion-item class="report-history-list-item" (tap)="itemTapped($event, report)">
+              <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
                 <div class="report-history-report-item item-group-id" *ngIf="ud.showID()">
                   <span class="report-history-report-item-header item-id-label">ID</span>
                   <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
@@ -163,14 +165,14 @@
                 </div>
               </ion-item>
               <ion-item-options side="right">
-                <button ion-button color="danger" (tap)="deleteOtherReport($event, report)">
+                <button ion-button color="danger" (tap)="deleteOtherReport($event, report, shift)">
                   <ion-icon name="trash"></ion-icon>
                   {{"delete" | translate}}
                 </button>
               </ion-item-options>
             </ion-item-sliding>
             <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Sick'">
-              <ion-item class="report-history-list-item" (tap)="itemTapped($event, report)">
+              <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
                 <div class="report-history-report-item item-group-id" *ngIf="ud.showID()">
                   <span class="report-history-report-item-header item-id-label">ID</span>
                   <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
@@ -185,14 +187,14 @@
                 </div>
               </ion-item>
               <ion-item-options side="right">
-                <button ion-button color="danger" (tap)="deleteOtherReport($event, report)">
+                <button ion-button color="danger" (tap)="deleteOtherReport($event, report, shift)">
                   <ion-icon name="trash"></ion-icon>
                   {{"delete" | translate}}
                 </button>
               </ion-item-options>
             </ion-item-sliding>
             <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Vacation'">
-              <ion-item class="report-history-list-item" (tap)="itemTapped($event, report)">
+              <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
                 <div class="report-history-report-item item-group-id" *ngIf="ud.showID()">
                   <span class="report-history-report-item-header item-id-label">ID</span>
                   <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
@@ -207,14 +209,14 @@
                 </div>
               </ion-item>
               <ion-item-options side="right">
-                <button ion-button color="danger" (tap)="deleteOtherReport($event, report)">
+                <button ion-button color="danger" (tap)="deleteOtherReport($event, report, shift)">
                   <ion-icon name="trash"></ion-icon>
                   {{"delete" | translate}}
                 </button>
               </ion-item-options>
             </ion-item-sliding>
             <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Holiday'">
-              <ion-item class="report-history-list-item" (tap)="itemTapped($event, report)">
+              <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
                 <div class="report-history-report-item item-group-id" *ngIf="ud.showID()">
                   <span class="report-history-report-item-header item-id-label">ID</span>
                   <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
@@ -229,7 +231,7 @@
                 </div>
               </ion-item>
               <ion-item-options side="right">
-                <button ion-button color="danger" (tap)="deleteOtherReport($event, report)">
+                <button ion-button color="danger" (tap)="deleteOtherReport($event, report, shift)">
                   <ion-icon name="trash"></ion-icon>
                   {{"delete" | translate}}
                 </button>
@@ -237,7 +239,7 @@
             </ion-item-sliding>
           </div>
         </div>
-        <div class="report-history-reports-subcontainer" *ngIf="!filtReports[filterKeys[i]].length">
+        <div class="report-history-reports-subcontainer" *ngIf="shift.getAllShiftReports().length === 0">
           <ion-item class="report-history-list-item">
             <div class="report-history-no-report">{{'no_reports_for_date' | translate}} </div>
           </ion-item>

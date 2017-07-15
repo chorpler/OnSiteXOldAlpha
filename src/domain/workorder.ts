@@ -34,6 +34,17 @@ export const fields = [
   [ "_rev"              , "_rev"           ] ,
 ];
 
+export const _sortReports = (a: WorkOrder, b: WorkOrder): number => {
+  let dateA = a['report_date'];
+  let dateB = b['report_date'];
+  let startA = a['time_start'];
+  let startB = b['time_start'];
+  dateA = isMoment(dateA) ? dateA : moment(dateA).startOf('day');
+  dateB = isMoment(dateB) ? dateB : moment(dateB).startOf('day');
+  startA = isMoment(startA) ? startA : moment(startA);
+  startB = isMoment(startB) ? startB : moment(startB);
+  return dateA.isBefore(dateB) ? -1 : dateA.isAfter(dateB) ? 1 : startA.isBefore(startB) ? -1 : startA.isAfter(startB) ? 1 : 0;
+};
 
 export class WorkOrder {
   // public type             : string;

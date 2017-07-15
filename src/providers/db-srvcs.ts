@@ -192,13 +192,16 @@ export class DBSrvcs {
       }).then(res => {
         if(!res.ok && !res.updated) {
           reject(res);
+
         } else {
-          Log.l("addDoc(): Successfully added document.");
+          let rev = res._rev;
+          // Log.l("addDoc(): Successfully added document.");
           Log.l(res);
+          newDoc['_rev'] = rev;
           resolve(res);
         }
       }).catch((err) => {
-        Log.l("addDoc(): Failed while trying to add document!");
+        // Log.l("addDocv(): Failed while trying to add document!");
         console.error(err);
         reject(err);
       });

@@ -2,6 +2,18 @@ import { Log, isMoment, moment, Moment   } from '../config/config.functions' ;
 import { sprintf                         } from 'sprintf-js'                 ;
 import { WorkOrder, ReportOther, Jobsite } from './domain-classes'         ;
 
+export const _sortReports = (a: WorkOrder, b: WorkOrder): number => {
+  let dateA = a['report_date'];
+  let dateB = b['report_date'];
+  let startA = a['time_start'];
+  let startB = b['time_start'];
+  dateA = isMoment(dateA) ? dateA : moment(dateA).startOf('day');
+  dateB = isMoment(dateB) ? dateB : moment(dateB).startOf('day');
+  startA = isMoment(startA) ? startA : moment(startA);
+  startB = isMoment(startB) ? startB : moment(startB);
+  return dateA.isBefore(dateB) ? -1 : dateA.isAfter(dateB) ? 1 : startA.isBefore(startB) ? -1 : startA.isAfter(startB) ? 1 : 0;
+};
+
 export class Shift {
   public site_name           : string                        ;
   public shift_id            : number                        ;
@@ -240,6 +252,27 @@ export class Shift {
 
   }
 
+  getNextReportStartTime():Moment {
+    let reports = this.getShiftReports();
+    reports.sort(_sortReports);
+    let start = this.getStartTime();
+    let begin = moment(start);
+    let debugString = ` START: ${start.format("YYYY-MM-DDTHH:mm")}\n`;
+    for(let report of reports) {
+      let hours = report.getRepairHours();
+      let hrs = Math.trunc(hours);
+      let min = (hours - hrs) * 60;
+      let out = sprintf("%02d:%02d", hrs, min);
+      // let duration = moment.duration(hours, 'hours');
+      // debugString += `   ADD: ${duration.hours()}:${duration.minutes()}\n`
+      debugString += `   ADD:             ${out}\n`
+      begin.add(hours, 'hours');
+      debugString += `RESULT: ${begin.format("YYYY-MM-DDTHH:mm")}\n`;
+    }
+    Log.l(`WORKORDER.getNextReportStartTime(): next start time is '${begin.format("YYYY-MM-DDTHH:mm")}'. Debug chain:\n`, debugString);
+    return begin;
+  }
+
   getShiftLength(newHours?:number) {
     let retVal = this.shift_length;
     let regHours = this.getNormalHours();
@@ -301,42 +334,6 @@ export class Shift {
   isBlue() {
     // this.getShiftColor();
     return this.colors.blue;
-  }
-
-  setShiftReports(reports:Array<WorkOrder>) {
-    this.shift_reports = reports;
-    return this.shift_reports;
-  }
-
-  addShiftReport(report:WorkOrder) {
-    this.shift_reports.push(report);
-    return this.shift_reports;
-  }
-
-  removeShiftReport(report:WorkOrder) {
-    let reports = this.getShiftReports();
-    let j = 0, i = -1;
-    for(let rep of reports) {
-      if(rep === report || (rep['_id'] && report['_id'] && rep['_id'] === report['_id'])) {
-        i = j;
-        break;
-      } else {
-        j++;
-      }
-    }
-    if(i > -1) {
-      Log.l(`removeShiftReport(): Removing report #${i} from shift ${this.getShiftSerial()}:\n`, reports[i])
-      window['onsitesplicedreport'] = reports.splice(i, 1)[0];
-    }
-    return reports;
-  }
-
-  getShiftReports() {
-    return this.shift_reports;
-  }
-
-  getShiftOtherReports() {
-    return this.other_reports;
   }
 
   getTotalShiftHours() {
@@ -412,6 +409,74 @@ export class Shift {
     return total;
   }
 
+  setShiftReports(reports: Array<WorkOrder>) {
+    this.shift_reports = reports;
+    return this.shift_reports;
+  }
+
+  addShiftReport(report: WorkOrder) {
+    let reports = this.getShiftReports();
+    let j = 0, i = -1;
+    for (let rep of reports) {
+      if (rep === report || (rep['_id'] && report['_id'] && rep['_id'] === report['_id'])) {
+        i = j;
+        break;
+      } else {
+        j++;
+      }
+    }
+    if (i > -1) {
+      Log.l(`addShiftReport(): Report '${report._id}' already exists in shift ${this.getShiftSerial()}.`);
+      // window['onsitesplicedreport'] = this.shift_reports.splice(i, 1)[0];
+    } else {
+      // Log.l(`removeShiftReport(): Report '${report._id}' not found in shift ${this.getShiftSerial()}:\n`, reports[i])
+      reports.push(report);
+    }
+    this.shift_reports = reports;
+    return this.shift_reports;
+    // this.shift_reports.push(report);
+    // return this.shift_reports;
+  }
+
+  removeShiftReport(report: WorkOrder) {
+    let reports = this.getShiftReports();
+    let j = 0, i = -1;
+    for (let rep of reports) {
+      if (rep === report || (rep['_id'] && report['_id'] && rep['_id'] === report['_id'])) {
+        i = j;
+        break;
+      } else {
+        j++;
+      }
+    }
+    if (i > -1) {
+      Log.l(`removeShiftReport(): Removing report #${i} from shift ${this.getShiftSerial()}:\n`, reports[i]);
+      window['onsitesplicedreport'] = this.shift_reports.splice(i, 1)[0];
+    } else {
+      Log.l(`removeShiftReport(): Report '${report._id}' not found in shift ${this.getShiftSerial()}.`);
+    }
+    return this.shift_reports;
+  }
+
+  getShiftReports() {
+    return this.shift_reports;
+  }
+
+  getShiftOtherReports() {
+    return this.other_reports;
+  }
+
+  getAllShiftReports(): Array<WorkOrder | ReportOther> {
+    let output: Array<WorkOrder | ReportOther> = [];
+    for (let report of this.getShiftReports()) {
+      output.push(report);
+    }
+    for (let other of this.getShiftOtherReports()) {
+      output.push(other);
+    }
+    return output;
+  }
+
   getOtherReports() {
     return this.other_reports;
   }
@@ -425,15 +490,10 @@ export class Shift {
   }
 
   addOtherReport(other:ReportOther) {
-    this.other_reports.push(other);
-    return this.other_reports;
-  }
-
-  removeOtherReport(other:ReportOther) {
-    let others = this.getShiftOtherReports();
     let j = 0, i = -1;
+    let others = this.getOtherReports();
     for (let oth of others) {
-      if (other === other || (oth['_id'] && other['_id'] && oth['_id'] === other['_id'])) {
+      if (oth === other || (oth['_id'] && other['_id'] && oth['_id'] === other['_id'])) {
         i = j;
         break;
       } else {
@@ -441,10 +501,38 @@ export class Shift {
       }
     }
     if (i > -1) {
-      Log.l(`removeShiftReport(): Removing report #${i} from shift ${this.getShiftSerial()}:\n`, others[i])
-      window['onsitesplicedreport'] = others.splice(i, 1)[0];
+      Log.l(`SHIFT.addOtherReport(): ReportOther '${other._id}' already exists in shift '${this.getShiftSerial()}'.`);
+    } else {
+      // Log.w(`SHIFT.addOtherReport(): Report '${other._id}' not found in shift '${this.shift_serial}'.`);
+      others.push(other);
     }
-    return others;
+    this.other_reports = others;
+    return this.other_reports;
+
+    // this.other_reports.push(other);
+    // return this.other_reports;
+  }
+
+  removeOtherReport(other:ReportOther) {
+    let others = this.getShiftOtherReports();
+    let j = 0, i = -1;
+    for (let oth of others) {
+      if (oth === other || (oth['_id'] && other['_id'] && oth['_id'] === other['_id'])) {
+        i = j;
+        break;
+      } else {
+        j++;
+      }
+    }
+    if (i > -1) {
+      Log.l(`removeOtherReport(): Removing report #${i} from shift ${this.getShiftSerial()}:\n`, others[i])
+      window['onsitesplicedreport'] = others.splice(i, 1)[0];
+    } else {
+      Log.w(`SHIFT.removeOtherReport(): Report '${other._id}' not found in shift '${this.shift_serial}'.`);
+    }
+    this.other_reports = others;
+    return this.other_reports;
+    // return others;
   }
 
   getShiftReportsStatus(complete?:boolean) {

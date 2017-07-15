@@ -386,13 +386,20 @@ export class HomePage {
   fetchTechWorkorders():Promise<Array<any>> {
     let techid = this.ud.getCredentials().user;
     return new Promise((resolve,reject) => {
-      this.server.getReportsForTech(techid).then((res) => {
+      this.server.getReportsForTech(techid).then((res:Array<WorkOrder>) => {
         Log.l(`HomePage: getReportsForTech(${techid}): Success! Result:\n`, res);
-        this.ud.setWorkOrderList(res);
+        for(let report of res) {
+          this.ud.addNewReport(report);
+        }
+        // this.ud.setWorkOrderList(res);
         this.techWorkOrders    = this.ud.getWorkOrderList();
         return this.server.getReportsOtherForTech(techid);
-      }).then(res => {
-        this.otherReports      = res;
+      }).then((res:Array<ReportOther>) => {
+        for(let other of res) {
+          this.ud.addNewOtherReport(other);
+        }
+        this.otherReports      = this.ud.getReportOtherList();
+
         let profile            = this.ud.getTechProfile();
         let tech               = new Employee();
         tech.readFromDoc(profile);
@@ -404,20 +411,20 @@ export class HomePage {
         Log.l("fetchTechWorkorders(): Payroll periods created as:\n", this.payrollPeriods);
         for(let period of this.payrollPeriods) {
           for(let shift of period.shifts) {
-            let reports = new Array<WorkOrder>();
-            for(let report of this.techWorkOrders) {
-              if(report.report_date === shift.start_time.format("YYYY-MM-DD")) {
-                reports.push(report);
-              }
-            }
-            let otherReports = new Array<ReportOther>();
-            for(let other of this.otherReports) {
-              if(other.report_date.format("YYYY-MM-DD") === shift.start_time.format("YYYY-MM-DD")) {
-                otherReports.push(other);
-              }
-            }
-            shift.setShiftReports(reports);
-            shift.setOtherReports(otherReports);
+            // let reports = new Array<WorkOrder>();
+            // for(let report of this.techWorkOrders) {
+            //   if(report.report_date === shift.start_time.format("YYYY-MM-DD")) {
+            //     reports.push(report);
+            //   }
+            // }
+            // let otherReports = new Array<ReportOther>();
+            // for(let other of this.otherReports) {
+            //   if(other.report_date.format("YYYY-MM-DD") === shift.start_time.format("YYYY-MM-DD")) {
+            //     otherReports.push(other);
+            //   }
+            // }
+            // shift.setShiftReports(reports);
+            // shift.setOtherReports(otherReports);
             let shiftDay     = shift.start_time.isoWeekday()      ;
             let ppIndex      = (shiftDay + 4) % 7                 ;
             let sites        = this.ud.getData('sites')           ;
@@ -611,7 +618,7 @@ export class HomePage {
   }
 
   showShiftReports(shift:Shift) {
-    if(shift.getShiftReports().length > 0) {
+    if(shift.getAllShiftReports().length > 0) {
       this.tabs.goToPage('ReportHistory', {mode: 'Shift', shift: shift, payroll_period: this.period});
     } else {
       this.tabs.goToPage('Report', {mode: 'Add', shift: shift, payroll_period: this.period});

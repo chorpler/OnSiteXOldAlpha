@@ -52,7 +52,8 @@ export class UserData {
   public static current_shift_hours   : any                                            ;
   public static circled_numbers       : Array<string>                                  ;
   public static circled_numbers_chars : Array<string>        = STRINGS.NUMCHARS        ;
-  public static techWOArrayInitialized: boolean              = false                   ;
+  // public static techWOArrayInitialized: boolean              = false                   ;
+  public static get techWOArrayInitialized():boolean {return Boolean(UserData.reports && UserData.reports.length);};
   public static get shifts():Array<Shift> {return UserData.data.shifts;};
   public static get payrollPeriods():Array<PayrollPeriod> {return UserData.data.payrollPeriods;};
   public static get reports():Array<WorkOrder> {return UserData.data.reports;};
@@ -445,15 +446,39 @@ export class UserData {
   }
 
   getWorkOrderList():Array<WorkOrder> {
+    let periods = this.getPayrollPeriods();
+    let newReports = new Array<WorkOrder>();
+    for(let period of periods) {
+      let shifts = period.getPayrollShifts();
+      for(let shift of shifts) {
+        let reports = shift.getShiftReports();
+        for(let report of reports) {
+          newReports.push(report);
+        }
+      }
+    }
+    UserData.reports = newReports;
     return UserData.reports;
   }
 
   setWorkOrderList(list:Array<any>) {
     UserData.reports = list;
-    UserData.techWOArrayInitialized = true;
+    // UserData.techWOArrayInitialized = true;
   }
 
   getReportOtherList():Array<ReportOther> {
+    let periods = this.getPayrollPeriods();
+    let newReports = new Array<ReportOther>();
+    for (let period of periods) {
+      let shifts = period.getPayrollShifts();
+      for (let shift of shifts) {
+        let reports = shift.getShiftOtherReports();
+        for (let report of reports) {
+          newReports.push(report);
+        }
+      }
+    }
+    UserData.otherReports = newReports;
     return UserData.otherReports;
   }
 
@@ -639,103 +664,202 @@ export class UserData {
     }
   }
 
-  updateShifts() {
-    let periods = UserData.payrollPeriods;
-    let others = UserData.otherReports;
-    let reports = this.getWorkOrderList();
-    for(let period of periods) {
-      let shifts = period.getPayrollShifts();
-      for(let shift of shifts) {
-        // let shiftReports = shift.getShiftReports();
-        let shiftDate = shift.getShiftDate().format("YYYY-MM-DD");
-        let shiftReports = new Array<WorkOrder>();
-        let shiftOtherReports = new Array<ReportOther>();
-        for(let report of reports) {
-          let reportDate = report.report_date;
-          if(shiftDate === reportDate) {
-            shiftReports.push(report);
-          }
-        }
-        for(let other of others) {
-          let otherDate = other.report_date;
-          if(shiftDate === otherDate) {
-            shiftOtherReports.push(other);
-          }
-        }
-        shift.setShiftReports(shiftReports);
-        shift.setOtherReports(shiftOtherReports);
-      }
-    }
-  }
+  // updateShifts() {
+  //   let periods = UserData.payrollPeriods;
+  //   let others = UserData.otherReports;
+  //   let reports = this.getWorkOrderList();
+  //   for(let period of periods) {
+  //     let shifts = period.getPayrollShifts();
+  //     for(let shift of shifts) {
+  //       // let shiftReports = shift.getShiftReports();
+  //       let shiftDate = shift.getShiftDate().format("YYYY-MM-DD");
+  //       let shiftReports = new Array<WorkOrder>();
+  //       let shiftOtherReports = new Array<ReportOther>();
+  //       let exists = false;
+  //       for(let report of reports) {
+  //         let rid = report._id;
+
+  //       }
+  //       for(let report of reports) {
+  //         let reportDate = report.report_date;
+  //         if(shiftDate === reportDate) {
+  //           shiftReports.push(report);
+  //         }
+  //       }
+  //       for(let other of others) {
+  //         let otherDate = other.report_date;
+  //         if(shiftDate === otherDate) {
+  //           shiftOtherReports.push(other);
+  //         }
+  //       }
+  //       shift.setShiftReports(shiftReports);
+  //       shift.setOtherReports(shiftOtherReports);
+  //     }
+  //   }
+  // }
 
   public addNewReport(newReport:WorkOrder) {
     Log.l("addNewReport(): Now adding report:\n", newReport);
-    let reports = this.getWorkOrderList();
+    // let reports = this.getWorkOrderList();
     let id = newReport.getReportID();
-    let exists = false;
-    for(let report of reports) {
-      let reportID = report.getReportID();
-      if(id === reportID) {
-        exists = true;
-        break;
+    let exists = false, existingReport = null, rightShift = null;
+    let periods = this.getPayrollPeriods();
+    let date = moment(newReport.report_date).startOf('day');
+    loop1:
+    for(let period of periods) {
+      let shifts = period.getPayrollShifts();
+      loop2:
+      for(let shift of shifts) {
+        let shiftDate = shift.getShiftDate().startOf('day');
+        if(moment(shiftDate).isSame(date, 'day')) {
+          rightShift = shift;
+        } else {
+          continue loop2;
+        }
+        let reports = shift.getShiftReports();
+        for(let report of reports) {
+          let rid = report.getReportID();
+          if(id === rid) {
+            exists = true;
+            break loop1;
+          }
+        }
       }
     }
-    if(!exists) {
-      reports.push(newReport);
-      UserData.reports = reports;
-      this.reports = UserData.reports;
-      this.updateShifts();
-      return this.reports;
+    if(exists && rightShift) {
+      Log.w(`addNewReport(): Shift #${rightShift.getShiftID()} already has a copy of report '${id}'.`);
+    } else if(rightShift) {
+      rightShift.addShiftReport(newReport);
     } else {
-      Log.w(`addNewReport(): Attempted to add report ${newReport._id}, which already exists.`);
-      return this.reports;
+      Log.w(`addNewReport(): Could not find correct shift for report '${id}', date '${date.format("YYYY-MM-DD")}'.`);
     }
   }
 
   public addNewOtherReport(newOther:ReportOther) {
     Log.l("addNewOtherReport(): Now adding report:\n", newOther);
-    let others = this.getReportOtherList();
-    let id = newOther.getReportID();
-    let exists = false;
-    for(let other of others) {
-      let reportID = other.getReportID();
-      if(id === reportID) {
-        exists = true;
-        break;
+    // let others = this.getReportOtherList();
+    let id     = newOther.getReportID();
+    let exists = false, existingReport = null, rightShift = null;
+    let periods = this.getPayrollPeriods();
+    let date = moment(newOther.report_date).startOf('day');
+    loop1:
+    for (let period of periods) {
+      let shifts = period.getPayrollShifts();
+      loop2:
+      for (let shift of shifts) {
+        let shiftDate = shift.getShiftDate().startOf('day');
+        if (moment(shiftDate).isSame(date, 'day')) {
+          rightShift = shift;
+        } else {
+          continue loop2;
+        }
+        let others = shift.getShiftOtherReports();
+        for (let other of others) {
+          let rid = other.getReportID();
+          if (id === rid) {
+            exists = true;
+            break loop1;
+          }
+        }
       }
     }
-    if(!exists) {
-      others.push(newOther);
-      UserData.otherReports = others;
-      this.otherReports = UserData.otherReports;
-      this.updateShifts();
-      return this.otherReports;
+    if (exists && rightShift) {
+      Log.w(`addNewOtherReport(): Shift #${rightShift.getShiftID()} already has a copy of ReportOther '${id}'.`);
+    } else if (rightShift) {
+      rightShift.addOtherReport(newOther);
     } else {
-      Log.w(`addNewOtherReport(): Attempted to add report ${newOther._id}, which already exists.`);
-      return this.otherReports;
+      Log.w(`addNewOtherReport(): Could not find correct shift for ReportOther '${id}', date '${date.format("YYYY-MM-DD")}'.`);
     }
   }
 
   public removeReport(report:WorkOrder) {
-    let reports = this.getWorkOrderList();
-    let i = reports.indexOf(report);
-    if(i > -1) {
-      reports.splice(i, 1);
-    } else {
-      Log.w(`removeReport(): Report ${report._id} not found!\n`,report);
+    // let reports = this.getWorkOrderList();
+    // let i = reports.indexOf(report);
+    // if(i > -1) {
+    //   reports.splice(i, 1);
+    // } else {
+    //   Log.w(`removeReport(): Report ${report._id} not found!\n`,report);
+    // }
+    // this.updateShifts();
+    let id = report.getReportID();
+    let exists = false, existingReport = null, rightShift = null, index = -1;
+    let periods = this.getPayrollPeriods();
+    let date = moment(report.report_date).startOf('day');
+    loop1:
+    for (let period of periods) {
+      let shifts = period.getPayrollShifts();
+      loop2:
+      for (let shift of shifts) {
+        let shiftDate = shift.getShiftDate().startOf('day');
+        if (moment(shiftDate).isSame(date, 'day')) {
+          rightShift = shift;
+        } else {
+          continue loop2;
+        }
+        let others = shift.getShiftReports();
+        let i = 0;
+        for (let other of others) {
+          let rid = other.getReportID();
+          if (id === rid) {
+            exists = true;
+            index = i;
+            break loop1;
+          }
+          i++;
+        }
+      }
     }
-    this.updateShifts();
+    if (exists && rightShift) {
+      Log.l(`removeReport(): Shift #${rightShift.getShiftID()} removing work report '${id}'.`);
+      rightShift.removeReport(report);
+    } else {
+      Log.w(`removeReport(): Could not find correct shift for ReportOther '${id}', date '${date.format("YYYY-MM-DD")}'.`);
+    }
   }
 
   public removeOtherReport(other:ReportOther) {
-    let others = this.getReportOtherList();
-    let i = others.indexOf(other);
-    if (i > -1) {
-      others.splice(i, 1);
-    } else {
-      Log.w(`removeOtherReport(): Report ${other._id} not found!\n`, other);
+    let id = other.getReportID();
+    let exists = false, existingReport = null, rightShift = null, index = -1;
+    let periods = this.getPayrollPeriods();
+    let date = moment(other.report_date).startOf('day');
+    loop1:
+    for (let period of periods) {
+      let shifts = period.getPayrollShifts();
+      loop2:
+      for (let shift of shifts) {
+        let shiftDate = shift.getShiftDate().startOf('day');
+        if (moment(shiftDate).isSame(date, 'day')) {
+          rightShift = shift;
+        } else {
+          continue loop2;
+        }
+        let others = shift.getShiftOtherReports();
+        let i = 0;
+        for (let other of others) {
+          let rid = other.getReportID();
+          if (id === rid) {
+            exists = true;
+            index = i;
+            break loop1;
+          }
+          i++;
+        }
+      }
     }
-    this.updateShifts();
+    if (exists && rightShift) {
+      Log.l(`removeOtherReport(): Shift #${rightShift.getShiftID()} removing ReportOther  '${id}'.`);
+      rightShift.removeOtherReport(other);
+    } else {
+      Log.w(`removeOtherReport(): Could not find correct shift for ReportOther '${id}', date '${date.format("YYYY-MM-DD")}'.`);
+    }
+    // let others = this.getReportOtherList();
+    // let i = others.indexOf(other);
+    // if (i > -1) {
+    //   others.splice(i, 1);
+    // } else {
+    //   Log.w(`removeOtherReport(): Report ${other._id} not found!\n`, other);
+    // }
+    // this.updateShifts();
   }
 
   createPayrollPeriods(tech:Employee, count?:number):Array<PayrollPeriod> {
