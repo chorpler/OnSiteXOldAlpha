@@ -1,6 +1,10 @@
 <ion-header>
   <ion-navbar>
-    <ion-title> {{'tech_settings_title' | translate}} </ion-title>
+    <!-- <ion-title> {{'tech_settings_title' | translate}} </ion-title> -->
+    <ion-title class="app-title">
+      <span class="app-page-title">{{"tech_settings_title" | translate}}</span>
+      <span class="app-user" *ngIf="ud.getTechName()">{{ud.getTechName()}}</span>
+    </ion-title>
   </ion-navbar>
 </ion-header>
 

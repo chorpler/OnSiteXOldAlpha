@@ -1,11 +1,9 @@
 <ion-header>
   <ion-navbar>
-    <ion-buttons start>
-      <button ion-button color="light" icon-only (tap)="navBacktoHome()">
-        <ion-icon name="home"></ion-icon>
-      </button>
-    </ion-buttons>
-     <ion-title> {{'settings_title' | translate}} </ion-title>
+    <ion-title class="app-title">
+      <span class="app-page-title">{{"settings_title" | translate}}</span>
+      <span class="app-user" *ngIf="ud.getTechName()">{{ud.getTechName()}}</span>
+    </ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -35,10 +33,10 @@
         <ion-label>{{'sounds' | translate}}</ion-label>
         <ion-toggle [(ngModel)]="sounds" (ngModelChange)="toggleSounds()"></ion-toggle>
       </ion-item>
-      <!-- <ion-item>
+      <ion-item>
         <ion-label>{{'stay_in_reports' | translate}}</ion-label>
         <ion-toggle [(ngModel)]="stayInReports" (ngModelChange)="toggleStayInReports()"></ion-toggle>
-      </ion-item> -->
+      </ion-item>
     </ion-item-group>
     <ion-item-group>
       <ion-item-divider color="light">{{'app_functions' | translate}} </ion-item-divider>

@@ -3,13 +3,9 @@
     <button class="startSingleButton" ion-button icon-only menuToggle>
       <ion-icon class="startSingleIcon" name="ion-home"></ion-icon>
     </button>
-    <ion-title>
-      <span class="title-and-user" *ngIf="!ud.getTechName()"><span class="app-title">{{"home_title" | translate}}</span></span>
-      <span class="title-and-user" *ngIf="ud.getTechName()">
-        <span class="app-title">{{"home_title" | translate}}</span>
-        &nbsp;
-        <span class="app-user">{{ud.getTechName()}}</span>
-      </span>
+    <ion-title class="app-title">
+      <span class="app-page-title">{{"home_title" | translate}}</span>
+      <span class="app-user" *ngIf="ud.getTechName()">{{ud.getTechName()}}</span>
     </ion-title>
     <ion-buttons right>
       <button ion-button color="primary" icon-only (tap)="toggleClock()">

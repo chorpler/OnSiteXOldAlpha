@@ -922,6 +922,8 @@ export class ReportPage implements OnInit {
     if (this.mode === 'Add' || this.mode === 'Añadir') {
       this.db.addDoc(this.prefs.DB.reports, tempWO).then((res) => {
         Log.l("processWO(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
+        let rev = res['_rev'];
+        tempWO['_rev'] = rev;
         return this.db.syncSquaredToServer(this.prefs.DB.reports);
       }).then((res) => {
         Log.l("processWO(): Successfully synchronized work order to remote.");
@@ -1019,9 +1021,10 @@ export class ReportPage implements OnInit {
     let start = shift.getStartTime();
     let hours = shift.getNormalHours();
     let end = this.previousEndTime;
-    let shiftLatest = moment(start).add(hours, 'hours');
+    let shiftLatest   = moment(start).add(hours, 'hours')                ;
     let wo            = new WorkOrder()                                  ;
-    wo.timestampM     = now                                              ;
+    wo._id            = wo.genReportID(tech)                             ;
+    wo.timestampM     = moment(now)                                      ;
     wo.timestamp      = now.toExcel()                                    ;
     wo.first_name     = tech.firstName                                   ;
     wo.last_name      = tech.lastName                                    ;
@@ -1033,8 +1036,6 @@ export class ReportPage implements OnInit {
     wo.location_id    = tech.locID                                       ;
     wo.payroll_period = shift.getPayrollPeriod()                         ;
     wo.shift_serial   = shift.getShiftSerial()                           ;
-    wo.report_date    = moment(date).startOf('day').format("YYYY-MM-DD") ;
-    wo.technician     = tech.getTechnician                               ;
     this.workOrder    = wo                                               ;
     return wo;
   }
@@ -1045,7 +1046,8 @@ export class ReportPage implements OnInit {
     let shift         = this.selectedShift          ;
     let date          = shift.getStartTime()        ;
     let ro            = new ReportOther()           ;
-    ro.timestampM     = now.format()                ;
+    ro._id            = ro.genReportID(tech)        ;
+    ro.timestampM     = moment(now)                 ;
     ro.timestamp      = now.toExcel()               ;
     ro.first_name     = tech.firstName              ;
     ro.last_name      = tech.lastName               ;
@@ -1058,7 +1060,6 @@ export class ReportPage implements OnInit {
     ro.shift_serial   = shift.getShiftSerial()      ;
     ro.report_date    = moment(date).startOf('day') ;
     this.reportOther  = ro                          ;
-
     return ro;
   }
 

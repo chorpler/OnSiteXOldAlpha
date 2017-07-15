@@ -62,8 +62,8 @@ export class WorkOrder {
   public username         : any;
   public shift_serial     : any;
   public payroll_period   : any;
-  public _id              : any;
-  public _rev             : any;
+  public _id              : string;
+  public _rev             : string;
 
   constructor(start?: any, end?: any, hours?: any, unit?: any, wo?: any, nts?: any, date?: any, last?: any, first?: any, shift?: any, client?: any, loc?: any, locid?: any, loc2?: any, shiftTime?: any, shiftLength?: any, shiftStartTime?: any, tech?: any, timestamp?: any, user?: any) {
     // this.type              = ""                    ;
@@ -93,8 +93,8 @@ export class WorkOrder {
     this.timestampM        = null                  ;
     this.shift_serial      = null                  ;
     this.payroll_period    = null                  ;
-    this._id               = null                  ;
-    this._rev              = null                  ;
+    this._id               = ""                    ;
+    this._rev              = ""                    ;
   }
 
   public readFromDoc(doc:any) {

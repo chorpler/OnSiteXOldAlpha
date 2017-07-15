@@ -14,6 +14,7 @@ import { PayrollPeriod                 } from '../domain/payroll-period'       ;
 import { WorkOrder                     } from '../domain/workorder'            ;
 import { ReportOther                   } from '../domain/reportother'          ;
 import { Employee                      } from '../domain/employee'             ;
+import { Message                       } from '../domain/message'              ;
 
 @Injectable()
 export class UserData {
@@ -41,6 +42,7 @@ export class UserData {
     serial      : "",
     uniqueID    : "",
   };
+  public static PREFS                 : any = new Preferences()                              ;
   public static _favorites            : string[]             = []                      ;
   public static HAS_LOGGED_IN         = 'hasLoggedIn'                                  ;
   public static HAS_SEEN_TUTORIAL     = 'hasSeenTutorial'                              ;
@@ -55,10 +57,12 @@ export class UserData {
   public static get payrollPeriods():Array<PayrollPeriod> {return UserData.data.payrollPeriods;};
   public static get reports():Array<WorkOrder> {return UserData.data.reports;};
   public static get otherReports():Array<ReportOther> {return UserData.data.otherReports;};
+  public static get messages():Array<Message> {return UserData.data.messages;};
   public static set shifts(value: Array<Shift>) { UserData.data.shifts = value;} ;
   public static set payrollPeriods(value:Array<PayrollPeriod>) {UserData.data.payrollPeriods = value;};
   public static set reports(value:Array<WorkOrder>) {UserData.data.reports = value;};
   public static set otherReports(value:Array<ReportOther>) {UserData.data.otherReports = value;};
+  public static set messages(value:Array<Message>) {UserData.data.messages = value;};
   // public static payrollPeriods        : Array<PayrollPeriod> = []                      ;
   // public static reports               : Array<WorkOrder>     = []                      ;
   // public static otherReports          : Array<ReportOther>   = []                      ;
@@ -82,6 +86,7 @@ export class UserData {
     minutes: 0,
     seconds: 0,
   };
+  public get prefs():any {return UserData.PREFS;};
   public get phonedata():any {return UserData.phonedata;}                       ;
   public get appdata():any {return UserData.appdata;}                         ;
   public set phonedata(value:any) { UserData.phonedata = value;}                       ;
@@ -109,12 +114,13 @@ export class UserData {
   public appReady:boolean = false;
 
   private static loginData:any = null;
+  private get loginData() {return UserData.loginData;};
+  private set loginData(value:any) {UserData.loginData = value;};
 
   constructor(
     public events  : Events,
     public storage : Storage,
     public platform: Platform,
-    public prefs   : Preferences,
     public device  : Device,
     public unique  : UniqueDeviceID,
     public version : AppVersion
@@ -132,30 +138,83 @@ export class UserData {
       report_types  : [],
       training_types: [],
     };
+  }
 
+  public showID() {
+    return this.prefs.DEVELOPER.showDocID;
+  }
+
+  public showRev() {
+    return this.prefs.DEVELOPER.showDocRev;
+  }
+
+  public static getMessages() {
+    return UserData.messages;
+  }
+
+  public static setMessages(msgs:Array<Message>) {
+    UserData.messages = msgs;
+    return UserData.messages;
+  }
+
+  public getMessages() {
+    return UserData.getMessages();
+  }
+
+  public setMessages(msgs:Array<Message>) {
+    return UserData.setMessages(msgs);
+  }
+
+  public static getMessageCount() {
+    return UserData.messages.length;
+  }
+
+  public getMessageCount() {
+    return UserData.getMessageCount();
+  }
+
+  public static getUnreadMessageCount() {
+    let msgs = UserData.messages;
+    let count = 0;
+    for(let msg of msgs) {
+      if(!msg.read) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  public getUnreadMessageCount() {
+    return UserData.getUnreadMessageCount();
+  }
+
+  public static isDeveloper() {
+    return UserData.isSpecialDeveloper();
   }
 
   public isDeveloper() {
     let un = this.getUsername();
     if(un) {
-      if (un === 'Chorpler' || un === 'Hachero' || un === 'mike' || un === 'admin') {
-        // this.appdata.developer = true;
-        return true;
-      } else if (this.isSpecialDeveloper()) {
+      let dev = (un === 'Chorpler' || un === 'Hachero' || un === 'mike' || un === 'admin') && this.appdata.developer;
+      if (dev || this.isSpecialDeveloper()) {
         // this.appdata.developer = true;
         return true;
       } else {
-        this.appdata.developer = false;
         return false;
       }
+    } else if(this.isSpecialDeveloper()) {
+      return true;
     } else {
       return false;
     }
+  }
 
+  public static isSpecialDeveloper() {
+    return this.appdata.developer;
   }
 
   public isSpecialDeveloper() {
-    return this.appdata.developer;
+    return UserData.isSpecialDeveloper();
   }
 
   public setSpecialDeveloper(value:boolean) {
@@ -316,16 +375,16 @@ export class UserData {
     return otherReports;
   }
 
-  public getShifts() {
-    return this.shifts;
-  }
+  // public getShifts() {
+  //   return this.shifts;
+  // }
 
-  public setShifts(shifts:Array<Shift>) {
-    let newShifts = [];
-    for(let shift of shifts) {
-      newShifts.push()
-    }
-  }
+  // public setShifts(shifts:Array<Shift>) {
+  //   let newShifts = [];
+  //   for(let shift of shifts) {
+  //     newShifts.push()
+  //   }
+  // }
 
   public static getSesaConfig() {
     return UserData.sesaConfig;

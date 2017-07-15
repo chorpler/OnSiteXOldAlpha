@@ -73,7 +73,7 @@ export class OnSiteApp {
                 public translate   : TranslateService  ,
                 public alert       : AlertService      ,
                 public audio       : SmartAudio        ,
-                public msgService  : MessageService    ,
+                public msg         : MessageService    ,
                 // public homepage    : HomePage          ,
   ) {
     window['onsiteapp'] = this;
@@ -196,16 +196,15 @@ export class OnSiteApp {
       }).then(res => {
         this.data = res;
         this.ud.setData(this.data);
-        return this.msgService.getMessages();
+        return this.msg.getMessages();
       }).then(res => {
         Log.l("OnSite.bootApp(): Got new messages.");
-        let badges = this.msgService.getNewMessageCount();
-        this.tabs.setMessageBadge(badges);
         return this.ud.checkPhoneInfo();
       }).then(res => {
         let tech = this.ud.getData('employee')[0];
         let pp = this.ud.createPayrollPeriods(this.data.employee[0], 2);
         if(res) {
+          Log.l("OnSite.bootApp(): Got phone data:\n", res);
           this.server.savePhoneInfo(tech, res).then(res => {
             resolve(true);
           }).catch(err => {

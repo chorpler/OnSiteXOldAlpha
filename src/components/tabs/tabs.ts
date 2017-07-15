@@ -1,11 +1,11 @@
-import    { Component, OnInit } from '@angular/core'                 ;
-import    { App, Platform     } from 'ionic-angular'                 ;
-// import { AuthSrvcs         } from '../../providers/auth-srvcs'    ;
-import    { NgZone            } from '@angular/core'                 ;
-import    { TranslateService  } from '@ngx-translate/core'           ;
-import    { UserData          } from '../../providers/user-data'     ;
-import    { AlertService      } from '../../providers/alerts'        ;
-import    { Log               } from '../../config/config.functions' ;
+import { Component, OnInit   } from '@angular/core'                   ;
+import { NgZone              } from '@angular/core'                   ;
+import { App, Platform       } from 'ionic-angular'                   ;
+import { TranslateService    } from '@ngx-translate/core'             ;
+import { UserData            } from '../../providers/user-data'       ;
+import { AlertService        } from '../../providers/alerts'          ;
+import { MessageService      } from '../../providers/message-service' ;
+import { Log, moment, Moment } from '../../config/config.functions'   ;
 
 enum Pages {
   'OnSiteHome'    = 0,
@@ -25,21 +25,29 @@ export class TabsComponent implements OnInit {
 
   public static nav:any;
   public nav:any = TabsComponent.nav;
+  public static unreadMessageCount:number = 0;
+  public get unreadMessageCount():number { return TabsComponent.unreadMessageCount;};
+  public set unreadMessageCount(value:number) { TabsComponent.unreadMessageCount = value;};
   public static tabClass: Array<boolean> = [ false, false, false, false, false, false, false ];
   public tabClass:Array<boolean> = TabsComponent.tabClass;
   public static allTabs:any = {'disabled': false};
   public allTabs:any = TabsComponent.allTabs;
-  public static tabInfo:any = [
+  public static get tabInfo() { return UserData.isDeveloper() ? TabsComponent.tabArrayDev : TabsComponent.tabArray; };
+  public static tabArray:any = [
     { name: 'OnSiteHome'    , fullName: 'OnSite Home'        , icon: 'ios-home-outline'     , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 ? true : false}, set hideBadge(val:boolean) {} } ,
     { name: 'Report'        , fullName: 'Report'             , icon: 'ios-document-outline' , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 ? true : false}, set hideBadge(val:boolean) {} } ,
     { name: 'ReportHistory' , fullName: 'Report History'     , icon: 'ios-folder-outline'   , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 ? true : false}, set hideBadge(val:boolean) {} } ,
     { name: 'User'          , fullName: 'User'               , icon: 'ios-contact-outline'  , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 ? true : false}, set hideBadge(val:boolean) {} } ,
-    { name: 'Message List'  , fullName: 'Messages'           , icon: 'ios-text-outline'     , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 ? true : false}, set hideBadge(val:boolean) {} } ,
+    { name: 'Message List'  , fullName: 'Messages'           , icon: 'ios-text-outline'     , active: false, get badgeCount():number { return UserData.getUnreadMessageCount();}, set badgeCount(value:number) {}, get hideBadge() {return this.badgeCount <= 0 ? true : false}, set hideBadge(val:boolean) {} } ,
     { name: 'Settings'      , fullName: 'Settings'           , icon: 'ios-settings-outline' , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 ? true : false}, set hideBadge(val:boolean) {} } ,
   ];
-  public tabInfo:any = TabsComponent.tabInfo;
-  public static developerTab: any = { name: 'DevPage', fullName: 'Developer Settings', icon: 'options', active: false, badgeCount: 0, get hideBadge() { return this.badgeCount <= 0 ? true : false }, set hideBadge(val: boolean) { } };
-  public developerTab:any = TabsComponent.developerTab;
+  public static tabArrayDev:any = [
+    ...TabsComponent.tabArray,
+    { name: 'DevPage', fullName: 'Developer Settings', icon: 'options', active: false, badgeCount: 0, get hideBadge() { return this.badgeCount <= 0 ? true : false }, set hideBadge(val: boolean) { } }
+  ]
+
+  public get tabInfo():any {return TabsComponent.tabInfo};
+  // public set tabInfo(value:any) { TabsComponent.tabInfo = value;};
   public static tab:any = {
     'OnSiteHome': {}
   };
@@ -49,26 +57,42 @@ export class TabsComponent implements OnInit {
   public enumPages      : any     ;
   public enumPagesDef   : any     ;
 
-  constructor( public app: App, public platform: Platform, public zone: NgZone, public translate: TranslateService, public ud:UserData, public alert:AlertService) {
+  constructor( public app: App, public platform: Platform, public zone: NgZone, public translate: TranslateService, public ud:UserData, public alert:AlertService, public msg:MessageService) {
     this.getActiveNav();
     window['onsitetabs'] = this;
     this.enumPages = Pages.OnSiteHome;
     this.enumPagesDef = Pages;
   }
 
+  public static getUnreadMessageCount():number {
+    let ret = TabsComponent.unreadMessageCount ? TabsComponent.unreadMessageCount : 0;
+    return ret;
+  }
+
+  public getUnreadMessageCount():number {
+    if(this && this.msg && this.msg.getNewMessageCount) {
+      let msgs = this.msg.getNewMessageCount();
+      TabsComponent.unreadMessageCount = msgs ? msgs : 0;
+      return TabsComponent.unreadMessageCount;
+    } else {
+      return 0;
+    }
+  }
+
   ngOnInit() {
     window['onSiteTabs'] = this;
     this.platform.ready().then(res => {
       if(this.ud.isAppLoaded()) {
-        if (this.onSitePage === 'Login') { this.setTabDisable(true); } else {
-          if(this.isDeveloper()) {
-            if(this.tabInfo[this.tabInfo.length - 1].name !== 'DevPage') {
-              this.tabInfo.push(this.developerTab);
-            }
-          } else if(this.tabInfo[this.tabInfo.length - 1].name === 'DevPage') {
-            this.tabInfo.pop();
-          }
-        }
+        if (this.onSitePage === 'Login') { this.setTabDisable(true); }
+        //  else {
+          // if(this.isDeveloper()) {
+          //   if(this.tabInfo[this.tabInfo.length - 1].name !== 'DevPage') {
+          //     this.tabInfo.push(this.developerTab);
+          //   }
+          // } else if(this.tabInfo[this.tabInfo.length - 1].name === 'DevPage') {
+          //   this.tabInfo.pop();
+          // }
+        // }
       }
     });
   }

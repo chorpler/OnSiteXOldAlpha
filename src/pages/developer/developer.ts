@@ -4,7 +4,6 @@ import { AuthSrvcs                                     } from '../../providers/a
 import { GeolocService                                 } from '../../providers/geoloc-service'  ;
 import { AlertService                                  } from '../../providers/alerts'          ;
 import { Log, moment, Moment                           } from '../../config/config.functions'   ;
-import { TimeSrvc                                      } from '../../providers/time-parse-srvc' ;
 import { DBSrvcs                                       } from '../../providers/db-srvcs'        ;
 import { SmartAudio                                    } from '../../providers/smart-audio'     ;
 import { TranslateModule, TranslateLoader              } from '@ngx-translate/core'             ;
@@ -46,7 +45,6 @@ export class DeveloperPage implements OnInit {
               public db        : DBSrvcs          ,
               public audio     : SmartAudio       ,
               public alert     : AlertService     ,
-              public timeSrvc  : TimeSrvc         ,
               public translate : TranslateService ,
               public tabs      : TabsComponent    ,
   ) {
@@ -58,7 +56,7 @@ export class DeveloperPage implements OnInit {
     }
   }
 
-  timeStamp() { this.onSiteTimeStamp = this.timeSrvc.getTimeStamp(); }
+  // timeStamp() { this.onSiteTimeStamp = this.timeSrvc.getTimeStamp(); }
 
   ionViewDidLoad() {
     Log.l('ionViewDidLoad DeveloperPage');

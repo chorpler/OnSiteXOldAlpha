@@ -100,5 +100,18 @@ export class Message {
     return doc;
   }
 
+  public isExpired() {
+    let now = moment();
+    let message = this;
+    let date = message.getMessageDate().startOf('day');
+    let duration = message.getMessageDuration();
+    let expires = moment(date).add(duration, 'days');
+    if (now.isSameOrBefore(expires, 'day')) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
 
 }

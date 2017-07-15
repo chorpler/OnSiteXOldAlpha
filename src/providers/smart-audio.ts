@@ -52,7 +52,6 @@ export class SmartAudio {
         this.sounds.push(audio);
         this.nativeAudio.preloadSimple(key, asset);
       }
-      this.sounds.push(audio);
     }
   }
 

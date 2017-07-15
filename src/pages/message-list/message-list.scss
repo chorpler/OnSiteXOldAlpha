@@ -1,10 +1,4 @@
 page-message-list {
-
-  .body-with-header-and-tabs {
-    margin-top: 40px;
-    margin-bottom: 40px;
-  }
-
   .messages-no-message {
     font-style: italic;
     font-weight: bold;
@@ -46,7 +40,103 @@ page-message-list {
     white-space: normal;
   }
 
-  .highlight {
+  $highlight-color: white;
+  $highlight-fg: $highlight-color;
+  $highlight-bg: darkcyan;
+  $active-color: white;
+  $active-fg: $active-color;
+  $active-bg: rgba(0, 0, 255, 0.7);
+  $hover-color: initial;
+  $hover-fg: $hover-color;
+  $hover-bg: rgba(0, 0, 128, 0.3);
+
+  // .highlight {
+  //   color: $highlight-fg;
+  //   background-color: $highlight-bg;
+  //   ion-list {
+  //     color: $highlight-fg;
+  //     background-color: $highlight-bg;
+  //     ion-item {
+  //       color: $highlight-fg;
+  //       background-color: $highlight-bg;
+  //       .item-inner {
+  //         color: $highlight-fg;
+  //         background-color: $highlight-bg;
+  //         .input-wrapper {
+  //           color: $highlight-fg;
+  //           background-color: $highlight-bg;
+  //           ion-label {
+  //             color: $highlight-fg;
+  //             background-color: $highlight-bg;
+  //             p {
+  //               color: $highlight-fg;
+  //               background-color: $highlight-bg;
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+
+  .message-card {
+    padding-top: 0;
+    cursor: pointer;
+  }
+
+  .message-card.highlight {
+    color: $highlight-color;
+    background-color: $highlight-bg;
+    p {
+      color: $highlight-color;
+    }
+  }
+
+  ion-card.message-card:hover {
+    color: $hover-color;
+    background-color: $hover-bg;
+  }
+
+  ion-card.message-card:active {
+    color: $active-color;
+    background-color: $active-bg;
+    p {
+      color: $active-fg;
+    }
+  }
+
+  .message-list {
+    padding: 0;
+    margin: 0;
+    background-color: transparent;
+  }
+
+  .message-list:nth-child(1) {
+    padding-top: 10px;
+    // background-color: transparent;
+    // max-height: calc(1.3em + 10px) !important;
+  }
+
+  .message-list-item {
+    // margin: 0;
+    // padding: 0;
+    background-color: transparent;
+    font-size: 1em;
+    line-height: 1.3em;
+    min-height: 1.3em;
+    max-height: 1.3em;
+  }
+  .message-list-item ion-label {
+    padding: 0;
+    margin: 0;
+  }
+  .message-list-label {
     font-weight: bold;
+    display: inline-block;
+    width: 30%;
+  }
+  .message-list-data {
+    display: inline-block;
+    width: 70%;
   }
 }

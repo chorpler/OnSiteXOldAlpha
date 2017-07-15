@@ -1,6 +1,10 @@
 <ion-header>
   <ion-navbar>
-    <ion-title> {{"report_history_title" | translate}} </ion-title>
+    <!-- <ion-title> {{"report_history_title" | translate}} </ion-title> -->
+    <ion-title class="app-title">
+      <span class="app-page-title">{{"report_history_title" | translate}}</span>
+      <span class="app-user" *ngIf="ud.getTechName()">{{ud.getTechName()}}</span>
+    </ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -26,6 +30,14 @@
           <div class="report-and-reportother-container" *ngFor="let report of filtReports[filterKeys[i]]">
             <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type===undefined || report.type==='Work Report'">
               <ion-item class="report-history-list-item" (tap)="itemTapped($event, report)" *ngIf="report['type']===undefined || report['type']==='Work Report'">
+                <div class="report-history-report-item item-group-id" *ngIf="ud.showID()">
+                  <span class="report-history-report-item-header item-id-label">ID</span>
+                  <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="ud.showRev()">
+                  <span class="report-history-report-item-header item-rev-label">Rev</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report._rev}}</span>
+                </div>
                 <div class="report-history-report-item">
                   <span class="report-history-report-item-header">{{'hours_header' | translate}}&nbsp;&nbsp;</span>
                   <span class="report-history-report-item-data">{{report.repair_hours}}</span>
@@ -54,6 +66,14 @@
             </ion-item-sliding>
             <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Travel'">
               <ion-item class="report-history-list-item" (tap)="itemTapped($event, report)">
+                <div class="report-history-report-item item-group-id" *ngIf="ud.showID()">
+                  <span class="report-history-report-item-header item-id-label">ID</span>
+                  <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="ud.showRev()">
+                  <span class="report-history-report-item-header item-rev-label">Rev</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report._rev}}</span>
+                </div>
                 <div class="report-history-report-item">
                   <span class="report-history-report-item-header">{{'travel' | translate}}&nbsp;&nbsp;</span>
                   <span class="report-history-report-item-data">{{report.travel_location}}</span>
@@ -72,6 +92,14 @@
             </ion-item-sliding>
             <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Training'">
               <ion-item class="report-history-list-item" (tap)="itemTapped($event, report)">
+                <div class="report-history-report-item item-group-id" *ngIf="ud.showID()">
+                  <span class="report-history-report-item-header item-id-label">ID</span>
+                  <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="ud.showRev()">
+                  <span class="report-history-report-item-header item-rev-label">Rev</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report._rev}}</span>
+                </div>
                 <div class="report-history-report-item">
                   <span class="report-history-report-item-header">{{'training' | translate}}&nbsp;&nbsp;</span>
                   <span class="report-history-report-item-data">{{report.training_type}}</span>
@@ -99,6 +127,14 @@
             -->
             <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Standby'">
               <ion-item class="report-history-list-item" (tap)="itemTapped($event, report)">
+                <div class="report-history-report-item item-group-id" *ngIf="ud.showID()">
+                  <span class="report-history-report-item-header item-id-label">ID</span>
+                  <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="ud.showRev()">
+                  <span class="report-history-report-item-header item-rev-label">Rev</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report._rev}}</span>
+                </div>
                 <div class="report-history-report-item">
                   <span class="report-history-report-item-header">{{'standby' | translate}}&nbsp;&nbsp;</span>
                   <span class="report-history-report-item-data">{{report.time}}</span>
@@ -113,6 +149,14 @@
             </ion-item-sliding>
             <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Standby: HB Duncan'">
               <ion-item class="report-history-list-item" (tap)="itemTapped($event, report)">
+                <div class="report-history-report-item item-group-id" *ngIf="ud.showID()">
+                  <span class="report-history-report-item-header item-id-label">ID</span>
+                  <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="ud.showRev()">
+                  <span class="report-history-report-item-header item-rev-label">Rev</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report._rev}}</span>
+                </div>
                 <div class="report-history-report-item">
                   <span class="report-history-report-item-header">{{'standby_hb_duncan' | translate}}&nbsp;&nbsp;</span>
                   <span class="report-history-report-item-data">{{report.time}}</span>
@@ -127,6 +171,14 @@
             </ion-item-sliding>
             <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Sick'">
               <ion-item class="report-history-list-item" (tap)="itemTapped($event, report)">
+                <div class="report-history-report-item item-group-id" *ngIf="ud.showID()">
+                  <span class="report-history-report-item-header item-id-label">ID</span>
+                  <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="ud.showRev()">
+                  <span class="report-history-report-item-header item-rev-label">Rev</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report._rev}}</span>
+                </div>
                 <div class="report-history-report-item">
                   <span class="report-history-report-item-header">{{'sick' | translate}}&nbsp;&nbsp;</span>
                   <span class="report-history-report-item-data">{{report.time}}</span>
@@ -141,6 +193,14 @@
             </ion-item-sliding>
             <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Vacation'">
               <ion-item class="report-history-list-item" (tap)="itemTapped($event, report)">
+                <div class="report-history-report-item item-group-id" *ngIf="ud.showID()">
+                  <span class="report-history-report-item-header item-id-label">ID</span>
+                  <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="ud.showRev()">
+                  <span class="report-history-report-item-header item-rev-label">Rev</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report._rev}}</span>
+                </div>
                 <div class="report-history-report-item">
                   <span class="report-history-report-item-header">{{'vacation' | translate}}&nbsp;&nbsp;</span>
                   <span class="report-history-report-item-data">{{report.time}}</span>
@@ -155,6 +215,14 @@
             </ion-item-sliding>
             <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Holiday'">
               <ion-item class="report-history-list-item" (tap)="itemTapped($event, report)">
+                <div class="report-history-report-item item-group-id" *ngIf="ud.showID()">
+                  <span class="report-history-report-item-header item-id-label">ID</span>
+                  <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="ud.showRev()">
+                  <span class="report-history-report-item-header item-rev-label">Rev</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report._rev}}</span>
+                </div>
                 <div class="report-history-report-item">
                   <span class="report-history-report-item-header">{{'holiday' | translate}}&nbsp;&nbsp;</span>
                   <span class="report-history-report-item-data">{{report.time}}</span>

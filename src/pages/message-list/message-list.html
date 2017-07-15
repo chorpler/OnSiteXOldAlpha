@@ -1,6 +1,10 @@
 <ion-header>
   <ion-navbar>
-    <ion-title> {{'messages_title' | translate}} </ion-title>
+    <!-- <ion-title> {{'messages_title' | translate}} </ion-title> -->
+    <ion-title class="app-title">
+      <span class="app-page-title">{{"messages_title" | translate}}</span>
+      <span class="app-user" *ngIf="ud.getTechName()">{{ud.getTechName()}}</span>
+    </ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -11,10 +15,21 @@
   </ion-item>
 </ion-content>
 <ion-content padding class="body-with-header-and-tabs" *ngIf="pageReady && messages && messages.length">
-    <ion-list no-border>
-      <ion-item class="message-list-item ion-item-button-like" *ngFor="let message of messages; let i=index" (click)="showMessage(message)">
-        <ion-label class="message-list-label" [ngClass]="{'highlight': !message.read}">{{message.getMessageDateString()}}</ion-label>
+  <ion-card class="message-card ion-card-button-like" [ngClass]="{'highlight': !message.read}" *ngFor="let message of messages; let i=index" (tap)="showMessage(message)">
+    <ion-list class="message-list">
+      <ion-item class="message-list-item">
+        <p class="message-list-label">{{'message_date' | translate}}</p>
+        <p class="message-list-data">{{message.getMessageDateString()}}</p>
+      </ion-item>
+      <ion-item class="message-list-item">
+        <p class="message-list-label">{{'message_from' | translate}}</p>
+        <p class="message-list-data">{{message.getMessageSender()}}</p>
+      </ion-item>
+      <ion-item class="message-list-item">
+        <p class="message-list-label">{{'message_subject' | translate}}</p>
+        <p class="message-list-data">{{message.getMessageSubject()}}</p>
       </ion-item>
     </ion-list>
- </ion-content>
+  </ion-card>
+</ion-content>
 <onsite-tabs></onsite-tabs>

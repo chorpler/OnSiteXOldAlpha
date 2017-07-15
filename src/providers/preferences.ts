@@ -99,7 +99,7 @@ export class Preferences {
   }
 
   static getPrefs() {
-    return { DB: Preferences.DB, SERVER: Preferences.SERVER, USER: Preferences.USER };
+    return { DB: Preferences.DB, SERVER: Preferences.SERVER, USER: Preferences.USER, DEVELOPER: Preferences.DEVELOPER };
   }
 
   static getDB() {

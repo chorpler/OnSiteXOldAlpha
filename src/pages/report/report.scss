@@ -36,11 +36,17 @@ page-report {
     width: 100%;
   }
   .ion-item-button-like {
-    :hover {
-      background-color: rgba(0, 0, 128, 0.02);
+    &:hover {
+      background-color: rgba(0, 0, 128, 0.2);
     }
-    :active {
-      background-color: rgba(0, 0, 255, 0.3);
+    &:active {
+      background-color: rgba(0, 0, 255, 0.5);
+      ion-label {
+        color: white;
+      }
+      .shift-date-select-results {
+        color: white;
+      }
     }
   }
   .work-order-payroll-hours-header {
@@ -62,9 +68,11 @@ page-report {
   }
   .shift-date-select-results {
     text-align: left;
+    cursor: pointer;
     // width: 80%;
     display: inline-block;
     input {
+      cursor: pointer;
       text-align: right;
       opacity: 1 !important;
       // width: 80%;
@@ -104,5 +112,27 @@ page-report {
   }
   .report-time-input input {
     text-align: right;
+  }
+  .report-dev-info {
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+  .report-dev-group {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+  .report-dev-header {
+    flex: 1 0 auto;
+    max-width: 25px;
+  }
+  .report-dev-data {
+    flex: 1 0 auto;
+    text-overflow: ellipsis;
   }
 }
