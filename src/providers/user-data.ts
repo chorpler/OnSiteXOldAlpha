@@ -19,7 +19,7 @@ import { Message                       } from '../domain/message'              ;
 @Injectable()
 export class UserData {
   public static appdata               : any = {ready: false,
-    version    : "10.11.07",
+    version    : "10.11.09",
     homeLoading: false,
     attempts   : 0,
     homeReady  : false,
@@ -42,7 +42,7 @@ export class UserData {
     serial      : "",
     uniqueID    : "",
   };
-  public static PREFS                 : any = new Preferences()                              ;
+  public static PREFS                 : any = new Preferences()                        ;
   public static _favorites            : string[]             = []                      ;
   public static HAS_LOGGED_IN         = 'hasLoggedIn'                                  ;
   public static HAS_SEEN_TUTORIAL     = 'hasSeenTutorial'                              ;
@@ -52,7 +52,6 @@ export class UserData {
   public static current_shift_hours   : any                                            ;
   public static circled_numbers       : Array<string>                                  ;
   public static circled_numbers_chars : Array<string>        = STRINGS.NUMCHARS        ;
-  // public static techWOArrayInitialized: boolean              = false                   ;
   public static get techWOArrayInitialized():boolean {return Boolean(UserData.reports && UserData.reports.length);};
   public static get shifts():Array<Shift> {return UserData.data.shifts;};
   public static get payrollPeriods():Array<PayrollPeriod> {return UserData.data.payrollPeriods;};
@@ -64,9 +63,6 @@ export class UserData {
   public static set reports(value:Array<WorkOrder>) {UserData.data.reports = value;};
   public static set otherReports(value:Array<ReportOther>) {UserData.data.otherReports = value;};
   public static set messages(value:Array<Message>) {UserData.data.messages = value;};
-  // public static payrollPeriods        : Array<PayrollPeriod> = []                      ;
-  // public static reports               : Array<WorkOrder>     = []                      ;
-  // public static otherReports          : Array<ReportOther>   = []                      ;
   public static user                  : Employee             = null                    ;
   public static techProfile           : any                                            ;
   public static userLoggedIn          : boolean              = false                   ;
@@ -699,7 +695,7 @@ export class UserData {
   // }
 
   public addNewReport(newReport:WorkOrder) {
-    Log.l("addNewReport(): Now adding report:\n", newReport);
+    // Log.l("addNewReport(): Now adding report:\n", newReport);
     // let reports = this.getWorkOrderList();
     let id = newReport.getReportID();
     let exists = false, existingReport = null, rightShift = null;
@@ -727,7 +723,7 @@ export class UserData {
       }
     }
     if(exists && rightShift) {
-      Log.w(`addNewReport(): Shift #${rightShift.getShiftID()} already has a copy of report '${id}'.`);
+      // Log.w(`addNewReport(): Shift #${rightShift.getShiftID()} already has a copy of report '${id}'.`);
     } else if(rightShift) {
       rightShift.addShiftReport(newReport);
     } else {

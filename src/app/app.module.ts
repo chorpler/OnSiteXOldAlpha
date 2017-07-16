@@ -22,6 +22,7 @@ import { UniqueDeviceID                                          } from '@ionic-
 import { Device                                                  } from '@ionic-native/device'                                       ;
 import { AppVersion                                              } from '@ionic-native/app-version'                                  ;
 import { NativeAudio                                             } from '@ionic-native/native-audio'                                 ;
+import { AppUpdate                                               } from '@ionic-native/app-update'                                   ;
 import { Camera, CameraOptions                                   } from '@ionic-native/camera'                                       ;
 import { OnSiteApp                                               } from './app.component.ts'                                         ;
 import { ProfileSettings                                         } from '../providers/profile-settings.ts'                           ;
@@ -71,10 +72,10 @@ import { ClockComponentModule                                    } from '../comp
                           deps: [Http]
                         }
                       }),
-                      // MultiPickerModule,
                       IonDigitKeyboard,
                       PipesModule,
                       ClockComponentModule,
+                      // MultiPickerModule,
                    ],
 
   providers      : [
@@ -102,6 +103,7 @@ import { ClockComponentModule                                    } from '../comp
                       UniqueDeviceID,
                       Device,
                       NativeAudio,
+                      AppUpdate,
                       Camera,
                       GeolocService,
                       PouchDBService,

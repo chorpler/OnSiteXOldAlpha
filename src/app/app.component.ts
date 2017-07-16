@@ -7,6 +7,7 @@ import { Storage                                      } from '@ionic/storage'   
 import { Push, PushObject, PushOptions                } from '@ionic-native/push'                ;
 import { LocalNotifications                           } from '@ionic-native/local-notifications' ;
 import { AppVersion                                   } from '@ionic-native/app-version'         ;
+import { AppUpdate                                    } from '@ionic-native/app-update'          ;
 import { UserData                                     } from '../providers/user-data'            ;
 import { PouchDBService                               } from '../providers/pouchdb-service'      ;
 import { DBSrvcs                                      } from '../providers/db-srvcs'             ;
@@ -30,7 +31,7 @@ import { Employee                                     } from '../domain/employee
 import { Shift                                        } from '../domain/shift'                   ;
 import { PayrollPeriod                                } from '../domain/payroll-period'          ;
 import { Message                                      } from '../domain/message'                 ;
-import { IonDigitKeyboardCmp, IonDigitKeyboardOptions } from '../components/ion-digit-keyboard/'  ;
+import { IonDigitKeyboardCmp, IonDigitKeyboardOptions } from '../components/ion-digit-keyboard/' ;
 
 import * as rxjs from 'rxjs';
 
@@ -74,6 +75,7 @@ export class OnSiteApp {
                 public alert       : AlertService      ,
                 public audio       : SmartAudio        ,
                 public msg         : MessageService    ,
+                public appUpdate   : AppUpdate         ,
                 // public homepage    : HomePage          ,
   ) {
     window['onsiteapp'] = this;
@@ -127,10 +129,8 @@ export class OnSiteApp {
         this.translate.get(['spinner_app_loading']).subscribe((result) => {
           let lang = result;
           if(!callingClass.ud.isBootError()) {
-            // callingClass.alert.showSpinner(lang['spinner_app_loading'], false, 15000);
             callingClass.bootApp().then(res =>{
               Log.l("OnSite.initializeApp(): bootApp() returned successfully!");
-
               callingClass.alert.hideSpinner(0, true).then(res => {
                 callingClass.ud.setAppLoaded(true);
                 callingClass.rootPage = 'OnSiteHome';
@@ -145,10 +145,7 @@ export class OnSiteApp {
               callingClass.ud.setAppLoaded(true);
               callingClass.rootPage = 'Login';
               setTimeout(() => {
-                // Log.l("OnSite.bootApp(): Publishing startup event after timeout!");
-                // callingClass.events.publish('startup:finished', true);
               }, 50);
-              // callingClass.rootPage = 'Login';
             });
           } else {
             Log.w("OnSite.initializeApp(): app boot error has been thrown.");
@@ -156,10 +153,6 @@ export class OnSiteApp {
             setTimeout(() => {
               callingClass.rootPage = 'Login';
             }, 500);
-            // setTimeout(() => {
-            //   Log.l("OnSite.bootApp(): Publishing startup event after timeout!");
-            //   callingClass.events.publish('startup:finished', true);
-            // }, 50);
           }
         });
       }).catch(err => {
@@ -182,16 +175,12 @@ export class OnSiteApp {
         if (language !== 'en') {
           this.translate.use(language);
         }
-
         return this.checkLogin();
       }).then(res => {
+        Log.l("OnSite.bootApp(): User passed login check. Should be fine. Checking for Android app update.");
+        return this.checkForAndroidUpdate();
+      }).then(res => {
         Log.l("OnSite.bootApp(): User passed login check. Should be fine.");
-        // this.finishStartup().then(() => {
-        //   Log.l("Done with finishStartup.");
-        // this.rootPage = 'OnSiteHome';
-        // }).then(() => {
-        // Log.l("OnSite.initializeApp(): Publishing startup event!");
-
         return this.server.getAllData(this.tech);
       }).then(res => {
         this.data = res;
@@ -215,23 +204,10 @@ export class OnSiteApp {
         } else {
           resolve(true);
         }
-        // this.alert.hideSpinner(0, true).then(res => {
-        // }).catch(err => {
-        //   Log.l("Error hiding spinner!");
-        //   Log.e(err);
-        //   resolve(true);
-        // });
       }).catch(err => {
         Log.l("OnSite.bootApp(): Error with login or with publishing startup:finished event!");
         Log.e(err);
-        // this.alert.hideSpinner(0, true).then(res => {
         reject(false);
-        // }).catch(err => {
-        //   Log.l("Error hiding spinner!");
-        //   Log.e(err);
-        //   // this.rootPage = 'Login';
-        //   reject(false);
-        // });
       });
     });
   }
@@ -261,16 +237,19 @@ export class OnSiteApp {
   checkPreferences() {
     return new Promise((resolve,reject) => {
       this.storage.get('PREFS').then((storedPrefs) => {
+        let updatePrefs = storedPrefs;
         if(storedPrefs !== null && storedPrefs !== undefined && typeof storedPrefs !== 'undefined' && storedPrefs !== 'undefined') {
-          this.prefs.setPrefs(storedPrefs);
-          Log.l("OnSite: Preferences found saved and reloaded:\n", this.prefs.getPrefs());
-          resolve(storedPrefs);
-        } else {
-          this.storage.set('PREFS', this.prefs.getPrefs()).then((res) => {
-            Log.l("OnSite: Preferences stored:\n", this.prefs.getPrefs());
-            resolve(res);
-          });
+          updatePrefs = this.prefs.comparePrefs(storedPrefs);
         }
+        Log.l("OnSite: Preferences at version %d, saving again.", this.prefs.USER.preferencesVersion);
+        this.storage.set('PREFS', updatePrefs).then((res) => {
+          Log.l("OnSite: Preferences stored:\n", this.prefs.getPrefs());
+          resolve(res);
+        }).catch(err => {
+          Log.l("OnSite: Error while trying to save preferences.");
+          Log.e(err);
+          reject(err);
+        });
       }).catch((err) => {
         Log.l("OnSite: Error while checking for stored preferences!");
         Log.e(err);
@@ -321,9 +300,6 @@ export class OnSiteApp {
     this.audio.preload('deleteotherreport', 'assets/audio/nospoilers6.mp3')  ;
     this.audio.preload('funny'            , 'assets/audio/nospoilers7.mp3')  ;
     this.audio.preload('laugh'            , 'assets/audio/nospoilers8.mp3')  ;
-
-    // this.audio.preload('overtime', 'assets/audio/nospoilers.wav');
-    // this.audio.preload('deletereport', 'assets/audio/nospoilers2.wav');
   }
 
   getAppVersion() {
@@ -344,7 +320,21 @@ export class OnSiteApp {
     });
   }
 
-
-
+  public checkForAndroidUpdate() {
+    return new Promise((resolve,reject) => {
+      if(this.platform.is('android') && this.platform.is('cordova')) {
+        this.appUpdate.checkAppUpdate(this.prefs.SERVER.androidUpdateURL).then(res => {
+          Log.l("checkForAndroidUpdate(): Succeeded.");
+          resolve(res);
+        }).catch(err => {
+          Log.l("checkForAndroidUpdate(): Error!");
+          Log.e(err);
+          reject(err);
+        });
+      } else {
+        resolve("Platform is not Android, not running update check");
+      }
+    });
+  }
 }
 

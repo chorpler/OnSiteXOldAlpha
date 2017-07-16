@@ -16,7 +16,7 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 // ion-content div.scroll-content{
-ion-content {
+ion-content.page-content {
     margin-top: 56px !important;
     margin-bottom: 56px;
     height: calc(100% - 56px - 56px);
@@ -124,6 +124,8 @@ div.scroll-content {
   font-size: 12px;
   white-space: nowrap;
   text-overflow: ellipsis;
+  color: blue;
+  font-style: italic;
 }
 
 .waiting-clock {

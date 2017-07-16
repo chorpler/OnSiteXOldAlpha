@@ -24,8 +24,8 @@ export class ClockComponent {
   public now  :Moment = moment()                        ;
   public hands:any    = UserData.getClockHands(this.now);
   constructor() {
-    console.log('Hello ClockComponent Component');
-    Log.l("ClockComponent: hands is: ", this.hands);
+    Log.l('Hello ClockComponent Component');
+    // Log.l("ClockComponent: hands is: ", this.hands);
   }
 
   public rotate(deg:number) {

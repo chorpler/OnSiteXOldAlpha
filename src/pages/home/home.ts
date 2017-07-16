@@ -1,7 +1,9 @@
-// import { Component, OnInit, NgZone, ViewChild, ElementRef } from '@angular/core'                 ;
 import { Component, OnInit, Input, NgZone, ViewChild      } from '@angular/core'                 ;
 import { Http                                             } from '@angular/http'                 ;
+import { DomSanitizer                                     } from '@angular/platform-browser'     ;
 import { trigger, state, style, animate, transition       } from '@angular/animations'           ;
+import { TranslateService                                 } from '@ngx-translate/core'           ;
+import { Pipe, PipeTransform                              } from '@angular/core'                 ;
 import { Platform, IonicPage, NavParams, Events           } from 'ionic-angular'                 ;
 import { NavController, ToastController                   } from 'ionic-angular'                 ;
 import { ModalController,ViewController,PopoverController } from 'ionic-angular'                 ;
@@ -19,9 +21,6 @@ import { Employee                                         } from '../../domain/e
 import { TabsComponent                                    } from '../../components/tabs/tabs'    ;
 import { STRINGS                                          } from '../../config/config.strings'   ;
 import { Preferences                                      } from '../../providers/preferences'   ;
-import { TranslateService                                 } from '@ngx-translate/core'           ;
-import { Pipe, PipeTransform                              } from '@angular/core'                 ;
-import { DomSanitizer                                     } from '@angular/platform-browser'     ;
 import { SafePipe                                         } from '../../pipes/safe'              ;
 import { SmartAudio                                       } from '../../providers/smart-audio'   ;
 
@@ -41,11 +40,11 @@ enum Icons {
   templateUrl: 'home.html',
 })
 export class HomePage {
-  static PREFS                : any           = new Preferences()        ;
-  static EVENTS               : Events                                   ;
-  static startupHandler       : any                                      ;
-  static pageLoadedPreviously : boolean       = false                    ;
-  static homePageStatus       : any           = {startupFinished: false} ;
+  static PREFS                       : any           = new Preferences()        ;
+  static EVENTS                      : Events                                   ;
+  static startupHandler              : any                                      ;
+  static pageLoadedPreviously        : boolean       = false                    ;
+  static homePageStatus              : any           = {startupFinished: false} ;
   static lang                        : any                                      ;
   static fixedHeight                 : any           = "0px"                    ;
   static moment                      : any           = moment                   ;
@@ -120,45 +119,6 @@ export class HomePage {
   public hands                       : any                 = HomePage.hands  ;
   public translations                : Array<string>       = HomePage.translations;
 
-  // static PREFS                : any           = new Preferences()        ;
-  // static EVENTS               : Events                                   ;
-  // static startupHandler       : any                                      ;
-  // static pageLoadedPreviously : boolean       = false                    ;
-  // static homePageStatus       : any           = {startupFinished: false} ;
-  // lang                        : any                                      ;
-  // fixedHeight                 : any           = "0px"                    ;
-  // moment                      : any           = moment                   ;
-  // today                       : any           = moment()                 ;
-  // loginData                   : any           = null                     ;
-  // username                    : string        = "unknown"                ;
-  // userLoggedIn                : boolean                                  ;
-  // title                       : string        = 'OnSite Home'            ;
-  // numChars                    : Array<string> = STRINGS.NUMCHARS         ;
-  // chkBxBool                   : boolean                                  ;
-  // chkBx                       : string                                   ;
-  // shftHrs                     : number                                   ;
-  // hrsSubmitted                : number                                   ;
-  // dataReady                   : boolean       = false                    ;
-  // spinnerText                 : string        = ""                       ;
-  // techProfile                 : any                                      ;
-  // techWorkOrders              : Array<WorkOrder>                         ;
-  // shiftWorkOrders             : Array<WorkOrder>                         ;
-  // payrollWorkOrders           : Array<WorkOrder>                         ;
-  // otherReports                : Array<ReportOther>                       ;
-  // hoursTotalList              : Array<any>    = []                       ;
-  // shifts                      : Array<Shift>  = []                       ;
-  // payrollPeriods              : Array<PayrollPeriod> = []                ;
-  // period                      : PayrollPeriod = null                     ;
-  // tech                        : Employee                                 ;
-  // payrollPeriodCount          : number        = 2                        ;
-  // payrollPeriodHoursTotal     : number        = 0                        ;
-  // payrollPeriodHours          : number        = 0                        ;
-  // payrollPeriodBonusHours     : number        = 0                        ;
-  // pageError                   : boolean       = false                    ;
-  // PREFS                       : any           = HomePage.PREFS           ;
-  // databases                   : any           = this.PREFS.DB            ;
-  // checkboxSVG                 : any           = UserData.getSVGData()    ;
-
   constructor(public http        : Http,
               public platform    : Platform,
               public navCtrl     : NavController,
@@ -175,8 +135,8 @@ export class HomePage {
               public alert       : AlertService,
               public zone        : NgZone,
               public translate   : TranslateService,
-              public audio       : SmartAudio )
-  {
+              public audio       : SmartAudio,
+  ) {
     window["onsitehome"] = window["onsitehome"] ? window["onsitehome"] : this;
     Log.l("HomePage: Hi, I'm the HomePage class constructor!");
     let translations = [

@@ -47,7 +47,6 @@ export class TabsComponent implements OnInit {
   ]
 
   public get tabInfo():any {return TabsComponent.tabInfo};
-  // public set tabInfo(value:any) { TabsComponent.tabInfo = value;};
   public static tab:any = {
     'OnSiteHome': {}
   };
@@ -110,16 +109,16 @@ export class TabsComponent implements OnInit {
     } else {
       pagename = page;
     }
-    Log.l(`Tabs: entering page '${pagename}'. First highlighting tab.`);
+    // Log.l(`Tabs: entering page '${pagename}'. First highlighting tab.`);
 
     this.highlightPageTab(pagename);
-    Log.l(`Tabs: found page ${pagename} at index ${Pages[pagename]}, getting NavController...`);
+    // Log.l(`Tabs: found page ${pagename} at index ${Pages[pagename]}, getting NavController...`);
     this.getActiveNav();
     if(params) {
-      Log.l(`Tabs: found params, so now calling setRoot(${pagename}, ${params})...`);
+      // Log.l(`Tabs: found params, so now calling setRoot(${pagename}, ${params})...`);
       this.nav.setRoot(pagename, params);
     } else {
-      Log.l(`Tabs: no params, so now calling setRoot(${pagename})...`);
+      // Log.l(`Tabs: no params, so now calling setRoot(${pagename})...`);
       this.nav.setRoot(pagename);
     }
   }
@@ -146,37 +145,37 @@ export class TabsComponent implements OnInit {
   }
 
   goHome() {
-    console.log('entering page: OnSite Home' );
+    // Log.l('entering page: OnSite Home' );
     this.goToPage('OnSiteHome');
   }
 
   goReport(params?:any) {
-    console.log('entering page: Report' );
+    // Log.l('entering page: Report' );
     this.goToPage('Report');
   }
 
   goHistory() {
-    console.log('entering page: ReportHistory' );
+    // Log.l('entering page: ReportHistory' );
     this.goToPage('ReportHistory');
   }
 
   goUser() {
-    console.log('entering page: User' );
+    // Log.l('entering page: User' );
     this.goToPage('User');
   }
 
   goSettings() {
-    console.log('entering page: Settings' );
+    // Log.l('entering page: Settings' );
     this.goToPage('Settings');
   }
 
   goMsgs() {
-    console.log('entering page: Messages' );
+    // Log.l('entering page: Messages' );
     this.goToPage('Messages');
   }
 
   goDev() {
-    console.log('entering page: DevPage' );
+    // Log.l('entering page: DevPage' );
     this.goToPage('DevPage');
   }
 
@@ -245,7 +244,7 @@ export class TabsComponent implements OnInit {
   }
 
   aboutPage(event:any, name:string) {
-    Log.l(`User wants info about tab '${name}'. Event:\n`, event);
+    // Log.l(`User wants info about tab '${name}'. Event:\n`, event);
     let help = {
       "OnSiteHome"   : "Home Page",
       "Report"       : "Work Reports",

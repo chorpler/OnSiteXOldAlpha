@@ -113,5 +113,22 @@ export class Message {
     }
   }
 
+  clone() {
+    let doc = this.serialize();
+    let newMsg = new Message();
+    let keys = Object.keys(this);
+    for(let key of keys) {
+      let value = this[key];
+      if(isMoment(value)) {
+        newMsg[key] = moment(value);
+      } else if(value && typeof value === 'object') {
+        newMsg[key] = Object.assign({}, value);
+      } else {
+        newMsg[key] = this[key];
+      }
+    }
+    return newMsg;
+  }
+
 
 }

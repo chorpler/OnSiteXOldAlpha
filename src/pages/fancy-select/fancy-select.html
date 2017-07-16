@@ -10,7 +10,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding *ngIf="selectDataReady">
+<ion-content padding class="page-content fancy-select-page-content" *ngIf="selectDataReady">
   <div class="full-screen-modal">
     <div class="fancy-select-period-title">{{'pay_period' | translate}}</div>
     <ion-select [(ngModel)]="period" (ngModelChange)="updateSelectedPeriod(period)" class="fancy-select-period">

@@ -1,9 +1,12 @@
-import { NgModule             } from '@angular/core'                       ;
-import { IonicPageModule      } from 'ionic-angular'                       ;
-import { ReportHistory        } from './report-history'                    ;
-import { TranslateModule      } from '@ngx-translate/core'                 ;
-import { TabsComponentModule  } from '../../components/tabs/tabs.module'   ;
-import { ClockComponentModule } from '../../components/clock/clock.module' ;
+import { NgModule                         } from '@angular/core'                       ;
+import { Http                             } from '@angular/http'                       ;
+import { IonicPageModule                  } from 'ionic-angular'                       ;
+import { ReportHistory                    } from './report-history'                    ;
+import { TabsComponentModule              } from '../../components/tabs/tabs.module'   ;
+import { ClockComponentModule             } from '../../components/clock/clock.module' ;
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core'                 ;
+import { TranslateHttpLoader              } from '@ngx-translate/http-loader'          ;
+import { createTranslateLoader            } from '../../config/customTranslateLoader'  ;
 
 @NgModule({
   declarations: [
@@ -11,7 +14,13 @@ import { ClockComponentModule } from '../../components/clock/clock.module' ;
   ],
   imports: [
     IonicPageModule.forChild(ReportHistory),
-    TranslateModule.forChild(),
+    TranslateModule.forChild({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: (createTranslateLoader),
+        deps: [Http]
+      }
+    }),
     TabsComponentModule,
     ClockComponentModule,
   ],

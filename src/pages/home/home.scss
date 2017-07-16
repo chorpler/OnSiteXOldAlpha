@@ -109,7 +109,7 @@ page-home {
     }
   }
   span.normal-txt {
-    // color: black;
+    color: black;
   }
   .header-close-button {
     color: black !important;
@@ -134,7 +134,7 @@ page-home {
     &:active {
       background-color: rgba(0, 0, 255, 0.7);
       color: white;
-      span.normal-text {
+      span.normal-txt {
         color: white;
       }
     }

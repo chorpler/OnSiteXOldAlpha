@@ -27,6 +27,7 @@ export class Preferences {
     server: "securedb.sesaonsite.com",
     port: '443',
     protocol: 'https',
+    androidUpdateURL: 'https://sos.sesa.us/android/OnSiteX.xml',
     opts: { adapter: 'websql', auto_compaction: true },
     ropts: { get adapter() { return Preferences.SERVER.protocol; }, skipSetup: true },
     cropts: { get adapter() { return Preferences.SERVER.protocol; } },
@@ -43,6 +44,7 @@ export class Preferences {
     }
   };
   public static USER: any = {
+    preferencesVersion: 37,
     language: 'en',
     shifts: 7,
     payroll_periods: 2,
@@ -152,6 +154,24 @@ export class Preferences {
     return Preferences.USER;
   }
 
+  public static comparePrefs(newPrefs:any) {
+    let prefs = Preferences.getPrefs();
+    let version = prefs.USER.preferencesVersion;
+    let newVersion = 0;
+    if(newPrefs['USER'] !== undefined && newPrefs['USER']['preferencesVersion'] !== undefined) {
+      newVersion = newPrefs.USER.preferencesVersion;
+    }
+    if(newVersion > version) {
+      Preferences.setPrefs(newPrefs);
+    }
+    let updatedPrefs = Preferences.getPrefs();
+    return updatedPrefs;
+  }
+
+  public comparePrefs(newPrefs:any) {
+    return Preferences.comparePrefs(newPrefs);
+  }
+
   reinitializePrefs() {
     Preferences.DB = {
       'reports'      : 'reports_ver101100',
@@ -171,6 +191,7 @@ export class Preferences {
       server: "securedb.sesaonsite.com",
       port: '443',
       protocol: "https",
+      androidUpdateURL: 'https://sos.sesa.us/android/OnSiteX.xml',
       opts: { adapter: 'websql', auto_compaction: true },
       ropts: { adapter: Preferences.SERVER.protocol, skipSetup: true },
       cropts: { adapter: Preferences.SERVER.protocol },
@@ -188,6 +209,7 @@ export class Preferences {
     };
 
     Preferences.USER = {
+      preferencesVersion: 37,
       language: 'en',
       shifts: 7,
       payroll_periods: 2,

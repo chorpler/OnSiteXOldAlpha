@@ -171,7 +171,7 @@ export class Settings implements OnInit {
     Log.l("toggleStayInReports(): set to '%s'", this.stayInReports);
     this.prefs.USER.stayInReports = this.stayInReports;
     this.savePreferences().then(res => {
-      Log.l("toggleSounds(): Sounds turned to '%s' and preferences saved:\n", this.prefs.USER.audio);
+      Log.l("toggleStayInReports(): StayInReports turned to '%s' and preferences saved:\n", this.prefs.USER.stayInReports);
       Log.l(this.prefs);
     }).catch(err => {
       Log.l("toggleSounds(): Error saving preferences.");
@@ -180,7 +180,7 @@ export class Settings implements OnInit {
   }
 
   public savePreferences() {
-    let prefsObj = { DB: this.prefs.DB, SERVER: this.prefs.SERVER, USER: this.prefs.USER };
+    let prefsObj = { DB: this.prefs.DB, SERVER: this.prefs.SERVER, USER: this.prefs.USER, DEVELOPER: this.prefs.DEVELOPER };
     return new Promise((resolve, reject) => {
       this.storage.persistentSet('PREFS', prefsObj).then(res => {
         Log.l("savePreferences(): Saved preferences successfully.\n", res);

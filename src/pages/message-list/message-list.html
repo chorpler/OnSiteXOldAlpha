@@ -9,12 +9,12 @@
 </ion-header>
 
 
-<ion-content class="body-with-header-and-tabs" padding *ngIf="pageReady && messages && !messages.length">
+<ion-content padding class="page-content message-list-page-content" *ngIf="pageReady && messages && !messages.length">
   <ion-item>
     <div class="messages-no-message">{{'messages_no_messages' | translate}}</div>
   </ion-item>
 </ion-content>
-<ion-content padding class="body-with-header-and-tabs" *ngIf="pageReady && messages && messages.length">
+<ion-content padding class="page-content message-list-page-content" *ngIf="pageReady && messages && messages.length">
   <ion-card class="message-card ion-card-button-like" [ngClass]="{'highlight': !message.read}" *ngFor="let message of messages; let i=index" (tap)="showMessage(message)">
     <ion-list class="message-list">
       <ion-item class="message-list-item">

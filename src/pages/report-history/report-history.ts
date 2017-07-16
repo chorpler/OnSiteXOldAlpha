@@ -14,7 +14,6 @@ import { Preferences                                            } from '../../pr
 import { TranslateService                                       } from '@ngx-translate/core'           ;
 import { TabsComponent                                          } from '../../components/tabs/tabs'    ;
 import { OrderBy                                                } from '../../pipes/pipes'             ;
-// import * as moment from 'moment';
 import { STRINGS                                                } from '../../config/config.strings'   ;
 import { SmartAudio                                             } from '../../providers/smart-audio'   ;
 

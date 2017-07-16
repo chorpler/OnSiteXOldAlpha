@@ -124,6 +124,7 @@
   "submitted_comment_successfully": "Your comment has been submitted. Thank you!",
   "success": "Success",
   "could_not_read_phone_info": "Could not read phone make and model. In your comment, please tell us what kind of phone you have.",
+  "comment_title": "Comments",
   "comment": "Comment",
   "send_comment": "Send Comment",
   "spinner_app_loading": "App Loading...",

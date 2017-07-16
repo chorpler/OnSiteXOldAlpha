@@ -11,7 +11,7 @@
 	</ion-navbar>
 
 </ion-header>
- <ion-content padding *ngIf="dataReady">
+ <ion-content padding class="page-content login-page-content" *ngIf="dataReady">
 	<form [formGroup]="LoginForm" (ngSubmit)="onSubmit()">
 		<ion-list>
 			<ion-item *ngIf="loginError" color="danger">
