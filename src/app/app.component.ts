@@ -180,7 +180,7 @@ export class OnSiteApp {
         Log.l("OnSite.bootApp(): User passed login check. Should be fine. Checking for Android app update.");
         return this.checkForAndroidUpdate();
       }).then(res => {
-        Log.l("OnSite.bootApp(): User passed login check. Should be fine.");
+        Log.l("OnSite.bootApp(): Done with Android update check. Now getting all data from server.");
         return this.server.getAllData(this.tech);
       }).then(res => {
         this.data = res;
@@ -332,6 +332,7 @@ export class OnSiteApp {
           reject(err);
         });
       } else {
+        Log.l("checkForAndroidUpdate(): Platform is not Android. No need for a check.");
         resolve("Platform is not Android, not running update check");
       }
     });

@@ -1,6 +1,6 @@
-import { Log, isMoment, moment, Moment   } from '../config/config.functions' ;
-import { sprintf                         } from 'sprintf-js'                 ;
-import { WorkOrder, ReportOther, Jobsite } from './domain-classes'         ;
+import { Log, isMoment, moment, Moment             } from '../config/config.functions' ;
+import { sprintf                                   } from 'sprintf-js'                 ;
+import { WorkOrder, ReportOther, Jobsite, Employee } from './domain-classes'           ;
 
 export const _sortReports = (a: WorkOrder, b: WorkOrder): number => {
   let dateA = a['report_date'];
@@ -297,6 +297,18 @@ export class Shift {
   setShiftLength(hours:number) {
     this.shift_length = hours;
     return this.shift_length;
+  }
+
+  updateShiftSiteInfo(site:Jobsite, tech:Employee) {
+    let shiftTime = tech.getShiftType();
+    let rotation  = tech.getShiftRotation();
+    let date = moment(this.start_time).startOf('day');
+    let shiftStart = site.getShiftLengthForDate(rotation, shiftTime, date);
+    this.setShiftLength(shiftStart);
+    let startHours = site.getShiftStartTime(shiftTime);
+    let hours = moment.duration(startHours, 'hours');
+    let startTime = moment(date).add(hours.hours(), 'hours').add(hours.minutes(), 'minutes');
+    this.start_time = startTime;
   }
 
   getShiftColor() {

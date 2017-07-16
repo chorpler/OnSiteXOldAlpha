@@ -1,6 +1,6 @@
-import { Street } from './street' ;
-import { Address} from './address';
-import { Log    } from '../config/config.functions';
+import { Street                        } from './street'                   ;
+import { Address                       } from './address'                  ;
+import { Log, moment, Moment, isMoment } from '../config/config.functions' ;
 
 export class Jobsite {
   public _id                       : string  ;
@@ -264,12 +264,12 @@ export class Jobsite {
     return this.hoursList;
   }
 
-  public getHoursList(shiftType:string|object, shiftTime?:string) {
+  public getHoursList(shiftRotation:string|object, shiftTime?:string) {
     let match = "", oneHourList = null, singleShiftList = null;
-    if(typeof shiftType === 'string') {
-      match = shiftType;
-    } else if(shiftType && typeof shiftType === 'object' && typeof shiftType['name'] === 'string') {
-      match = shiftType['name'];
+    if(typeof shiftRotation === 'string') {
+      match = shiftRotation;
+    } else if(shiftRotation && typeof shiftRotation === 'object' && typeof shiftRotation['name'] === 'string') {
+      match = shiftRotation['name'];
     }
     if(this.hoursList[match] !== undefined) {
       oneHourList = this.hoursList[match];
@@ -283,5 +283,14 @@ export class Jobsite {
     } else {
       return oneHourList;
     }
+  }
+
+  public getShiftLengthForDate(shiftRotation:string|object, shiftTime:string, date:Moment|Date):number {
+    let list = this.getHoursList(shiftRotation, shiftTime);
+    let day = moment(date);
+    let dayIndex = day.isoWeekday();
+    let hoursIndex = (dayIndex + 4) % 7;
+    let shiftLength = list[hoursIndex];
+    return shiftLength;
   }
 }

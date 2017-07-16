@@ -18,15 +18,15 @@ export interface IFEmployee {
   location            : any            ;
   locID               : any            ;
   loc2nd              : any            ;
-  shift               : any            ;
-  shiftLength         : any            ;
-  shiftStartTime      : any            ;
-  shiftStartTimeMoment: any            ;
+  shift               : string         ;
+  shiftLength         : string|number  ;
+  shiftStartTime      : string|number  ;
+  shiftStartTimeMoment: Moment         ;
   shiftStartTimeHour  : string         ;
   rotation            : string         ;
   email               : Array<string>  ;
-  phone               : any            ;
-  cell                : any            ;
+  phone               : string         ;
+  cell                : string         ;
   address             : Address        ;
   payRate             : number         ;
   active              : boolean        ;
@@ -172,6 +172,23 @@ export class Employee implements IFEmployee {
 
   public getUsername() {
     return this.username ? this.username : this.avatarName;
+  }
+
+  public getShiftType():string {
+    return this.shift;
+  }
+
+  public setShiftType(AMorPM:string) {
+    this.shift = AMorPM;
+    return this.shift;
+  }
+
+  public getShiftRotation():string {
+    if(this.rotation) {
+      return this.rotation;
+    } else {
+      return "CONTN WEEK";
+    }
   }
 
   public isActive() {

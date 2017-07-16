@@ -398,6 +398,7 @@ export class DBSrvcs {
         return rdb1.put(newProfileDoc);
       }).then((res) => {
         Log.l("saveTechProfile(): Saved updated techProfile:\n", res);
+        this.ud.setTechProfile(res);
         resolve(res);
       }).catch((err) => {
         Log.l("saveTechProfile(): Error saving to sesa-employees database!");

@@ -15,6 +15,8 @@ import { WorkOrder                     } from '../domain/workorder'            ;
 import { ReportOther                   } from '../domain/reportother'          ;
 import { Employee                      } from '../domain/employee'             ;
 import { Message                       } from '../domain/message'              ;
+import { Jobsite                       } from '../domain/jobsite'              ;
+import * as HashMap from '@typed/hashmap';
 
 @Injectable()
 export class UserData {
@@ -77,6 +79,7 @@ export class UserData {
     messages      : [],
     report_types  : [],
     training_types: [],
+    site_info     : new Map(),
   };
   public static hands                 : any = {
     hours  : 0,
@@ -124,6 +127,11 @@ export class UserData {
   ) {
     window["onsiteuserdata"] = this;
     window["UserData"] = UserData;
+    let hm = ['empty', 'set', 'get', 'has', 'size', 'remove', 'entries', 'keys', 'values', 'reduce', 'map', 'forEach', 'filter', 'fromIterable', 'fromObject', 'fromArray'];
+    window['hm'] = window['hm'] || {};
+    for(let key of hm) {
+      window['hm'][key] = HashMap[key];
+    }
     UserData.data = UserData.data || {
       employee      : [],
       sites         : [],
@@ -143,6 +151,16 @@ export class UserData {
 
   public showRev() {
     return this.prefs.DEVELOPER.showDocRev;
+  }
+
+  public updateAllShiftInfo(site:Jobsite, tech:Employee) {
+    let periods = this.getPayrollPeriods();
+    for(let period of periods) {
+      let shifts = period.getPayrollShifts();
+      for(let shift of shifts) {
+        shift.updateShiftSiteInfo(site, tech);
+      }
+    }
   }
 
   public static getMessages() {
@@ -869,8 +887,9 @@ export class UserData {
     let cli = tech.client.toUpperCase();
     let loc = tech.location.toUpperCase();
     let lid = tech.locID.toUpperCase();
-    let lc2 = typeof tech.loc2nd === 'string' && tech.loc2nd !== "NA" && tech.loc2nd !== "N/A" ? tech.loc2nd.toUpperCase() : "";
+    let lc2 = typeof tech.loc2nd === 'string' ? tech.loc2nd.toUpperCase() : "NA";
     let site = null;
+    Log.l(`createPayrollPeriods(): About to test tech '${tech.getUsername()}' for ${cli}, ${loc}, ${lid}, ${lc2}...`);
     for(let js of sites) {
       let jscli1 = js.client.name.toUpperCase();
       let jscli2 = js.client.fullName.toUpperCase();
@@ -879,12 +898,19 @@ export class UserData {
       let jslid1 = js.locID.name.toUpperCase();
       let jslid2 = js.locID.fullName.toUpperCase();
       let jslc21, jslc22;
-      if(js.loc2nd) {
+      if(js.loc2nd && typeof js.loc2nd['fullName'] === 'string') {
         jslc21 = js.loc2nd.name.toUpperCase();
         jslc22 = js.loc2nd.fullName.toUpperCase();
+      } else if(js.loc2nd && typeof js.loc2nd === 'string') {
+        jslc21 = js.loc2nd.toUpperCase();
+        jslc22 = js.loc2nd.toUpperCase();
       }
       let loc2ndBool = lc2 ? (lc2 === jslc21 || lc2 === jslc22) : true;
-      if ((cli === jscli1 || cli === jscli2) && (loc === jsloc1 || loc === jsloc2) && (lid === jslid1 || lid === jslid2) && (loc === jsloc1 || loc === jsloc2) && loc2ndBool) {
+      let clientMatch = cli === jscli1 || cli === jscli2;
+      let locationMatch = loc === jsloc1 || loc === jsloc2;
+      let locIDMatch = lid === jslid1 || lid === jslid2;
+      Log.l(`createPayrollPeriods(): Booleans for site '${js.getSiteID()}' and tech ${tech.getUsername()} are: %s, %s, %s, %s`, clientMatch, locationMatch, locIDMatch, loc2ndBool);
+      if (clientMatch && locationMatch && locIDMatch && loc2ndBool) {
         site = js;
         break;
       }
@@ -900,7 +926,8 @@ export class UserData {
       }
       return UserData.payrollPeriods;
     } else {
-      Log.e("createPayrollPeriods(): Could not find tech at any jobsites:\n", tech);
+      Log.e("createPayrollPeriods(): Could not find tech at any jobsites!");
+      Log.l(tech);
       Log.e(sites);
       return [];
     }
@@ -908,6 +935,83 @@ export class UserData {
 
   getPayrollPeriods() {
     return UserData.payrollPeriods;
+  }
+
+  // public getSiteList(value:string) {
+  //   let out = new Map();
+  //   if(value === 'clients') {
+
+  //   } else if(value === 'locations') {
+
+  //   } else if(value === )
+
+  // }
+
+  // public addSiteConfig(j:any, client:any, location:any, locID:any, loc2nd?:any) {
+  //   let sitec = j || new Map();
+  public addSiteConfig(client:any, location:any, locID:any, loc2nd?:any) {
+    let sitec = this.data.site_info || new Map();
+    // let sitec = j || HashMap.empty<any,any>();
+    // let sitec = sites || new Map();
+    let cli, loc, lid, l2d;
+    // let temp = HashMap.empty<any,any>();
+    // cli = HashMap.has(client, sitec) ? HashMap.get(client, sitec) : HashMap.set(client, HashMap.empty<any,any>(), sitec);
+    // sitec = HashMap.set(client, cli, sitec);
+    // loc = HashMap.has(location, cli) ? HashMap.get(location, cli) : HashMap.set(location, HashMap.empty<any,any>(), cli);
+    // // lid = HashMap.has(locID, sitec)  ? HashMap.get(locID, loc)    : loc2nd ? HashMap.set(locID, HashMap.fromIterable(new Map([loc2nd, true])), sitec) : HashMap.set(locID, true, sitec);
+    // lid = HashMap.has(locID, sitec)  ? HashMap.get(locID, loc)    : HashMap.set(locID, HashMap.empty<any,any>(), loc);
+
+
+    if(sitec.has(client)) {
+      cli = sitec.get(client);
+    } else {
+      sitec.set(client, new Map());
+      cli = sitec.get(client);
+    }
+    if(cli.has(location)) {
+      loc = cli.get(location);
+    } else {
+      cli.set(location, new Map());
+      loc = cli.get(location);
+    }
+    if(loc.has(locID)) {
+      lid = loc.get(locID);
+    } else {
+      if(loc2nd) {
+        loc.set(locID, new Map());
+        lid = loc.get(locID);
+        if(lid.has(loc2nd)) {
+          l2d = lid.get(loc2nd);
+        } else {
+          lid.set(loc2nd, true);
+          l2d = lid.get(loc2nd);
+        }
+      } else {
+        loc.set(locID, true);
+        lid = loc.get(locID);
+      }
+    }
+    return sitec;
+    // this.data.site_info = sitec;
+    // return this.data.site_info;
+
+  }
+
+  public createSiteComponentsList() {
+    let sites = this.getData('sites');
+    // let clients = new Array<string>();
+    // this.data.site_info = HashMap.empty<string,string>();
+    this.data.site_info = new Map();
+    for(let site of sites) {
+      let client = site.client;
+      let location = site.location;
+      let locID = site.locID;
+      let loc2nd = site.loc2nd;
+      // this.data.site_info = this.addSiteConfig(client.fullName.toUpperCase(), location.fullName.toUpperCase(), locID.fullName.toUpperCase(), loc2nd);
+      // this.addSiteConfig(client, location, locID, loc2nd);
+      this.addSiteConfig(JSON.stringify(client), JSON.stringify(location), JSON.stringify(locID), JSON.stringify(loc2nd));
+    }
+    return this.data.site_info;
   }
 
   createShifts() {
