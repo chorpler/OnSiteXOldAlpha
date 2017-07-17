@@ -170,5 +170,8 @@
   "error_report_not_found": "Report was not found in list. You should not ever see this. Please send a comment from the Settings page (<span class='alert-with-icon'><span class='alert-icon'>&#xf20d;</span></span>) telling us.",
   "error_no_site_title": "Site Not Found",
   "error_no_site_message": "Work site '%s %s %s' was not found. Please send a comment to the developers telling them what happened.",
-  "off": "Off"
+  "off": "Off",
+  "alert": "Alert",
+  "unable_to_sync_message": "Unable to connect to server to sync reports. Your report has been saved to your phone. Please sync later by adding another Work Report or by using the 'Sync Data' button in Settings (<span class='alert-with-icon'><span class='alert-icon'>&#xf20d;</span></span>).",
+  "sync_data": "Sync Data"
 }

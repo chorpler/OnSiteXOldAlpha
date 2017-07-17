@@ -170,5 +170,8 @@
   "error_report_not_found": "El informe no se encontró en la lista. No deberías ver esto. Envía un comentario desde la página de configuración (<span class='alert-with-icon'><span class='alert-icon'>&#xf20d;</span></span>) que nos indica.",
   "error_no_site_title": "Sitio no Encontrado",
   "error_no_site_message": "No se encontró el sitio de trabajo '%s %s %s'. Por favor, envíe un comentario a los desarrolladores diciéndoles lo que sucedió.",
-  "off": "Descanso"
+  "off": "Descanso",
+  "alert": "Alerta",
+  "unable_to_sync_message": "No se puede conectar al servidor para sincronizar los informes. Tu informe se ha guardado en tu teléfono. Para sincronizar más tarde, agregue otro informe de trabajo o utilice el botón 'Sincronizar Datos' en Configuración (<span class='alert-with-icon'><span class='alert-icon'>&#xf20d;</span></span>).",
+  "sync_data": "Sincronizar Datos"
 }

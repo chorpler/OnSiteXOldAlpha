@@ -58,19 +58,19 @@
         <span class="fake-wrapper" *ngIf="shift.getShiftLength() !== 'off'">
           <span class="fake-wrapper" *ngIf="!shift.getShiftReportsStatus().workHours">
             <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().otherReportHours">
-              0&nbsp;/&nbsp;{{shift.getShiftLength()}} &nbsp; Hrs. &nbsp;&nbsp;
+              a 0&nbsp;/&nbsp;{{shift.getShiftLength()}} &nbsp; Hrs. &nbsp;&nbsp;
             </span>
             <span class="shift-text" *ngIf="shift.getShiftReportsStatus().otherReportHours">
-              {{shift.getShiftReportsStatus().otherReportHours}}&nbsp;/&nbsp;{{shift.getShiftLength()}} &nbsp; Hrs. &nbsp;&nbsp;
+              b {{shift.getShiftReportsStatus().otherReportHours}}&nbsp;/&nbsp;{{shift.getShiftLength()}} &nbsp; Hrs. &nbsp;&nbsp;
             </span>
           </span>
           <span class="fake-wrapper" *ngIf="shift.getShiftReportsStatus().workHours">
             <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().otherReportHours">
-              {{shift.getNormalHours()}}&nbsp;/&nbsp;{{shift.getShiftLength()}} &nbsp; Hrs. &nbsp;&nbsp;
+             c {{shift.getNormalHours()}}&nbsp;/&nbsp;{{shift.getShiftLength()}} &nbsp; Hrs. &nbsp;&nbsp;
             </span>
             <span class="shift-text" *ngIf="shift.getShiftReportsStatus().otherReportHours">
               <!-- {{shift.getShiftReportStatus().otherReportHours}}&nbsp;/&nbsp;{{shift.getShiftLength()}} &nbsp; Hrs. &nbsp;&nbsp; -->
-              {{shift.getShiftReportsStatus().code}} &nbsp;+&nbsp; {{shift.getNormalHours()}} &nbsp; Hrs &nbsp;&nbsp;
+              d {{shift.getShiftReportsStatus().code}} &nbsp;+&nbsp; {{shift.getNormalHours()}} &nbsp; Hrs &nbsp;&nbsp;
             </span>
           </span>
         </span>
