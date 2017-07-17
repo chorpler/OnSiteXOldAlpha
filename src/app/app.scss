@@ -45,6 +45,9 @@ ion-app.ios ion-content > .scroll-content {
   margin-top: unset !important;
 }
 
+
+
+
 .loading-md .loading-wrapper {
   border-radius:64px !important;
 }
@@ -186,4 +189,5 @@ ion-app.ios .waiting-clock {
 
 ion-app.ios .scroll-content {
   padding-bottom: 100px;
+  margin-top: 2px !important;
 }
