@@ -16,7 +16,7 @@ import { ReportOther                   } from '../domain/reportother'          ;
 import { Employee                      } from '../domain/employee'             ;
 import { Message                       } from '../domain/message'              ;
 import { Jobsite                       } from '../domain/jobsite'              ;
-import * as HashMap from '@typed/hashmap';
+// import * as HashMap from '@typed/hashmap';
 
 @Injectable()
 export class UserData {
@@ -127,11 +127,11 @@ export class UserData {
   ) {
     window["onsiteuserdata"] = this;
     window["UserData"] = UserData;
-    let hm = ['empty', 'set', 'get', 'has', 'size', 'remove', 'entries', 'keys', 'values', 'reduce', 'map', 'forEach', 'filter', 'fromIterable', 'fromObject', 'fromArray'];
-    window['hm'] = window['hm'] || {};
-    for(let key of hm) {
-      window['hm'][key] = HashMap[key];
-    }
+    // let hm = ['empty', 'set', 'get', 'has', 'size', 'remove', 'entries', 'keys', 'values', 'reduce', 'map', 'forEach', 'filter', 'fromIterable', 'fromObject', 'fromArray'];
+    // window['hm'] = window['hm'] || {};
+    // for(let key of hm) {
+    //   window['hm'][key] = HashMap[key];
+    // }
     UserData.data = UserData.data || {
       employee      : [],
       sites         : [],
