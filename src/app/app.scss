@@ -139,8 +139,10 @@ div.scroll-content {
   --widthA: 350px;
   width: 40vw;
   height: 40vh;
-  margin-left: auto;
-  margin-right: auto;
+  margin-left: calc(50vw - 350px/2);
+  margin-right: calc(50vw - 350px/2);
+  min-width: 350px;
+  min-height: 350px;
   min-width: var(--widthA);
   min-height: var(--widthA);
   align-items: center;
