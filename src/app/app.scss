@@ -143,8 +143,8 @@ ion-content > .scroll-content {
   --widthA: 350px;
   width: 40vw;
   height: 40vh;
-  margin-left: calc(50vw - 350px/2);
-  margin-right: calc(50vw - 350px/2);
+  margin-left: auto;
+  margin-right: auto;
   min-width: 350px;
   min-height: 350px;
   min-width: var(--widthA);
@@ -152,6 +152,7 @@ ion-content > .scroll-content {
   align-items: center;
   justify-content: space-around;
   margin-top: calc(15vh);
+
 
   clock {
     flex: 1 1 auto;
@@ -173,3 +174,7 @@ ion-content > .scroll-content {
   // zoom: calc(var(--widthA) / 700);
 }
 
+ion-app.ios .waiting-clock {
+  margin-left: calc(50vw - 350px/2);
+  margin-right: calc(50vw - 350px/2);
+}
