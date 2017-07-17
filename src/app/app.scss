@@ -16,6 +16,10 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 // ion-content div.scroll-content{
+.ionic-root-nav-element {
+
+}
+
 .toolbar-ios {
   height: 56px;
 }
@@ -28,11 +32,11 @@ ion-content.page-content {
     height: calc(100% - 56px - 56px);
   // margin-bottom: 55px;
 }
-div.fixed-content {
+ion-app .fixed-content {
   margin-top: unset !important;
   display: none;
 }
-div.scroll-content {
+ion-app.ios .scroll-content {
   margin-top: unset !important;
 }
 
