@@ -36,7 +36,7 @@ ion-app .fixed-content {
   margin-top: unset !important;
   display: none;
 }
-ion-app.ios .scroll-content {
+ion-content > .scroll-content {
   margin-top: unset !important;
 }
 
