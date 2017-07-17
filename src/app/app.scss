@@ -36,7 +36,12 @@ ion-app .fixed-content {
   margin-top: unset !important;
   display: none;
 }
-ion-content > .scroll-content {
+.scroll-content {
+  margin-top: 2px !important;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+ion-app.ios ion-content > .scroll-content {
   margin-top: unset !important;
 }
 
@@ -177,4 +182,8 @@ ion-content > .scroll-content {
 ion-app.ios .waiting-clock {
   margin-left: calc(50vw - 350px/2);
   margin-right: calc(50vw - 350px/2);
+}
+
+ion-app.ios .scroll-content {
+  padding-bottom: 100px;
 }
