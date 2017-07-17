@@ -23,6 +23,7 @@ enum Pages {
 })
 export class TabsComponent implements OnInit {
 
+  public lang:any;
   public static nav:any;
   public nav:any = TabsComponent.nav;
   public static unreadMessageCount:number = 0;
@@ -44,7 +45,7 @@ export class TabsComponent implements OnInit {
   public static tabArrayDev:any = [
     ...TabsComponent.tabArray,
     { name: 'DevPage', fullName: 'Developer Settings', icon: 'options', active: false, badgeCount: 0, get hideBadge() { return this.badgeCount <= 0 ? true : false }, set hideBadge(val: boolean) { } }
-  ]
+  ];
 
   public get tabInfo():any {return TabsComponent.tabInfo};
   public static tab:any = {
@@ -81,8 +82,34 @@ export class TabsComponent implements OnInit {
   ngOnInit() {
     window['onSiteTabs'] = this;
     this.platform.ready().then(res => {
+      let translations = [
+        'help_home',
+        'help_reports',
+        'help_report_history',
+        'help_tech_settings',
+        'help_messages',
+        'help_settings',
+      ];
+      let eng = [
+        'Home Page',
+        'Add Work Report',
+        'Work Report History',
+        'User Profile',
+        'Messages',
+        'Settings',
+      ];
+      this.lang = new Object();
+      let len = translations.length;
+      for(let i = 0; i < len; i++) {
+        let key = translations[i];
+        this.lang[key] = eng[i];
+      }
+      this.translate.get(translations).subscribe((results:any) => {
+        this.lang = results;
+      });
       if(this.ud.isAppLoaded()) {
         if (this.onSitePage === 'Login') { this.setTabDisable(true); }
+
         //  else {
           // if(this.isDeveloper()) {
           //   if(this.tabInfo[this.tabInfo.length - 1].name !== 'DevPage') {
@@ -245,14 +272,25 @@ export class TabsComponent implements OnInit {
 
   aboutPage(event:any, name:string) {
     // Log.l(`User wants info about tab '${name}'. Event:\n`, event);
+    let lang = this.lang;
     let help = {
-      "OnSiteHome"   : "Home Page",
-      "Report"       : "Work Reports",
-      "ReportHistory": "Work Report History",
-      "User"         : "User Information",
-      "Message List" : "Messages",
-      "Settings"     : "Settings",
-    }
-    this.alert.showPopover(help[name], {}, event);
+      "OnSiteHome"   : 'help_home',
+      "Report"       : 'help_reports',
+      "ReportHistory": 'help_report_history',
+      "User"         : 'help_tech_settings',
+      "Message List" : 'help_messages',
+      "Settings"     : 'help_settings',
+    };
+    // let help = {
+    //   "OnSiteHome"   : "Home Page",
+    //   "Report"       : "Work Reports",
+    //   "ReportHistory": "Work Report History",
+    //   "User"         : "User Information",
+    //   "Message List" : "Messages",
+    //   "Settings"     : "Settings",
+    // };
+
+    // this.alert.showPopover(help[name], {}, event);
+    this.alert.showToast(lang[help[name]], 2000, 'middle');
   }
 }

@@ -11,8 +11,8 @@
 </ion-header>
 
 <ion-content padding class="page-content developer-page-content">
-  <button ion-button block color="primary" (click)="updatePreferences()">Save</button>
-  <button ion-button block color="light" type="button" (click)="cancel()">Cancel</button>
+  <button ion-button block color="primary" (tap)="updatePreferences()">Save</button>
+  <button ion-button block color="light" type="button" (tap)="cancel()">Cancel</button>
   <ion-item-group>
     <ion-item-divider color="light">Developer Controls</ion-item-divider>
     <ion-item>
@@ -48,12 +48,12 @@
     </ion-item-group>
   </ion-item-group>
   <ion-item-group>
-    <button ion-button (click)="getSomeCharacters()">Unicode Characters</button>
+    <button ion-button (tap)="getSomeCharacters()">Unicode Characters</button>
     <ion-item>
       {{unicodeChars}}
     </ion-item>
   </ion-item-group>
-  <button ion-button block color="primary" (click)="updatePreferences()">Save</button>
-  <button ion-button block color="light" type="button" (click)="cancel()">Cancel</button>
+  <button ion-button block color="primary" (tap)="updatePreferences()">Save</button>
+  <button ion-button block color="light" type="button" (tap)="cancel()">Cancel</button>
 </ion-content>
 <onsite-tabs></onsite-tabs>

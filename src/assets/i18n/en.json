@@ -121,7 +121,7 @@
   "total_payroll_hours": "Total Pay Period Hours",
   "submitting_comment": "Submitting comment...",
   "could_not_submit_comment": "Could not submit comment at this time. Internet or server connection problem.",
-"submitted_comment_successfully": "Your comment has been submitted. Thank you!",
+  "submitted_comment_successfully": "Your comment has been submitted. Thank you!",
   "success": "Success",
   "could_not_read_phone_info": "Could not read phone make and model. In your comment, please tell us what kind of phone you have.",
   "comment_title": "Comments",
@@ -177,5 +177,11 @@
   "sync_data_help": "Sends any reports that were saved while the app could not contact the server.",
   "spinner_sending_reports_to_server": "Sending reports to server...",
   "manual_sync_error": "Unable to send reports to server. Please check your phone's Internet connection and try again. If you still get an error, please contact the developers.",
-  "manual_sync_success": "Successfully sent reports to server."
+  "manual_sync_success": "Successfully sent reports to server.",
+  "help_home": "Home Page",
+  "help_reports": "Add Work Report",
+  "help_report_history": "Work Report History",
+  "help_tech_settings": "User Profile",
+  "help_messages": "Messages",
+  "help_settings": "Settings"
 }

@@ -267,17 +267,20 @@ export class AlertService {
     });
   }
 
-  showToast(msg: string, ms?:number) {
-    let duration = 3000;
-    if(ms) {
-      duration = ms;
-    }
-    this.toast = this.toast.create({
+  showToast(msg: string, ms?:number, position?: string, cssClass?:string) {
+    let duration = ms ? ms : 3000;
+    let place = position ? position : 'bottom';
+    let css = cssClass ? cssClass : 'onsite-alert-toast';
+    let toast = this.toastCtrl.create({
       message: msg,
-      duration: duration
+      duration: duration,
+      position: place,
+      showCloseButton: false,
+      dismissOnPageChange: true,
+      cssClass: css
     });
-    this.toasts.push(this.toast);
-    this.toast.present();
+    // this.toasts.push(this.toast);
+    toast.present().catch(() => { });;
   }
 
   hideToast() {
@@ -285,9 +288,9 @@ export class AlertService {
     toast.dismiss().catch((reason:any) => {
       Log.l("AlertService: toast.dismiss() error:\n", reason);
       for(let i in this.toasts) {
-        this.toasts.pop().dismiss();
+        this.toasts.pop().dismiss().catch(() => { });;
       }
-    })
+    });
   }
 
 }

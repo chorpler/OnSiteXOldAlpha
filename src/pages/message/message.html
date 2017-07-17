@@ -18,7 +18,7 @@
       <ion-item class="message-body">
         <p class="message-item-body" [innerHTML]="message.getMessageBody()"></p>
       </ion-item>
-      <button ion-item color="primary" class="message-done-button"  (click)="closeMessage()">{{'message_done' | translate}}</button>
+      <button ion-item color="primary" class="message-done-button"  (tap)="closeMessage()">{{'message_done' | translate}}</button>
     </ion-list>
   </ion-card>
 </ion-content>

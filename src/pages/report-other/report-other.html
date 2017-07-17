@@ -9,7 +9,7 @@
     <!-- <ion-title>{{'report_title' | translate}}</ion-title> -->
     <ion-title>{{title}}</ion-title>
     <ion-buttons end>
-      <button ion-button icon-only (click)="deleteReportOther(report)" *ngIf="mode=='Edit'">
+      <button ion-button icon-only (tap)="deleteReportOther(report)" *ngIf="mode=='Edit'">
         <ion-icon class="work-order-delete-button" name="ios-trash-outline"></ion-icon>
       </button>
     </ion-buttons>
@@ -36,7 +36,7 @@
             <ion-option *ngFor='let type of selReportType' [value]='type'>{{type}}</ion-option>
           </ion-select>
         </ion-item>
-        <ion-item (click)="showFancySelect()" class="item item-button ion-item-button-like">
+        <ion-item (tap)="showFancySelect()" class="item item-button ion-item-button-like">
           <ion-label>{{'shift_date' | translate}}</ion-label>
           <ion-input #shiftDateResults [disabled]="shiftDateInputDisabled" class="shift-date-select-results" [value]="selectedShift.toString(translate)"></ion-input>
           <ion-icon item-right class="shift-date-select-icon" name="md-arrow-dropdown"></ion-icon>
@@ -78,7 +78,7 @@
       </ion-list>
       <button type="submit" ion-button block color="favorite" *ngIf="mode==='Add'">{{'submit_report' | translate}}</button>
       <button type="submit" ion-button block color="favorite" *ngIf="mode==='Edit'">{{'save_report' | translate}}</button>
-      <button type="button" ion-button block color="light" (click)="cancel()">{{'cancel' | translate}}</button>
+      <button type="button" ion-button block color="light" (tap)="cancel()">{{'cancel' | translate}}</button>
     </form>
   </div>
 </ion-content>

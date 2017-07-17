@@ -177,5 +177,11 @@
   "sync_data_help": "Envía todos los reportes que se guardaron mientras la aplicación no pudo ponerse en contacto con el servidor.",
   "spinner_sending_reports_to_server": "Enviar reportes al servidor...",
   "manual_sync_error": "No se pueden enviar reportes al servidor. Comprueba la conexión a Internet de tu teléfono e inténtalo de nuevo. Si sigue recibiendo un error, póngase en contacto con los desarrolladores.",
-  "manual_sync_success": "Envió correctamente los reportes al servidor."
+  "manual_sync_success": "Envió correctamente los reportes al servidor.",
+  "help_home": "Página Principal",
+  "help_reports": "Añadir Reportes de Trabajo",
+  "help_report_history": "Historial de Reportes de Trabajo",
+  "help_tech_settings": "Informacion del Usuario",
+  "help_messages": "Mensajes",
+  "help_settings": "Ajustes"
 }
