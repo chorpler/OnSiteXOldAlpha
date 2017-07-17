@@ -2,6 +2,7 @@ import { Injectable  } from '@angular/core'              ;
 import { Platform    } from 'ionic-angular'              ;
 import { NativeAudio } from '@ionic-native/native-audio' ;
 import { Preferences } from './preferences'              ;
+import { Log         } from '../config/config.functions' ;
 
 @Injectable()
 export class SmartAudio {
@@ -50,7 +51,10 @@ export class SmartAudio {
       }
       if (!found) {
         this.sounds.push(audio);
-        this.nativeAudio.preloadSimple(key, asset);
+        this.nativeAudio.preloadSimple(key, asset).catch(err => {
+          Log.l(`preload(): Error preloading asset ${asset} with key ${key}.`);
+          Log.e(err);
+        });
       }
     }
   }
