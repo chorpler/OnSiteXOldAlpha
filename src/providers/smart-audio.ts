@@ -40,7 +40,7 @@ export class SmartAudio {
     } else {
       let audio = {
         key: key,
-        asset: asset,
+        asset: key,
         type: 'native'
       };
       let found = false;
