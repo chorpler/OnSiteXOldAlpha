@@ -4,6 +4,7 @@ import { DBSrvcs                                                             } f
 import { Login                                                               } from '../login/login'                  ;
 import { Log, moment, Moment                                                 } from '../../config/config.functions'   ;
 import { AuthSrvcs                                                           } from '../../providers/auth-srvcs'      ;
+import { SrvrSrvcs                                                           } from '../../providers/srvr-srvcs'      ;
 import { AlertService                                                        } from '../../providers/alerts'          ;
 import { TabsComponent                                                       } from '../../components/tabs/tabs'      ;
 import { TranslateService                                                    } from '@ngx-translate/core'             ;
@@ -37,7 +38,7 @@ export class Settings implements OnInit {
   public prefs           : any        = Settings.PREFS    ;
   public keysetup        : any                            ;
 
-  constructor( public navCtrl: NavController, public platform: Platform,  public auth: AuthSrvcs, public alert: AlertService, public tabs: TabsComponent, public translate: TranslateService, public version:AppVersion, public storage:StorageService, public modalCtrl:ModalController, public ud:UserData, public zone:NgZone) {
+  constructor( public navCtrl: NavController, public platform: Platform,  public auth: AuthSrvcs, public server:SrvrSrvcs, public alert: AlertService, public tabs: TabsComponent, public translate: TranslateService, public version:AppVersion, public storage:StorageService, public modalCtrl:ModalController, public ud:UserData, public zone:NgZone) {
     window["onsitesettings"] = this;
     this.keysetup = { visible: false, width: '100%', swipeToHide: true };
   }
@@ -62,7 +63,14 @@ export class Settings implements OnInit {
       'confirm_app_restart_title',
       'confirm_app_restart_text',
       'show_clock',
-      'show_clock_help'
+      'show_clock_help',
+      'sync_data',
+      'sync_data_help',
+      'spinner_sending_reports_to_server',
+      'manual_sync_error',
+      'manual_sync_success',
+      'error',
+      'success',
     ]
     this.lang = this.translate.instant(translations);
     let en = { value: 'en', display: 'English' };
@@ -217,6 +225,26 @@ export class Settings implements OnInit {
       Log.l("confirmAppReload(): Error confirming reload!");
       Log.e(err);
     });
+  }
+
+  public syncData() {
+    let lang = this.lang;
+    Log.l("syncData(): Started...");
+    this.alert.showSpinner(lang['spinner_sending_reports_to_server']);
+    this.server.syncToServer(this.prefs.DB.reports, this.prefs.DB.reports).then(res => {
+      Log.l("syncData(): Successfully synchronized to server.");
+      this.alert.hideSpinner();
+      this.alert.showAlert(lang['success'], lang['manual_sync_success']);
+    }).catch(err => {
+      Log.l("syncData(): Error with server sync.");
+      Log.e(err);
+      this.alert.showAlert(lang['error'], lang['manual_sync_error']);
+    });
+  }
+
+  public syncHelp() {
+    let lang = this.lang;
+    this.alert.showAlert(lang['sync_data'], lang['sync_data_help']);
   }
 
 }

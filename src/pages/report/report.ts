@@ -169,6 +169,7 @@ export class ReportPage implements OnInit {
     let mode = this.mode.toLowerCase();
     let translations = [
       mode,
+      'alert',
       'error',
       'report',
       'confirm',
@@ -183,6 +184,7 @@ export class ReportPage implements OnInit {
       'error_saving_report_message',
       'standby_hb_duncan_wrong_location',
       'attempt_to_change_existing_report_type',
+      'unable_to_sync_message',
       'duplicate_standby_report',
       'standby_report_xor_work_report_existing_standby',
       'standby_report_xor_work_report_existing_work_report',
@@ -1025,7 +1027,7 @@ export class ReportPage implements OnInit {
         Log.l("processWO(): Error saving work order to local database.");
         Log.e(err);
         this.alert.hideSpinner();
-        this.alert.showAlert(lang['error'], lang['error_saving_report_message']);
+        this.alert.showAlert(lang['alert'], lang['unable_to_sync_message']);
       });
     }
   }
