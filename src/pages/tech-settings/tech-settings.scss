@@ -3,7 +3,10 @@ page-tech-settings {
     text-align: center;
   }
   form > ion-list > ion-item > div.item-inner > div > ion-select,
-  ion-select.select.user-settings-select {
+  form ion-select.select.user-settings-select,
+  .tech-settings-form > ion-list > ion-item > div.item-inner > div > ion-select,
+  .tech-settings-form ion-select.select.user-settings-select,
+   {
     flex: 0 0 100%;
     width: 100%;
     min-width: 100%;
@@ -14,17 +17,33 @@ page-tech-settings {
     padding-top: 8px;
     padding-bottom: 8px;
   }
-  form > ion-list > ion-item > div.item-inner > div > ion-select > div.select-icon {
+  // .tech-settings-form > ion-list > ion-item > div.item-inner > div > ion-select,
+  // .tech-settings-form ion-select.select.user-settings-select {
+  //   flex: 0 0 100%;
+  //   width: calc(100% - 150px);
+  //   min-width: calc(100% - 200px);
+  //   // max-width: 80vw;
+  //   min-height: 35px;
+  //   align-self: center;
+  //   padding-left: 8px;
+  //   padding-top: 8px;
+  //   padding-bottom: 8px;
+  // }
+  form > ion-list > ion-item > div.item-inner > div > ion-select > div.select-icon,
+  .tech-settings-form > ion-list > ion-item > div.item-inner > div > ion-select > div.select-icon,
+  {
     width: 20px !important;
   }
-  form > ion-list > ion-item {
+  form > ion-list > ion-item,
+  .tech-settings-form > ion-list > ion-item {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
     justify-content: flex-start;
     align-items: flex-start;
   }
-  form > ion-list > ion-item > div.item-inner > div > ion-select > div.select-text {
+  form > ion-list > ion-item > div.item-inner > div > ion-select > div.select-text,
+  .tech-settings-form > ion-list > ion-item > div.item-inner > div > ion-select > div.select-text {
     // flex: 0 0 80%;
     // min-width: 80%;
     color: #488aff;
@@ -41,7 +60,8 @@ page-tech-settings {
   }
   ion-input {
   }
-  ion-label.manual-float-label{
+  form ion-label.manual-float-label,
+  .tech-settings-form ion-label.manual-float-label{
     // transform: translate3d(0, 0, 0) scale(0.8);
     // transform-origin: left top;
     flex: 0 0 100%;
@@ -52,6 +72,18 @@ page-tech-settings {
     margin-bottom: 2px;
     min-height: 20px;
   }
+  // div ion-label.manual-float-label{
+  //   // transform: translate3d(0, 0, 0) scale(0.8);
+  //   // transform-origin: left top;
+  //   flex: 0 0 100%;
+  //   transform: translate3d(0, 0, 0) scale(0.8);
+  //   margin-left: 0;
+  //   margin-right: auto;
+  //   margin-top: 2px;
+  //   margin-bottom: 2px;
+  //   min-height: 20px;
+  //   max-width: 125px;
+  // }
   div.scroll-content {
     // height: 80%;
     // margin-top: 50px;

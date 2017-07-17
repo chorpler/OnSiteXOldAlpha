@@ -796,7 +796,13 @@ export class ReportPage implements OnInit {
         total = shift.getNormalHours();
       }
       // let target = Number(this.techProfile.shiftLength);
-      let target = shift.getShiftLength();
+      let target;
+      let tmp1 = shift.getShiftLength();
+      if(tmp1 === 'off') {
+        return 'green';
+      } else {
+        target = tmp1;
+      }
       // Log.l(`getShiftHoursStatus(): total = ${total}, target = ${target}.`);
       if(isNaN(target)) {
         if(total) {

@@ -27,25 +27,88 @@
       <ion-item class="home-card-header-payroll-period-label-item">
         <ion-label class="home-card-header-payroll-period-label-label">{{'payroll_period' | translate}}</ion-label>
       </ion-item>
-        <ion-list radio-group [(ngModel)]="period">
-          <ion-item *ngFor="let payperiod of payrollPeriods">
-            <ion-label>{{payperiod.getPayrollPeriodDescription()}}</ion-label>
-            <ion-radio [value]="payperiod" (ionSelect)="changedPayrollPeriod(payperiod)"></ion-radio>
-          </ion-item>
-        </ion-list>
+      <ion-list radio-group [(ngModel)]="period">
+        <ion-item *ngFor="let payperiod of payrollPeriods">
+          <ion-label>{{payperiod.getPayrollPeriodDescription()}}</ion-label>
+          <ion-radio [value]="payperiod" (ionSelect)="changedPayrollPeriod(payperiod)"></ion-radio>
+        </ion-item>
+      </ion-list>
     </ion-card-header>
-    <ion-list no-lines no-border class="home-card-body-list">
-      <ion-item class="ion-item-button-like"  *ngFor="let shift of period.shifts; let i=index" (tap)="showShiftReports(shift)">
+    <ion-list no-lines no-border class="home-card-body-list" *ngIf="period">
+      <ion-item class="ion-item-button-like" *ngFor="let shift of period.shifts; let i=index" (tap)="showShiftReports(shift)">
         <ion-icon class="shft-num-icon">{{numChars[shift.shift_number]}}</ion-icon>
-        <span class="shift-text" *ngIf="shift.getShiftReportsStatus().status && !shift.getShiftReportsStatus().workHours">
-          {{shift.getShiftReportsStatus().code}}&nbsp;/&nbsp;{{shift.getShiftReportsStatus().code}} &nbsp;&nbsp;
+        <span class="fake-wrapper" *ngIf="shift.getShiftLength() === 'off'">
+          <span class="fake-wrapper" *ngIf="!shift.getShiftReportsStatus().workHours">
+            <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().otherReportHours">
+              {{'off' | translate}} &nbsp;&nbsp;
+            </span>
+            <span class="shift-text" *ngIf="shift.getShiftReportsStatus().otherReportHours">
+              {{shift.getShiftReportsStatus().code}}&nbsp;/&nbsp;{{shift.getShiftReportsStatus().code}} &nbsp;&nbsp;
+            </span>
+          </span>
+          <span class="fake-wrapper" *ngIf="shift.getShiftReportsStatus().workHours">
+            <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().otherReportHours">
+              {{shift.getNormalHours()}}&nbsp;/&nbsp;{{'off' | translate}} &nbsp; Hrs. &nbsp;&nbsp;
+            </span>
+            <span class="shift-text" *ngIf="shift.getShiftReportsStatus().otherReportHours">
+              {{shift.getShiftReportsStatus().code}} &nbsp;+&nbsp; {{shift.getNormalHours()}} &nbsp;&nbsp;
+            </span>
+          </span>
         </span>
-        <span class="shift-text" *ngIf="shift.getShiftReportsStatus().status && shift.getShiftReportsStatus().workHours">
-          {{shift.getShiftReportsStatus().code}}&nbsp;+&nbsp;{{shift.getShiftReportsStatus().workHours}} &nbsp;Hrs. &nbsp;&nbsp;
+        <span class="fake-wrapper" *ngIf="shift.getShiftLength() !== 'off'">
+          <span class="fake-wrapper" *ngIf="!shift.getShiftReportsStatus().workHours">
+            <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().otherReportHours">
+              0&nbsp;/&nbsp;{{shift.getShiftLength()}} &nbsp; Hrs. &nbsp;&nbsp;
+            </span>
+            <span class="shift-text" *ngIf="shift.getShiftReportsStatus().otherReportHours">
+              {{shift.getShiftReportsStatus().otherReportHours}}&nbsp;/&nbsp;{{shift.getShiftLength()}} &nbsp; Hrs. &nbsp;&nbsp;
+            </span>
+          </span>
+          <span class="fake-wrapper" *ngIf="shift.getShiftReportsStatus().workHours">
+            <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().otherReportHours">
+              {{shift.getNormalHours()}}&nbsp;/&nbsp;{{shift.getShiftLength()}} &nbsp; Hrs. &nbsp;&nbsp;
+            </span>
+            <span class="shift-text" *ngIf="shift.getShiftReportsStatus().otherReportHours">
+              <!-- {{shift.getShiftReportStatus().otherReportHours}}&nbsp;/&nbsp;{{shift.getShiftLength()}} &nbsp; Hrs. &nbsp;&nbsp; -->
+              {{shift.getShiftReportsStatus().code}} &nbsp;+&nbsp; {{shift.getNormalHours()}} &nbsp; Hrs &nbsp;&nbsp;
+            </span>
+          </span>
         </span>
-        <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().status">
-          {{shift.getNormalHours()}}&nbsp;/&nbsp;{{shift.getShiftLength()}} &nbsp;Hrs. &nbsp;&nbsp;
+          <!-- <span class="shift-text" *ngIf="shift.getShiftReportsStatus().otheReportHours">
+              {{shift.getShiftReportsStatus().code}}&nbsp;/&nbsp;{{shift.getShiftReportsStatus().code}} &nbsp;&nbsp;
+            </span>
+          </span>
+          <span class="fake-wrapper" *ngIf="shift.getShiftReportsStatus().workHours">
+            <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().otheReportHours">
+              {{'off' | translate}} &nbsp;&nbsp;
+            </span>
+          <span class="shift-text" *ngIf="shift.getShiftReportsStatus().otheReportHours">
+              {{shift.getShiftReportsStatus().code}}&nbsp;/&nbsp;{{shift.getShiftReportsStatus().code}} &nbsp;&nbsp;
+            </span>
+          </span>
         </span>
+          <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().workHours && shift.getShiftReport">
+              {{shift.getShiftReportsStatus().code}}&nbsp;/&nbsp;{{shift.getShiftReportsStatus().code}} &nbsp;&nbsp;
+            </span>
+            <span class="shift-text" *ngIf="shift.getShiftReportsStatus().status && shift.getShiftReportsStatus().workHours">
+              {{shift.getShiftReportsStatus().code}}&nbsp;+&nbsp;{{shift.getShiftReportsStatus().workHours}} &nbsp;Hrs. &nbsp;&nbsp;
+            </span>
+            <span class="shift-text" *ngIf="shift.getShiftReportsStatus().status &&">
+              {{shift.getNormalHours()}}&nbsp;/&nbsp;{{'off' | translate}} &nbsp;Hrs. &nbsp;&nbsp;
+            </span>
+          </span>
+        </span>
+        <span class="fake-wrapper" *ngIf="shift.getShiftLength() !== 'off'">
+          <span class="shift-text" *ngIf="shift.getShiftReportsStatus().status && !shift.getShiftReportsStatus().workHours">
+            {{shift.getShiftReportsStatus().code}}&nbsp;/&nbsp;{{shift.getShiftReportsStatus().code}} &nbsp;&nbsp;
+          </span>
+          <span class="shift-text" *ngIf="shift.getShiftReportsStatus().status && shift.getShiftReportsStatus().workHours">
+            {{shift.getShiftReportsStatus().code}}&nbsp;+&nbsp;{{shift.getShiftReportsStatus().workHours}} &nbsp;Hrs. &nbsp;&nbsp;
+          </span>
+          <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().status">
+            {{shift.getNormalHours()}}&nbsp;/&nbsp;{{shift.getShiftLength()}} &nbsp;Hrs. &nbsp;&nbsp;
+          </span>
+        </span> -->
         <span class="normal-txt">{{shift.getStartTime().format("ddd, MMM D")}}</span>
         <ion-icon item-end class="chk-box-icon" [ngClass]="shift.getShiftStatus()" [innerHTML]="getCheckboxSVG(shift) | safe: 'html'" (tap)="possibleSound(shift)"></ion-icon>
       </ion-item>

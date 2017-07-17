@@ -386,7 +386,7 @@ export class DBSrvcs {
         Log.l("saveTechProfile(): now attempting save...");
         return this.addLocalDoc(this.prefs.DB.reports, newProfileDoc);
       }).then((res) => {
-        rdb1 = this.server.addRDB('sesa-employees');
+        rdb1 = this.server.addRDB(this.prefs.DB.employees);
         let name = this.ud.getUsername();
         uid = `org.couchdb.user:${name}`;
         Log.l(`saveTechProfile(): Now fetching remote copy with id '${uid}'...`);
@@ -398,7 +398,7 @@ export class DBSrvcs {
         return rdb1.put(newProfileDoc);
       }).then((res) => {
         Log.l("saveTechProfile(): Saved updated techProfile:\n", res);
-        this.ud.setTechProfile(res);
+        this.ud.setTechProfile(doc);
         resolve(res);
       }).catch((err) => {
         Log.l("saveTechProfile(): Error saving to sesa-employees database!");

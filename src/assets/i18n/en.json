@@ -167,5 +167,8 @@
   "show_clock": "Show Pocketwatch",
   "show_clock_help": "Shows the animated clock, in case people want to see it. Tap the screen again to bring back the app.",
   "error_blank_item": "Form item '%s' is empty.",
-  "error_report_not_found": "Report was not found in list. You should not ever see this. Please send a comment from the Settings page (<span class='alert-with-icon'><span class='alert-icon'>&#xf20d;</span></span>) telling us."
+  "error_report_not_found": "Report was not found in list. You should not ever see this. Please send a comment from the Settings page (<span class='alert-with-icon'><span class='alert-icon'>&#xf20d;</span></span>) telling us.",
+  "error_no_site_title": "Site Not Found",
+  "error_no_site_message": "Work site '%s %s %s' was not found. Please send a comment to the developers telling them what happened.",
+  "off": "Off"
 }

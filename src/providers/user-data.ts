@@ -777,9 +777,10 @@ export class UserData {
         }
       }
     }
-    if (exists && rightShift) {
-      Log.w(`addNewOtherReport(): Shift #${rightShift.getShiftID()} already has a copy of ReportOther '${id}'.`);
-    } else if (rightShift) {
+    // if (exists && rightShift) {
+    //   // Log.w(`addNewOtherReport(): Shift #${rightShift.getShiftID()} already has a copy of ReportOther '${id}'.`);
+    // } else
+    if (rightShift) {
       rightShift.addOtherReport(newOther);
     } else {
       Log.w(`addNewOtherReport(): Could not find correct shift for ReportOther '${id}', date '${date.format("YYYY-MM-DD")}'.`);
@@ -887,9 +888,9 @@ export class UserData {
     let cli = tech.client.toUpperCase();
     let loc = tech.location.toUpperCase();
     let lid = tech.locID.toUpperCase();
-    let lc2 = typeof tech.loc2nd === 'string' ? tech.loc2nd.toUpperCase() : "NA";
+    // let lc2 = typeof tech.loc2nd === 'string' ? tech.loc2nd.toUpperCase() : "NA";
     let site = null;
-    Log.l(`createPayrollPeriods(): About to test tech '${tech.getUsername()}' for ${cli}, ${loc}, ${lid}, ${lc2}...`);
+    Log.l(`createPayrollPeriods(): About to test tech '${tech.getUsername()}' for ${cli}, ${loc}, ${lid}...`);
     for(let js of sites) {
       let jscli1 = js.client.name.toUpperCase();
       let jscli2 = js.client.fullName.toUpperCase();
@@ -897,20 +898,20 @@ export class UserData {
       let jsloc2 = js.location.fullName.toUpperCase();
       let jslid1 = js.locID.name.toUpperCase();
       let jslid2 = js.locID.fullName.toUpperCase();
-      let jslc21, jslc22;
-      if(js.loc2nd && typeof js.loc2nd['fullName'] === 'string') {
-        jslc21 = js.loc2nd.name.toUpperCase();
-        jslc22 = js.loc2nd.fullName.toUpperCase();
-      } else if(js.loc2nd && typeof js.loc2nd === 'string') {
-        jslc21 = js.loc2nd.toUpperCase();
-        jslc22 = js.loc2nd.toUpperCase();
-      }
-      let loc2ndBool = lc2 ? (lc2 === jslc21 || lc2 === jslc22) : true;
+      // let jslc21, jslc22;
+      // if(js.loc2nd && typeof js.loc2nd['fullName'] === 'string') {
+      //   jslc21 = js.loc2nd.name.toUpperCase();
+      //   jslc22 = js.loc2nd.fullName.toUpperCase();
+      // } else if(js.loc2nd && typeof js.loc2nd === 'string') {
+      //   jslc21 = js.loc2nd.toUpperCase();
+      //   jslc22 = js.loc2nd.toUpperCase();
+      // }
+      // let loc2ndBool = lc2 ? (lc2 === jslc21 || lc2 === jslc22) : true;
       let clientMatch = cli === jscli1 || cli === jscli2;
       let locationMatch = loc === jsloc1 || loc === jsloc2;
       let locIDMatch = lid === jslid1 || lid === jslid2;
-      Log.l(`createPayrollPeriods(): Booleans for site '${js.getSiteID()}' and tech ${tech.getUsername()} are: %s, %s, %s, %s`, clientMatch, locationMatch, locIDMatch, loc2ndBool);
-      if (clientMatch && locationMatch && locIDMatch && loc2ndBool) {
+      Log.l(`createPayrollPeriods(): Booleans for site '${js.getSiteID()}' and tech ${tech.getUsername()} are: %s, %s, %s`, clientMatch, locationMatch, locIDMatch);
+      if (clientMatch && locationMatch && locIDMatch) {
         site = js;
         break;
       }

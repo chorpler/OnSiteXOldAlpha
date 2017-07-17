@@ -291,6 +291,10 @@ export class Jobsite {
     let dayIndex = day.isoWeekday();
     let hoursIndex = (dayIndex + 4) % 7;
     let shiftLength = list[hoursIndex];
-    return shiftLength;
+    let output = shiftLength;
+    if(shiftLength === 0) {
+      output = "off";
+    }
+    return output;
   }
 }

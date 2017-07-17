@@ -32,6 +32,7 @@ export class Shift {
   public shift_reports       : Array<WorkOrder>   = []       ;
   public other_reports       : Array<ReportOther> = []       ;
   public site                : Jobsite                       ;
+  public tech                : Employee                      ;
 
   constructor(site_name?, shift_week?, shift_time?, start_time?, shift_length?) {
     if(arguments.length == 1 && typeof arguments[0] == 'object') {
@@ -51,6 +52,7 @@ export class Shift {
       this.shift_reports  = this.shift_reports || [] ;
       this.other_reports  = this.other_reports || [] ;
       this.site           = null                     ;
+      this.tech           = null                     ;
       this.updateShiftNumber();
       this.colors = {'red': false, 'green': false, 'blue': false};
       this.XL = { 'shift_time': null, 'shift_week': null, 'current_payroll_week': null};
@@ -101,6 +103,15 @@ export class Shift {
       this.start_time = start;
     }
     return this.start_time;
+  }
+
+  public setTech(tech:Employee) {
+    this.tech = tech;
+    return this.tech;
+  }
+
+  public getTech() {
+    return this.tech;
   }
 
   public setJobsite(site:Jobsite) {
@@ -277,14 +288,18 @@ export class Shift {
     let retVal = this.shift_length;
     let regHours = this.getNormalHours();
     let status = this.getShiftReportsStatus();
-    if(newHours) {
-      if(String(retVal) === 'S' || status.status) {
-        return newHours;
-      } else {
-        return regHours;
-      }
+    if(retVal === 0) {
+      return 'off';
     } else {
-      return retVal;
+      if(newHours) {
+        if(String(retVal) === 'S' || status.status) {
+          return newHours;
+        } else {
+          return regHours;
+        }
+      } else {
+        return retVal;
+      }
     }
 
     // if(status.status && regHours) {
@@ -303,8 +318,8 @@ export class Shift {
     let shiftTime = tech.getShiftType();
     let rotation  = tech.getShiftRotation();
     let date = moment(this.start_time).startOf('day');
-    let shiftStart = site.getShiftLengthForDate(rotation, shiftTime, date);
-    this.setShiftLength(shiftStart);
+    let shiftLength = site.getShiftLengthForDate(rotation, shiftTime, date);
+    this.setShiftLength(shiftLength);
     let startHours = site.getShiftStartTime(shiftTime);
     let hours = moment.duration(startHours, 'hours');
     let startTime = moment(date).add(hours.hours(), 'hours').add(hours.minutes(), 'minutes');
@@ -741,7 +756,9 @@ export class Shift {
     let status = this.getShiftReportsStatus();
 
     let retVal;
-    if(status.status && !status.workHours) {
+    if(total === 'off') {
+      retVal = "hoursComplete";
+    } else if(status.status && !status.workHours) {
       retVal = "hoursComplete";
     } else if(status.status && status.workHours) {
       retVal = "hoursComplete";
