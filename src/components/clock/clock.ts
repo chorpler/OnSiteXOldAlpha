@@ -23,6 +23,7 @@ export class ClockComponent {
   @Input('start') start: number;
   public now  :Moment = moment()                        ;
   public hands:any    = UserData.getClockHands(this.now);
+
   constructor() {
     Log.l('Hello ClockComponent Component');
     // Log.l("ClockComponent: hands is: ", this.hands);
@@ -31,6 +32,20 @@ export class ClockComponent {
   public rotate(deg:number) {
     let res = `rotate(${deg}deg)`;
     return res;
+  }
+
+  rotateLoop() {
+    let timoutSececonds: number;
+    let i:number;
+    for (i=1; i = 0; i--) {
+      if (i === 1) {
+        // rotate all hands to proper degrees and start animation
+        setTimeout(timoutSececonds);
+      }
+      if (i === 0 ) {
+        // run animation...
+      }
+    }
   }
 
 }
