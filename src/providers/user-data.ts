@@ -86,6 +86,10 @@ export class UserData {
     minutes: 0,
     seconds: 0,
   };
+  // public get clockZoom():number { Log.l("clockZoom called"); if(this.platform && this.platform.width() && this.platform.width() < 350) { return this.platform.width()/350; } else { return 1.0};};
+  // public set clockZoom(value:number) {};
+  // public get clockZoom():number { return UserData.clockZoom;};
+  // public set clockZoom(value:number) { UserData.clockZoom = value;};
   public get prefs():any {return UserData.PREFS;};
   public get phonedata():any {return UserData.phonedata;}                       ;
   public get appdata():any {return UserData.appdata;}                         ;
