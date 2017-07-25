@@ -78,10 +78,42 @@ page-report-history {
     align-items: center;
     cursor: pointer;
   }
+  .report-history-group-date {
+    // max-height: 50px;
+  }
+  .report-history-divider-date {
+    // height: 75px;
+    max-height: 50px;
+  }
   .ionic-button-icon-outline {
-      background-color: transparent !important;
-      background: none !important;
-      box-shadow: none;
+    background-color: transparent !important;
+    background: none !important;
+    box-shadow: none;
+    height: 75px !important;
+    // max-height: 75px;
+    .button-inner {
+      padding-left: 15px;
+      padding-right: 15px;
+      &:hover {
+        background-color: rgba(0, 0, 128, 0.3);
+      }
+      &:active {
+        background-color: rgba(0, 0, 255, 0.5);
+        * {
+          color: white !important;
+        }
+      }
+    }
+    * {
+      cursor: pointer;
+    }
+  }
+  .ionic-icon-outline {
+    cursor: pointer;
+    font-size: 36px;
+    &:active {
+      color: white !important;
+    }
   }
   ion-icon.shft-num-icon {
     font-size: 25px;

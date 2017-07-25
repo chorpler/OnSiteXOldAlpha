@@ -365,8 +365,6 @@ export class HomePage {
         tech.readFromDoc(profile);
         this.tech              = tech;
         let now                = moment();
-        // let payrollPeriod      = this.ud.getPayrollPeriodForDate(now);
-        // this.payrollPeriods    = this.ud.createPayrollPeriods(tech, this.payrollPeriodCount);
         this.payrollPeriods    = this.ud.getPayrollPeriods();
         Log.l("fetchTechWorkorders(): Payroll periods created as:\n", this.payrollPeriods);
         for(let period of this.payrollPeriods) {

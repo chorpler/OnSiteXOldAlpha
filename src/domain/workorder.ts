@@ -219,7 +219,7 @@ export class WorkOrder {
   public setStartTime(time:any) {
     if (isMoment(time) || moment.isDate(time)) {
       this.time_start = moment(time);
-      this.report_date = moment(time).format("YYYY-MM-DD");
+      // this.report_date = moment(time).format("YYYY-MM-DD");
       this.checkTimeCalculations(0);
     } else {
       Log.l("WorkOrder.setStartTime(): Needs a date/moment, was given this:\n", time);

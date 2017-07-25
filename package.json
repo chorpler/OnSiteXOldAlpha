@@ -171,6 +171,7 @@
         "object-keys": "^1.0.11",
         "phonegap-plugin-push": "^2.0.0-rc5",
         "pouchdb": "^6.2.0",
+        "pouchdb-adapter-cordova-sqlite": "^2.0.2",
         "pouchdb-all-dbs": "^1.0.2",
         "pouchdb-authentication": "^0.5.5",
         "pouchdb-collections": "^6.2.0",

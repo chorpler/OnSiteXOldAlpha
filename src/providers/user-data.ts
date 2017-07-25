@@ -1019,31 +1019,31 @@ export class UserData {
     return this.data.site_info;
   }
 
-  createShifts() {
-    let now = moment();
-    UserData.shifts = UserData.shifts;
-    let tp = UserData.techProfile;
-    if(tp !== undefined && tp !== null) {
-      for (let i = 0; i < STRINGS.NUMBER_OF_SHIFTS; i++) {
-        let tmpDay = moment(now).subtract(i, 'days');
-        let shift_day = tmpDay.startOf('day');
-        let tmpStart = UserData.techProfile.shiftStartTime;
-        let shift_start_time = moment(shift_day).add(tmpStart, 'hours');
-        // let shiftStartDay = moment(now).subtract(i, 'days');
-        let client = UserData.techProfile.client || "SITENAME";
-        let type = UserData.techProfile.shift;
-        let length = UserData.techProfile.shiftLength;
-        let thisShift = new Shift(client, null, type, shift_start_time, length);
-        thisShift.updateShiftWeek();
-        thisShift.updateShiftNumber();
-        thisShift.getExcelDates();
-        UserData.shifts.push(thisShift);
-        Log.l(`Now adding day ${i}: ${moment(shift_day).format()}`);
-      }
-    } else {
-      Log.w("createShifts(): Failed, techProfile does not exist.")
-    }
-  }
+  // createShifts() {
+  //   let now = moment();
+  //   UserData.shifts = UserData.shifts;
+  //   let tp = UserData.techProfile;
+  //   if(tp !== undefined && tp !== null) {
+  //     for (let i = 0; i < STRINGS.NUMBER_OF_SHIFTS; i++) {
+  //       let tmpDay = moment(now).subtract(i, 'days');
+  //       let shift_day = tmpDay.startOf('day');
+  //       let tmpStart = UserData.techProfile.shiftStartTime;
+  //       let shift_start_time = moment(shift_day).add(tmpStart, 'hours');
+  //       // let shiftStartDay = moment(now).subtract(i, 'days');
+  //       let client = UserData.techProfile.client || "SITENAME";
+  //       let type = UserData.techProfile.shift;
+  //       let length = UserData.techProfile.shiftLength;
+  //       let thisShift = new Shift(client, null, type, shift_start_time, length);
+  //       thisShift.updateShiftWeek();
+  //       thisShift.updateShiftNumber();
+  //       thisShift.getExcelDates();
+  //       UserData.shifts.push(thisShift);
+  //       Log.l(`Now adding day ${i}: ${moment(shift_day).format()}`);
+  //     }
+  //   } else {
+  //     Log.w("createShifts(): Failed, techProfile does not exist.")
+  //   }
+  // }
 
   getPeriodShifts():Array<Shift> {
     return UserData.shifts;
@@ -1220,7 +1220,7 @@ export class UserData {
     }, 1000);
   }
 
-  updatePerfectlyNormalEvent(event?:any) {
+  public updatePerfectlyNormalEvent(event?:any) {
     Log.l("Now updating perfectly normal event, with devtix at %d.", UserData.appdata.devtix);
     if(UserData.appdata.devtix >= 3) {
       UserData.appdata.devtix = 0;
@@ -1235,11 +1235,6 @@ export class UserData {
   }
 
   public checkPhoneInfo() {
-    // let profile = this.getTechProfile();
-    // let tech = new Employee();
-    // tech.readFromDoc(profile);
-    // this.user = tech;
-    // let techname = tech.getFullNameNormal();
     return new Promise((resolve,reject) => {
       if(this.platform.is('cordova')) {
         this.readPhoneInfo().then(res => {

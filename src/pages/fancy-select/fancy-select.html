@@ -20,10 +20,11 @@
       <button ion-item class="fancy-select-item" (tap)="selectOption(shift)" *ngFor="let shift of period.shifts; let i=index">
       <div class="one-ion-option" [ngClass]="shift.getShiftColor()">
         <div class="shift-svg-number">{{circled_numbers[shift.shift_number]}}</div>
-        <div class="shift-text">{{shift.start_time.format("ddd DD")}} ({{'payroll_week' | translate}} {{shift.shift_week.format("MMM DD")}})</div>
+        <!-- <div class="shift-text">{{shift.start_time.format("ddd DD")}} ({{'payroll_week' | translate}} {{shift.shift_week.format("MMM DD")}})</div> -->
+        <div class="shift-text">{{shift.start_time.format("ddd DD")}}</div>
       </div>
     </button>
     </ion-list>
-  <button ion-button block color="light" (tap)="cancel()">{{'cancel' | translate}}</button>
+    <button ion-button block color="light" (tap)="cancel()">{{'cancel' | translate}}</button>
   </div>
 </ion-content>

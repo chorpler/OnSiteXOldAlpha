@@ -12,12 +12,6 @@ import { TranslateService                              } from '@ngx-translate/co
 import { TabsComponent                                 } from '../../components/tabs/tabs'      ;
 import { Preferences                                   } from '../../providers/preferences'     ;
 
-/**
- * Generated class for the DeveloperPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
 @IonicPage({name: 'DevPage'})
 @Component({
   selector: 'page-developer',
@@ -25,17 +19,19 @@ import { Preferences                                   } from '../../providers/p
 })
 export class DeveloperPage implements OnInit {
 
-  title          : string        = 'Developers'       ;
-  static PREFS   : any           = new Preferences()  ;
-  public prefs   : any           = DeveloperPage.PREFS;
-  showingAlert   : boolean       = false              ;
-  GeolocStatus   : boolean       = false              ;
-  onSiteTimeStamp: number                             ;
-  databaseNames  : Array<string> = []                 ;
-  spanishDefault : boolean       = false              ;
-  unicodeChars   : string        = ""                 ;
-  showID         : boolean       = false              ;
-  showRev        : boolean       = false              ;
+  public title          : string        = 'Developers'              ;
+  public static PREFS   : any           = new Preferences()         ;
+  public prefs   : any                  = DeveloperPage.PREFS       ;
+  public showingAlert   : boolean       = false                     ;
+  public GeolocStatus   : boolean       = false                     ;
+  public onSiteTimeStamp: number                                    ;
+  public databaseNames  : Array<string> = []                        ;
+  public spanishDefault : boolean       = false                     ;
+  public unicodeChars   : string        = ""                        ;
+  public showID         : boolean       = this.prefs.getShowID()    ;
+  public showRev        : boolean       = this.prefs.getShowRev()   ;
+  public showTimes      : boolean       = this.prefs.getShowTimes() ;
+  public payrollPeriodCount:number      = this.prefs.getPayrollPeriodCount();
 
   constructor(public navCtrl   : NavController    ,
               public navParams : NavParams        ,
@@ -81,7 +77,7 @@ export class DeveloperPage implements OnInit {
   //   Log.l("checkTestDatabases(): PREFS are now:\n", this.prefs.getPrefs());
   // }
 
-  toggleBackgroundGeolocation() {
+  public toggleBackgroundGeolocation() {
     if(this.platform.is('cordova')) {
       if(this.GeolocStatus) {
         this.geoloc.startBackgroundGeolocation().then((res) => {
@@ -118,19 +114,31 @@ export class DeveloperPage implements OnInit {
     }
   }
 
-  toggleShowID(value:boolean) {
+  public toggleShowID() {
     let val = this.showID;
     Log.l("togleShowID(): ID view set to: %s", val);
-    this.prefs.DEVELOPER.showDocID = val;
+    // this.prefs.DEVELOPER.showDocID = val;
+    this.prefs.setShowID(val);
   }
 
-  toggleShowRev(value:boolean) {
+  public toggleShowRev() {
     let val = this.showRev;
     Log.l("togleShowRev(): Rev view set to: %s", val);
-    this.prefs.DEVELOPER.showDocRev = val;
+    this.prefs.setShowRev(val);
   }
 
-  developerAlert() {
+  public toggleShowTimes() {
+    let val = this.showTimes;
+    Log.l("toggleShowTimes(): Report Times view set to: %s", val);
+    this.prefs.setShowTimes(val);
+  }
+
+  public updatePayrollPeriodCount(value:number) {
+    Log.l("updatePayrollPeriodCount(): Count set to %d.", value);
+    this.prefs.setPayrollPeriodCount(value);
+  }
+
+  public developerAlert() {
     this.showingAlert = true;
     let title1 = window.atob("TE8gU0lFTlRPIEhFUk1BTk8=");
     let text1  = window.atob("QSBwZXNhciBkZSBxdWUgZXJlcyB1biBkZXNhcnJvbGxhZG9yLCBlc3RhIGNvbm11dGFjaSZvYWN1dGU7biBubyBwdWVkZSBoYWNlciBsYSBtaWVyZGEgdG9kbyBjdWFuZG8gbm8gZXN0JmFhY3V0ZTtzIGNvcnJpZW5kbyBlbiBDJm9hY3V0ZTtyZG9iYS4=");
@@ -170,7 +178,7 @@ export class DeveloperPage implements OnInit {
 
   }
 
-  updatePreferences() {
+  public updatePreferences() {
     this.db.savePreferences(this.prefs.getPrefs()).then((res) => {
       Log.l("updatePreferences(): Saved preferences successfully.");
       this.alert.showAlert("SUCCESS", "Preferences saved!");
@@ -191,7 +199,7 @@ export class DeveloperPage implements OnInit {
   //   }
   // }
 
-  getSomeCharacters() {
+  public getSomeCharacters() {
     this.audio.play('sorry');
     let temp1 = `&#x2714;&check;&cross;&#x2716;&check;&#x1F5F4;&#x1F5F9;&#x1F5F8;&#x1F5F6;&#x1F5F5;&#x2705;&#x1F5F9;`;
     let temp2 = `✔✓✗✖✓🗴🗹🗸🗶🗵✅🗹`;
@@ -202,7 +210,7 @@ export class DeveloperPage implements OnInit {
     }
   }
 
-  cancel() {
+  public cancel() {
     this.audio.play('dropit');
     this.tabs.goToPage('OnSiteHome');
   }

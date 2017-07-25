@@ -150,7 +150,7 @@ export class ReportPage implements OnInit {
     this.dataReady = false;
     if (this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
     if (this.navParams.get('type') !== undefined) { this.type = this.navParams.get('type'); }
-    if (this.navParams.get('shift') !== undefined) { this.shiftToUse = this.selectedShift = this.navParams.get('shift'); }
+    if (this.navParams.get('shift') !== undefined) { this.selectedShift = this.navParams.get('shift'); this.shiftToUse = this.selectedShift; }
     if (this.navParams.get('payroll_period') !== undefined) { this.period = this.navParams.get('payroll_period'); }
     if (this.navParams.get('workOrder') !== undefined) {
       this.workOrder = this.navParams.get('workOrder');
@@ -256,11 +256,14 @@ export class ReportPage implements OnInit {
       }
       // this.updateActiveShiftWorkOrders(this.selectedShift);
       if (this.mode === 'Add' || this.mode === 'Añadir') {
-        let startTime = moment(this.selectedShift.start_time);
-        let addTime = this.selectedShift.getShiftHours();
-        let newStartTime = moment(startTime).add(addTime, 'hours');
-        Log.l("ReportPage: Now setting work order start time. Start Time = %s, adding %f hours, gives:\n", startTime.format(), addTime, newStartTime);
-        this.workOrder.setStartTime(newStartTime);
+        // let startTime = moment(this.selectedShift.start_time);
+        // let addTime = this.selectedShift.getShiftHours();
+        // let newStartTime = moment(startTime).add(addTime, 'hours');
+        let shift = this.selectedShift;
+        let start = shift.getNextReportStartTime();
+        Log.l("ReportPage: Now setting work order start time: '%s'", start);
+        this.workOrder.report_date = shift.getShiftDate().format("YYYY-MM-DD");
+        this.workOrder.setStartTime(start);
       } else {
 
       }
@@ -276,6 +279,7 @@ export class ReportPage implements OnInit {
   }
 
   public initializeUIData() {
+    /* spinner options (ion-multi-picker and Ionic Spinner options) */
     this.chooseHours = [
       { "name": "Hours", "options": [], "header": "H", "headerWidth": "20px", "columnWidth": "72px" },
       { "name": "Minutes", "options": [], "header": "M", "headerWidth": "20px", "columnWidth": "72px" }
@@ -291,10 +295,10 @@ export class ReportPage implements OnInit {
     this.chooseHours[1].options.push({ 'text': '30', 'value': '30' });
     this.selReportType = this.ud.getData('report_types');
     this.selTrainingType = this.ud.getData('training_types');
-    let sites = [], siteSelect = [];
+    let siteSelect = [];
     this.sites = this.ud.getData('sites');
-    let siteList = this.ud.getData('sites');
-    for(let site of siteList) {
+    let sites = this.ud.getData('sites');
+    for(let site of sites) {
       let name = site.getSiteSelectName();
       let hours = site.travel_time;
       let oneSite = {name: name, value: name, hours: hours};
@@ -307,7 +311,7 @@ export class ReportPage implements OnInit {
   }
 
   public initializeFormListeners() {
-    let lang                = this.lang                                       ;
+    let lang                = this.lang                                  ;
     this._type              = this.workOrderForm.get('type')             ;
     this._training_type     = this.workOrderForm.get('training_type')    ;
     this._travel_location   = this.workOrderForm.get('travel_location')  ;
@@ -319,18 +323,6 @@ export class ReportPage implements OnInit {
     this._unit_number       = this.workOrderForm.get('unit_number')      ;
     this._work_order_number = this.workOrderForm.get('work_order_number');
     this._allDay            = this.workOrderForm.get('allDay')           ;
-
-    // this._type            = this.workOrderForm.controls['type']            ;
-    // this._training_type   = this.workOrderForm.controls['training_type']   ;
-    // this._travel_location = this.workOrderForm.controls['travel_location'] ;
-    // this._time            = this.workOrderForm.controls['time']            ;
-    // this._endTime         = this.workOrderForm.controls['endTime']         ;
-    // this._repairHours     = this.workOrderForm.controls['repair_time']     ;
-    // this._selected_shift  = this.workOrderForm.controls['selected_shift']  ;
-    // this._notes           = this.workOrderForm.controls['notes']           ;
-    // this._unit_number     = this.workOrderForm.controls['unit_number']     ;
-    // this._work_order_number = this.workOrderForm.controls['work_order_number'];
-    // this._allDay          = this.workOrderForm.controls['allDay']          ;
 
     this._type.valueChanges.subscribe((value:any) => {
       Log.l("Field 'type' fired valueChanges for:\n", value);
@@ -547,7 +539,7 @@ export class ReportPage implements OnInit {
         let iDur = hrs + (min / 60);
         this.currentRepairHours = iDur;
         let total = this.selectedShift.getNormalHours() + this.currentRepairHours - this.thisWorkOrderContribution;
-        Log.l("ReportForm: currentRepairHours changed to %s:%s, value %f, so total is now %f", hrs, min, iDur, total);
+        Log.l("ReportForm: currentRepairHours changed to %s, value %f, so total is now %f", sprintf("%02d:%02d", hrs, min), iDur, total);
         this.workOrder.setRepairHours(iDur);
         if (this.selectedShift !== undefined && this.selectedShift !== null) {
           this.shiftHoursColor = this.getShiftHoursStatus(this.selectedShift);
@@ -563,24 +555,25 @@ export class ReportPage implements OnInit {
       let ss                       = shift                                                   ;
       // this.updateActiveShiftWorkOrders(shift);
       let report_date              = moment(shift.getStartTime())                            ;
-      let woHoursSoFar             = shift.getShiftHours()                                   ;
-      let woStart                  = moment(shift.getStartTime()).add(woHoursSoFar, 'hours') ;
+      // let woHoursSoFar             = shift.getShiftHours()                                   ;
+      // let woStart                  = moment(shift.getStartTime()).add(woHoursSoFar, 'hours') ;
+      let woStart                  = shift.getNextReportStartTime()                          ;
 
       let reportDateString         = report_date.format("YYYY-MM-DD")                        ;
-      this.reportOther.report_date = report_date                                             ;
       this.selectedShift           = shift                                                   ;
 
-      if(this.workOrderForm.value.type.name === 'work_report') {
-        this.workOrder.setStartTime(woStart);
-        this.workOrder.report_date   = reportDateString                                        ;
-        this.workOrder.shift_serial = shift.getShiftSerial();
+      let type = this.workOrderForm.value.type;
+      if(!type || (type && type.name && type.name === 'work_report')) {
+        Log.l("workOrderForm: Setting work report start time to '%s' and date to '%s'", moment(woStart), reportDateString);
+        this.workOrder.setStartTime(moment(woStart));
+        this.workOrder.report_date    = reportDateString                                      ;
+        this.workOrder.shift_serial   = shift.getShiftSerial();
         this.workOrder.payroll_period = shift.getPayrollPeriod();
-        this.workOrderForm.get('report_date').setValue(reportDateString);
       } else {
-        this.reportOther.report_date = reportDateString;
+        Log.l("workOrderForm: Setting other report date to '%s'", reportDateString);
+        this.reportOther.report_date  = moment(report_date);
         this.reportOther.shift_serial = shift.getShiftSerial();
         this.reportOther.payroll_period = shift.getPayrollPeriod();
-        this.workOrderForm.get('report_date').setValue(reportDateString);
       }
     });
 
@@ -663,17 +656,12 @@ export class ReportPage implements OnInit {
       'unit_number'       : new FormControl(wo.unit_number                    , Validators.required) ,
       'work_order_number' : new FormControl(wo.work_order_number              , Validators.required) ,
       'notes'             : new FormControl(wo.notes                          , Validators.required) ,
-      'report_date'       : new FormControl(rprtDate.format("YYYY-MM-DD")     , Validators.required) ,
-      // 'timestamp'         : new FormControl({ value: ts, disabled: true }     , Validators.required) ,
+      // 'report_date'       : new FormControl(rprtDate.format("YYYY-MM-DD")     , Validators.required) ,
       'type'              : new FormControl(this.type                         , Validators.required) ,
       'training_type'     : new FormControl(this.training_type                , Validators.required) ,
       'travel_location'   : new FormControl(this.travel_location              , Validators.required) ,
       'time'              : new FormControl(this.currentOtherHours) ,
       'allDay'            : new FormControl(this.allDay) ,
-      // 'sickTime'          : new FormControl(8) ,
-      // 'vacation'          : new FormControl(8                                 , Validators.required) ,
-      // 'Standby_HB_DCN'    : new FormControl("S"                               , Validators.required) ,
-      // 'Standby'           : new FormControl(0                                 , Validators.required) ,
     });
   }
 
@@ -762,13 +750,14 @@ export class ReportPage implements OnInit {
   public showFancySelect() {
     Log.l("showFancySelect(): Called!");
     let options = [];
-    let fancySelectModal = this.modal.create('Fancy Select', { title: "Select Shift", shifts: this.period.shifts, periods: this.payrollPeriods }, { cssClass: 'fancy-select-modal' });
+    let shifts = [];
+    let fancySelectModal = this.modal.create('Fancy Select', { title: "Select Shift", shifts: this.period.getPayrollShifts(), periods: this.payrollPeriods }, { cssClass: 'fancy-select-modal' });
     fancySelectModal.onDidDismiss(data => {
       Log.l("ReportPage: Returned from fancy select, got back:\n", data);
-      if (data !== null) {
+      if (data) {
         this.selectedShift = data;
         this.selectedShiftText = this.selectedShift.toString(this.translate);
-        this.workOrderForm.controls['selected_shift'].setValue(this.selectedShift);
+        this.workOrderForm.get('selected_shift').setValue(this.selectedShift);
       }
     });
     fancySelectModal.present();
@@ -997,10 +986,11 @@ export class ReportPage implements OnInit {
         // this.ud.addNewReport(newWO);
         this.currentRepairHours = 0;
         // this.ud.updateShifts();
-        if(this.prefs.USER.stayInReports) {
-          this.createFreshReport();
-          this.initializeForm();
-          this.initializeFormListeners();
+        if(this.prefs.getStayInReports()) {
+          this.tabs.goToPage('Report');
+          // this.createFreshReport();
+          // this.initializeForm();
+          // this.initializeFormListeners();
         } else {
           this.tabs.goToPage('ReportHistory');
         }
@@ -1085,19 +1075,18 @@ export class ReportPage implements OnInit {
     // if(this.workOrderForm.value.type === 'work_report') {
     let start = shift.getStartTime();
     let hours = shift.getNormalHours();
-    let end = this.previousEndTime;
-    let shiftLatest   = moment(start).add(hours, 'hours')                ;
+    // let end = this.previousEndTime;
+    let shiftLatest   = shift.getNextReportStartTime()                   ;
     let wo            = new WorkOrder()                                  ;
     wo._id            = wo.genReportID(tech)                             ;
     wo.timestampM     = moment(now)                                      ;
     wo.timestamp      = now.toExcel()                                    ;
     wo.first_name     = tech.firstName                                   ;
     wo.last_name      = tech.lastName                                    ;
-    wo.time_start     = end ? moment(end) : shiftLatest                  ;
+    wo.time_start     = shiftLatest                                      ;
     wo.username       = tech.avatarName                                  ;
     wo.client         = tech.client                                      ;
     wo.location       = tech.location                                    ;
-    wo.location_2     = tech.loc2nd                                      ;
     wo.location_id    = tech.locID                                       ;
     wo.payroll_period = shift.getPayrollPeriod()                         ;
     wo.shift_serial   = shift.getShiftSerial()                           ;
@@ -1120,7 +1109,6 @@ export class ReportPage implements OnInit {
     ro.username       = tech.avatarName             ;
     ro.client         = tech.client                 ;
     ro.location       = tech.location               ;
-    ro.location_2     = tech.loc2nd                 ;
     ro.location_id    = tech.locID                  ;
     ro.payroll_period = shift.getPayrollPeriod()    ;
     ro.shift_serial   = shift.getShiftSerial()      ;

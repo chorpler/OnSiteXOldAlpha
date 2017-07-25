@@ -20,12 +20,20 @@
       <ion-toggle [(ngModel)]="GeolocStatus" (ionChange)="toggleBackgroundGeolocation()"></ion-toggle>
     </ion-item>
     <ion-item>
+      <ion-label>Payroll Periods</ion-label>
+      <ion-input [(ngModel)]="payrollPeriodCount" (ionChange)="updatePayrollPeriodCount(payrollPeriodCount)"></ion-input>
+    </ion-item>
+    <ion-item>
       <ion-label>Show _id</ion-label>
       <ion-toggle [(ngModel)]="showID" (ionChange)="toggleShowID()"></ion-toggle>
     </ion-item>
     <ion-item>
       <ion-label>Show _rev</ion-label>
       <ion-toggle [(ngModel)]="showRev" (ionChange)="toggleShowRev()"></ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-label>Show Report Times</ion-label>
+      <ion-toggle [(ngModel)]="showTimes" (ionChange)="toggleShowTimes()"></ion-toggle>
     </ion-item>
   </ion-item-group>
   <ion-item-group>

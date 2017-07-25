@@ -8,17 +8,11 @@ import { DBSrvcs                                                                
 import { AlertService                                                            } from '../../providers/alerts'         ;
 import { NetworkStatus                                                           } from '../../providers/network-status' ;
 import { UserData                                                                } from '../../providers/user-data'      ;
+import { Preferences                                                             } from '../../providers/preferences'    ;
 import { Log                                                                     } from '../../config/config.functions'  ;
 import { TabsComponent                                                           } from '../../components/tabs/tabs'     ;
-import { TranslateService } from '@ngx-translate/core';
-import { Preferences } from '../../providers/preferences';
-import { PREFS } from '../../config/config.strings';
-/**
- * Generated class for the Login page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
+import { TranslateService                                                        } from '@ngx-translate/core'            ;
+
 @IonicPage({name: 'Login'})
 @Component({
   selector: 'page-login',
@@ -26,6 +20,8 @@ import { PREFS } from '../../config/config.strings';
 })
 export class Login implements OnInit {
   public title          : string  = "OnSite Login"       ;
+  public static PREFS   : any     = new Preferences()    ;
+  public prefs          : any     = Login.PREFS          ;
   private username      : string                         ;
   private password      : string                         ;
   public loginError     : boolean = false                ;
@@ -42,19 +38,19 @@ export class Login implements OnInit {
   // public prefs          : any = Login.PREFS              ;
 
 
-  constructor(public navCtrl: NavController,
+  constructor(
+    public navCtrl  : NavController,
     public navParams: NavParams,
-    private auth: AuthSrvcs,
-    private server: SrvrSrvcs,
-    private db: DBSrvcs,
-    private network: NetworkStatus,
-    private alert: AlertService,
-    public viewCtrl: ViewController,
-    public ud: UserData,
-    public events: Events,
-    public tabs: TabsComponent,
+    private auth    : AuthSrvcs,
+    private server  : SrvrSrvcs,
+    private db      : DBSrvcs,
+    private network : NetworkStatus,
+    private alert   : AlertService,
+    public viewCtrl : ViewController,
+    public ud       : UserData,
+    public events   : Events,
+    public tabs     : TabsComponent,
     public translate: TranslateService,
-    public prefs: Preferences,
   ) {
     window['loginscreen'] = this;
   }

@@ -202,7 +202,7 @@ export class Shift {
   public getShiftWeekID() {
     let shift_week_number = -1;
     // let start_date = moment(XL);
-    if(moment.isMoment(this.shift_week)) {
+    if(isMoment(this.shift_week)) {
       // shift_week_number = this.shift_week.diff(XL, 'days') + 2;
       shift_week_number = moment(this.shift_week).toExcel(true);
     }
@@ -276,9 +276,9 @@ export class Shift {
       let out = sprintf("%02d:%02d", hrs, min);
       // let duration = moment.duration(hours, 'hours');
       // debugString += `   ADD: ${duration.hours()}:${duration.minutes()}\n`
-      debugString += `   ADD:             ${out}\n`
+      debugString += `    ADD:             ${out}\n`
       begin.add(hours, 'hours');
-      debugString += `RESULT: ${begin.format("YYYY-MM-DDTHH:mm")}\n`;
+      debugString += ` RESULT: ${begin.format("YYYY-MM-DDTHH:mm")}\n`;
     }
     Log.l(`WORKORDER.getNextReportStartTime(): next start time is '${begin.format("YYYY-MM-DDTHH:mm")}'. Debug chain:\n`, debugString);
     return begin;
@@ -301,12 +301,6 @@ export class Shift {
         return retVal;
       }
     }
-
-    // if(status.status && regHours) {
-    //   return regHours;
-    // } else {
-    //   return retVal;
-    // }
   }
 
   setShiftLength(hours:number) {
@@ -350,19 +344,6 @@ export class Shift {
     return this.colors;
   }
 
-  isRed() {
-    // this.getShiftColor();
-    return this.colors.red;
-  }
-  isGreen() {
-    // this.getShiftColor();
-    return this.colors.green;
-  }
-  isBlue() {
-    // this.getShiftColor();
-    return this.colors.blue;
-  }
-
   getTotalShiftHours() {
     return this.getNormalHours();
   }
@@ -398,11 +379,15 @@ export class Shift {
 
   getNormalHours() {
     let total = 0;
-    for (let report of this.shift_reports) {
+    let reports = this.getShiftReports();
+    for (let report of reports) {
       if (report['type'] === undefined || report['type'] === 'Work Report') {
         total += report.getRepairHours();
       } else {
-        /* ToDo(2017-07-05): Ask Mike if miscellaneous reports should count for shift hours, or what */
+        /**
+         * ToDo(2017-07-05): Ask Mike if miscellaneous reports should count for shift hours, or what
+         * Conclusion: They get their own hours and codes
+         */
       }
     }
     return total;
@@ -504,9 +489,9 @@ export class Shift {
     return output;
   }
 
-  getOtherReports() {
-    return this.other_reports;
-  }
+  // getOtherReports() {
+  //   return this.other_reports;
+  // }
 
   setOtherReports(others:Array<ReportOther>) {
     this.other_reports = [];
@@ -518,7 +503,7 @@ export class Shift {
 
   addOtherReport(other:ReportOther) {
     let j = 0, i = -1;
-    let others = this.getOtherReports();
+    let others = this.getShiftOtherReports();
     for (let oth of others) {
       if (oth === other || (oth['_id'] && other['_id'] && oth['_id'] === other['_id'])) {
         i = j;
@@ -563,7 +548,7 @@ export class Shift {
   }
 
   getShiftReportsStatus(complete?:boolean) {
-    let others  = this.getOtherReports() ;
+    let others  = this.getShiftOtherReports() ;
     let reports = this.getShiftReports() ;
     let output  = []                     ;
     // let slcode  = ""                     ;
@@ -710,7 +695,7 @@ export class Shift {
   }
 
   public getSpecialHours(type?:string) {
-    let others    = this.getOtherReports();
+    let others    = this.getShiftOtherReports();
     let total     = 0;
     let codeTotal = 0;
     let codes     = "";
@@ -792,7 +777,8 @@ export class Shift {
     if(translate) {
       payrollWeek = translate.instant('payroll_week');
     }
-    strOut = `${start} (${payrollWeek} ${weekStart})`;
+    // strOut = `${start} (${payrollWeek} ${weekStart})`;
+    strOut = `${start}`;
     return strOut;
   }
 

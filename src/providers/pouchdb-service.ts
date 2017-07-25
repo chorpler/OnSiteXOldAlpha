@@ -1,14 +1,13 @@
-import { Injectable } from '@angular/core';
 import 'rxjs/add/operator/map';
-import * as PouchDB from 'pouchdb';
-import * as PDBAuth from 'pouchdb-authentication';
-// import * as PouchDBAuth from 'pouchdb-auth';
-import * as pdbFind from 'pouchdb-find';
-import * as pdbUpsert from 'pouchdb-upsert';
-import * as pdbAllDBs from 'pouchdb-all-dbs';
-import { Log } from '../config/config.functions';
-// import { PREFS } from '../config/config.strings';
-import { Preferences } from './preferences';
+import * as PouchDB from 'pouchdb'                ;
+import * as PDBAuth from 'pouchdb-authentication' ;
+// import * as PouchDBAuth from 'pouchdb-auth'    ;
+import * as pdbFind from 'pouchdb-find'           ;
+import * as pdbUpsert from 'pouchdb-upsert'       ;
+import * as pdbAllDBs from 'pouchdb-all-dbs'      ;
+import { Injectable  } from '@angular/core'              ;
+import { Log         } from '../config/config.functions' ;
+import { Preferences } from './preferences'              ;
 
 @Injectable()
 export class PouchDBService {
@@ -64,11 +63,11 @@ export class PouchDBService {
   }
 
 
-  addDB(dbname: string) {
+  public addDB(dbname: string) {
     return PouchDBService.addDB(dbname);
   }
 
-  static addDB(dbname: string) {
+  public static addDB(dbname: string) {
     let dbmap = PouchDBService.pdb;
     if(dbmap.has(dbname)) {
       // Log.l(`addDB(): Not adding local database ${dbname} because it already exists.`);
@@ -80,11 +79,11 @@ export class PouchDBService {
     }
   }
 
-  addRDB(dbname: string) {
+  public addRDB(dbname: string) {
     return PouchDBService.addRDB(dbname);
   }
 
-  static addRDB(dbname: string) {
+  public static addRDB(dbname: string) {
     let rdbmap = PouchDBService.rdb;
     let url = PouchDBService.PREFERENCES.SERVER.rdbServer.protocol + "://" + PouchDBService.PREFERENCES.SERVER.rdbServer.server + "/" + dbname;
     // Log.l(`addRDB(): Now fetching remote DB ${dbname} at ${url} ...`);

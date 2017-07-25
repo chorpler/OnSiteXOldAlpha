@@ -105,7 +105,8 @@ export class OnSiteApp {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
       NetworkStatus.watchForDisconnect();
-      this.pouchOptions = { adapter: 'websql', auto_compaction: true };
+      // this.pouchOptions = { adapter: 'websql', auto_compaction: true };
+      this.pouchOptions = { auto_compaction: true };
       window["PouchDB"] = PouchDBService.PouchInit();
       window["Platform"] = this.platform;
       window["PouchDB" ].defaults(this.pouchOptions);
@@ -119,50 +120,51 @@ export class OnSiteApp {
       this.preloadAudioFiles();
 
       let callingClass = this;
-      this.checkPreferences().then(() => {
-        Log.l("OnSite.initializeApp(): Done messing with preferences, now checking login...");
-        let language = this.prefs.USER.language;
-        this.translate.addLangs(this.appLanguages);
-        if (language !== 'en') {
-          this.translate.use(language);
-        }
-        this.translate.get(['spinner_app_loading']).subscribe((result) => {
-          let lang = result;
-          if(!callingClass.ud.isBootError()) {
-            callingClass.bootApp().then(res =>{
-              Log.l("OnSite.initializeApp(): bootApp() returned successfully!");
-              callingClass.alert.hideSpinner(0, true).then(res => {
-                callingClass.ud.setAppLoaded(true);
-                callingClass.rootPage = 'OnSiteHome';
-                setTimeout(() => {
-                  Log.l("OnSite.bootApp(): Publishing startup event after timeout!");
-                  callingClass.events.publish('startup:finished', true);
-                }, 50);
-              })
-            }).catch(err => {
-              Log.l("OnSite.initializeApp(): bootApp() returned error.");
-              Log.e(err);
+      // this.checkPreferences().then(() => {
+      //   Log.l("OnSite.initializeApp(): Done messing with preferences, now checking login...");
+      //   let language = this.prefs.getLanguage();
+      //   this.translate.addLangs(this.appLanguages);
+      //   if (language !== 'en') {
+      //     this.translate.use(language);
+      //   }
+      this.translate.get(['spinner_app_loading']).subscribe((result) => {
+        let lang = result;
+        if(!callingClass.ud.isBootError()) {
+          callingClass.bootApp().then(res => {
+            Log.l("OnSite.initializeApp(): bootApp() returned successfully!");
+            callingClass.alert.hideSpinner(0, true).then(res => {
               callingClass.ud.setAppLoaded(true);
-              callingClass.rootPage = 'Login';
+              callingClass.rootPage = 'OnSiteHome';
               setTimeout(() => {
+                Log.l("OnSite.bootApp(): Publishing startup event after timeout!");
+                callingClass.events.publish('startup:finished', true);
               }, 50);
-            });
-          } else {
-            Log.w("OnSite.initializeApp(): app boot error has been thrown.");
+            })
+          }).catch(err => {
+            Log.l("OnSite.initializeApp(): bootApp() returned error.");
+            Log.e(err);
             callingClass.ud.setAppLoaded(true);
+            callingClass.rootPage = 'Login';
             setTimeout(() => {
-              callingClass.rootPage = 'Login';
-            }, 500);
-          }
-        });
-      }).catch(err => {
-        Log.l("initializeApp(): Error in checkPreferences or translate.get or something!");
-        Log.e(err);
+            }, 50);
+          });
+        } else {
+          Log.w("OnSite.initializeApp(): app boot error has been thrown.");
+          callingClass.ud.setAppLoaded(true);
+          setTimeout(() => {
+            callingClass.rootPage = 'Login';
+          }, 500);
+        }
       });
     }).catch(err => {
-      Log.l("initializeApp(): Error with getAppVersion() or platform.ready()! That's bad!");
+      Log.l("initializeApp(): Error in getAppVersion() or platform.ready()! That's bad! Or in checkPreferences or translate.get or something!");
       Log.e(err);
+      this.alert.showAlert("ERROR", "Error starting app, please tell developers:<br>\n<br>\n" + err.message);
     });
+    // }).catch(err => {
+    //   Log.l("initializeApp(): Error with getAppVersion() or platform.ready()! That's bad!");
+    //   Log.e(err);
+    // });
   }
 
   bootApp() {
@@ -171,7 +173,7 @@ export class OnSiteApp {
       Log.l("OnSite.bootApp(): Called.")
       this.checkPreferences().then(() => {
         Log.l("OnSite.bootApp(): Done messing with preferences, now checking login...");
-        let language = this.prefs.USER.language;
+        let language = this.prefs.getLanguage();
         if (language !== 'en') {
           this.translate.use(language);
         }
@@ -191,7 +193,7 @@ export class OnSiteApp {
         return this.ud.checkPhoneInfo();
       }).then(res => {
         let tech = this.ud.getData('employee')[0];
-        let pp = this.ud.createPayrollPeriods(this.data.employee[0], 2);
+        let pp = this.ud.createPayrollPeriods(this.data.employee[0], this.prefs.getPayrollPeriodCount());
         if(res) {
           Log.l("OnSite.bootApp(): Got phone data:\n", res);
           this.server.savePhoneInfo(tech, res).then(res => {
@@ -241,6 +243,7 @@ export class OnSiteApp {
         if(storedPrefs !== null && storedPrefs !== undefined && typeof storedPrefs !== 'undefined' && storedPrefs !== 'undefined') {
           updatePrefs = this.prefs.comparePrefs(storedPrefs);
         }
+        this.prefs.setPrefs(updatePrefs);
         Log.l("OnSite: Preferences at version %d, saving again.", this.prefs.USER.preferencesVersion);
         this.storage.set('PREFS', updatePrefs).then((res) => {
           Log.l("OnSite: Preferences stored:\n", this.prefs.getPrefs());

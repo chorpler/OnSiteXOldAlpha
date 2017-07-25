@@ -45,7 +45,7 @@ export class DBSrvcs {
     window["dbserv"] = this;
     window["sdb"] = DBSrvcs;
 
-    this.pdbOpts = {adapter: 'websql', auto_compaction: true};
+    // this.pdbOpts = {adapter: 'websql', auto_compaction: true};
 
     DBSrvcs.addDB(this.prefs.DB.reports);
 

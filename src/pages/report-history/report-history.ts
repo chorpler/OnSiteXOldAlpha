@@ -270,7 +270,7 @@ export class ReportHistory implements OnInit {
     // }
     // if(shiftToSend) {
       Log.l("itemTapped(): Got shift to send:\n", shift);
-      if(item['type']) {
+      if(item['type'] && item['type'] !== 'Work Report') {
         this.tabs.goToPage('Report', {mode: 'Edit', reportOther: report, shift: shift, payroll_period: this.period, type: item['type']});
       } else if(item instanceof WorkOrder) {
         this.tabs.goToPage('Report', {mode: 'Edit', workOrder: report, shift: shift, payroll_period: this.period});
@@ -280,6 +280,11 @@ export class ReportHistory implements OnInit {
     // } else {
     //   this.alert.showAlert(lang['error'], lang['error_report_not_found']);
     // }
+  }
+
+  addNewReportForShift(shift: Shift) {
+    Log.l("addNewReportForShift(): Got shift to send:\n", shift);
+    this.tabs.goToPage('Report', { mode: 'Add', shift: shift, payroll_period: this.period });
   }
 
   deleteWorkOrder(event:Event, report:WorkOrder, shift:Shift) {
@@ -367,10 +372,5 @@ export class ReportHistory implements OnInit {
     });
 
   }
-
-  addNewReportForShift(shift:Shift) {
-    this.tabs.goToPage('Report', {mode: 'Add', shift: shift});
-  }
-
 
 }

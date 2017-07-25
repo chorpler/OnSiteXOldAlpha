@@ -291,6 +291,6 @@ export class TabsComponent implements OnInit {
     // };
 
     // this.alert.showPopover(help[name], {}, event);
-    this.alert.showToast(lang[help[name]], 2000, 'middle');
+    // this.alert.showToast(lang[help[name]], 2000, 'middle');
   }
 }

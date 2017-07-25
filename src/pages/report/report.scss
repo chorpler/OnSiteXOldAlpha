@@ -21,10 +21,6 @@ ion-content {
 }
 
 page-report {
-  // .hdrDate {
-  //   font-size: 11px;
-  //   text-align: right;
-  // }
   .date {
     color: blue;
   }
@@ -86,7 +82,6 @@ page-report {
   }
   .bar-button-md ion-icon, .bar-button-md[icon-only] ion-icon {
     color: grey !important;
-    // background: transparent !important;
   }
 
   .red {
@@ -129,10 +124,12 @@ page-report {
   }
   .report-dev-header {
     flex: 1 0 auto;
-    max-width: 25px;
+    max-width: 40px;
+    margin: 2px;
   }
   .report-dev-data {
     flex: 1 0 auto;
     text-overflow: ellipsis;
+    margin: 2px;
   }
 }

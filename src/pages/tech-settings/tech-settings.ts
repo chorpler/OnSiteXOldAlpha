@@ -301,9 +301,9 @@ export class TechSettingsPage implements OnInit {
   initFormData() {
     let sesaConfig = this.ud.getSesaConfig();
     if (sizeOf(sesaConfig) > 0) {
-      let keys  = ['client', 'location', 'locid', 'loc2nd', 'shift', 'shiftlength', 'shiftstarttime'];
-      let keys2 = ['client', 'location', 'locID', 'loc2nd', 'shift', 'shiftLength', 'shiftStartTime'];
-      let keys3 = ['clients', 'locations', 'locIDs', 'loc2nds', 'shiftTimes', 'shiftLengths', 'shiftStartTimes'];
+      let keys  = ['client', 'location', 'locid', 'shift', 'shiftlength', 'shiftstarttime'];
+      let keys2 = ['client', 'location', 'locID', 'shift', 'shiftLength', 'shiftStartTime'];
+      let keys3 = ['clients', 'locations', 'locIDs', 'shiftTimes', 'shiftLengths', 'shiftStartTimes'];
       for (let i in keys) {
         let sesaVar   = keys[i];
         let techVar   = keys2[i];
@@ -320,23 +320,14 @@ export class TechSettingsPage implements OnInit {
     Log.l(values);
     let matchKey = String(key).toUpperCase();
     for(let value of values) {
-      let nameKey = String(value.name).toUpperCase();
-      let fullNameKey = String(value.fullName).toUpperCase();
-      if(nameKey === matchKey || fullNameKey === matchKey) {
+      let name = String(value.name).toUpperCase();
+      let fullName = String(value.fullName).toUpperCase();
+      if (name === matchKey || fullName === matchKey) {
         return value;
       }
     }
     return null;
   }
-
-  // public getSitesFor(cli:any, loc?:any, lid?:any, lc2?:any) {
-  //   let sites = this.ud.getData('sites');
-  //   for(let site of sites) {
-  //     if(_cmp(cli, site.client)) {
-  //       this.locations
-  //     }
-  //   }
-  // }
 
   public initializeSites() {
     this.techSettingsReady = false;
@@ -344,30 +335,7 @@ export class TechSettingsPage implements OnInit {
     let clients   = new Array() ;
     let locations = new Array() ;
     let locIDs    = new Array() ;
-    // let loc2nds   = new Array() ;
-    // for(let site of sites) {
-    //   site.filter((a,b) => {
-    //     return
-    //   },[]);
-    // }
-    // this.siteInfo = this.ud.createSiteComponentsList();
-    // clients = [...this.siteInfo.keys()];
-    // for(let site of sites) {
-    //   // let cli = JSON.stringify(site.client);
-    //   // let cli = site.client;
 
-    //   clients.push  (site.client  );
-    //   locations.push(site.location);
-    //   locIDs.push   (site.locID   );
-    //   // if(site.loc2nd) { loc2nds.push  (site.loc2nd  )};
-    //   // clients.add(  JSON.stringify(site.client  ));
-    //   // locations.add(JSON.stringify(site.location));
-    //   // locIDs.add(   JSON.stringify(site.locID   ));
-    //   // loc2nds.add(  JSON.stringify(site.loc2nd  ));
-    // }
-    // let k = [clients,locations,locIDs,loc2nds];
-    // window['funqy1'] = k;
-    // Log.l("Arrays:\n", k);
     clients   = _dedupe(sites.map(obj => obj['client']));
     locations = _dedupe(sites.map(obj => obj['location']));
     locIDs    = _dedupe(sites.map(obj => obj['locID']));
@@ -375,7 +343,6 @@ export class TechSettingsPage implements OnInit {
     this.allclient   = clients.slice(0);
     this.alllocation = locations.slice(0);
     this.alllocID    = locIDs.slice(0);
-    // this.allloc2nd   = _dedupe(loc2nds, 'fullName');
     this.clients     = this.allclient.sort(_sort);
     this.locations   = this.alllocation.sort(_sort);
     this.locIDs      = this.alllocID.sort(_sort);
@@ -385,91 +352,10 @@ export class TechSettingsPage implements OnInit {
     this.client      = this.clients.find(a=>{return a['fullName'].toUpperCase() === cli.toUpperCase() || a['name'] === cli.toUpperCase();});
     this.location    = this.locations.find(a=>{return a['fullName'].toUpperCase() === loc.toUpperCase() || a['name'] === loc.toUpperCase();});
     this.locID       = this.locIDs.find(a=>{return a['fullName'].toUpperCase() === lid.toUpperCase() || a['name'] === lid.toUpperCase();});
-    // this.loc2nds     = this.allloc2nd.map(obj => obj['fullName'].toUpperCase()).sort(_sort);
-    // let j = [clients,locations,locIDs,loc2nds];
-    // window['funqy']=j;
-
-    // let js = new Map();
-
-    // let clients = new Map();
-    // for(let site of sites) {
-    //   let client = site.client;
-    //   let name = client.fullName;
-    //   if(!clients.has(client)) {
-    //     clients.set(client, new Map());
-    //   }
-    //   let locations = clients.get(client);
-    //   let location  = site.location;
-    //   name = location.fullName;
-    //   if(!locations.has(location)) {
-    //     locations.set(location, new Map());
-    //   }
-    //   let locIDs = locations.get(location);
-    //   let locID  = site.locID;
-    //   name = locID.fullName;
-    //   if(!locIDs.has(locID)) {
-    //     locIDs.set(locID, locID);
-    //   }
-    // }
-    // Log.l("initializeSites(): New clients list is:\n", clients);
-    // return clients;
-    // this.techSettingsReady = false;
   }
 
   public getSiteFromInfo(client:any, location:any, locID:any, loc2nd?:any) {
     let lang = this.lang;
-    // let cli, loc, lid, lc2;
-    // if(client && typeof client === 'object' && typeof client.fullName === 'string') {
-    //   cli = client.fullName.toUpperCase();
-    // } else if(client && typeof client === 'string') {
-    //   cli = client.toUpperCase();
-    // }
-
-    // if(location && typeof location === 'object' && typeof location.fullName === 'string') {
-    //   loc = location.fullName.toUpperCase();
-    // } else if(location && typeof location === 'string') {
-    //   loc = location.toUpperCase();
-    // }
-
-    // if(locID && typeof locID === 'object' && typeof locID.fullName === 'string') {
-    //   lid = locID.fullName.toUpperCase();
-    // } else if(locID && typeof locID === 'string') {
-    //   lid = locID.toUpperCase();
-    // }
-
-    // if(loc2nd && typeof loc2nd === 'object' && typeof loc2nd.fullName === 'string') {
-    //   lc2 = loc2nd.fullName.toUpperCase();
-    // } else if(loc2nd && typeof loc2nd === 'string') {
-    //   lc2 = loc2nd.toUpperCase();
-    // }
-
-    // let js = null;
-
-    // for(let site of this.sites) {
-    //   let cli1 = site.client.fullName.toUpperCase();
-    //   let loc1 = site.location.fullName.toUpperCase();
-    //   let lid1 = site.locID.fullName.toUpperCase();
-    //   let lc21 = "";
-    //   if(site.loc2nd && typeof site.loc2nd.fullName === 'string') {
-    //     lc21 = site.loc2nd.fullName.toUpperCase();
-    //   } else if(site.loc2nd && typeof site.loc2nd === 'string') {
-    //     lc21 = site.loc2nd.toUpperCase();
-    //   } else {
-    //     lc21 = "NA";
-    //   }
-    //   if(cli === cli1 && loc === loc1 && lid === lid1) {
-    //     if(lc2 !== 'NA' && lc2 !== "N/A") {
-    //       if(lc2 === lc21) {
-    //         js = site;
-    //         break;
-    //       }
-    //     } else {
-    //       js = site;
-    //       break;
-    //     }
-    //   }
-    // }
-
     let sites = this.sites;
     let site = sites.filter((obj, pos, arr) => { return _cmp(this.client, obj['client']) })
                     .filter((obj, pos, arr) => { return _cmp(this.location, obj['location']) })
@@ -488,13 +374,11 @@ export class TechSettingsPage implements OnInit {
     let lang = this.lang;
     let form            = this.techSettings.value               ;
     let tech            = this.tech                             ;
-    // let keys = Object.keys(form);
     let keys = ['firstName', 'lastName', 'client', 'location', 'locID', 'shift', 'shiftLength', 'shiftStartTime'];
     let error = false;
     let errorKey = "";
     for(let key of keys) {
       if(error) {break};
-      // let value = form[key];
       let value = this[key];
       if(!value) {
         error = true;
@@ -502,28 +386,17 @@ export class TechSettingsPage implements OnInit {
       }
     }
     if(!error) {
-      this.alert.showSpinner(lang['spinner_saving_tech_profile']);
+      this.alert.showSpinner(lang['spinner_saving_tech_profile']) ;
       tech.updated        = true                                  ;
       tech.technician     = this.lastName + ', ' + this.firstName ;
       tech.client         = this.client.fullName.toUpperCase()    ;
       tech.location       = this.location.fullName.toUpperCase()  ;
       tech.locID          = this.locID.name.toUpperCase()         ;
-      // tech.loc2nd         = this.loc2nd.name.toUpperCase()        ;
       tech.shift          = this.shift.name                       ;
       tech.shiftLength    = Number(this.shiftLength.name)         ;
       tech.shiftStartTime = Number(this.shiftStartTime.name)      ;
       tech.firstName      = this.firstName                        ;
       tech.lastName       = this.lastName                         ;
-      // tech.technician     = form.lastName + ', ' + form.firstName ;
-      // tech.client         = form.client.fullName.toUpperCase()    ;
-      // tech.location       = form.location.fullName.toUpperCase()  ;
-      // tech.locID          = form.locID.name.toUpperCase()         ;
-      // tech.loc2nd         = form.loc2nd.name.toUpperCase()        ;
-      // tech.shift          = form.shift.name                       ;
-      // tech.shiftLength    = Number(form.shiftLength.name)         ;
-      // tech.shiftStartTime = Number(form.shiftStartTime.name)      ;
-      // tech.firstName      = form.firstName                        ;
-      // tech.lastName       = form.lastName                         ;
       this.reportMeta     = tech                                  ;
       let site = this.getSiteFromInfo(this.client, this.location, this.locID);
       if(site) {

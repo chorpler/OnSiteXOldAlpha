@@ -24,6 +24,8 @@ import { AppVersion                                              } from '@ionic-
 import { NativeAudio                                             } from '@ionic-native/native-audio'                                 ;
 import { AppUpdate                                               } from '@ionic-native/app-update'                                   ;
 import { Camera, CameraOptions                                   } from '@ionic-native/camera'                                       ;
+import { TranslateModule, TranslateLoader                        } from '@ngx-translate/core'                                        ;
+import { TranslateHttpLoader                                     } from '@ngx-translate/http-loader'                                 ;
 import { OnSiteApp                                               } from './app.component.ts'                                         ;
 import { ProfileSettings                                         } from '../providers/profile-settings.ts'                           ;
 import { AuthSrvcs                                               } from '../providers/auth-srvcs'                                    ;
@@ -35,8 +37,6 @@ import { AlertService                                            } from '../prov
 import { GeolocService                                           } from '../providers/geoloc-service'                                ;
 import { PouchDBService                                          } from '../providers/pouchdb-service'                               ;
 import { StorageService                                          } from '../providers/storage-service'                               ;
-import { TranslateModule, TranslateLoader                        } from '@ngx-translate/core'                                        ;
-import { TranslateHttpLoader                                     } from '@ngx-translate/http-loader'                                 ;
 import { CustomTranslateLoaderModule                             } from '../config/customTranslateLoader.module'                     ;
 import { createTranslateLoader                                   } from '../config/customTranslateLoader'                            ;
 import { TabsComponent                                           } from '../components/tabs/tabs'                                    ;

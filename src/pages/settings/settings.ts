@@ -27,7 +27,7 @@ export class Settings implements OnInit {
   public confirmTitle    : string     = ""                ;
   public logOutMsg       : string     = ""                ;
   public languages       : Array<any> = []                ;
-  public selectedLanguage: any        ;
+  public selectedLanguage: any                            ;
   public language        : any        = null              ;
   public appName         : string     = "SESA OnSiteX"    ;
   public appVersion      : string     = "?.?.?"           ;
@@ -238,6 +238,7 @@ export class Settings implements OnInit {
     }).catch(err => {
       Log.l("syncData(): Error with server sync.");
       Log.e(err);
+      this.alert.hideSpinner();
       this.alert.showAlert(lang['error'], lang['manual_sync_error']);
     });
   }
