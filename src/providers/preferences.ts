@@ -1,6 +1,6 @@
 /**
  * Name: Preferences provider
- * Vers: 40
+ * Vers: 41
  * Date: 2017-07-25
  * Auth: David Sargeant
  */
@@ -10,7 +10,7 @@ import { Injectable } from '@angular/core'              ;
 import { Http       } from '@angular/http'              ;
 import { Log        } from '../config/config.functions' ;
 
-export const version  = 40;
+export const version  = 41;
 export var   server   = "securedb.sesaonsite.com";
 export var   port     = 443;
 export var   protocol = "https";
@@ -30,6 +30,7 @@ export class Preferences {
     showDocID: false,
     showDocRev: false,
     showReportTimes: false,
+    showReportSite: false,
   };
   public static DB: any = {
     'reports'      : 'reports_ver101100',
@@ -111,6 +112,15 @@ export class Preferences {
   public setShowTimes(value:boolean) {
     this.DEVELOPER.showReportTimes = value;
     return this.DEVELOPER.showReportTimes;
+  }
+
+  public getShowSite() {
+    return this.DEVELOPER.showReportSite;
+  }
+
+  public setShowSite(value:boolean) {
+    this.DEVELOPER.showReportSite = value;
+    return this.DEVELOPER.showReportSite;
   }
 
   public getPrefs() {
@@ -289,6 +299,8 @@ export class Preferences {
     Preferences.DEVELOPER = {
       showDocID: false,
       showDocRev: false,
+      showReportTimes: false,
+      showReportSite: false,
     }
   }
 

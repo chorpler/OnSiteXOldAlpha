@@ -21,7 +21,7 @@
     </ion-item>
     <ion-item>
       <ion-label>Payroll Periods</ion-label>
-      <ion-input [(ngModel)]="payrollPeriodCount" (ionChange)="updatePayrollPeriodCount(payrollPeriodCount)"></ion-input>
+      <ion-input type="number" [(ngModel)]="payrollPeriodCount" (ionChange)="updatePayrollPeriodCount(payrollPeriodCount)"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label>Show _id</ion-label>
@@ -34,6 +34,10 @@
     <ion-item>
       <ion-label>Show Report Times</ion-label>
       <ion-toggle [(ngModel)]="showTimes" (ionChange)="toggleShowTimes()"></ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-label>Show Report Site</ion-label>
+      <ion-toggle [(ngModel)]="showSite" (ionChange)="toggleShowSite()"></ion-toggle>
     </ion-item>
   </ion-item-group>
   <ion-item-group>

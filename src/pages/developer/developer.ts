@@ -32,6 +32,7 @@ export class DeveloperPage implements OnInit {
   public showRev        : boolean       = this.prefs.getShowRev()   ;
   public showTimes      : boolean       = this.prefs.getShowTimes() ;
   public payrollPeriodCount:number      = this.prefs.getPayrollPeriodCount();
+  public showSite       : boolean       = this.prefs.getShowSite()  ;
 
   constructor(public navCtrl   : NavController    ,
               public navParams : NavParams        ,
@@ -133,9 +134,16 @@ export class DeveloperPage implements OnInit {
     this.prefs.setShowTimes(val);
   }
 
+  public toggleShowSite() {
+    let val = this.showSite;
+    Log.l("toggleShowSite(): Report Site view set to: %s", val);
+    this.prefs.setShowSite(val);
+  }
+
   public updatePayrollPeriodCount(value:number) {
-    Log.l("updatePayrollPeriodCount(): Count set to %d.", value);
-    this.prefs.setPayrollPeriodCount(value);
+    let val = Number(value);
+    Log.l("updatePayrollPeriodCount(): Count set to %d.", val);
+    this.prefs.setPayrollPeriodCount(val);
   }
 
   public developerAlert() {

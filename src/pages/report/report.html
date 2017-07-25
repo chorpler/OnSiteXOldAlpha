@@ -58,12 +58,15 @@
 <!-- ******************************************************************************************************************************  -->
 <!--WORK REPORT  -->
       <ion-list *ngIf="type.name==='work_report'">
-        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes()">
-          <span class="report-dev-group" *ngIf="prefs.getShowID()"><p class="report-dev-header">ID:</p><p class="report-dev-data">{{workOrder.getReportID()}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{workOrder._rev}}</p></span>
+        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
+          <span class="report-dev-group" *ngIf="prefs.getShowID()"   ><p class="report-dev-header">ID:</p><p class="report-dev-data">{{workOrder.getReportID()}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowRev()"  ><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{workOrder._rev}}</p></span>
           <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{workOrder.report_date}}</p></span>
           <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Start:</p><p class="report-dev-data">{{workOrder.time_start}}</p></span>
           <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">End:</p><p class="report-dev-data">{{workOrder.time_end}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{workOrder.client}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{workOrder.location}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{workOrder.location_id}}</p></span>
         </span>
         <ion-item>
           <ion-label>{{'repair_time' | translate}}</ion-label>
@@ -89,10 +92,13 @@
 
 <!-- TRAVEL  -->
       <ion-list *ngIf="type.name==='travel'">
-        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes()">
+        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
           <span class="report-dev-group" *ngIf="prefs.getShowID()"><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
           <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{reportOther._rev}}</p></span>
           <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{reportOther.report_date}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{reportOther.client}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{reportOther.location}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{reportOther.location_id}}</p></span>
         </span>
         <ion-item>
           <ion-label>{{'travel' | translate}} </ion-label>
@@ -108,10 +114,13 @@
 
 <!-- TRAINING  -->
       <ion-list *ngIf="type.name==='training'">
-        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes()">
+        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
           <span class="report-dev-group" *ngIf="prefs.getShowID()"><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
           <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{reportOther._rev}}</p></span>
           <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{reportOther.report_date}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{reportOther.client}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{reportOther.location}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{reportOther.location_id}}</p></span>
         </span>
         <ion-item>
           <ion-label>{{'training' | translate}}</ion-label>
@@ -127,10 +136,13 @@
 
 <!-- STANDBY (BILLABLE)  -->
       <ion-list *ngIf="type.name==='standby'">
-        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes()">
+        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
           <span class="report-dev-group" *ngIf="prefs.getShowID()"><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
           <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{reportOther._rev}}</p></span>
           <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{reportOther.report_date}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{reportOther.client}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{reportOther.location}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{reportOther.location_id}}</p></span>
         </span>
         <ion-item>
           <ion-label class="report-time-label">{{'standby' | translate}}</ion-label>
@@ -140,10 +152,13 @@
 
 <!-- DUNCAN STANDBY  -->
       <ion-list *ngIf="type.name==='standby_hb_duncan'">
-        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes()">
+        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
           <span class="report-dev-group" *ngIf="prefs.getShowID()"><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
           <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{reportOther._rev}}</p></span>
           <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{reportOther.report_date}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{reportOther.client}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{reportOther.location}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{reportOther.location_id}}</p></span>
         </span>
         <ion-item>
           <ion-label class="report-time-label">{{'standby_hb_duncan' | translate}}</ion-label>
@@ -153,10 +168,13 @@
 
 <!-- SICK TIME  -->
       <ion-list *ngIf="type.name==='sick'">
-        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes()">
+        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
           <span class="report-dev-group" *ngIf="prefs.getShowID()"><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
           <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{reportOther._rev}}</p></span>
           <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{reportOther.report_date}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{reportOther.client}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{reportOther.location}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{reportOther.location_id}}</p></span>
         </span>
         <ion-item>
           <ion-label>{{'all_day' | translate}}</ion-label>
@@ -170,10 +188,13 @@
 
 <!-- VACATION  -->
       <ion-list *ngIf="type.name==='vacation'">
-        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes()">
+        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
           <span class="report-dev-group" *ngIf="prefs.getShowID()"><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
           <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{reportOther._rev}}</p></span>
           <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{reportOther.report_date}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{reportOther.client}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{reportOther.location}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{reportOther.location_id}}</p></span>
         </span>
         <ion-item>
           <ion-label class="report-time-label">{{'vacation_hours' | translate}}</ion-label>
@@ -183,10 +204,13 @@
 
 <!-- HOLIDAY  -->
       <ion-list *ngIf="type.name==='holiday'">
-        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes()">
-          <span class="report-dev-group" *ngIf="prefs.getShowID()"><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
+        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
+          <span class="report-dev-group" *ngIf="prefs.getShowID()" ><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
           <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{reportOther._rev}}</p></span>
           <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{reportOther.report_date}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{reportOther.client}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{reportOther.location}}</p></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{reportOther.location_id}}</p></span>
         </span>
         <ion-item>
           <ion-label class="report-time-label">{{'holiday_hours' | translate}}</ion-label>
