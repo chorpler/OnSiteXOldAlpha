@@ -52,6 +52,18 @@
                   <span class="report-history-report-item-header item-rev-label">End</span>
                   <span class="report-history-report-item-data item-rev-data">{{report.time_end}}</span>
                 </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">Client</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.client}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">Location</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.location}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">LocID</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.location_id}}</span>
+                </div>
                 <div class="report-history-report-item">
                   <span class="report-history-report-item-header">{{'hours_header' | translate}}&nbsp;&nbsp;</span>
                   <span class="report-history-report-item-data">{{report.repair_hours}}</span>
@@ -92,6 +104,18 @@
                   <span class="report-history-report-item-header item-rev-label">Date</span>
                   <span class="report-history-report-item-data item-rev-data">{{report.report_date}}</span>
                 </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">Client</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.client}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">Location</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.location}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">LocID</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.location_id}}</span>
+                </div>
                 <div class="report-history-report-item">
                   <span class="report-history-report-item-header">{{'travel' | translate}}&nbsp;&nbsp;</span>
                   <span class="report-history-report-item-data">{{report.travel_location}}</span>
@@ -121,6 +145,18 @@
                 <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowTimes()">
                   <span class="report-history-report-item-header item-rev-label">Date</span>
                   <span class="report-history-report-item-data item-rev-data">{{report.report_date}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">Client</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.client}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">Location</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.location}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">LocID</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.location_id}}</span>
                 </div>
                 <div class="report-history-report-item">
                   <span class="report-history-report-item-header">{{'training' | translate}}&nbsp;&nbsp;</span>
@@ -161,6 +197,18 @@
                   <span class="report-history-report-item-header item-rev-label">Date</span>
                   <span class="report-history-report-item-data item-rev-data">{{report.report_date}}</span>
                 </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">Client</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.client}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">Location</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.location}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">LocID</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.location_id}}</span>
+                </div>
                 <div class="report-history-report-item">
                   <span class="report-history-report-item-header">{{'standby' | translate}}&nbsp;&nbsp;</span>
                   <span class="report-history-report-item-data">{{report.time}}</span>
@@ -186,6 +234,18 @@
                 <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowTimes()">
                   <span class="report-history-report-item-header item-rev-label">Date</span>
                   <span class="report-history-report-item-data item-rev-data">{{report.report_date}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">Client</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.client}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">Location</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.location}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">LocID</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.location_id}}</span>
                 </div>
                 <div class="report-history-report-item">
                   <span class="report-history-report-item-header">{{'standby_hb_duncan' | translate}}&nbsp;&nbsp;</span>
@@ -213,6 +273,18 @@
                   <span class="report-history-report-item-header item-rev-label">Date</span>
                   <span class="report-history-report-item-data item-rev-data">{{report.report_date}}</span>
                 </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">Client</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.client}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">Location</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.location}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">LocID</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.location_id}}</span>
+                </div>
                 <div class="report-history-report-item">
                   <span class="report-history-report-item-header">{{'sick' | translate}}&nbsp;&nbsp;</span>
                   <span class="report-history-report-item-data">{{report.time}}</span>
@@ -239,6 +311,18 @@
                   <span class="report-history-report-item-header item-rev-label">Date</span>
                   <span class="report-history-report-item-data item-rev-data">{{report.report_date}}</span>
                 </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">Client</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.client}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">Location</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.location}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">LocID</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.location_id}}</span>
+                </div>
                 <div class="report-history-report-item">
                   <span class="report-history-report-item-header">{{'vacation' | translate}}&nbsp;&nbsp;</span>
                   <span class="report-history-report-item-data">{{report.time}}</span>
@@ -264,6 +348,18 @@
                 <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowTimes()">
                   <span class="report-history-report-item-header item-rev-label">Date</span>
                   <span class="report-history-report-item-data item-rev-data">{{report.report_date}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">Client</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.client}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">Location</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.location}}</span>
+                </div>
+                <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
+                  <span class="report-history-report-item-header item-rev-label">LocID</span>
+                  <span class="report-history-report-item-data item-rev-data">{{report.location_id}}</span>
                 </div>
                 <div class="report-history-report-item">
                   <span class="report-history-report-item-header">{{'holiday' | translate}}&nbsp;&nbsp;</span>
