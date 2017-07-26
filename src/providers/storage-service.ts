@@ -1,12 +1,12 @@
-import { Injectable                         } from '@angular/core'                ;
 import 'rxjs/add/operator/map'                                                    ;
-import { Storage                            } from '@ionic/storage'               ;
+import { Injectable                         } from '@angular/core'                ;
+import { Platform                           } from 'ionic-angular'                ;
+import { Storage,                           } from '@ionic/storage'               ;
 import { SecureStorage, SecureStorageObject } from '@ionic-native/secure-storage' ;
 import { SrvrSrvcs                          } from './srvr-srvcs'                 ;
 import { AlertService                       } from '../providers/alerts'          ;
 import { UserData                           } from '../providers/user-data'       ;
 import { Log                                } from '../config/config.functions'   ;
-import { STRINGS                            } from '../config/config.strings'     ;
 
 @Injectable()
 export class StorageService {
@@ -22,9 +22,14 @@ export class StorageService {
   remoteDB    : any = {} ;
   localDB     : any = {} ;
 
-  constructor( private storage: Storage,
-               public secureStorage: SecureStorage,
-               public ud: UserData, public alert: AlertService) {
+  constructor(
+    public storage      : Storage,
+    public secureStorage: SecureStorage,
+    public ud           : UserData,
+    public alert        : AlertService,
+    public platform     : Platform,
+
+  ) {
     window['securestorage'] = this.secureStorage;
     window['onsitestorage'] = this;
   }
@@ -171,7 +176,7 @@ export class StorageService {
 
   secureAvailable() {
     return new Promise((resolve, reject) => {
-      if(window['cordova'] !== undefined && this.ud.getPlatform() !== 'android') {
+      if(this.platform.is(if(window['cordova'] !== undefined && this.ud.getPlatform() !== 'android') {
         Log.l("SecureStorage is probably available (cordova and not Android)");
         this.secureStorage.create('OnSiteX').then((sec: SecureStorageObject) => {
           Log.l("SecureStorage available");

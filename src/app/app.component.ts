@@ -17,7 +17,6 @@ import { AlertService                                 } from '../providers/alert
 import { NetworkStatus                                } from '../providers/network-status'       ;
 import { GeolocService                                } from '../providers/geoloc-service'       ;
 import { Log, CONSOLE, moment, Moment                 } from '../config/config.functions'        ;
-import { DOMTimeStamp, Coordinates, Position          } from '../config/geoloc'                  ;
 import { HomePage                                     } from '../pages/home/home'                ;
 import { MessageService                               } from '../providers/message-service'      ;
 import { TabsComponent                                } from '../components/tabs/tabs'           ;

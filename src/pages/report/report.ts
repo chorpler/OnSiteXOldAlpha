@@ -998,7 +998,7 @@ export class ReportPage implements OnInit {
         Log.l("processWO(): Error saving work order to local database.");
         Log.e(err);
         this.alert.hideSpinner();
-        this.alert.showAlert(lang['error'], lang['error_saving_report_message']);
+        this.alert.showAlert(lang['alert'], lang['unable_to_sync_message']);
       });
     } else {
       tempWO._rev = this.workOrder._rev;
@@ -1054,7 +1054,7 @@ export class ReportPage implements OnInit {
     }).catch(err => {
       Log.l("processAlternateWO(): Error saving ReportOther!");
       Log.e(err);
-      this.alert.showAlert(lang['error'], lang['error_saving_report_message']);
+      this.alert.showAlert(lang['alert'], lang['unable_to_sync_message']);
     });
   }
 

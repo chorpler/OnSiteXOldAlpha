@@ -85,7 +85,7 @@ export class AuthSrvcs {
     console.log("AuthSrvcs.login() now starting");
     return new Promise((resolve, reject) => {
       this.server.loginToServer(this.username, this.password).then((session) => {
-        if(session != false) {
+        if(session) {
           /* Login good */
           Log.l("login(): Got valid session:", session);
           this.saveCredentials().then((res) => {
@@ -114,13 +114,14 @@ export class AuthSrvcs {
 
   saveCredentials() {
     let userInfo = {username: this.username, password: this.password};
-    return this.storage.persistentSave('userInfo', userInfo);
+    // return this.storage.persistentSave('userInfo', userInfo);
+    return this.storage.secureSave('userInfo', userInfo);
   }
 
   getCredentials() {
     Log.l("Retrieving credentials...");
     return new Promise((resolve,reject) => {
-      this.storage.persistentGet('userInfo').then((res:any) => {
+      this.storage.secureGet('userInfo').then((res:any) => {
         if(res !== null) {
           let userInfo = res;
           this.setUser(userInfo.username);
@@ -141,13 +142,13 @@ export class AuthSrvcs {
 
   clearCredentials() {
     Log.l("Clearing credentials...");
-    return this.storage.persistentDelete('userInfo');
+    return this.storage.secureDelete('userInfo');
   }
 
   areCredentialsSaved() {
     console.log("Checking status of saved credentials...");
     return new Promise((resolve,reject) => {
-      this.storage.persistentGet('userInfo').then((res:any) => {
+      this.storage.secureGet('userInfo').then((res:any) => {
         if(res !== null) {
         let userInfo = res;
         this.setUser(userInfo.username);
