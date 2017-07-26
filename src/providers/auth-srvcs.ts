@@ -27,30 +27,6 @@ export class AuthSrvcs {
                 public ud: UserData, public alert: AlertService) {
     window["authserv"     ] = this;
   }
-// 'https://martiancouch.hplx.net/reports'
-
-  // -------------- AuthSrvcs METHODS------------------------
-
-  // showConfirm(title: string, text: string) {
-  //   return new Promise((resolve,reject) => {
-  //     let confirm = this.alrt.create({
-  //       title: title,
-  //       message: text,
-  //       buttons: [
-  //                 {text: 'Cancel', role: 'cancel', handler: () => {resolve(false);}},
-  //                 {text: 'OK', handler: () => {resolve(true);}}
-  //                ]
-  //     }); confirm.present();
-  //   });
-  // }
-
-  // showAlert(title: string, subtitle?:string) {
-  //   let alert = this.alrt.create({
-  //     title: title,
-  //     subTitle: subtitle || '',
-  //     buttons: ['OK']
-  //   }); alert.present();
-  // }
 
   setUser(user1: string) {
     this.username = user1;

@@ -1,18 +1,18 @@
-import { Injectable     } from '@angular/core'                ;
-import { Http           } from '@angular/http'                ;
-import { PouchDBService } from '../providers/pouchdb-service' ;
-import { Log            } from '../config/config.functions'   ;
-import { UserData       } from '../providers/user-data'       ;
-import { Message        } from '../domain/message'            ;
-import { Preferences    } from '../providers/preferences'     ;
-import { Comment        } from '../domain/comment'            ;
-import { Jobsite        } from '../domain/jobsite'            ;
-import { WorkOrder      } from '../domain/workorder'          ;
-import { ReportOther    } from '../domain/reportother'        ;
-import { Employee       } from '../domain/employee'           ;
-import { Shift          } from '../domain/shift'              ;
-import { PayrollPeriod  } from '../domain/payroll-period'     ;
 import 'rxjs/add/operator/map'                                ;
+import { Injectable          } from '@angular/core'                ;
+import { Http                } from '@angular/http'                ;
+import { PouchDBService      } from '../providers/pouchdb-service' ;
+import { Log, moment, Moment } from '../config/config.functions'   ;
+import { UserData            } from '../providers/user-data'       ;
+import { Message             } from '../domain/message'            ;
+import { Preferences         } from '../providers/preferences'     ;
+import { Comment             } from '../domain/comment'            ;
+import { Jobsite             } from '../domain/jobsite'            ;
+import { WorkOrder           } from '../domain/workorder'          ;
+import { ReportOther         } from '../domain/reportother'        ;
+import { Employee            } from '../domain/employee'           ;
+import { Shift               } from '../domain/shift'              ;
+import { PayrollPeriod       } from '../domain/payroll-period'     ;
 
 export const noDD     = "_\uffff";
 export const noDesign = {include_docs: true, startkey: noDD };
@@ -834,16 +834,19 @@ export class SrvrSrvcs {
 
   public savePhoneInfo(tech:Employee, data:any) {
     return new Promise((resolve,reject) => {
-      let rdb1 = this.addRDB(this.prefs.DB.config);
+      let dbs = this.prefs.getDB();
+      let rdb1 = this.addRDB(dbs.phoneInfo);
       let userid = tech.getUsername();
-      rdb1.upsert('techPhones', (doc) => {
+      let timestamp = moment();
+      let id = `${userid}_${timestamp.format()}`;
+      rdb1.upsert(id, (doc) => {
         if(doc) {
           let rev = doc._rev;
-          doc[userid] = data;
+          doc['device'] = data;
           return doc;
         } else {
-          doc = {"_id": "techPhones"};
-          doc[userid] = data;
+          doc = {"_id": id};
+          doc['device'] = data;
           return doc;
         }
       }).then(res => {

@@ -192,15 +192,16 @@ export class OnSiteApp {
       }).then(res => {
         let tech = this.ud.getData('employee')[0];
         this.checkForNewMessages();
+        let phoneInfo = res;
         let pp = this.ud.createPayrollPeriods(this.data.employee[0], this.prefs.getPayrollPeriodCount());
-        if(res) {
-          Log.l("OnSite.bootApp(): Got phone data:\n", res);
-          this.server.savePhoneInfo(tech, res).then(res => {
+        if(phoneInfo) {
+          Log.l("OnSite.bootApp(): Got phone data:\n", phoneInfo);
+          this.server.savePhoneInfo(tech, phoneInfo).then(res => {
             resolve(true);
           }).catch(err => {
             Log.l("OnSite.bootApp(): Error saving phone info to server!");
             Log.e(err);
-            reject(err);
+            resolve(false);
           });
         } else {
           resolve(true);
@@ -208,7 +209,7 @@ export class OnSiteApp {
       }).catch(err => {
         Log.l("OnSite.bootApp(): Error with login or with publishing startup:finished event!");
         Log.e(err);
-        reject(false);
+        reject(err);
       });
     });
   }
@@ -346,7 +347,7 @@ export class OnSiteApp {
         }).catch(err => {
           Log.l("checkForAndroidUpdate(): Error!");
           Log.e(err);
-          reject(err);
+          resolve("Android update error, skipping it.");
         });
       } else {
         Log.l("checkForAndroidUpdate(): Platform is not Android. No need for a check.");
