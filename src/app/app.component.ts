@@ -144,27 +144,25 @@ export class OnSiteApp {
             Log.l("OnSite.initializeApp(): bootApp() returned error.");
             Log.e(err);
             callingClass.ud.setAppLoaded(true);
-            callingClass.rootPage = 'Login';
-            setTimeout(() => {
-            }, 50);
+            this.alert.showAlert("STARTUP ERROR", "Error on load, please tell developers:<br>\n<br>\n" + err.message).then(res => {
+              callingClass.rootPage = 'Login';
+            });
           });
         } else {
           Log.w("OnSite.initializeApp(): app boot error has been thrown.");
           callingClass.ud.setAppLoaded(true);
-          setTimeout(() => {
+          this.alert.showAlert("STARTUP ERROR", "Unknown error on loading app.").then(res => {
             callingClass.rootPage = 'Login';
-          }, 500);
+          });
         }
       });
     }).catch(err => {
       Log.l("initializeApp(): Error in getAppVersion() or platform.ready()! That's bad! Or in checkPreferences or translate.get or something!");
       Log.e(err);
-      this.alert.showAlert("ERROR", "Error starting app, please tell developers:<br>\n<br>\n" + err.message);
+      this.alert.showAlert("ERROR", "Error starting app, please tell developers:<br>\n<br>\n" + err.message).then(res => {
+        this.rootPage = 'Login';
+      });
     });
-    // }).catch(err => {
-    //   Log.l("initializeApp(): Error with getAppVersion() or platform.ready()! That's bad!");
-    //   Log.e(err);
-    // });
   }
 
   bootApp() {

@@ -97,7 +97,14 @@ export class StorageService {
           }).catch((err) => {
             Log.e("secureSave(): Error saving credentials in secure storage!");
             Log.e(err);
-            reject(err);
+            Log.l("secureSave(): SecureStorage not available, using Localstorage...");
+            this.persistentSave(key, value).then((res) => {
+              resolve(res);
+            }).catch((err) => {
+              Log.e("secureSave(): Error while falling back to LocalStorage!");
+              Log.e(err);
+              reject(err);
+            });
           });
         } else {
           Log.l("secureSave(): SecureStorage not available, using Localstorage...");
