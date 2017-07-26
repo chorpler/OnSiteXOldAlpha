@@ -256,8 +256,10 @@ export class OnSiteApp {
         let updatePrefs = storedPrefs;
         if(storedPrefs !== null && storedPrefs !== undefined && typeof storedPrefs !== 'undefined' && storedPrefs !== 'undefined') {
           updatePrefs = this.prefs.comparePrefs(storedPrefs);
+          this.prefs.setPrefs(updatePrefs);
+        } else {
+          updatePrefs = this.prefs.getPrefs();
         }
-        this.prefs.setPrefs(updatePrefs);
         Log.l("OnSite: Preferences at version %d, saving again.", this.prefs.USER.preferencesVersion);
         this.storage.set('PREFS', updatePrefs).then((res) => {
           Log.l("OnSite: Preferences stored:\n", this.prefs.getPrefs());
