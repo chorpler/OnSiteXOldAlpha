@@ -236,8 +236,9 @@ export class Settings implements OnInit {
   public syncData() {
     let lang = this.lang;
     Log.l("syncData(): Started...");
+    let db = this.prefs.getDB();
     this.alert.showSpinner(lang['spinner_sending_reports_to_server']);
-    this.server.syncToServer(this.prefs.DB.reports, this.prefs.DB.reports).then(res => {
+    this.server.syncToServer(db.reports, db.reports).then(res => {
       Log.l("syncData(): Successfully synchronized to server.");
       this.alert.hideSpinner();
       this.alert.showAlert(lang['success'], lang['manual_sync_success']);

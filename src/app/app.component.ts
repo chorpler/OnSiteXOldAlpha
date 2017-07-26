@@ -143,25 +143,37 @@ export class OnSiteApp {
           }).catch(err => {
             Log.l("OnSite.initializeApp(): bootApp() returned error.");
             Log.e(err);
+            let errorText = "";
+            if(err && err.message) {
+              errorText = err.message;
+            } else if(typeof err === 'string') {
+              errorText = err;
+            }
             callingClass.ud.setAppLoaded(true);
-            this.alert.showAlert("STARTUP ERROR", "Error on load, please tell developers:<br>\n<br>\n" + err.message).then(res => {
+            // this.alert.showAlert("STARTUP ERROR", "Error on load, please tell developers:<br>\n<br>\n" + errorText).then(res => {
               callingClass.rootPage = 'Login';
-            });
+            // });
           });
         } else {
           Log.w("OnSite.initializeApp(): app boot error has been thrown.");
           callingClass.ud.setAppLoaded(true);
-          this.alert.showAlert("STARTUP ERROR", "Unknown error on loading app.").then(res => {
+          // this.alert.showAlert("STARTUP ERROR", "Unknown error on loading app.").then(res => {
             callingClass.rootPage = 'Login';
-          });
+          // });
         }
       });
     }).catch(err => {
       Log.l("initializeApp(): Error in getAppVersion() or platform.ready()! That's bad! Or in checkPreferences or translate.get or something!");
       Log.e(err);
-      this.alert.showAlert("ERROR", "Error starting app, please tell developers:<br>\n<br>\n" + err.message).then(res => {
+      let errorText = "";
+      if (err && err.message) {
+        errorText = err.message;
+      } else if (typeof err === 'string') {
+        errorText = err;
+      }
+      // this.alert.showAlert("ERROR", "Error starting app, please tell developers:<br>\n<br>\n" + errorText).then(res => {
         this.rootPage = 'Login';
-      });
+      // });
     });
   }
 

@@ -378,36 +378,12 @@ export class ReportPage implements OnInit {
           Log.w("User attempted to create duplicate standby report.");
           let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
           let warningText = sprintf(lang['duplicate_standby_report'], warnIcon);
-          // this.type = oldType;
-          // this._type.setValue(oldType);
-          // this.alert.showAlert(lang['error'], warningText);
-          // this.alert.showAlert(lang['error'], warningText).then(res => {
-            // this.type = oldType;
-            // setTimeout(() => {
-              // this._type.setValue(oldType);
-              // error = true;
-            // this.zone.run(() => { this._type.setValue(this.oldType); });
-            // }, 500);
-          // });
           this._type.setValue(this.selReportType[0]);
           setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
-        } else if(hours >   0) {
+        } else if(hours > 0) {
           Log.w("User attempted to create a standby report in the same shift as an existing work report.");
           let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
           let warningText = sprintf(lang['standby_report_xor_work_report_existing_work_report'], warnIcon);
-          // this.type = oldType;
-          // this._type.setValue(oldType);
-          // this.alert.showAlert(lang['error'], warningText);
-          // });
-          // this.alert.showAlert(lang['error'], warningText).then(res => {
-            // this.type = oldType;
-            // this._type.setValue(oldType);
-            // setTimeout(() => {
-              // this._type.setValue(oldType);
-              // this.zone.run(() => {this._type.setValue(this.oldType);});
-              // error = true;
-            // }, 500);
-          // });
           this._type.setValue(this.selReportType[0]);
           setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
         } else {
@@ -420,22 +396,26 @@ export class ReportPage implements OnInit {
         let status = this.selectedShift.getShiftReportsStatus(true).code;
         let i = status.indexOf("B");
         let j = status.indexOf("S");
-        if(this.techProfile.location !== "DUNCAN") {
+        if(this.techProfile.location !== "DUNCAN" && this.techProfile.location !== "DCN") {
           Log.w("User attempted to create Standby: HB Duncan report without being set to Duncan location.");
           let strIcon = "<span class='alert-icon'>&#xf419;</span>";
           let warnText = sprintf(lang['standby_hb_duncan_wrong_location'], strIcon)
           let warnFont = sprintf("<span class='alert-with-icon'>%s</span>", warnText);
-          // this.alert.showAlert(lang['error'], warnFont);
-          // this._type.setValue(oldType);
-          // this.type = oldType;
-          // this._type.setValue(oldType);
-          // this.alert.showAlert(lang['error'], warnFont);
-          // this.alert.showAlert(lang['error'], warnFont).then(res => {
-          //   Log.l("Resetting form.type to:\n", this.selReportType[0])
-          //   this._type.setValue(this.selReportType[0]);
-          // });
-          this._type.setValue(this.selReportType[0]);
-          setTimeout(() => { this.alert.showAlert(lang['error'], warnFont); });
+          setTimeout(() => {
+            this.alert.showConfirmYesNo(lang['alert'], lang['standby_hb_duncan_wrong_location']).then(res => {
+              if(res) {
+                this.type = value;
+                this.reportOther.type = value.value;
+                this.reportOther.time = 8;
+                this._time.setValue(8);
+                this._type.setValue(this.selReportType[0], {emitEvent: false});
+              } else {
+
+              }
+            });
+          });
+
+          // setTimeout(() => { this.alert.showAlert(lang['error'], warnFont); });
         } else if(i > -1 || j > -1) {
           Log.w("User attempted to create duplicate standby report.");
           let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
@@ -893,11 +873,12 @@ export class ReportPage implements OnInit {
             }
           }
         }
-      } else if(type === "standby_hb_duncan" && this.techProfile.location !== "DUNCAN") {
+      } else if(type === "standby_hb_duncan" && this.techProfile.location.toUpperCase() !== "DUNCAN" && this.techProfile.location.toUpperCase() !== "DCN") {
         // let response = await this.showPossibleError('unit');
         Log.l("checkForUserMistakes(): User tried to set standby_hb_duncan type but is not set to HB Duncan location.");
-        this.alert.showAlert(lang['error'], lang['standby_hb_duncan_wrong_location']);
-        return false;
+        let response = await this.showPossibleError('hb_duncan_standby');
+        // this.alert.showAlert(lang['error'], lang['standby_hb_duncan_wrong_location']);
+        if(response) {return false;}
         // if (response) {
         //   // this.unitNumberInput.setFocus();
         //   setTimeout(() => {
@@ -1180,17 +1161,37 @@ export class ReportPage implements OnInit {
     }
   }
 
+  public syncData() {
+    let lang = this.lang;
+    Log.l("syncData(): Started...");
+    let db = this.prefs.getDB();
+    this.alert.showSpinner(lang['spinner_sending_reports_to_server']);
+    this.server.syncToServer(db.reports, db.reports).then(res => {
+      Log.l("syncData(): Successfully synchronized to server.");
+      this.alert.hideSpinner();
+      this.alert.showAlert(lang['success'], lang['manual_sync_success']);
+    }).catch(err => {
+      Log.l("syncData(): Error with server sync.");
+      Log.e(err);
+      this.alert.hideSpinner();
+      this.alert.showAlert(lang['error'], lang['manual_sync_error']);
+    });
+  }
+
   deleteWorkOrder(event) {
     Log.l("deleteWorkOrder() clicked ...");
     let lang = this.lang;
+    let db = this.prefs.getDB();
+    let tmpReport = this.workOrder;
     this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
       if (res) {
         this.alert.showSpinner(lang['spinner_deleting_report']);
         Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
-        let wo = this.workOrder.clone();
+        // let wo = this.workOrder.clone();
+        let wo = this.workOrder;
         let reports = this.ud.getWorkOrderList();
         let i = reports.indexOf(this.workOrder);
-        this.server.deleteDoc(this.prefs.DB.reports, wo).then((res) => {
+        this.db.deleteDoc(db.reports, wo).then((res) => {
           Log.l("deleteWorkOrder(): Success:\n", res);
           Log.l("Going to delete work order %d in the list.", i);
           let tmpReport = this.workOrder;
@@ -1199,13 +1200,11 @@ export class ReportPage implements OnInit {
           }
           this.selectedShift.removeShiftReport(tmpReport);
           this.ud.removeReport(tmpReport);
-          // if (this.mode === 'Add' || this.mode === 'Añadir') {
-          //   this.alert.hideSpinner();
-          //   this.tabs.goToPage('OnSiteHome');
-          // } else {
+          return this.server.syncToServer(db.reports, db.reports);
+        }).then(res => {
+          Log.l(`deleteWorkOrder(): Synchronized local '${db.reports}' to remote.`)
           this.alert.hideSpinner();
           this.tabs.goToPage('ReportHistory', {report_deleted: tmpReport});
-          // }
         }).catch((err) => {
           this.alert.hideSpinner();
           Log.l("deleteWorkOrder(): Error!");
@@ -1227,6 +1226,7 @@ export class ReportPage implements OnInit {
     Log.l("deleteOtherReport() clicked ...");
     let other = this.reportOther;
     let lang = this.lang;
+    let db = this.prefs.getDB();
     this.audio.play('deleteotherreport');
     this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
       if (res) {
@@ -1236,9 +1236,8 @@ export class ReportPage implements OnInit {
         let others = shift.getShiftOtherReports();
         let ro:ReportOther = other.clone();
         let reportDate = ro.report_date.format("YYYY-MM-DD");
-        this.server.deleteDoc(this.prefs.DB.reports_other, other).then((res) => {
+        this.db.deleteDoc(db.reports_other, other).then((res) => {
           Log.l("deleteOtherReport(): Success:\n", res);
-          // this.items.splice(i, 1);
           let tmpReport = this.reportOther;
           let i = others.indexOf(other);
           if(i > -1) {
@@ -1246,8 +1245,9 @@ export class ReportPage implements OnInit {
           }
           this.selectedShift.removeOtherReport(tmpReport);
           this.ud.removeOtherReport(tmpReport);
-          // i = this.filtReports[reportDate].indexOf(other);
-          // this.filtReports[reportDate].splice(i, 1);
+          return this.server.syncToServer(db.reports_other, db.reports_other);
+        }).then(res => {
+          Log.l(`deleteOtherReport(): Synchronized local '${db.reports}' to remote.`);
           this.alert.hideSpinner();
           this.tabs.goToPage('ReportHistory', { report_deleted: this.reportOther });
         }).catch((err) => {
