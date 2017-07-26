@@ -119,7 +119,14 @@ export class StorageService {
       }).catch((err) => {
         Log.l("secureSave(): Error while checking for availability of SecureStorage.");
         Log.e(err);
-        reject(err);
+        Log.l("secureSave(): SecureStorage not available, using Localstorage...");
+        this.persistentSave(key, value).then((res) => {
+          resolve(res);
+        }).catch((err) => {
+          Log.e("secureSave(): Error while falling back to LocalStorage!");
+          Log.e(err);
+          reject(err);
+        });
       });
     });
   }
@@ -140,12 +147,34 @@ export class StorageService {
               resolve(JSON.parse(value));
             } else {
               Log.e(`secureGet(): Key '${key}' not found in secure storage.`);
-              reject(false);
+              Log.l("secureGet(): SecureStorage does not have credentials, falling back to LocalStorage.");
+              this.persistentGet(key).then(res => {
+                if (res) {
+                  resolve(res);
+                } else {
+                  Log.l(`secureGet->persistentGet(): Value was undefined or null for key '${key}'.`);
+                  reject("Value undefined");
+                }
+              }).catch(err => {
+                Log.l(`secureGet(): Error falling back to LocalStorage.`);
+                Log.e(err);
+                reject(err);
+              });
             }
           }).catch((err) => {
-            Log.e(`secureGet(): Error retrieving '${key}' from secure storage.`);
-            Log.e(err);
-            reject(err);
+            Log.e(`secureGet(): Error retrieving '${key}' from secure storage. SecureStorage not available or value not found, falling back to LocalStorage.`);
+            this.persistentGet(key).then(res => {
+              if (res) {
+                resolve(res);
+              } else {
+                Log.l(`secureGet->persistentGet(): Value was undefined or null for key '${key}'.`);
+                reject(err);
+              }
+            }).catch(err => {
+              Log.l(`secureGet(): Error falling back to LocalStorage.`);
+              Log.e(err);
+              reject(err);
+            });
           });
         } else {
           Log.l("secureGet(): SecureStorage not available, falling back to LocalStorage.");
@@ -156,7 +185,11 @@ export class StorageService {
               Log.l(`secureGet->persistentGet(): Value was undefined or null for key '${key}'.`);
               reject("Value undefined");
             }
-          })
+          }).catch(err => {
+            Log.l(`secureGet(): Error falling back to LocalStorage.`);
+            Log.e(err);
+            reject(err);
+          });
         }
       });
     });

@@ -50,7 +50,7 @@ export class MessageService {
           return timeA.isAfter(timeB) ? -1 : timeA.isBefore(timeB) ? 1 : 0;
         }
         messages.sort(_orderBy);
-        Log.l("getMessages(): Sorted array is:\n", messages);
+        // Log.l("getMessages(): Sorted array is:\n", messages);
         this.messages = messages;
         this.ud.setMessages(messages);
         MessageService.messageInfo.new_messages = this.getNewMessageCount();

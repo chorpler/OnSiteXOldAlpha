@@ -230,6 +230,7 @@ export class OnSiteApp {
 
   public checkForNewMessages() {
     let interval = this.prefs.getMessageCheckInterval();
+    // Log.l("checkForNewMessages(): Interval is set to %d.", interval);
     this.messageCheckTimeout = setInterval(() => {
       Log.l("checkForNewMessages(): Fetching new messages...");
       this.msg.getMessages().then(res => {
@@ -238,8 +239,6 @@ export class OnSiteApp {
         Log.l("checkForNewMessages(): Caught error. Silently dying.");
         Log.e(err);
       });
-    // }, 1000 * 60 * 15);
-    // }, 1000 * 60 * 1);
     }, 1000 * 60 * interval);
   }
 

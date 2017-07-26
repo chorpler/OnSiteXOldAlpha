@@ -631,7 +631,7 @@ export class SrvrSrvcs {
         //     out.push(local[match]);
         //   }
         // }
-        Log.l("fetchNewMessages(): Final output of new messages is:\n", out);
+        // Log.l("fetchNewMessages(): Final output of new messages is:\n", out);
         resolve(out);
       }).catch(err => {
         Log.l("fetchNewMessages(): Error retrieving messages from server.");
@@ -839,14 +839,15 @@ export class SrvrSrvcs {
       let userid = tech.getUsername();
       let timestamp = moment();
       let id = `${userid}_${timestamp.format()}`;
+      let phoneDoc = {'_id': id, 'username': tech.getUsername(), 'timestampM': timestamp.format(), 'timestamp': timestamp.toExcel(), 'device': data};
       rdb1.upsert(id, (doc) => {
         if(doc) {
           let rev = doc._rev;
-          doc['device'] = data;
-          return doc;
+          phoneDoc['_rev'] = rev;
+          return phoneDoc;
         } else {
-          doc = {"_id": id};
-          doc['device'] = data;
+          doc = phoneDoc;
+          delete doc['_rev'];
           return doc;
         }
       }).then(res => {
