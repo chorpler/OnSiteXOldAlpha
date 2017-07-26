@@ -143,12 +143,12 @@ export class OnSiteApp {
           }).catch(err => {
             Log.l("OnSite.initializeApp(): bootApp() returned error.");
             Log.e(err);
-            let errorText = "";
-            if(err && err.message) {
-              errorText = err.message;
-            } else if(typeof err === 'string') {
-              errorText = err;
-            }
+            // let errorText = "";
+            // if(err && err.message) {
+            //   errorText = err.message;
+            // } else if(typeof err === 'string') {
+            //   errorText = err;
+            // }
             callingClass.ud.setAppLoaded(true);
             // this.alert.showAlert("STARTUP ERROR", "Error on load, please tell developers:<br>\n<br>\n" + errorText).then(res => {
               callingClass.rootPage = 'Login';
@@ -187,42 +187,54 @@ export class OnSiteApp {
         if (language !== 'en') {
           this.translate.use(language);
         }
-        return this.checkLogin();
-      }).then(res => {
-        Log.l("OnSite.bootApp(): User passed login check. Should be fine. Checking for Android app update.");
-        return this.checkForAndroidUpdate();
-      }).then(res => {
-        Log.l("OnSite.bootApp(): Done with Android update check. Now getting all data from server.");
-        return this.server.getAllData(this.tech);
-      }).then(res => {
-        this.data = res;
-        this.ud.setData(this.data);
-        return this.msg.getMessages();
-      }).then(res => {
-        Log.l("OnSite.bootApp(): Got new messages.");
-        return this.ud.checkPhoneInfo();
-      }).then(res => {
-        let tech = this.ud.getData('employee')[0];
-        this.checkForNewMessages();
-        let phoneInfo = res;
-        let pp = this.ud.createPayrollPeriods(this.data.employee[0], this.prefs.getPayrollPeriodCount());
-        if(phoneInfo) {
-          Log.l("OnSite.bootApp(): Got phone data:\n", phoneInfo);
-          this.server.savePhoneInfo(tech, phoneInfo).then(res => {
-            resolve(true);
+        this.checkLogin().then(res => {
+          Log.l("OnSite.bootApp(): User passed login check. Should be fine. Checking for Android app update.");
+          this.checkForAndroidUpdate().then(res => {
+            Log.l("OnSite.bootApp(): Done with Android update check. Now getting all data from server.");
+            return this.server.getAllData(this.tech);
+          }).then(res => {
+            this.data = res;
+            this.ud.setData(this.data);
+            return this.msg.getMessages();
+          }).then(res => {
+            Log.l("OnSite.bootApp(): Got new messages.");
+            return this.ud.checkPhoneInfo();
+          }).then(res => {
+            let tech = this.ud.getData('employee')[0];
+            this.checkForNewMessages();
+            let phoneInfo = res;
+            let pp = this.ud.createPayrollPeriods(this.data.employee[0], this.prefs.getPayrollPeriodCount());
+            if(phoneInfo) {
+              Log.l("OnSite.bootApp(): Got phone data:\n", phoneInfo);
+              this.server.savePhoneInfo(tech, phoneInfo).then(res => {
+                resolve(true);
+              }).catch(err => {
+                Log.l("OnSite.bootApp(): Error saving phone info to server!");
+                Log.e(err);
+                resolve(false);
+              });
+            } else {
+              resolve(true);
+            }
           }).catch(err => {
-            Log.l("OnSite.bootApp(): Error saving phone info to server!");
+            Log.l("OnSite.bootApp(): Erorr ")
             Log.e(err);
-            resolve(false);
+            this.alert.showAlert("STARTUP ERROR", "Caught app loading error:<br>\n<br>\n" + err.message).then(res => {
+              reject(err);
+            });
           });
-        } else {
-          resolve(true);
-        }
+        }).catch(err => {
+          Log.l("OnSite.bootApp(): Error with login");
+          Log.e(err);
+          reject(err);
+        });
       }).catch(err => {
-        Log.l("OnSite.bootApp(): Error with login or with publishing startup:finished event!");
+        Log.l("OnSite.bootApp(): Error with check preferences.");
         Log.e(err);
-        reject(err);
-      });
+        this.alert.showAlert("STARTUP ERROR", "Caught preference error:<br>\n<br>\n" + err.message).then(res => {
+          reject(err);
+        });
+      })
     });
   }
 
