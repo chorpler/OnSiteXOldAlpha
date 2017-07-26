@@ -183,5 +183,6 @@
   "help_report_history": "Historial de Reportes de Trabajo",
   "help_tech_settings": "Informacion del Usuario",
   "help_messages": "Mensajes",
-  "help_settings": "Ajustes"
+  "help_settings": "Ajustes",
+  "weeks_to_show": "Semanas"
 }

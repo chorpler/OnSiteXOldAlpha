@@ -7,6 +7,10 @@
 <ion-content padding class="page-content message-page-content">
   <ion-card>
     <ion-list no-border>
+      <ion-item class="message-header-item message-date">
+        <h4 class="message-label">{{'message_date' | translate}}</h4>
+        <p class="message-item-text">{{message.getMessageDate().format("MMM DD, YYYY")}}</p>
+      </ion-item>
       <ion-item class="message-header-item message-sender">
         <h4 class="message-label">{{'message_from' | translate}}</h4>
         <p class="message-item-text">{{message.getMessageSender()}}</p>

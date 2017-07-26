@@ -37,6 +37,9 @@ export class Settings implements OnInit {
   public static PREFS    : any        = new Preferences() ;
   public prefs           : any        = Settings.PREFS    ;
   public keysetup        : any                            ;
+  public advanced        : boolean    = false             ;
+  public weeksToShowList : Array<number> = []             ;
+  public weeksToShow     : number        = this.prefs.getPayrollPeriodCount();
 
   constructor( public navCtrl: NavController, public platform: Platform,  public auth: AuthSrvcs, public server:SrvrSrvcs, public alert: AlertService, public tabs: TabsComponent, public translate: TranslateService, public version:AppVersion, public storage:StorageService, public modalCtrl:ModalController, public ud:UserData, public zone:NgZone) {
     window["onsitesettings"] = this;
@@ -73,6 +76,9 @@ export class Settings implements OnInit {
       'success',
     ]
     this.lang = this.translate.instant(translations);
+    for(let i = 1; i < 9; i++) {
+      this.weeksToShowList.push(i);
+    }
     let en = { value: 'en', display: 'English' };
     let es = { value: 'es', display: 'Español' };
     this.languages = [en, es];
@@ -246,6 +252,24 @@ export class Settings implements OnInit {
   public syncHelp() {
     let lang = this.lang;
     this.alert.showAlert(lang['sync_data'], lang['sync_data_help']);
+  }
+
+  public showAdvanced() {
+    this.advanced = !this.advanced;
+  }
+
+  public updateWeeksToShow(weeks:number) {
+    let lang = this.lang;
+    let count = Number(weeks);
+    this.prefs.setPayrollPeriodCount(weeks);
+    this.savePreferences().then(res => {
+      Log.l("saved weeks to show.");
+      this.ud.reloadApp();
+    }).catch(err => {
+      Log.l("updateWeeksToShow(): error saving weeks to show.");
+      Log.e(err);
+      this.alert.showAlert(lang['error'], err.message);
+    });
   }
 
 }

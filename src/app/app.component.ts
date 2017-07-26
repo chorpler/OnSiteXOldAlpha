@@ -53,6 +53,7 @@ export class OnSiteApp {
   public tech                    : Employee                    ;
   public appLanguages            : Array<string> = ['en','es'] ;
   public keysetup                : any                         ;
+  public messageCheckTimeout     : any                         ;
 
   constructor(
                 public platform    : Platform          ,
@@ -193,6 +194,7 @@ export class OnSiteApp {
         return this.ud.checkPhoneInfo();
       }).then(res => {
         let tech = this.ud.getData('employee')[0];
+        this.checkForNewMessages();
         let pp = this.ud.createPayrollPeriods(this.data.employee[0], this.prefs.getPayrollPeriodCount());
         if(res) {
           Log.l("OnSite.bootApp(): Got phone data:\n", res);
@@ -226,6 +228,21 @@ export class OnSiteApp {
         reject(false);
       }
     });
+  }
+
+  public checkForNewMessages() {
+    let interval = this.prefs.getMessageCheckInterval();
+    this.messageCheckTimeout = setInterval(() => {
+      Log.l("checkForNewMessages(): Fetching new messages...");
+      this.msg.getMessages().then(res => {
+        Log.l("checkForNewMessages(): Checked sucessfully.");
+      }).catch(err => {
+        Log.l("checkForNewMessages(): Caught error. Silently dying.");
+        Log.e(err);
+      });
+    // }, 1000 * 60 * 15);
+    // }, 1000 * 60 * 1);
+    }, 1000 * 60 * interval);
   }
 
   showToast(text: string) {

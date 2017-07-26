@@ -1,6 +1,6 @@
 /**
  * Name: Preferences provider
- * Vers: 41
+ * Vers: 42
  * Date: 2017-07-25
  * Auth: David Sargeant
  */
@@ -10,7 +10,7 @@ import { Injectable } from '@angular/core'              ;
 import { Http       } from '@angular/http'              ;
 import { Log        } from '../config/config.functions' ;
 
-export const version  = 41;
+export const version  = 42;
 export var   server   = "securedb.sesaonsite.com";
 export var   port     = 443;
 export var   protocol = "https";
@@ -25,6 +25,7 @@ export class Preferences {
     audio: false,
     stayInReports: false,
     spinnerSpeed: 10,
+    messageCheckInterval: 15,
   };
   public static DEVELOPER: any = {
     showDocID: false,
@@ -177,6 +178,16 @@ export class Preferences {
     return this.USER.payroll_periods;
   }
 
+  public getMessageCheckInterval() {
+    return this.USER.messageCheckInterval;
+  }
+
+  public setMessageCheckInterval(value:number) {
+    let val = Number(value);
+    this.USER.messageCheckInterval = val;
+    return this.USER.messageCheckInterval;
+  }
+
   public static getPrefs() {
     return { DB: Preferences.DB, SERVER: Preferences.SERVER, USER: Preferences.USER, DEVELOPER: Preferences.DEVELOPER };
   }
@@ -294,6 +305,7 @@ export class Preferences {
       audio: false,
       stayInReports: false,
       spinnerSpeed: 10,
+      messageCheckInterval: 15,
     }
 
     Preferences.DEVELOPER = {
