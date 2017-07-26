@@ -142,7 +142,14 @@ export class StorageService {
           });
         } else {
           Log.l("secureGet(): SecureStorage not available, falling back to LocalStorage.");
-          resolve(this.persistentGet(key));
+          this.persistentGet(key).then(res => {
+            if(res) {
+              resolve(res);
+            } else {
+              Log.l(`secureGet->persistentGet(): Value was undefined or null for key '${key}'.`);
+              reject("Value undefined");
+            }
+          })
         }
       });
     });
@@ -168,7 +175,14 @@ export class StorageService {
             reject(err);
           });
         } else {
-          resolve(this.persistentDelete(key));
+          this.persistentDelete(key).then(res => {
+            Log.l(`secureDelete->persistentDelete(): Successfully deleted key '${key}'.`);
+            resolve(res);
+          }).catch(err => {
+            Log.l(`secureDelete->persistentDelete(): Error deleting key '${key}'.`);
+            Log.e(err);
+            reject(err);
+          })
         }
       });
     });
@@ -176,7 +190,7 @@ export class StorageService {
 
   secureAvailable() {
     return new Promise((resolve, reject) => {
-      if(this.platform.is(if(window['cordova'] !== undefined && this.ud.getPlatform() !== 'android') {
+      if(this.platform.is('cordova') && !this.platform.is('android')) {
         Log.l("SecureStorage is probably available (cordova and not Android)");
         this.secureStorage.create('OnSiteX').then((sec: SecureStorageObject) => {
           Log.l("SecureStorage available");
@@ -185,7 +199,8 @@ export class StorageService {
           Log.l("SecureStorage not available");
           resolve(false);
         });
-      } else if(this.ud.getPlatform() == 'android') {
+      // } else if(this.ud.getPlatform() == 'android') {
+      } else if(this.platform.is('cordova') && this.platform.is('android')) {
         // 2017-07-06: Fuck it, nobody wants to see this warning
         resolve(false);
         // let ss = {};
