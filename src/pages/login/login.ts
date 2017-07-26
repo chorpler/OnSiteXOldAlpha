@@ -121,7 +121,7 @@ export class Login implements OnInit {
         this.alert.hideSpinner();
         this.events.publish('startup:finished', true);
         this.events.publish('login:finished', true);
-        this.ud.reloadApp();
+        // this.ud.reloadApp();
         // if(this.mode === 'modal') {
         //   this.tabs.setTabDisable(false);
         //   this.viewCtrl.dismiss(creds);
