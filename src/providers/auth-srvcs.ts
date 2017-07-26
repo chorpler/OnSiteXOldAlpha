@@ -112,332 +112,15 @@ export class AuthSrvcs {
     });
   }
 
-  // saveCredentials() {
-  //   console.log("Saving credentials...");
-  //   window["secureStorage"] = this.secureStorage;
-  //   return new Promise((resolve,reject) => {
-  //     this.isSecureStorageAvailable().then((ssAvailable) => {
-  //       if(ssAvailable) {
-  //         Log.l("saveCredentials(): Using SecureStorage...");
-  //         this.secureStorage.create('OnSiteX').then((sec: SecureStorageObject) => {
-  //           let userInfo = {username: this.username, password: this.password};
-  //           return sec.set('userInfo', JSON.stringify(userInfo));
-  //         }).then((res) => {
-  //           console.log("saveCredentials(): Credentials saved in secure storage!");
-  //           console.log(res);
-  //           resolve(res);
-  //         }).catch((err) => {
-  //           console.log("saveCredentials(): Error saving credentials in secure storage!");
-  //           console.warn(err);
-  //           reject(err);
-  //         });
-  //       } else {
-  //         Log.l("saveCredentials(): SecureStorage not available, using Localstorage...");
-  //         let userInfo = {username: this.username, password: this.password};
-  //         this.storage.set('userInfo', userInfo).then((res) => {
-  //           console.log("Saved credentials to local storage.");
-  //           console.log(res);
-  //           resolve(res);
-  //         }).catch((err) => {
-  //           console.log("Error saving credentials in local storage!");
-  //           console.warn(err);
-  //           reject(err);
-  //         });
-  //       }
-  //     }).catch((outerError) => {
-  //       Log.l("saveCredentials(): Error while checking for availability of SecureStorage.");
-  //       Log.e(outerError);
-  //       reject(outerError);
-  //     });
-  //   });
-  // }
-
-  // getCredentials() {
-  //   console.log("Retrieving credentials...");
-  //   return new Promise((resolve,reject) => {
-  //     this.isSecureStorageAvailable().then((ssAvailable) => {
-  //       Log.l("SecureStorageAvailable returned: ", ssAvailable);
-  //       if(ssAvailable) {
-  //         Log.l("getCredentials(): Using SecureStorage...");
-  //         this.secureStorage.create('OnSiteX').then((sec: SecureStorageObject) => {
-  //           let userLogin = {username: this.username, password: this.password};
-  //           return sec.get('userInfo');
-  //         }).then((res) => {
-  //           if(res != null) {
-  //             console.log("getCredentials(): Credentials retrieved from secure storage!");
-  //             console.log(res);
-  //             let userInfo = JSON.parse(res);
-  //             this.setUser(userInfo.username);
-  //             this.setPassword(userInfo.password);
-  //             this.ud.storeCredentials(userInfo.username, userInfo.password);
-  //             // this.ud.setLoginStatus(true);
-  //             resolve(userInfo);
-  //           } else {
-  //             Log.l("getCredentials(): Credentials not available.");
-  //             reject(false);
-  //           }
-  //         }).catch((err) => {
-  //           console.log("getCredentials(): Error getting credentials from secure storage!");
-  //           console.error(err);
-  //           reject(err);
-  //         });
-  //       } else {
-  //         Log.l("getCredentials(): SecureStorage not available, using Localstorage...");
-  //         this.storage.get('userInfo').then((res) => {
-  //           if(res != null) {
-  //             console.log("getCredentials(): Credentials retrieved from local storage!");
-  //             console.log(res);
-  //             let userInfo = res;
-  //             this.setUser(userInfo.username);
-  //             this.setPassword(userInfo.password);
-  //             this.ud.storeCredentials(userInfo.username, userInfo.password);
-  //             // this.ud.setLoginStatus(true);
-  //             resolve(userInfo);
-  //           } else {
-  //             Log.l("getCredentials(): Credentials not available.");
-  //             reject(false);
-  //           }
-  //         }).catch((err) => {
-  //           console.log("getCredentials(): Error retrieving credentials from local storage!");
-  //           console.error(err);
-  //           reject(err);
-  //         });
-  //       }
-  //     }).catch((outerError) => {
-  //       Log.l("getCredentials(): Error while checking for availability of SecureStorage.");
-  //       Log.e(outerError);
-  //       reject(outerError);
-  //     });
-  //   });
-  // }
-
-  // clearCredentials() {
-  //   console.log("Clearing credentials...");
-  //   window["secureStorage"] = this.secureStorage;
-  //   return new Promise((resolve,reject) => {
-  //     if(typeof window['cordova'] != 'undefined') {
-  //       console.log("clearCredentials(): Running in a Cordova environment, using SecureStorage...");
-  //       this.secureStorage.create('OnSiteX').then((secstorage: SecureStorageObject) => {
-  //         // let userLogin = {username: this.username, password: this.password};
-  //         return secstorage.remove('userLogin');
-  //       }).then((res) => {
-  //         console.log("Credentials successfully cleared from secure storage!");
-  //         console.log(res);
-  //         resolve(res);
-  //       }).catch((err) => {
-  //         console.log("Error clearing credentials in secure storage!");
-  //         console.warn(err);
-  //         reject(err);
-  //       });
-  //     } else {
-  //       console.log("clearCredentials(): Running in a browser environment, using LocalStorage...");
-  //       // let userLogin = {username: this.username, password: this.password};
-  //       this.storage.remove('userLogin').then((res) => {
-  //         console.log("Cleared credentials from local storage.");
-  //         console.log(res);
-  //         resolve(res);
-  //       }).catch((err) => {
-  //         console.log("Error clearing credentials from local storage!");
-  //         console.warn(err);
-  //         reject(err);
-  //       });
-  //     }
-  //   });
-  // }
-
-  // areCredentialsSaved() {
-  //   console.log("Checking status of saved credentials...");
-  //   return new Promise((resolve,reject) => {
-  //     this.isSecureStorageAvailable().then((ssAvailable) => {
-  //       if(ssAvailable) {
-  //         this.secureStorage.create('OnSiteX').then((sec: SecureStorageObject) => {
-  //           // let userLogin = {username: this.username, password: this.password};
-  //           return sec.get('userInfo');
-  //         }).then((res) => {
-  //           console.log("getCredentials(): Credentials retrieved from secure storage!");
-  //           console.log(res);
-  //           let userInfo = JSON.parse(res);
-  //           this.setUser(userInfo.username);
-  //           this.setPassword(userInfo.password);
-  //           this.ud.storeCredentials(userInfo.username, userInfo.password);
-  //           // this.ud.setLoginStatus(true);
-  //           resolve(userInfo);
-  //         }).catch((err) => {
-  //           console.log("getCredentials(): Error getting credentials from secure storage!");
-  //           console.error(err);
-  //           reject(err);
-  //         });
-  //       } else {
-  //         Log.l("getCredentials(): SecureStorage not available, using Localstorage...");
-  //         this.storage.get('userInfo').then((res) => {
-  //           console.log("getCredentials(): Credentials retrieved from local storage!");
-  //           console.log(res);
-  //           let userInfo = res;
-  //           this.setUser(userInfo.username);
-  //           this.setPassword(userInfo.password);
-  //           this.ud.storeCredentials(userInfo.username, userInfo.password);
-  //           // this.ud.setLoginStatus(true);
-  //           resolve(userInfo);
-  //         }).catch((err) => {
-  //           console.log("getCredentials(): Error retrieving credentials from local storage!");
-  //           console.error(err);
-  //           reject(err);
-  //         });
-  //       }
-  //     }).catch((outerError) => {
-  //       Log.l("saveCredentials(): Error while checking for availability of SecureStorage.");
-  //       Log.e(outerError);
-  //       reject(outerError);
-  //     });
-  //   });
-  // }
-
-  // isSecureStorageAvailable() {
-  //   return new Promise((resolve, reject) => {
-  //     if(typeof window['cordova'] != 'undefined' && this.ud.getPlatform() != 'android') {
-  //       Log.l("SecureStorage is probably available (cordova and not Android)");
-  //       this.secureStorage.create('OnSiteX').then((sec: SecureStorageObject) => {
-  //         Log.l("SecureStorage available");
-  //         resolve(true);
-  //       }).catch((err) => {
-  //         Log.l("SecureStorage not available");
-  //         resolve(false);
-  //       });
-  //     } else if(this.ud.getPlatform() == 'android') {
-  //       /* Message / Localstorage */
-  //       let ss = {};
-  //       Log.l("SecureStorage is probably not available (Android) but we will check");
-  //       var _init = (param) => {
-  //         return new Promise((iresolve,ireject) => {
-  //             window['ss'] = new window['cordova']['plugins']['SecureStorage'](
-  //               () => { iresolve(true);},
-  //               () => {
-  //                 if(param==0) {
-  //                   this.alert.showConfirm('NOT SECURE', 'Your device must be locked to save your user data. Go to security settings?').then((res) => {
-  //                     Log.l("ShowConfirm gave:\n",res);
-  //                     if(res) {
-  //                       window['ss'].secureDevice(() => {iresolve(true)}, () => {Log.l("secureDevice called fail callback and is triggering init again."); iresolve(_init(1));});
-  //                     } else {
-  //                       this.alert.showConfirm('ARE YOU SURE?', 'You will have to log in every time. Go to security settings?').then((res) => {
-  //                         if(res) {
-  //                           window['ss'].secureDevice(() => {iresolve(true)}, () => {iresolve(false)});
-  //                         } else {
-  //                           iresolve(false);
-  //                         }
-  //                       }).catch((err) => {
-  //                         iresolve(false);
-  //                       });
-  //                     }
-  //                   });
-  //                 } else {
-  //                   this.alert.showConfirm('ARE YOU SURE?', 'You will have to log in every time. Go to security settings?').then((res) => {
-  //                     if(res) {
-  //                       window['ss'].secureDevice(() => {iresolve(true)}, () => {iresolve(false)});
-  //                     } else {
-  //                       iresolve(false);
-  //                     }
-  //                   }).catch((err) => {
-  //                     iresolve(false);
-  //                   });
-  //                 }
-  //               }, 'OnSiteX');
-  //         })
-  //       };
-  //       Log.l("About to check SecureStorage!");
-  //       _init(0).then((res) => {
-  //         Log.l("isSecureStorageAvailable(): \n", res);
-  //         Log.l("SecureStorage is in window.ss. See what it is!");
-  //         resolve(res);
-  //       }).catch((err) => {
-  //         Log.l("isSecureStorageAvailable(): Error!");
-  //         Log.e(err);
-  //         resolve(false);
-  //       });
-  //     } else {
-  //       Log.l("SecureStorage is not available (not cordova)");
-  //       resolve(false);
-  //     }
-  //   });
-  // }
-
-  // passportAuthenticate() { }
-
-  // isFirstLogin() {
-  //   console.log("Checking to see if this is first login...");
-  //   return new Promise((resolve,reject) => {
-  //     return this.storage.get('hasLoggedIn').then((userHasLoggedInBefore) => {
-  //       if(userHasLoggedInBefore) {
-  //         console.log("This is not the first login.");
-  //         console.log(userHasLoggedInBefore)
-  //         resolve(false);
-  //       } else {
-  //         console.log("This must be first login, hasLoggedIn flag does not exist.");
-  //         resolve(true);
-  //       }
-  //     }).catch((err) => {
-  //       /* Error getting tech profile or user is not logged in */
-  //       console.log("This may be first login, hasLoggedIn flag does not exist.");
-  //       resolve(true);
-  //     });
-  //   });
-  // }
-
-  // setLoginFlag() {
-  //   Log.l("setLoginFlag(): Attempting to set login flag to true...");
-  //   return new Promise((resolve,reject) => {
-  //     this.storage.set('hasLoggedIn', true).then((res) => {
-  //       console.log("Set hasLoggedIn to true.");
-  //       console.log(res);
-  //       resolve(res);
-  //     }).catch((err) => {
-  //       console.log("Error setting hasLoggedIn to true!");
-  //       console.warn(err);
-  //       reject(err);
-  //     });
-  //   });
-  // }
-
-  // clearLoginFlag() {
-  //   Log.l("clearLoginFlag(): Attempting to clear login flag...");
-  //   return new Promise((resolve,reject) => {
-  //     this.storage.remove('hasLoggedIn').then((res) => {
-  //       console.log("clearLoginFlag(): Successfully cleared hasLoggedIn flag.");
-  //       console.log(res);
-  //       resolve(res);
-  //     }).catch((err) => {
-  //       console.log("clearLoginFlag(): Error while attempting to clear hasLoggedIn flag.");
-  //       console.warn(err);
-  //       reject(err);
-  //     });
-  //   });
-  // }
-
-  // logout() {
-  //   Log.l("logout(): Attempting to remove logged-in flag...");
-  //   return new Promise((resolve,reject) => {
-  //     this.clearLoginFlag().then((res) => {
-  //       Log.l("AuthSrvcs.logout(): Cleared hasLoggedIn flag, now removing stored credentials.");
-  //       return this.clearCredentials();
-  //     }).then((res) =>{
-  //       this.ud.logout();
-  //       Log.l("AuthSrvcs.logout(): Cleared user credentials. User is now well and truly logged out.");
-  //       resolve(res);
-  //     }).catch((err) => {
-  //       Log.l("AuthSrvcs.logout(): Error while logging out.");
-  //       resolve(false);
-  //     });
-  //   });
-  // }
-
   saveCredentials() {
     let userInfo = {username: this.username, password: this.password};
-    return this.storage.secureSave('userInfo', userInfo);
+    return this.storage.persistentSave('userInfo', userInfo);
   }
 
   getCredentials() {
     Log.l("Retrieving credentials...");
     return new Promise((resolve,reject) => {
-      this.storage.secureGet('userInfo').then((res:any) => {
+      this.storage.persistentGet('userInfo').then((res:any) => {
         if(res !== null) {
           let userInfo = res;
           this.setUser(userInfo.username);
@@ -449,7 +132,7 @@ export class AuthSrvcs {
           reject(false);
         }
       }).catch((err) => {
-        Log.e("getCredentials(): Error getting credentials from secure storage!");
+        Log.e("getCredentials(): Error getting credentials from persistent storage!");
         Log.e(err);
         reject(err);
       });
@@ -458,13 +141,13 @@ export class AuthSrvcs {
 
   clearCredentials() {
     Log.l("Clearing credentials...");
-    return this.storage.secureDelete('userInfo');
+    return this.storage.persistentDelete('userInfo');
   }
 
   areCredentialsSaved() {
     console.log("Checking status of saved credentials...");
     return new Promise((resolve,reject) => {
-      this.storage.secureGet('userInfo').then((res:any) => {
+      this.storage.persistentGet('userInfo').then((res:any) => {
         if(res !== null) {
         let userInfo = res;
         this.setUser(userInfo.username);
