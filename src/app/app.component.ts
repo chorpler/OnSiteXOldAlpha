@@ -217,7 +217,7 @@ export class OnSiteApp {
               resolve(true);
             }
           }).catch(err => {
-            Log.l("OnSite.bootApp(): Erorr ")
+            Log.l("OnSite.bootApp(): Error starting up. ")
             Log.e(err);
             this.alert.showAlert("STARTUP ERROR", "Caught app loading error:<br>\n<br>\n" + err.message).then(res => {
               reject(err);

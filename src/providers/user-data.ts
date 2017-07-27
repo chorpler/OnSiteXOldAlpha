@@ -21,7 +21,7 @@ import { Jobsite                       } from '../domain/jobsite'              ;
 @Injectable()
 export class UserData {
   public static appdata               : any = {ready: false,
-    version    : "10.11.16",
+    version    : "10.11.17",
     homeLoading: false,
     attempts   : 0,
     homeReady  : false,
