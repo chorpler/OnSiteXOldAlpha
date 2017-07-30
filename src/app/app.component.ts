@@ -219,8 +219,12 @@ export class OnSiteApp {
           }).catch(err => {
             Log.l("OnSite.bootApp(): Error starting up. ")
             Log.e(err);
-            this.alert.showAlert("STARTUP ERROR", "Caught app loading error:<br>\n<br>\n" + err.message).then(res => {
-              reject(err);
+            this.alert.showConfirmYesNo("STARTUP ERROR", "Caught app loading error:<br>\n<br>\n" + err.message + "<br>\n<br>\nTry to restart app?").then(res => {
+              if(res) {
+                this.ud.reloadApp();
+              } else {
+                reject(err);
+              }
             });
           });
         }).catch(err => {
@@ -231,8 +235,12 @@ export class OnSiteApp {
       }).catch(err => {
         Log.l("OnSite.bootApp(): Error with check preferences.");
         Log.e(err);
-        this.alert.showAlert("STARTUP ERROR", "Caught preference error:<br>\n<br>\n" + err.message).then(res => {
-          reject(err);
+        this.alert.showConfirmYesNo("STARTUP ERROR", "Caught app loading error:<br>\n<br>\n" + err.message + "<br>\n<br>\nTry to restart app?").then(res => {
+          if (res) {
+            this.ud.reloadApp();
+          } else {
+            reject(err);
+          }
         });
       })
     });

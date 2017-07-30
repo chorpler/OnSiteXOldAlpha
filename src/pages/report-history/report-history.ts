@@ -290,15 +290,28 @@ export class ReportHistory implements OnInit {
   deleteWorkOrder(event:Event, report:WorkOrder, shift:Shift) {
     Log.l("deleteWorkOrder() clicked ...");
     let lang = this.lang;
+    let db = this.prefs.getDB();
     this.audio.play('deletereport');
     this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
       if (res) {
         this.alert.showSpinner(lang['spinner_deleting_report']);
         Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
-        // let wo:WorkOrder = report.clone();
         let wo:WorkOrder = report;
-        let reportDate = wo.report_date;
-        this.server.deleteDoc(this.prefs.DB.reports, wo).then((res) => {
+        this.db.deleteDoc(db.reports, wo).then((res) => {
+          Log.l("deleteWorkOrder(): Success:\n", res);
+          let tmpReport = wo;
+          let reports = this.ud.getWorkOrderList();
+          let i = reports.indexOf(wo);
+          Log.l("Going to delete work order %d in the list.", i);
+          if (i > -1) {
+            tmpReport = reports.splice(i, 1)[0];
+          }
+          shift.removeShiftReport(tmpReport);
+          this.ud.removeReport(tmpReport);
+          return this.server.syncToServer(db.reports, db.reports);
+        }).then(res => {
+          Log.l(`deleteWorkOrder(): Synchronized local '${db.reports}' to remote.`)
+        // this.server.deleteDoc(this.prefs.DB.reports, wo).then((res) => {
           Log.l("deleteWorkOrder(): Success:\n", res);
           // this.items.splice(i, 1);
           // let i = this.reports.indexOf(report);
@@ -332,25 +345,41 @@ export class ReportHistory implements OnInit {
   deleteOtherReport(event:Event, other:ReportOther, shift:Shift) {
     Log.l("deleteOtherReport() clicked ...");
     let lang = this.lang;
+    let db = this.prefs.getDB();
     this.audio.play('deleteotherreport');
     this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
       if (res) {
         this.alert.showSpinner(lang['spinner_deleting_report']);
         Log.l("deleteOtherReport(): User confirmed deletion, deleting...");
         // let ro: ReportOther = other.clone();
-        let ro:ReportOther = other;
-        let reportDate = ro.report_date.format("YYYY-MM-DD");
-        this.server.deleteDoc(this.prefs.DB.reports_other, ro).then((res) => {
-          Log.l("deleteOtherReport(): Success:\n", res);
-          // this.items.splice(i, 1);
-          // let i = this.otherReports.indexOf(other);
-          let tmpOther = other;
-          // if(i > -1) {
-          //   tmpOther = this.otherReports.splice(i, 1)[0];
-          // }
-          // i = this.filtReports[reportDate].indexOf(other);
-          // this.filtReports[reportDate].splice(i, 1);
-          // let tmpReport = this.filtReports[reportDate].splice(i, 1)[0];
+        let wo:ReportOther = other;
+        let tmpOther = other;
+        this.db.deleteDoc(db.reports, wo).then((res) => {
+          Log.l("deleteWorkOrder(): Success:\n", res);
+          let tmpOther = wo;
+          let reports = this.ud.getReportOtherList();
+          let i = reports.indexOf(wo);
+          Log.l("Going to delete work order %d in the list.", i);
+          if (i > -1) {
+            tmpOther = reports.splice(i, 1)[0];
+          }
+          shift.removeOtherReport(tmpOther)
+          this.ud.removeOtherReport(tmpOther);
+          return this.server.syncToServer(db.reports, db.reports);
+        }).then(res => {
+          Log.l(`deleteWorkOrder(): Synchronized local '${db.reports}' to remote.`)
+        // let ro:ReportOther = other;
+        // let reportDate = ro.report_date.format("YYYY-MM-DD");
+        // this.server.deleteDoc(db.reports_other, ro).then((res) => {
+        //   Log.l("deleteOtherReport(): Success:\n", res);
+        //   // this.items.splice(i, 1);
+        //   // let i = this.otherReports.indexOf(other);
+        //   // if(i > -1) {
+        //   //   tmpOther = this.otherReports.splice(i, 1)[0];
+        //   // }
+        //   // i = this.filtReports[reportDate].indexOf(other);
+        //   // this.filtReports[reportDate].splice(i, 1);
+        //   // let tmpReport = this.filtReports[reportDate].splice(i, 1)[0];
           Log.l(`deleteOtherReport(): About to delete report '${other._id}' from shift '${shift.getShiftSerial()}'...\n`, other);
           shift.removeOtherReport(tmpOther);
           // this.ud.removeOtherReport(tmpOther);
