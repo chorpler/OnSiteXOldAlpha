@@ -184,5 +184,6 @@
   "help_tech_settings": "User Profile",
   "help_messages": "Messages",
   "help_settings": "Settings",
-  "weeks_to_show": "Weeks"
+  "weeks_to_show": "Weeks",
+  "startup_error": "Error during app startup:<br>\n<br>\n%s<br>\n<br>\nTry to restart app?"
 }

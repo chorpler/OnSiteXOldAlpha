@@ -115,20 +115,21 @@ export class Login implements OnInit {
       }).then(res => {
         Log.l("loginAtttempt(): Got SESA config data.");
         this.ud.setSesaConfig(res);
-        let creds = { user: this.username, pass: this.password };
+        let creds = { user: this.username, pass: this.password, justLoggedIn: true};
         this.ud.storeCredentials(creds);
         this.ud.setLoginStatus(true);
         this.alert.hideSpinner();
         this.events.publish('startup:finished', true);
         this.events.publish('login:finished', true);
         // this.ud.reloadApp();
-        // if(this.mode === 'modal') {
-        //   this.tabs.setTabDisable(false);
-        //   this.viewCtrl.dismiss(creds);
-        // } else {
-        //   this.tabs.setTabDisable(false);
-        //   this.tabs.goToPage('OnSiteHome');
-        // }
+        if(this.mode === 'modal') {
+          creds['justLoggedIn'] = true;
+          this.tabs.setTabDisable(false);
+          this.viewCtrl.dismiss(creds);
+        } else {
+          this.tabs.setTabDisable(false);
+          this.tabs.goToPage('OnSiteHome', creds);
+        }
       }).catch((err) => {
         Log.l("loginAttempt(): Error validating and saving user info.");
         Log.l(err);

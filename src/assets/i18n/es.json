@@ -184,5 +184,6 @@
   "help_tech_settings": "Informacion del Usuario",
   "help_messages": "Mensajes",
   "help_settings": "Ajustes",
-  "weeks_to_show": "Semanas"
+  "weeks_to_show": "Semanas",
+  "startup_error": "Error durante el inicio de la aplicación:<br>\n<br>\n%s<br>\n<br>\n¿Intente reiniciar la aplicación?"
 }

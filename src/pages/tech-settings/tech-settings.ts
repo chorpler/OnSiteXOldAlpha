@@ -1,16 +1,10 @@
-// import { Component, OnInit, ViewChild, ElementRef     } from '@angular/core'                          ;
 import { Component, OnInit, NgZone                    } from '@angular/core'                          ;
 import { FormGroup, FormControl, Validators           } from "@angular/forms"                         ;
 import { IonicPage, NavController, NavParams          } from 'ionic-angular'                          ;
 import { ViewController                               } from 'ionic-angular'                          ;
 import { TranslateService                             } from '@ngx-translate/core'                    ;
-// import { CLIENT, LOCATION, LOCID, SHIFTLENGTH         } from '../../config/config.constants.settings' ;
-// import { SHIFT, SHIFTSTARTTIME, SHIFTROTATION, LOC2ND } from '../../config/config.constants.settings' ;
-// import { REPORTHEADER, REPORTMETA                     } from '../../config/report.object'             ;
 import { Log, sizeOf, isMoment, moment, Moment        } from '../../config/config.functions'          ;
 import { DBSrvcs                                      } from '../../providers/db-srvcs'               ;
-// import { ReportBuildSrvc                              } from '../../providers/report-build-srvc'      ;
-// import { Login                                        } from '../login/login'                         ;
 import { UserData                                     } from '../../providers/user-data'              ;
 import { AlertService                                 } from '../../providers/alerts'                 ;
 import { TabsComponent                                } from '../../components/tabs/tabs'             ;

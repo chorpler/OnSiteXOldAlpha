@@ -118,6 +118,7 @@ export class HomePage {
   public checkboxSVG                 : any                 = UserData.getSVGData()    ;
   public hands                       : any                 = HomePage.hands  ;
   public translations                : Array<string>       = HomePage.translations;
+  public justLoggedIn                : boolean             = false                    ;
 
   constructor(public http        : Http,
               public platform    : Platform,
@@ -141,9 +142,11 @@ export class HomePage {
     Log.l("HomePage: Hi, I'm the HomePage class constructor!");
     let translations = [
       'error',
-      'alet_retrieve_reports_error',
+      'startup_error',
+      'alert_retrieve_reports_error',
       'spinner_fetching_reports'
     ];
+    if(this.navParams.get('justLoggedIn') !== undefined) { this.justLoggedIn = this.navParams.get('justLoggedIn');}
     HomePage.translations = translations;
     this.translations = HomePage.translations;
     // this.lang = this.translate.instant(translations);
@@ -190,6 +193,7 @@ export class HomePage {
   ionViewDidEnter() {
     Log.l("HomePage: ionViewDidEnter() called. First wait to make sure app is finished loading.");
     var caller = this;
+    let lang = this.lang;
     // if(HomePage.homePageStatus.startupFinished) {
     // Log.l("HomePage.ionViewDidEnter(): startup already finished, just continuing with runEveryTime()...");
     this.tabs.highlightPageTab('OnSiteHome');
@@ -198,9 +202,30 @@ export class HomePage {
     let loading = this.ud.isHomePageLoading();
     let attempts = this.ud.getLoadAttempts();
     if (!this.ud.isAppLoaded()) {
-      Log.l("HOMEPAGE.ionViewDidEnter() SAYS DON'T LOAD ME YET, D-BAG!");
+      Log.l("HOMEPAGE.ionViewDidEnter() SAYS QUIT TRYING TO DUAL LOAD!");
     } else {
-      this.runEveryTime();
+      if(this.justLoggedIn) {
+        this.justLoggedIn = false;
+        this.newLoginSetup().then(res => {
+          this.runEveryTime();
+          Log.l("HomePage: Done loading in ionViewDidEnter().");
+        }).catch(err => {
+          Log.l("HomePage: Error after new login!");
+          Log.e(err);
+          let errMessage = err;
+          if(err && err.message) {
+            errMessage = err.message;
+          }
+          let msg = sprintf(lang['startup_error'], errMessage)
+          this.alert.showConfirmYesNo(lang['error'], msg).then(res => {
+            if(res) {
+              this.ud.reloadApp();
+            }
+          });
+        });
+      } else {
+        this.runEveryTime();
+      }
     }
     if(loaded) {
       // if(!ready && !loading) {
@@ -253,58 +278,94 @@ export class HomePage {
   runEveryTime() {
     // try {
       // let lang = this.translate.instant(['error', 'alert_retrieve_reports_error'])
-      this.dataReady = false;
-      this.ud.setHomePageLoading(true);
-      this.ud.setHomePageReady(true);
-      let lang = this.lang;
-      if (this.ud.getLoginStatus() === false) {
-        Log.l("HomePage.runEveryTime(): User not logged in, showing login modal.");
-        this.presentLoginModal();
-      } else {
-        this.ud.setHomePageLoading(true);
-        Log.l("HomePage.runEveryTime(): Fetching work orders.");
-        // this.fixedHeight = this.mapElement.nativeElement.offsetHeight;
-        // this.alert.showSpinner(lang['spinner_fetching_reports']);
-        this.fetchTechWorkorders().then((res) => {
-          this.techProfile = this.ud.getTechProfile();
-          this.shifts = this.ud.getPeriodShifts();
-          // this.countHoursForShifts();
-          HomePage.homePageStatus.startupFinished = true;
-          this.ud.setHomePageReady(true);
-          this.dataReady = true;
-          // this.alert.hideSpinner(0, true).then(res => {
-            this.ud.setHomePageReady(true);
-            HomePage.homePageStatus.startupFinished = true;
-            this.dataReady = true;
-          // }).catch(err => {
-          //   Log.l("Error hiding spinner!");
-          //   HomePage.homePageStatus.startupFinished = true;
-          //   this.ud.setHomePageReady(true);
-          //   this.dataReady = true;
-        // }).catch((err) => {
-        //   Log.l("HomePage: ionViewDidEnter() got error while fetching tech work orders.");
-        //   Log.e(err);
-        //   this.pageError = true;
-        //   this.alert.hideSpinner(0, true).then(res => {
-        //     this.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
-        //   }).catch(err => {
-        //     Log.l("Error hiding spinner again!");
-        //     Log.e(err);
-        //     this.pageError = true;
-        //   });
-        // });
+    this.dataReady = false;
+    this.ud.setHomePageLoading(true);
+    this.ud.setHomePageReady(true);
+    let lang = this.lang;
+    if (this.ud.getLoginStatus() === false) {
+      Log.l("HomePage.runEveryTime(): User not logged in, showing login modal.");
+      this.presentLoginModal();
+    } else if(this.justLoggedIn) {
+      this.justLoggedIn = false;
+      this.newLoginSetup().then(res => {
+        Log.l("HomePage: Done loading in ionViewDidEnter().");
+        this.ifLoggedInAndAlreadySetUp();
       }).catch(err => {
-        Log.l("Error fetching tech work orders!");
+        Log.l("HomePage: Error after new login!");
         Log.e(err);
-        // this.alert.hideSpinner();
-        this.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
+        let errMessage = err;
+        if (err && err.message) {
+          errMessage = err.message;
+        }
+        let msg = sprintf(lang['startup_error'], errMessage)
+        this.alert.showConfirmYesNo(lang['error'], msg).then(res => {
+          if (res) {
+            this.ud.reloadApp();
+          }
+        });
       });
-    // } catch(err) {
-    //   this.alert.hideSpinner();
-    //   let lang = this.translate.instant(['error', 'alert_retrieve_reports_error'])
-    //   this.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
-    // }
+    } else {
+      this.ifLoggedInAndAlreadySetUp();
     }
+  }
+
+  public ifLoggedInAndAlreadySetUp() {
+    let lang = this.lang;
+    this.ud.setHomePageLoading(true);
+    Log.l("HomePage.runEveryTime(): Fetching work orders.");
+    // this.fixedHeight = this.mapElement.nativeElement.offsetHeight;
+    // this.alert.showSpinner(lang['spinner_fetching_reports']);
+    this.fetchTechWorkorders().then((res) => {
+      this.techProfile = this.ud.getTechProfile();
+      this.shifts = this.ud.getPeriodShifts();
+      // this.countHoursForShifts();
+      HomePage.homePageStatus.startupFinished = true;
+      this.ud.setHomePageReady(true);
+      this.dataReady = true;
+      // this.alert.hideSpinner(0, true).then(res => {
+      this.ud.setHomePageReady(true);
+      HomePage.homePageStatus.startupFinished = true;
+      this.dataReady = true;
+    }).catch(err => {
+      Log.l("Error fetching tech work orders!");
+      Log.e(err);
+      // this.alert.hideSpinner();
+      this.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
+    });
+  }
+
+  public newLoginSetup() {
+    return new Promise((resolve,reject) => {
+      let profile = this.ud.getTechProfile();
+      let tech = new Employee();
+      tech.readFromDoc(profile);
+      this.tech = tech;
+      this.server.getAllData(this.tech).then(res => {
+        this.ud.setData(res);
+        Log.l("newLoginSetup(): Got all data.");
+        return this.server.getAllConfigData();
+      }).then(res => {
+        Log.l("checkLogin(): Successfully retrieved config data...");
+        this.ud.setSesaConfig(res);
+        return this.ud.checkPhoneInfo();
+      }).then(res => {
+        let tech = this.tech;
+        let phoneInfo = res;
+        let pp = this.ud.createPayrollPeriods(tech, this.prefs.getPayrollPeriodCount());
+        if(phoneInfo) {
+          Log.l("newLoginSetup(): Got phone data:\n", phoneInfo);
+          this.server.savePhoneInfo(tech, phoneInfo).then(res => {
+            resolve(true);
+          }).catch(err => {
+            Log.l("OnSite.bootApp(): Error saving phone info to server!");
+            Log.e(err);
+            resolve(false);
+          });
+        } else {
+          resolve(true);
+        }
+      });
+    });
   }
 
   public runAfterTranslation() {
@@ -498,17 +559,18 @@ export class HomePage {
   // }
 
   presentLoginModal() {
-    let loginPage = this.modalCtrl.create('Login', {user: '', pass: ''}, { enableBackdropDismiss: false, cssClass: 'login-modal'});
-    loginPage.onDidDismiss(data => {
-      Log.l("Got back:\n", data);
-      this.userLoggedIn = this.ud.getLoginStatus();
-      if( this.userLoggedIn ) {
-        console.log("Login Modal succeeded, now opening user modal.");
-        // this.userLoggedIn = true;
-        this.presentUserModal(); }
-      else { console.log("Login Modal did not succeed."); }
-    });
-    loginPage.present();
+    // let loginPage = this.modalCtrl.create('Login', {user: '', pass: ''}, { enableBackdropDismiss: false, cssClass: 'login-modal'});
+    // loginPage.onDidDismiss(data => {
+    //   Log.l("Got back:\n", data);
+    //   this.userLoggedIn = this.ud.getLoginStatus();
+    //   if( this.userLoggedIn ) {
+    //     console.log("Login Modal succeeded, now opening user modal.");
+    //     // this.userLoggedIn = true;
+    //     this.presentUserModal(); }
+    //   else { console.log("Login Modal did not succeed."); }
+    // });
+    // loginPage.present();
+    this.tabs.goToPage('Login');
   }
 
   getCheckboxSVG(shift:Shift) {

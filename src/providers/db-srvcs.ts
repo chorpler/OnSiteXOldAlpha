@@ -1,6 +1,7 @@
+import 'rxjs/add/operator/map'                                                                                                 ;
 import { Injectable, NgZone                                                                } from '@angular/core'              ;
 import { Http                                                                              } from '@angular/http'              ;
-import { Log, CONSOLE                                                                      } from '../config/config.functions' ;
+import { Log, CONSOLE, moment, Moment, isMoment                                            } from '../config/config.functions' ;
 import { Storage                                                                           } from '@ionic/storage'             ;
 import { NativeStorage                                                                     } from 'ionic-native'               ;
 import { PouchDBService                                                                    } from './pouchdb-service'          ;
@@ -11,7 +12,6 @@ import { UserData                                                               
 import { Preferences                                                                       } from './preferences'              ;
 import { Employee, Jobsite, WorkOrder, ReportOther, Message, Comment, Shift, PayrollPeriod } from '../domain/domain-classes'   ;
 
-import 'rxjs/add/operator/map'                                  ;
 
 export const noDD = "_\uffff";
 export const noDesign = { include_docs: true, startkey: noDD };

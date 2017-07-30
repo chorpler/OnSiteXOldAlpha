@@ -1,29 +1,31 @@
-import * as moment from 'moment';
-import { Log, isMoment, date2xl, xl2date, xl2datetime } from '../config/config.functions';
+import { Log, moment, isMoment, Moment } from '../config/config.functions';
 import { SrvrSrvcs } from '../providers/srvr-srvcs';
 import { DBSrvcs } from '../providers/db-srvcs';
 
 export class Message {
-  public _id: string;
-  public _rev: string;
-  public from: string;
-  public date: moment.Moment;
-  public XLdate: number;
-  public duration: number;
-  public subject: string;
-  public text: string;
-  public read:boolean;
-  public readTS:moment.Moment;
+  public _id      : string  ;
+  public _rev     : string  ;
+  public from     : string  ;
+  public date     : Moment  ;
+  public XLdate   : number  ;
+  public duration : number  ;
+  public subject  : string  ;
+  public text     : string  ;
+  public subjectES: string  ;
+  public textES   : string  ;
+  public texts    : any     = { en: "", es: "" } ;
+  public subjects : any     = { en: "", es: "" } ;
+  public read     : boolean ;
+  public readTS   : Moment  ;
 
-  constructor(from?: string, date?: moment.Moment | Date | string, duration?:number, subject?:string, text?:string) {
+  constructor(from?: string, date?: Moment | Date | string, duration?:number, subject?:string, text?:string) {
     this.from     = from     || ''  ;
     this.duration = duration || null;
     this.subject  = subject  || ''  ;
     this.text     = text     || ''  ;
-    let mDate     = isMoment(date) || date instanceof Date ? moment(date) : typeof date === 'string' ? moment(date, 'YYYY-MM-DD') : null;
+    let mDate     = isMoment(date) || date instanceof Date ? moment(date) : typeof date === 'string' ? moment(date, 'YYYY-MM-DD') : moment();
     this.date     = moment(mDate)  || null;
-    let xldate    = date2xl(mDate);
-    this.XLdate   = xldate;
+    this.XLdate   = mDate.toExcel(true);
     this.read     = false;
     this.readTS   = null;
   }
@@ -49,7 +51,7 @@ export class Message {
         this[key] = value;
       }
     }
-    this.XLdate = date2xl(this.date);
+    this.XLdate = this.date.toExcel(true);
   }
 
   getMessageDate() {
