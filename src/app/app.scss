@@ -110,7 +110,11 @@ ion-app.ios ion-content > .scroll-content {
   //   background-color: rgba(0, 0, 128, 0.02);
   // }
   &:active {
-    background-color: rgba(0, 0, 255, 0.3);
+    background-color: rgba(0, 0, 255, 0.5);
+    color: white;
+    span.normal-txt {
+      color: white;
+    }
   }
 }
 
