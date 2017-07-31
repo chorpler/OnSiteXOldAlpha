@@ -1,5 +1,5 @@
 <!-- <div class="waiting-clock" *ngIf="!ud.isAppLoaded()" [ngStyle]="{zoom: ud.clockZoom}"> -->
-<div class="waiting-clock" *ngIf="!ud.isAppLoaded()">
+<div class="waiting-clock" *ngIf="!ud.isAppLoaded() && ud.showClock">
   <clock></clock>
 </div>
 <ion-nav class="ionic-root-nav-element" [root]="rootPage"></ion-nav>

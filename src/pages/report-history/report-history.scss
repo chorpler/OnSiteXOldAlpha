@@ -26,9 +26,9 @@ page-report-history {
   .report-history-list-item-sliding {
     cursor: pointer;
     background-color: transparent;
-    &:hover {
-      background-color: rgba(0, 0, 128, 0.3);
-    }
+    // &:hover {
+    //   background-color: rgba(0, 0, 128, 0.3);
+    // }
     &:active {
       background-color: rgba(0, 0, 255, 0.5);
     }
@@ -94,9 +94,9 @@ page-report-history {
     .button-inner {
       padding-left: 15px;
       padding-right: 15px;
-      &:hover {
-        background-color: rgba(0, 0, 128, 0.3);
-      }
+      // &:hover {
+      //   background-color: rgba(0, 0, 128, 0.3);
+      // }
       &:active {
         background-color: rgba(0, 0, 255, 0.5);
         * {

@@ -49,7 +49,7 @@
         </ion-item>
         <ion-item (tap)="showFancySelect()" class="item item-button ion-item-button-like">
           <ion-label>{{'shift_date' | translate}}</ion-label>
-          <ion-input #shiftDateResults class="shift-date-select-results" [value]="selectedShift.toString(translate)"></ion-input>
+          <ion-input #shiftDateResults class="shift-date-select-results" [value]="selectedShift.toString(translate)" readonly></ion-input>
           <!-- <ion-input #shiftDateResults [disabled]="shiftDateInputDisabled" class="shift-date-select-results" [value]="selectedShift.toString(translate)"></ion-input> -->
           <ion-icon item-right class="shift-date-select-icon" name="md-arrow-dropdown"></ion-icon>
         </ion-item>

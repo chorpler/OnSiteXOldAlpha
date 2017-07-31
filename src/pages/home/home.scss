@@ -9,6 +9,8 @@
 page-home {
   ion-content > div.scroll-content {
     padding-top: 3px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
   p.home-welcome {
     text-align: right;
@@ -126,19 +128,19 @@ page-home {
   .hoursOver {
     color: red;
   }
-  ion-list>ion-item.ion-item-button-like {
-    cursor: pointer;
-    &:hover {
-      background-color: rgba(0, 0, 128, 0.2);
-    }
-    &:active {
-      background-color: rgba(0, 0, 255, 0.7);
-      color: white;
-      span.normal-txt {
-        color: white;
-      }
-    }
-  }
+  // ion-list>ion-item.ion-item-button-like {
+  //   cursor: pointer;
+  //   &:hover {
+  //     background-color: rgba(0, 0, 128, 0.2);
+  //   }
+  //   &:active {
+  //     background-color: rgba(0, 0, 255, 0.7);
+  //     color: white;
+  //     span.normal-txt {
+  //       color: white;
+  //     }
+  //   }
+  // }
   .home-card-header-payroll-period {
     text-align: center;
     border-bottom: 1px solid #dedede;
@@ -247,5 +249,41 @@ page-home {
   // }
   .header-clock-button {
     font-family: 'Ionicons';
+  }
+  .fake-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  .fake-column {
+    flex: 1 1 auto;
+    align-self: center;
+  }
+  .fake-col-01 {
+    width: 30px;
+  }
+  .fake-col-02 {
+    width: 130px;
+
+  }
+  .fake-col-03 {
+    width: 130px;
+  }
+  .fake-col-04 {
+    width: 30px;
+    text-align: right;
+    align-self: right !important;
+    ion-icon {
+      padding: 0 !important;
+      margin: 0 !important;
+      svg {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
+
+    }
   }
 }

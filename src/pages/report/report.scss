@@ -32,11 +32,11 @@ page-report {
     width: 100%;
   }
   .ion-item-button-like {
-    &:hover {
-      background-color: rgba(0, 0, 128, 0.2);
-    }
+    // &:hover {
+    //   background-color: rgba(0, 0, 128, 0.2);
+    // }
     &:active {
-      background-color: rgba(0, 0, 255, 0.5);
+      // background-color: rgba(0, 0, 255, 0.5);
       ion-label {
         color: white;
       }

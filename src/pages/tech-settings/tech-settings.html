@@ -56,6 +56,7 @@
       </ion-item>
     </ion-list>
     <button type="submit" ion-button block color="favorite" (tap)="onSubmit()">{{'update_user' | translate}}</button>
+    <button type="button" ion-button block color="light" (tap)="cancel()">{{'cancel' | translate}}</button>
   </div>
 </ion-content>
-<onsite-tabs></onsite-tabs>
+<onsite-tabs *ngIf="mode !== 'modal'"></onsite-tabs>

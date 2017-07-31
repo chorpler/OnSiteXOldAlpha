@@ -22,7 +22,7 @@
           <ion-icon class="shft-num-icon">{{numChars[shift.shift_number]}}&nbsp;&nbsp;</ion-icon>
           &nbsp;&nbsp;{{shift.getStartTime().format("ddd, MMM D")}}&nbsp;&nbsp;
           <ion-note>{{shift.getNormalHours()}} Hrs</ion-note>
-          <button class="ionic-button-icon-outline" ion-button icon-only item-end (tap)="addNewReportForShift(shift)">
+          <button class="ionic-button-icon-outline ion-button-like" ion-button icon-only item-end (tap)="addNewReportForShift(shift)">
             <ion-icon class="ionic-icon-outline" name='ios-document-outline' color="primary"></ion-icon>
           </button>
         </ion-item-divider>

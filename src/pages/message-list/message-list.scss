@@ -92,10 +92,10 @@ page-message-list {
     }
   }
 
-  ion-card.message-card:hover {
-    color: $hover-color;
-    background-color: $hover-bg;
-  }
+  // ion-card.message-card:hover {
+  //   color: $hover-color;
+  //   background-color: $hover-bg;
+  // }
 
   ion-card.message-card:active {
     color: $active-color;

@@ -134,6 +134,7 @@ export class OnSiteApp {
             Log.l("OnSite.initializeApp(): bootApp() returned successfully!");
             callingClass.alert.hideSpinner(0, true).then(res => {
               callingClass.ud.setAppLoaded(true);
+              callingClass.ud.showClock = false;
               callingClass.rootPage = 'OnSiteHome';
               setTimeout(() => {
                 Log.l("OnSite.bootApp(): Publishing startup event after timeout!");
@@ -151,14 +152,16 @@ export class OnSiteApp {
             // }
             callingClass.ud.setAppLoaded(true);
             // this.alert.showAlert("STARTUP ERROR", "Error on load, please tell developers:<br>\n<br>\n" + errorText).then(res => {
-              callingClass.rootPage = 'Login';
+            callingClass.ud.showClock = false;
+            callingClass.rootPage = 'Login';
             // });
           });
         } else {
           Log.w("OnSite.initializeApp(): app boot error has been thrown.");
           callingClass.ud.setAppLoaded(true);
           // this.alert.showAlert("STARTUP ERROR", "Unknown error on loading app.").then(res => {
-            callingClass.rootPage = 'Login';
+          this.ud.showClock = false;
+          callingClass.rootPage = 'Login';
           // });
         }
       });
@@ -172,7 +175,8 @@ export class OnSiteApp {
         errorText = err;
       }
       // this.alert.showAlert("ERROR", "Error starting app, please tell developers:<br>\n<br>\n" + errorText).then(res => {
-        this.rootPage = 'Login';
+      this.ud.showClock = false;
+      this.rootPage = 'Login';
       // });
     });
   }

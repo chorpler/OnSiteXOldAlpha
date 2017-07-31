@@ -427,4 +427,12 @@ export class TechSettingsPage implements OnInit {
 
     }
   }
+
+  public cancel() {
+    if(this.mode === 'modal') {
+      this.viewCtrl.dismiss();
+    } else {
+      this.tabs.goToPage('OnSiteHome');
+    }
+  }
 }

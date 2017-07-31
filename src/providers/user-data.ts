@@ -120,6 +120,7 @@ export class UserData {
   private static loginData:any = null;
   private get loginData() {return UserData.loginData;};
   private set loginData(value:any) {UserData.loginData = value;};
+  public showClock:boolean = true;
 
   constructor(
     public events  : Events,
