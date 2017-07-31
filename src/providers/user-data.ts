@@ -149,6 +149,10 @@ export class UserData {
     };
   }
 
+  public getVersion() {
+    return this.appdata.version;
+  }
+
   public showID() {
     return this.prefs.DEVELOPER.showDocID;
   }
@@ -1308,6 +1312,7 @@ export class UserData {
         return this.version.getVersionNumber();
       }).then(res => {
         this.phonedata.appVersion = res;
+        this.appdata.version = res;
         resolve({ appName: this.phonedata.appName, appVersion: this.phonedata.appVersion });
       }).catch(err => {
         Log.l("Error getting app version.");

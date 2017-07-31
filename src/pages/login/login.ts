@@ -1,17 +1,17 @@
-import { Component, OnInit                                                       } from '@angular/core'                  ;
-import { IonicPage, NavController, NavParams, LoadingController, AlertController } from 'ionic-angular'                  ;
-import { PopoverController, ViewController, Events                               } from 'ionic-angular'                  ;
-import { FormGroup, FormControl, Validators                                      } from "@angular/forms"                 ;
-import { AuthSrvcs                                                               } from '../../providers/auth-srvcs'     ;
-import { SrvrSrvcs                                                               } from '../../providers/srvr-srvcs'     ;
-import { DBSrvcs                                                                 } from '../../providers/db-srvcs'       ;
-import { AlertService                                                            } from '../../providers/alerts'         ;
-import { NetworkStatus                                                           } from '../../providers/network-status' ;
-import { UserData                                                                } from '../../providers/user-data'      ;
-import { Preferences                                                             } from '../../providers/preferences'    ;
-import { Log                                                                     } from '../../config/config.functions'  ;
-import { TabsComponent                                                           } from '../../components/tabs/tabs'     ;
-import { TranslateService                                                        } from '@ngx-translate/core'            ;
+import { Component, OnInit                                                                 } from '@angular/core'                  ;
+import { IonicPage, NavController, NavParams, Platform, LoadingController, AlertController } from 'ionic-angular'                  ;
+import { PopoverController, ViewController, Events                                         } from 'ionic-angular'                  ;
+import { FormGroup, FormControl, Validators                                                } from "@angular/forms"                 ;
+import { AuthSrvcs                                                                         } from '../../providers/auth-srvcs'     ;
+import { SrvrSrvcs                                                                         } from '../../providers/srvr-srvcs'     ;
+import { DBSrvcs                                                                           } from '../../providers/db-srvcs'       ;
+import { AlertService                                                                      } from '../../providers/alerts'         ;
+import { NetworkStatus                                                                     } from '../../providers/network-status' ;
+import { UserData                                                                          } from '../../providers/user-data'      ;
+import { Preferences                                                                       } from '../../providers/preferences'    ;
+import { Log                                                                               } from '../../config/config.functions'  ;
+import { TabsComponent                                                                     } from '../../components/tabs/tabs'     ;
+import { TranslateService                                                                  } from '@ngx-translate/core'            ;
 
 @IonicPage({name: 'Login'})
 @Component({
@@ -33,6 +33,7 @@ export class Login implements OnInit {
   private formPass      : any                            ;
   private submitAttempt : boolean = false                ;
   public mode           : string = "page"                ;
+  public version        : string = ""                    ;
   public dataReady      : boolean = false                ;
   // public static PREFS   : any = new Preferences()        ;
   // public prefs          : any = Login.PREFS              ;
@@ -41,6 +42,7 @@ export class Login implements OnInit {
   constructor(
     public navCtrl  : NavController,
     public navParams: NavParams,
+    public platform : Platform,
     private auth    : AuthSrvcs,
     private server  : SrvrSrvcs,
     private db      : DBSrvcs,
@@ -74,7 +76,9 @@ export class Login implements OnInit {
   public runFromInit() {
     Log.l("Starting login page...");
     if(this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
+
     this.initializeForm();
+    this.version = this.ud.getVersion();
     this.dataReady = true;
   }
 

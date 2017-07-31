@@ -1,12 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { DomSanitizer, SafeHtml, SafeStyle, SafeScript, SafeUrl, SafeResourceUrl } from '@angular/platform-browser';
 
-/**
- * Generated class for the SafePipe pipe.
- *
- * See https://angular.io/docs/ts/latest/guide/pipes.html for more info on
- * Angular Pipes.
- */
 @Pipe({
   name: 'safe',
 })

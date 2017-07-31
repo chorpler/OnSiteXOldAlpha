@@ -1,17 +1,10 @@
-<!--
-	Generated template for the Login page.
-
-	See http://ionicframework.com/docs/components/#navigation for more info on
-	Ionic pages and navigation.
--->
 <ion-header>
-
 	<ion-navbar>
 		<ion-title>{{"login_title" | translate}}</ion-title>
 	</ion-navbar>
-
 </ion-header>
- <ion-content padding class="page-content login-page-content" *ngIf="dataReady">
+
+<ion-content padding class="page-content login-page-content" *ngIf="dataReady">
 	<form [formGroup]="LoginForm" (ngSubmit)="onSubmit()">
 		<ion-list>
 			<ion-item *ngIf="loginError" color="danger">
@@ -19,7 +12,7 @@
 			</ion-item>
 			<ion-item>
 				<ion-label floating> {{"username" | translate}} </ion-label>
-				<ion-input type="text" formControlName="formUser" [class.invalid]="!LoginForm.controls.formUser.valid && (LoginForm.controls.formUser.dirty || submitAttempt)"></ion-input>
+				<ion-input type="email" formControlName="formUser" [class.invalid]="!LoginForm.controls.formUser.valid && (LoginForm.controls.formUser.dirty || submitAttempt)"></ion-input>
 			</ion-item>
 			<ion-item *ngIf="(!LoginForm.controls.formUser.valid && (LoginForm.controls.formUser.dirty || submitAttempt))">
 				<p> {{"username_error" | translate }} </p>
@@ -32,7 +25,8 @@
 				<p> {{"password_error" | translate}} </p>
 			</ion-item>
 			<div padding></div>
-			<button ion-button color="primary" block color="favorite" [disabled]="(!LoginForm.controls.formUser.valid && (LoginForm.controls.formUser.dirty || submitAttempt)) || (!LoginForm.controls.formPass.valid && (LoginForm.controls.formPass.dirty || submitAttempt))">{{"sign_in" | translate}}</button>
+      <button ion-button color="primary" block color="favorite" [disabled]="(!LoginForm.controls.formUser.valid && (LoginForm.controls.formUser.dirty || submitAttempt)) || (!LoginForm.controls.formPass.valid && (LoginForm.controls.formPass.dirty || submitAttempt))">{{"sign_in" | translate}}</button>
+      <p class="login-version">OnSiteX v{{version}}</p>
 		</ion-list>
 	</form>
 </ion-content>
