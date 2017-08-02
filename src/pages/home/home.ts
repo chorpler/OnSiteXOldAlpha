@@ -104,8 +104,8 @@ export class HomePage {
   public shiftWorkOrders             : Array<WorkOrder>    = HomePage.shiftWorkOrders;
   public payrollWorkOrders           : Array<WorkOrder>    = HomePage.payrollWorkOrders;
   public otherReports                : Array<ReportOther>  = HomePage.otherReports;
-  public hoursTotalList              : Array<any>    = []  = HomePage.hoursTotalList;
-  public shifts                      : Array<Shift>  = []  = HomePage.shifts;
+  public hoursTotalList              : Array<any>          = HomePage.hoursTotalList;
+  public shifts                      : Array<Shift>        = HomePage.shifts;
   public payrollPeriods              : Array<PayrollPeriod>= HomePage.payrollPeriods;
   public period                      : PayrollPeriod       = HomePage.period;
   public tech                        : Employee            = HomePage.tech;

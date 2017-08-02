@@ -1,21 +1,21 @@
-import { Component, OnInit, ChangeDetectionStrategy, NgZone     } from '@angular/core'                 ;
-import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular'                 ;
-import { DBSrvcs                                                } from '../../providers/db-srvcs'      ;
-import { AuthSrvcs                                              } from '../../providers/auth-srvcs'    ;
-import { SrvrSrvcs                                              } from '../../providers/srvr-srvcs'    ;
-import { UserData                                               } from '../../providers/user-data'     ;
-import { AlertService                                           } from '../../providers/alerts'        ;
-import { Log, isMoment, moment, Moment                          } from '../../config/config.functions' ;
-import { WorkOrder                                              } from '../../domain/workorder'        ;
-import { ReportOther                                            } from '../../domain/reportother'      ;
-import { Shift                                                  } from '../../domain/shift'            ;
-import { PayrollPeriod                                          } from '../../domain/payroll-period'   ;
-import { Preferences                                            } from '../../providers/preferences'   ;
-import { TranslateService                                       } from '@ngx-translate/core'           ;
-import { TabsComponent                                          } from '../../components/tabs/tabs'    ;
-import { OrderBy                                                } from '../../pipes/pipes'             ;
-import { STRINGS                                                } from '../../config/config.strings'   ;
-import { SmartAudio                                             } from '../../providers/smart-audio'   ;
+import { Component, OnInit, ChangeDetectionStrategy, NgZone                  } from '@angular/core'                 ;
+import { IonicPage, NavController, NavParams, LoadingController, ItemSliding } from 'ionic-angular'                 ;
+import { DBSrvcs                                                             } from '../../providers/db-srvcs'      ;
+import { AuthSrvcs                                                           } from '../../providers/auth-srvcs'    ;
+import { SrvrSrvcs                                                           } from '../../providers/srvr-srvcs'    ;
+import { UserData                                                            } from '../../providers/user-data'     ;
+import { AlertService                                                        } from '../../providers/alerts'        ;
+import { Log, isMoment, moment, Moment                                       } from '../../config/config.functions' ;
+import { WorkOrder                                                           } from '../../domain/workorder'        ;
+import { ReportOther                                                         } from '../../domain/reportother'      ;
+import { Shift                                                               } from '../../domain/shift'            ;
+import { PayrollPeriod                                                       } from '../../domain/payroll-period'   ;
+import { Preferences                                                         } from '../../providers/preferences'   ;
+import { TranslateService                                                    } from '@ngx-translate/core'           ;
+import { TabsComponent                                                       } from '../../components/tabs/tabs'    ;
+import { OrderBy                                                             } from '../../pipes/pipes'             ;
+import { STRINGS                                                             } from '../../config/config.strings'   ;
+import { SmartAudio                                                          } from '../../providers/smart-audio'   ;
 
 export const _sortReports = (a:WorkOrder,b:WorkOrder):number => {
   let dateA  = a['report_date'];
@@ -288,7 +288,7 @@ export class ReportHistory implements OnInit {
   }
 
   deleteWorkOrder(event:Event, report:WorkOrder, shift:Shift) {
-    Log.l("deleteWorkOrder() clicked ...");
+    Log.l("deleteWorkOrder() clicked ... with event:\n", event);
     let lang = this.lang;
     let db = this.prefs.getDB();
     this.audio.play('deletereport');
@@ -311,7 +311,9 @@ export class ReportHistory implements OnInit {
           return this.server.syncToServer(db.reports, db.reports);
         }).then(res => {
           Log.l(`deleteWorkOrder(): Synchronized local '${db.reports}' to remote.`)
-        // this.server.deleteDoc(this.prefs.DB.reports, wo).then((res) => {
+          // return this.server.deleteDoc(db.reports, wo);
+          // .then((res) => {
+        // }).then(res => {
           Log.l("deleteWorkOrder(): Success:\n", res);
           // this.items.splice(i, 1);
           // let i = this.reports.indexOf(report);
@@ -321,6 +323,7 @@ export class ReportHistory implements OnInit {
           // }
           // i = this.filtReports[reportDate].indexOf(item);
           // let tmpReport = this.filtReports[reportDate].splice(i, 1)[0];
+          Log.l(`deleteWorkOrder(): Successfully deleted report '${report._id}' from server.`);
           Log.l(`deleteWorkOrder(): About to delete report '${report._id}' from shift '${shift.getShiftSerial()}'...\n`, report);
           shift.removeShiftReport(tmpReport);
           // this.ud.removeReport(tmpReport);
@@ -343,7 +346,7 @@ export class ReportHistory implements OnInit {
   }
 
   deleteOtherReport(event:Event, other:ReportOther, shift:Shift) {
-    Log.l("deleteOtherReport() clicked ...");
+    Log.l("deleteOtherReport() clicked ... with event:\n", event);
     let lang = this.lang;
     let db = this.prefs.getDB();
     this.audio.play('deleteotherreport');
@@ -352,13 +355,13 @@ export class ReportHistory implements OnInit {
         this.alert.showSpinner(lang['spinner_deleting_report']);
         Log.l("deleteOtherReport(): User confirmed deletion, deleting...");
         // let ro: ReportOther = other.clone();
-        let wo:ReportOther = other;
+        let ro:ReportOther = other;
         let tmpOther = other;
-        this.db.deleteDoc(db.reports, wo).then((res) => {
+        this.db.deleteDoc(db.reports, ro).then((res) => {
           Log.l("deleteWorkOrder(): Success:\n", res);
-          let tmpOther = wo;
+          let tmpOther = ro;
           let reports = this.ud.getReportOtherList();
-          let i = reports.indexOf(wo);
+          let i = reports.indexOf(ro);
           Log.l("Going to delete work order %d in the list.", i);
           if (i > -1) {
             tmpOther = reports.splice(i, 1)[0];
@@ -367,11 +370,13 @@ export class ReportHistory implements OnInit {
           this.ud.removeOtherReport(tmpOther);
           return this.server.syncToServer(db.reports, db.reports);
         }).then(res => {
+          // let ro:ReportOther = other;
           Log.l(`deleteWorkOrder(): Synchronized local '${db.reports}' to remote.`)
-        // let ro:ReportOther = other;
+          // return this.server.deleteDoc(db.reports, ro);
+        // }).then(res => {
         // let reportDate = ro.report_date.format("YYYY-MM-DD");
         // this.server.deleteDoc(db.reports_other, ro).then((res) => {
-        //   Log.l("deleteOtherReport(): Success:\n", res);
+          Log.l("deleteOtherReport(): Successfully deleted from server:\n", res);
         //   // this.items.splice(i, 1);
         //   // let i = this.otherReports.indexOf(other);
         //   // if(i > -1) {

@@ -784,12 +784,37 @@ export class SrvrSrvcs {
     });
   }
 
+  public syncReportsFromServer() {
+    Log.l(`syncReportsFromServer(): Starting up...`);
+    let dbname = this.prefs.getDB().reports;
+    let db1 = this.addDB(dbname);
+    let db2 = this.addRDB(dbname);
+    return new Promise((resolve, reject) => {
+      let db1 = this.addDB(dbname);
+      let db2 = this.addRDB(dbname);
+      let user = this.ud.getUsername();
+      db2.replicate.to(db1, {
+        filter: 'ref/forTech',
+        query_params: { username: user }
+      }).then(res => {
+        Log.l("syncReportsFromServer(): Successfully replicated filtered reports from server.\n", res);
+        resolve(res);
+      }).catch(err => {
+        Log.l("syncReportsFromServer(): Error during replication!");
+        Log.e(err);
+        reject(err);
+      });
+    });
+  }
+
   public getAllData(tech:Employee):Promise<any> {
     return new Promise((resolve, reject) => {
       let data = { employee: [], sites: [], reports: [], otherReports: [], payrollPeriods: [], shifts: [], messages: [], config: {} };
       let username = tech.getUsername();
       data.employee.push(tech);
-      this.getReportsForTech(username).then(res => {
+      this.syncReportsFromServer().then(res => {
+        return this.getReportsForTech(username);
+      }).then(res => {
         for (let doc of res) {
           let report = new WorkOrder();
           report.readFromDoc(doc);

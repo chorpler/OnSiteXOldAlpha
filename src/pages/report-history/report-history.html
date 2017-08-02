@@ -29,8 +29,8 @@
         <!-- <div class="report-history-reports-subcontainer" *ngIf="filtReports[filterKeys[i]].length">
           <div class="report-and-reportother-container" *ngFor="let report of filtReports[filterKeys[i]]"> -->
         <div class="report-history-reports-subcontainer" *ngIf="shift.getAllShiftReports()">
-          <div class="report-and-reportother-container" *ngFor="let report of shift.getAllShiftReports()">
-            <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type===undefined || report.type==='Work Report'">
+          <div class="report-and-reportother-container" *ngFor="let report of shift.getAllShiftReports(); let i=index">
+            <ion-item-sliding #item{{i}} class="report-history-list-item-sliding" *ngIf="report.type===undefined || report.type==='Work Report'">
               <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
                 <div class="report-history-report-item item-group-id" *ngIf="prefs.getShowID()">
                   <span class="report-history-report-item-header item-id-label">ID</span>
@@ -90,7 +90,7 @@
                 </button>
               </ion-item-options>
             </ion-item-sliding>
-            <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Travel'">
+            <ion-item-sliding #item{{i}} class="report-history-list-item-sliding" *ngIf="report.type==='Travel'">
               <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
                 <div class="report-history-report-item item-group-id" *ngIf="prefs.getShowID()">
                   <span class="report-history-report-item-header item-id-label">ID</span>
@@ -132,7 +132,7 @@
                 </button>
               </ion-item-options>
             </ion-item-sliding>
-            <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Training'">
+            <ion-item-sliding #item{{i}} class="report-history-list-item-sliding" *ngIf="report.type==='Training'">
               <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
                 <div class="report-history-report-item item-group-id" *ngIf="prefs.getShowID()">
                   <span class="report-history-report-item-header item-id-label">ID</span>
@@ -183,7 +183,7 @@
               // H Holiday
               // V Vacation
             -->
-            <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Standby'">
+            <ion-item-sliding #item{{i}} class="report-history-list-item-sliding" *ngIf="report.type==='Standby'">
               <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
                 <div class="report-history-report-item item-group-id" *ngIf="prefs.getShowID()">
                   <span class="report-history-report-item-header item-id-label">ID</span>
@@ -221,7 +221,7 @@
                 </button>
               </ion-item-options>
             </ion-item-sliding>
-            <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Standby: HB Duncan'">
+            <ion-item-sliding #item{{i}} class="report-history-list-item-sliding" *ngIf="report.type==='Standby: HB Duncan'">
               <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
                 <div class="report-history-report-item item-group-id" *ngIf="prefs.getShowID()">
                   <span class="report-history-report-item-header item-id-label">ID</span>
@@ -259,7 +259,7 @@
                 </button>
               </ion-item-options>
             </ion-item-sliding>
-            <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Sick'">
+            <ion-item-sliding #item{{i}} class="report-history-list-item-sliding" *ngIf="report.type==='Sick'">
               <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
                 <div class="report-history-report-item item-group-id" *ngIf="prefs.getShowID()">
                   <span class="report-history-report-item-header item-id-label">ID</span>
@@ -297,7 +297,7 @@
                 </button>
               </ion-item-options>
             </ion-item-sliding>
-            <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Vacation'">
+            <ion-item-sliding #item{{i}} class="report-history-list-item-sliding" *ngIf="report.type==='Vacation'">
               <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
                 <div class="report-history-report-item item-group-id" *ngIf="prefs.getShowID()">
                   <span class="report-history-report-item-header item-id-label">ID</span>
@@ -335,7 +335,7 @@
                 </button>
               </ion-item-options>
             </ion-item-sliding>
-            <ion-item-sliding class="report-history-list-item-sliding" *ngIf="report.type==='Holiday'">
+            <ion-item-sliding #item{{i}} class="report-history-list-item-sliding" *ngIf="report.type==='Holiday'">
               <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
                 <div class="report-history-report-item item-group-id" *ngIf="prefs.getShowID()">
                   <span class="report-history-report-item-header item-id-label">ID</span>

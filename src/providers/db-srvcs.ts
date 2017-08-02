@@ -173,6 +173,26 @@ export class DBSrvcs {
     });
   }
 
+  public syncReportsFromServer(dbname: string) {
+    Log.l(`syncReportsFromServer(): Starting up...`);
+    return new Promise((resolve,reject) => {
+      let db1 = this.addDB(dbname);
+      let db2 = this.addRDB(dbname);
+      let user = this.data.getUsername();
+      db2.replicate.to(db1, {
+        filter: 'ref/forTech',
+        query_params: {username: user}
+      }).then(res => {
+        Log.l("syncReportsFromServer(): Successfully replicated filtered reports from server.\n", res);
+        resolve(res);
+      }).catch(err => {
+        Log.l("syncReportsFromServer(): Error during replication!");
+        Log.e(err);
+        reject(err);
+      });
+    });
+  }
+
   addDoc(dbname:string, newDoc) {
     return new Promise((resolve, reject) => {
       Log.l(`addDoc(): Adding document to ${dbname}:\n`, newDoc);
@@ -258,19 +278,31 @@ export class DBSrvcs {
     return new Promise((resolve,reject) => {
       Log.l(`deleteDoc(): Attempting to delete doc ${newDoc._id}...`);
       let db1 = this.addDB(dbname);
-      return db1.upsert(newDoc._id, (doc) => {
-        if(doc) {
-          let rev = doc._rev;
-          doc = newDoc;
-          doc._rev = rev;
-          doc['_deleted'] = true;
-          return doc;
-        } else {
-          doc = newDoc;
-          doc['_deleted'] = true;
-          delete doc._rev;
-          return doc;
-        }
+      let i = 0;
+      db1.putIfNotExists(newDoc).then(res => {
+        return db1.upsert(newDoc._id, (doc) => {
+          if(i++ > 5) { return false;}
+          if(doc && doc._id) {
+          //   let rev = doc._rev;
+          //   doc = newDoc;
+          // doc._rev = rev;
+            Log.l("deleteDoc(): Doc exists.\n", doc);
+            doc['_deleted'] = true;
+            return doc;
+          } else {
+            Log.l("deleteDoc(): Doc does not exist:\n", doc);
+            // doc = newDoc;
+            // doc['_id'] = newDoc._id;
+            // doc['_rev'] = newDoc._rev;
+            newDoc['_deleted'] = true;
+            delete newDoc._rev;
+            // delete doc._rev;
+            Log.l(`deleteDoc(): upsert will return doc:\n`, newDoc);
+            return newDoc;
+          }
+          // return false;
+          // doc._deleted = true;
+        });
       }).then((res) => {
         if(!res.ok && !res.updated) {
           Log.l("deleteDoc(): soft upsert error:\n", res);
