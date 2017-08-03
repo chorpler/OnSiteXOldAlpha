@@ -357,7 +357,7 @@ export class ReportHistory implements OnInit {
         // let ro: ReportOther = other.clone();
         let ro:ReportOther = other;
         let tmpOther = other;
-        this.db.deleteDoc(db.reports, ro).then((res) => {
+        this.db.deleteDoc(db.reports_other, ro).then((res) => {
           Log.l("deleteWorkOrder(): Success:\n", res);
           let tmpOther = ro;
           let reports = this.ud.getReportOtherList();
@@ -368,10 +368,10 @@ export class ReportHistory implements OnInit {
           }
           shift.removeOtherReport(tmpOther)
           this.ud.removeOtherReport(tmpOther);
-          return this.server.syncToServer(db.reports, db.reports);
+          return this.server.syncToServer(db.reports_other, db.reports_other);
         }).then(res => {
           // let ro:ReportOther = other;
-          Log.l(`deleteWorkOrder(): Synchronized local '${db.reports}' to remote.`)
+          Log.l(`deleteWorkOrder(): Synchronized local '${db.reports_other}' to remote.`)
           // return this.server.deleteDoc(db.reports, ro);
         // }).then(res => {
         // let reportDate = ro.report_date.format("YYYY-MM-DD");

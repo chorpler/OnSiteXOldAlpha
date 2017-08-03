@@ -1005,6 +1005,7 @@ export class ReportPage implements OnInit {
 
   processAlternateWO() {
     let lang = this.lang;
+    let db =
     this.alert.showSpinner(lang['spinner_saving_report']);
     let doc = this.workOrderForm.getRawValue();
     // let newReport = new ReportOther().readFromDoc(doc);
@@ -1015,7 +1016,7 @@ export class ReportPage implements OnInit {
     this.db.saveReportOther(newDoc).then(res => {
       Log.l("processAlternateWO(): Done saving ReportOther!");
       this.selectedShift.addOtherReport(newReport);
-      this.ud.addNewOtherReport(newReport);
+      // this.ud.addNewOtherReport(newReport);
       // this.ud.updateShifts();
       this.currentOtherHours = 0;
       this.alert.hideSpinner();
@@ -1244,7 +1245,7 @@ export class ReportPage implements OnInit {
             tmpReport = others.splice(i, 1)[0];
           }
           this.selectedShift.removeOtherReport(tmpReport);
-          this.ud.removeOtherReport(tmpReport);
+          // this.ud.removeOtherReport(tmpReport);
           return this.server.syncToServer(db.reports_other, db.reports_other);
         }).then(res => {
           Log.l(`deleteOtherReport(): Synchronized local '${db.reports}' to remote.`);

@@ -17,12 +17,12 @@ if not exist plugins\cordova-plugin-nativestorage (
   REM npm install --save @ionic-native/app-update @ionic-native/device @ionic-native/unique-device-id @ionic-native/badge @ionic-native/camera
   ionic cordova plugin add cordova-plugin-nativestorage & npm install --save @ionic-native/native-storage
   echo Starting ionic serve completely seriously, if anyone from any government agency is listening...
-  ionic serve --lab
+  ionic serve --lab --address=0.0.0.0
 REM ) else if not exist node_modules\uuid (
   REM echo Installing new plugins. Should script stop running, just run "ironic" again or double-click your icon again.
   npm install uuid --save & npm install @types/uuid --save
 ) else (
   echo No new plugins required!
   echo Starting ionic serve completely seriously, if anyone from any government agency is listening...
-  ionic serve --lab
+  ionic serve --lab --address=0.0.0.0
 )

@@ -787,8 +787,6 @@ export class SrvrSrvcs {
   public syncReportsFromServer() {
     Log.l(`syncReportsFromServer(): Starting up...`);
     let dbname = this.prefs.getDB().reports;
-    let db1 = this.addDB(dbname);
-    let db2 = this.addRDB(dbname);
     return new Promise((resolve, reject) => {
       let db1 = this.addDB(dbname);
       let db2 = this.addRDB(dbname);
@@ -798,6 +796,15 @@ export class SrvrSrvcs {
         query_params: { username: user }
       }).then(res => {
         Log.l("syncReportsFromServer(): Successfully replicated filtered reports from server.\n", res);
+        dbname = this.prefs.getDB().reports_other;
+        db1 = this.addDB(dbname);
+        db2 = this.addRDB(dbname);
+        return db2.replicate.to(db1, {
+          filter: 'ref/forTech',
+          query_params: { username: user }
+        });
+      }).then(res => {
+        Log.l("syncReportsFromServer(): Successfully replicated filtered ReportOthers from server.\n", res);
         resolve(res);
       }).catch(err => {
         Log.l("syncReportsFromServer(): Error during replication!");

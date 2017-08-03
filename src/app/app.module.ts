@@ -27,7 +27,6 @@ import { Camera, CameraOptions                                   } from '@ionic-
 import { TranslateModule, TranslateLoader                        } from '@ngx-translate/core'                                        ;
 import { TranslateHttpLoader                                     } from '@ngx-translate/http-loader'                                 ;
 import { OnSiteApp                                               } from './app.component.ts'                                         ;
-import { ProfileSettings                                         } from '../providers/profile-settings.ts'                           ;
 import { AuthSrvcs                                               } from '../providers/auth-srvcs'                                    ;
 import { DBSrvcs                                                 } from '../providers/db-srvcs'                                      ;
 import { UserData                                                } from '../providers/user-data'                                     ;
@@ -89,7 +88,6 @@ import { ClockComponentModule                                    } from '../comp
                         provide: ErrorHandler,
                         useClass: IonicErrorHandler
                       },
-                      ProfileSettings,
                       AuthSrvcs,
                       DBSrvcs,
                       UserData,

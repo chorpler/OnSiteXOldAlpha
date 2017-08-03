@@ -1,3 +1,4 @@
+import { sprintf                                          } from 'sprintf-js'                    ;
 import { Component, OnInit, Input, NgZone, ViewChild      } from '@angular/core'                 ;
 import { Http                                             } from '@angular/http'                 ;
 import { DomSanitizer                                     } from '@angular/platform-browser'     ;
