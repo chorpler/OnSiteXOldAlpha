@@ -245,6 +245,9 @@ export class TechSettingsPage implements OnInit {
     this.locIDs = tmpLocIDs;
     this.locID = lid;
 
+    let site = this.getSiteFromInfo(client, loc, lid);
+    this.setTechTimes();
+
     Log.l(`CLIENTCHANGE: Client ${client.fullName}, location ${loc.fullName}, locID ${lid.fullName}.\ngot locations and locIDs:\n`, tmpLocations);
     Log.l(tmpLocIDs);
   }
@@ -267,6 +270,9 @@ export class TechSettingsPage implements OnInit {
 
     Log.l("LOCATIONCHANGE: ended up with locations and locIDs:\n", locations);
     Log.l(locIDs);
+    let site = this.getSiteFromInfo(client, location, lid);
+    this.setTechTimes();
+
     // if (locIDs.length) {
     //   this.locIDs = _dedupe(locIDs.map(obj => obj['locID'])).sort(_sort);
     //   Log.l("LOCATIONCHANGE: Got locIDs:\n", this.locIDs);
@@ -290,7 +296,24 @@ export class TechSettingsPage implements OnInit {
 
   updateLocID(locID:any) {
     Log.l("updateLocID(): Updated to:\n", locID);
+    let client = this.client;
+    let location = this.location;
+    let lid = this.locID;
+    let site = this.getSiteFromInfo(client, location, lid);
+    this.setTechTimes();
+  }
 
+  public setTechTimes() {
+    let site = this.site;
+    let rot = this.tech.rotation;
+    let shift = this.tech.shift;
+    let now = moment();
+    let shiftLength = site.getShiftLengthForDate(rot, shift, now);
+    let shiftStartTime = site.getShiftStartTime(shift);
+    shiftLength = this.shiftLengths.find(a => a['name'] === shiftLength);
+    shiftStartTime = this.shiftStartTimes.find(a => a['fullName'] === shiftStartTime);
+    this.shiftLength = shiftLength;
+    this.shiftStartTime = shiftStartTime;
   }
 
   initFormData() {
@@ -357,6 +380,7 @@ export class TechSettingsPage implements OnInit {
                     .filter((obj, pos, arr) => { return _cmp(this.locID, obj['locID']) });
     Log.l("getSiteFromInfo(): Site narrowed down to:\n", site);
     if(site && !window['onsitedevflag']) {
+      this.site = site[0];
       return site[0];
     } else {
       let msg = sprintf(lang['error_no_site_message'], this.client.fullName, this.location.fullName, this.locID.fullName);
@@ -401,13 +425,13 @@ export class TechSettingsPage implements OnInit {
       this.db.saveTechProfile(this.reportMeta).then((res) => {
         Log.l("onSubmit(): Saved techProfile successfully. Now updating shift info for new site:\n", this.site);
         this.ud.updateAllShiftInfo(this.site, tech);
+        this.ud.setTechUpdated(true);
         Log.l("onSubmit(): Updated all shift info successfully. Now returning from tech settings.");
         if ( this.mode === 'modal' ) {
           Log.l('Mode = ' + this.mode );
           this.alert.hideSpinner();
           this.viewCtrl.dismiss();
-        }
-        else {
+        } else {
           Log.l('Mode = ' + this.mode );
           this.alert.hideSpinner();
           this.tabs.goToPage('OnSiteHome');
@@ -425,7 +449,6 @@ export class TechSettingsPage implements OnInit {
         Log.l("onSubmit(): Error showing alert to user!");
         Log.e(err);
       });
-
     }
   }
 

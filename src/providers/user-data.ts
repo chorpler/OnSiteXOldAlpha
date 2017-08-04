@@ -80,13 +80,14 @@ export class UserData {
     report_types  : [],
     training_types: [],
     site_info     : new Map(),
+    techUpdated   : false,
   };
   public static hands                 : any = {
     hours  : 0,
     minutes: 0,
     seconds: 0,
   };
-  // public get clockZoom():number { Log.l("clockZoom called"); if(this.platform && this.platform.width() && this.platform.width() < 350) { return this.platform.width()/350; } else { return 1.0};};
+  // public get clockZo om():number { Log.l("clockZoom called"); if(this.platform && this.platform.width() && this.platform.width() < 350) { return this.platform.width()/350; } else { return 1.0};};
   // public set clockZoom(value:number) {};
   // public get clockZoom():number { return UserData.clockZoom;};
   // public set clockZoom(value:number) { UserData.clockZoom = value;};
@@ -147,7 +148,25 @@ export class UserData {
       messages      : [],
       report_types  : [],
       training_types: [],
+      site_info     : new Map(),
+      techUpdated   : false,
     };
+  }
+
+  public static isTechUpdated() {
+    return UserData.data.techUpdated;
+  }
+
+  public static setTechUpdated(value:boolean) {
+    UserData.data.techUpdated = value;
+  }
+
+  public isTechUpdated() {
+    return UserData.isTechUpdated();
+  }
+
+  public setTechUpdated(value:boolean) {
+    return UserData.setTechUpdated(value);
   }
 
   public getVersion() {
@@ -199,12 +218,16 @@ export class UserData {
 
   public static getUnreadMessageCount() {
     let msgs = UserData.messages;
-    let count = 0;
-    for(let msg of msgs) {
-      if(!msg.read) {
-        count++;
-      }
-    }
+    let messages = msgs.filter(a => {
+      return !a['read'];
+    })
+    let count = messages.length;
+    // let count = 0;
+    // for(let msg of msgs) {
+    //   if(!msg.read) {
+    //     count++;
+    //   }
+    // }
     return count;
   }
 

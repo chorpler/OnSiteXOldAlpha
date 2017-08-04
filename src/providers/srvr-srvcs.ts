@@ -575,8 +575,9 @@ export class SrvrSrvcs {
     let out = new Array<Message>();
     let remote = new Array<Message>();
     let local = new Array<Message>();
+    let db = this.prefs.getDB();
     return new Promise((resolve, reject) => {
-      let dbname = this.prefs.DB.messages;
+      let dbname = db.messages;
       let db1 = this.addDB(dbname);
       let rdb1 = this.addRDB(dbname);
       // rdb1.allDocs({include_docs:true}).then(res => {
@@ -594,8 +595,20 @@ export class SrvrSrvcs {
           if(doc && row.id[0] !== '_') {
             let msg = new Message();
             msg.readFromDoc(row.doc);
-            out.push(msg);
+            let date = msg.getMessageDate().toExcel(true);
+            let duration = msg.getMessageDuration();
+            let expires = date + duration;
+            let now = moment().toExcel();
+            if (now <= expires) {
+              out.push(msg);
+            }
           }
+          let _orderBy = function (a:Message, b:Message) {
+            let tA = a.date;
+            let tB = b.date;
+            return tA < tB ? 1 : tA > tB ? -1 : 0;
+          }
+          out.sort(_orderBy);
         }
         // Log.l("fetchNewMessages(): Final remote messages array is:\n", remote);
         // Log.l("fetchNewMessages(): Now getting local messages...");

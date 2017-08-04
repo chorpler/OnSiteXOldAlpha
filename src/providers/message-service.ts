@@ -33,24 +33,8 @@ export class MessageService {
     return new Promise((resolve,reject) => {
       let messages = new Array<Message>();
       this.server.fetchNewMessages().then(res => {
-        let messages = new Array<Message>();
+        let messages = res;
         let badgeCount = 0;
-        let now = moment().toExcel(true);
-        for (let message of res) {
-          let date = message.getMessageDate().toExcel(true);
-          let duration = message.getMessageDuration();
-          let expires = date + duration;
-          if(now <= expires) {
-            messages.push(message);
-          }
-        }
-        let _orderBy = function (a, b) {
-          let timeA = moment(a.date);
-          let timeB = moment(b.date);
-          return timeA.isAfter(timeB) ? -1 : timeA.isBefore(timeB) ? 1 : 0;
-        }
-        messages.sort(_orderBy);
-        // Log.l("getMessages(): Sorted array is:\n", messages);
         this.messages = messages;
         this.ud.setMessages(messages);
         MessageService.messageInfo.new_messages = this.getNewMessageCount();
@@ -63,25 +47,17 @@ export class MessageService {
     });
   }
 
-  public static getNewMessagecount():number {
+  public static getNewMessageCount():number {
     let badges = 0;
     let msgs = MessageService.messages || [];
-    for(let message of msgs) {
-      if(!message.read) {
-        badges++;
-      }
-    }
-    return badges;
+    let messages = msgs.filter(a => {
+      return !a['read'];
+    })
+    MessageService.messageInfo.new_messages = messages.length;
+    return MessageService.messageInfo.new_messages;
   }
 
   public getNewMessageCount():number {
-    let badgeCount = 0;
-    for(let message of this.messages) {
-      if (!message.read) {
-        badgeCount++;
-      }
-    }
-    MessageService.messageInfo.new_messages = badgeCount;
-    return badgeCount;
+    return MessageService.getNewMessageCount();
   }
 }

@@ -191,6 +191,15 @@ export class Employee implements IFEmployee {
     }
   }
 
+  public getShiftLength() {
+    return this.shiftLength;
+  }
+
+  public setShiftLength(value:string|number) {
+    this.shiftLength = value;
+    return this.shiftLength;
+  }
+
   public isActive() {
     return this.active;
   }

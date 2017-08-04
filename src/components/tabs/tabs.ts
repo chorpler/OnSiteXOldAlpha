@@ -26,21 +26,22 @@ export class TabsComponent implements OnInit {
   public lang:any;
   public static nav:any;
   public nav:any = TabsComponent.nav;
-  public static unreadMessageCount:number = 0;
-  public get unreadMessageCount():number { return TabsComponent.unreadMessageCount;};
-  public set unreadMessageCount(value:number) { TabsComponent.unreadMessageCount = value;};
+  // public static unreadMessageCount:number = 0;
+  // public get unreadMessageCount():number { return TabsComponent.unreadMessageCount;};
+  // public set unreadMessageCount(value:number) { TabsComponent.unreadMessageCount = value;};
   public static tabClass: Array<boolean> = [ false, false, false, false, false, false, false ];
   public tabClass:Array<boolean> = TabsComponent.tabClass;
   public static allTabs:any = {'disabled': false};
   public allTabs:any = TabsComponent.allTabs;
+  public static ready:boolean = false;
   public static get tabInfo() { return UserData.isDeveloper() ? TabsComponent.tabArrayDev : TabsComponent.tabArray; };
   public static tabArray:any = [
-    { name: 'OnSiteHome'    , fullName: 'OnSite Home'        , icon: 'ios-home-outline'     , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 ? true : false}, set hideBadge(val:boolean) {} } ,
-    { name: 'Report'        , fullName: 'Report'             , icon: 'ios-document-outline' , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 ? true : false}, set hideBadge(val:boolean) {} } ,
-    { name: 'ReportHistory' , fullName: 'Report History'     , icon: 'ios-folder-outline'   , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 ? true : false}, set hideBadge(val:boolean) {} } ,
-    { name: 'User'          , fullName: 'User'               , icon: 'ios-contact-outline'  , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 ? true : false}, set hideBadge(val:boolean) {} } ,
-    { name: 'Message List'  , fullName: 'Messages'           , icon: 'ios-text-outline'     , active: false, get badgeCount():number { return UserData.getUnreadMessageCount();}, set badgeCount(value:number) {}, get hideBadge() {return this.badgeCount <= 0 ? true : false}, set hideBadge(val:boolean) {} } ,
-    { name: 'Settings'      , fullName: 'Settings'           , icon: 'ios-settings-outline' , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 ? true : false}, set hideBadge(val:boolean) {} } ,
+    { name: 'OnSiteHome'    , fullName: 'OnSite Home'        , icon: 'ios-home-outline'     , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !this.ud.isAppLoaded() ? true : false}, set hideBadge(val:boolean) {} } ,
+    { name: 'Report'        , fullName: 'Report'             , icon: 'ios-document-outline' , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !this.ud.isAppLoaded() ? true : false}, set hideBadge(val:boolean) {} } ,
+    { name: 'ReportHistory' , fullName: 'Report History'     , icon: 'ios-folder-outline'   , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !this.ud.isAppLoaded() ? true : false}, set hideBadge(val:boolean) {} } ,
+    { name: 'User'          , fullName: 'User'               , icon: 'ios-contact-outline'  , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !this.ud.isAppLoaded() ? true : false}, set hideBadge(val:boolean) {} } ,
+    { name: 'Message List'  , fullName: 'Messages'           , icon: 'ios-text-outline'     , active: false, get badgeCount():number { return UserData.getUnreadMessageCount();}, set badgeCount(value:number) {}, get hideBadge() {return this.badgeCount <= 0 || !this.ud.isAppLoaded() ? true : false}, set hideBadge(val:boolean) {} } ,
+    { name: 'Settings'      , fullName: 'Settings'           , icon: 'ios-settings-outline' , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !this.ud.isAppLoaded() ? true : false}, set hideBadge(val:boolean) {} } ,
   ];
   public static tabArrayDev:any = [
     ...TabsComponent.tabArray,
@@ -48,6 +49,8 @@ export class TabsComponent implements OnInit {
   ];
 
   public get tabInfo():any {return TabsComponent.tabInfo};
+  public get ready():boolean {return TabsComponent.ready;};
+  public set ready(value:boolean) { TabsComponent.ready = value;};
   public static tab:any = {
     'OnSiteHome': {}
   };
@@ -64,20 +67,20 @@ export class TabsComponent implements OnInit {
     this.enumPagesDef = Pages;
   }
 
-  public static getUnreadMessageCount():number {
-    let ret = TabsComponent.unreadMessageCount ? TabsComponent.unreadMessageCount : 0;
-    return ret;
-  }
+  // public static getUnreadMessageCount():number {
+  //   let ret = TabsComponent.unreadMessageCount ? TabsComponent.unreadMessageCount : 0;
+  //   return ret;
+  // }
 
-  public getUnreadMessageCount():number {
-    if(this && this.msg && this.msg.getNewMessageCount) {
-      let msgs = this.msg.getNewMessageCount();
-      TabsComponent.unreadMessageCount = msgs ? msgs : 0;
-      return TabsComponent.unreadMessageCount;
-    } else {
-      return 0;
-    }
-  }
+  // public getUnreadMessageCount():number {
+  //   if(this && this.msg && this.msg.getNewMessageCount) {
+  //     let msgs = this.msg.getNewMessageCount();
+  //     TabsComponent.unreadMessageCount = msgs ? msgs : 0;
+  //     return TabsComponent.unreadMessageCount;
+  //   } else {
+  //     return 0;
+  //   }
+  // }
 
   ngOnInit() {
     window['onSiteTabs'] = this;
