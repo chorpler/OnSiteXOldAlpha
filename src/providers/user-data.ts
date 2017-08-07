@@ -20,8 +20,9 @@ import { Jobsite                       } from '../domain/jobsite'              ;
 
 @Injectable()
 export class UserData {
-  public static appdata               : any = {ready: false,
-    version    : "10.11.20",
+  public static appdata               : any = {
+    ready      : false,
+    version    : "10.11.21",
     homeLoading: false,
     attempts   : 0,
     homeReady  : false,
@@ -320,8 +321,12 @@ export class UserData {
     }
   }
 
+  public static isAppLoaded() {
+    return UserData.appdata !== undefined && UserData.appdata.ready !== undefined ? UserData.appdata.ready : false;
+  }
+
   public isAppLoaded() {
-    return UserData.appdata.ready;
+    return UserData.isAppLoaded();
   }
 
   public setAppLoaded(value:boolean) {

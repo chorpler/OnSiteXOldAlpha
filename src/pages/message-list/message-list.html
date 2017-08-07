@@ -16,7 +16,7 @@
 </ion-content>
 <ion-content padding class="page-content message-list-page-content" *ngIf="pageReady && messages && messages.length">
   <ion-card class="message-card ion-card-button-like" [ngClass]="{'highlight': !message.read}" *ngFor="let message of messages; let i=index" (tap)="showMessage(message)">
-    <ion-list class="message-list">
+    <ion-list no-lines class="message-list">
       <ion-item class="message-list-item">
         <p class="message-list-label">{{'message_date' | translate}}</p>
         <p class="message-list-data">{{message.getMessageDateString()}}</p>
@@ -27,7 +27,8 @@
       </ion-item>
       <ion-item class="message-list-item">
         <p class="message-list-label">{{'message_subject' | translate}}</p>
-        <p class="message-list-data">{{message.getMessageSubject()}}</p>
+        <p class="message-list-data" *ngIf="language!=='es'">{{message.getMessageSubject()}}</p>
+        <p class="message-list-data" *ngIf="language==='es'">{{message.getMessageSubjectES()}}</p>
       </ion-item>
     </ion-list>
   </ion-card>

@@ -36,12 +36,12 @@ export class TabsComponent implements OnInit {
   public static ready:boolean = false;
   public static get tabInfo() { return UserData.isDeveloper() ? TabsComponent.tabArrayDev : TabsComponent.tabArray; };
   public static tabArray:any = [
-    { name: 'OnSiteHome'    , fullName: 'OnSite Home'        , icon: 'ios-home-outline'     , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !this.ud.isAppLoaded() ? true : false}, set hideBadge(val:boolean) {} } ,
-    { name: 'Report'        , fullName: 'Report'             , icon: 'ios-document-outline' , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !this.ud.isAppLoaded() ? true : false}, set hideBadge(val:boolean) {} } ,
-    { name: 'ReportHistory' , fullName: 'Report History'     , icon: 'ios-folder-outline'   , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !this.ud.isAppLoaded() ? true : false}, set hideBadge(val:boolean) {} } ,
-    { name: 'User'          , fullName: 'User'               , icon: 'ios-contact-outline'  , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !this.ud.isAppLoaded() ? true : false}, set hideBadge(val:boolean) {} } ,
-    { name: 'Message List'  , fullName: 'Messages'           , icon: 'ios-text-outline'     , active: false, get badgeCount():number { return UserData.getUnreadMessageCount();}, set badgeCount(value:number) {}, get hideBadge() {return this.badgeCount <= 0 || !this.ud.isAppLoaded() ? true : false}, set hideBadge(val:boolean) {} } ,
-    { name: 'Settings'      , fullName: 'Settings'           , icon: 'ios-settings-outline' , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !this.ud.isAppLoaded() ? true : false}, set hideBadge(val:boolean) {} } ,
+    { name: 'OnSiteHome'    , fullName: 'OnSite Home'        , icon: 'ios-home-outline'     , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
+    { name: 'Report'        , fullName: 'Report'             , icon: 'ios-document-outline' , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
+    { name: 'ReportHistory' , fullName: 'Report History'     , icon: 'ios-folder-outline'   , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
+    { name: 'User'          , fullName: 'User'               , icon: 'ios-contact-outline'  , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
+    { name: 'Message List'  , fullName: 'Messages'           , icon: 'ios-text-outline'     , active: false, get badgeCount():number { return UserData.getUnreadMessageCount();}, set badgeCount(value:number) {}, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
+    { name: 'Settings'      , fullName: 'Settings'           , icon: 'ios-settings-outline' , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
   ];
   public static tabArrayDev:any = [
     ...TabsComponent.tabArray,
@@ -54,6 +54,7 @@ export class TabsComponent implements OnInit {
   public static tab:any = {
     'OnSiteHome': {}
   };
+  public get tabArray():any {return TabsComponent.tabArray;};
   public onSitePage     : any     ;
   public userLoggedIn   : boolean ;
   public userIsDeveloper: boolean =false ;
@@ -110,7 +111,7 @@ export class TabsComponent implements OnInit {
       this.translate.get(translations).subscribe((results:any) => {
         this.lang = results;
       });
-      if(this.ud.isAppLoaded()) {
+      if(UserData.isAppLoaded()) {
         if (this.onSitePage === 'Login') { this.setTabDisable(true); }
 
         //  else {

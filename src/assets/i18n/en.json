@@ -185,5 +185,7 @@
   "help_messages": "Messages",
   "help_settings": "Settings",
   "weeks_to_show": "Weeks",
-  "startup_error": "Error during app startup:<br>\n<br>\n%s<br>\n<br>\nTry to restart app?"
+  "startup_error": "Error during app startup:<br>\n<br>\n%s<br>\n<br>\nTry to restart app?",
+  "english": "English",
+  "spanish": "Spanish"
 }

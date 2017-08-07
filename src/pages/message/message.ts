@@ -1,18 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-import { TabsComponent } from '../../components/tabs/tabs';
-import { TranslateService } from '@ngx-translate/core';
-import { DBSrvcs } from '../../providers/db-srvcs';
-import { SrvrSrvcs } from '../../providers/srvr-srvcs';
-import { STRINGS } from '../../config/config.strings'   ;
-import { Pipe, PipeTransform } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import { SafePipe } from '../../pipes/safe';
-import { Message } from '../../domain/message';
-import { AlertService } from '../../providers/alerts';
-import { MessageService } from '../../providers/message-service';
-import { Log, isMoment, date2xl, xl2date, xl2datetime } from '../../config/config.functions';
-import * as moment from 'moment';
+import { Component, OnInit                                   } from '@angular/core'                   ;
+import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular'                   ;
+import { TabsComponent                                       } from '../../components/tabs/tabs'      ;
+import { TranslateService                                    } from '@ngx-translate/core'             ;
+import { DBSrvcs                                             } from '../../providers/db-srvcs'        ;
+import { SrvrSrvcs                                           } from '../../providers/srvr-srvcs'      ;
+import { STRINGS                                             } from '../../config/config.strings'     ;
+import { Pipe, PipeTransform                                 } from '@angular/core'                   ;
+import { DomSanitizer                                        } from '@angular/platform-browser'       ;
+import { SafePipe                                            } from '../../pipes/safe'                ;
+import { Message                                             } from '../../domain/message'            ;
+import { AlertService                                        } from '../../providers/alerts'          ;
+import { MessageService                                      } from '../../providers/message-service' ;
+import { Log, moment, Moment, isMoment                       } from '../../config/config.functions'   ;
 
 @IonicPage({
   name: 'Message'
@@ -23,19 +22,22 @@ import * as moment from 'moment';
 })
 
 export class MessagePage implements OnInit {
-
-  title: string = "Message from Tino";
+  public lang:any;
+  public language:any = "en";
+  public title:string = "Message from Tino";
   public messages:Array<Message> = [];
   public message:Message = null;
   public pageReady:boolean = false;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public db:DBSrvcs, public server:SrvrSrvcs, public msg:MessageService, public tabs:TabsComponent, public viewCtrl: ViewController, public alert:AlertService) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public translate:TranslateService, public db:DBSrvcs, public server:SrvrSrvcs, public msg:MessageService, public tabs:TabsComponent, public viewCtrl: ViewController, public alert:AlertService) {
     window["onsitemessages"] = this;
     if(this.navParams.get('message') !== undefined) { this.message = this.navParams.get('message');}
   }
 
   ionViewDidEnter() {
     Log.l('ionViewDidLoad MessagePage');
+    this.language = this.translate.currentLang || "en";
+
     // this.server.fetchNewMessages().then(res => {
     //   Log.l("MessagesPage: got new message:\n", res);
     //   this.messages = res;

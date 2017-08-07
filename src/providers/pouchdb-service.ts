@@ -6,6 +6,7 @@ import * as pdbFind from 'pouchdb-find'           ;
 import * as pdbUpsert from 'pouchdb-upsert'       ;
 import * as pdbAllDBs from 'pouchdb-all-dbs'      ;
 import { Injectable  } from '@angular/core'              ;
+import { Platform    } from 'ionic-angular'              ;
 import { Log         } from '../config/config.functions' ;
 import { Preferences } from './preferences'              ;
 
@@ -16,11 +17,11 @@ export class PouchDBService {
   public static initialized   : boolean       = false                                        ;
   public static pdb           : any           = new Map()                                    ;
   public static rdb           : any           = new Map()                                    ;
-  public static PREFERENCES   : any           = new Preferences()                            ;
-  public prefs                : any           = PouchDBService.PREFERENCES                   ;
+  public static PREFS         : any           = new Preferences()                            ;
+  public get prefs() { return PouchDBService.PREFS;};
 
-  constructor() {
-    console.log('Hello PouchDBService Provider');
+  constructor(public platform:Platform) {
+    Log.l('Hello PouchDBService Provider');
   }
 
   public static PouchInit() {
@@ -69,11 +70,13 @@ export class PouchDBService {
 
   public static addDB(dbname: string) {
     let dbmap = PouchDBService.pdb;
+    let opts = {adapter: 'websql'};
+    // let opts = {adapter: 'cordova-sqlite'};
     if(dbmap.has(dbname)) {
       // Log.l(`addDB(): Not adding local database ${dbname} because it already exists.`);
       return dbmap.get(dbname);
     } else {
-      dbmap.set(dbname, PouchDBService.StaticPouchDB(dbname, PouchDBService.PREFERENCES.SERVER.opts));
+      dbmap.set(dbname, PouchDBService.StaticPouchDB(dbname, opts));
       // Log.l(`addDB(): Added local database ${dbname} to the list.`);
       return dbmap.get(dbname);
     }
@@ -85,12 +88,14 @@ export class PouchDBService {
 
   public static addRDB(dbname: string) {
     let rdbmap = PouchDBService.rdb;
-    let url = PouchDBService.PREFERENCES.SERVER.rdbServer.protocol + "://" + PouchDBService.PREFERENCES.SERVER.rdbServer.server + "/" + dbname;
+    let PREFS = PouchDBService.PREFS;
+    let SERVER = PREFS.getServer();
+    let url = SERVER.rdbServer.protocol + "://" + SERVER.rdbServer.server + "/" + dbname;
     // Log.l(`addRDB(): Now fetching remote DB ${dbname} at ${url} ...`);
     if(rdbmap.has(dbname)) {
       return rdbmap.get(dbname);
     } else {
-      let rdb1 = PouchDBService.StaticPouchDB(url, PouchDBService.PREFERENCES.SERVER.ropts);
+      let rdb1 = PouchDBService.StaticPouchDB(url, SERVER.ropts);
       rdbmap.set(dbname, rdb1);
       // Log.l(`addRDB(): Added remote database ${url} to the list as ${dbname}.`);
       return rdbmap.get(dbname);

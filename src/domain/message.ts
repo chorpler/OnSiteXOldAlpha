@@ -71,8 +71,16 @@ export class Message {
     return this.subject;
   }
 
+  getMessageSubjectES() {
+    return this.subjectES;
+  }
+
   getMessageBody() {
     return this.text;
+  }
+
+  getMessageBodyES() {
+    return this.textES;
   }
 
   getMessageDuration() {

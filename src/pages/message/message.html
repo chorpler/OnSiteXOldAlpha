@@ -17,10 +17,16 @@
       </ion-item>
       <ion-item class="message-header-item message-subject">
         <h4 class="message-label">{{'message_subject' | translate}}</h4>
-        <p class="message-item-text">{{message.getMessageSubject()}}</p>
+        <p class="message-item-text" *ngIf="language!=='es'">{{message.getMessageSubject()}}</p>
+        <p class="message-item-text" *ngIf="language==='es'">{{message.getMessageSubjectES()}}</p>
       </ion-item>
       <ion-item class="message-body">
+        <h4 class="message-label">{{'english' | translate}}</h4>
         <p class="message-item-body" [innerHTML]="message.getMessageBody()"></p>
+      </ion-item>
+      <ion-item class="message-body" *ngIf="language==='es'">
+        <h4 class="message-label">{{'spanish' | translate}}</h4>
+        <p class="message-item-body" [innerHTML]="message.getMessageBodyES()"></p>
       </ion-item>
       <button ion-item color="primary" class="message-done-button"  (tap)="closeMessage()">{{'message_done' | translate}}</button>
     </ion-list>

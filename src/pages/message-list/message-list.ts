@@ -27,26 +27,29 @@ export const _msgSort = (a, b) => {
   templateUrl: 'message-list.html',
 })
 export class MessageListPage implements OnInit {
+  public lang     : any                    ;
+  public language : string = "en"          ;
   public messages : Array<Message> = []    ;
   public message  : Message        = null  ;
   public msgModal : any            = null  ;
   public pageReady: boolean        = false ;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public zone:NgZone, public db:DBSrvcs, public server:SrvrSrvcs, public msg:MessageService, public tabs:TabsComponent, public modalCtrl:ModalController, public ud:UserData) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public zone:NgZone, public translate:TranslateService, public db:DBSrvcs, public server:SrvrSrvcs, public msg:MessageService, public tabs:TabsComponent, public modalCtrl:ModalController, public ud:UserData) {
     window["onsitemessages"] = this;
+  }
+
+  ngOnInit() {
+    Log.l("MessageListPage: ngOnInit() fired");
   }
 
   ionViewDidLoad() {
     Log.l('ionViewDidLoad MessageListPage');
+    this.language = this.translate.currentLang || "en";
     this.messages = this.ud.getMessages();
     this.messages.sort(_msgSort);
     this.purgeOldMessages();
     Log.l("MessageListPage.ionViewDidLoad(): Final messages array is:\n", this.messages);
     this.pageReady = true;
-  }
-
-  ngOnInit() {
-    Log.l("MessageListPage: ngOnInit() fired");
   }
 
   public retrieveMessages() {

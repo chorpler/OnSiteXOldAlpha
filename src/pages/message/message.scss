@@ -16,6 +16,7 @@ page-message {
   }
   .message-label {
     font-weight: bold;
+    margin-top: 1px !important;
   }
 
   .message-subject {
@@ -35,10 +36,15 @@ page-message {
 
   .message-item-body {
     font-weight: normal;
+    margin-top: 5px;
     // height: 150px;
   }
 
   ion-label .message-item-body {
     white-space: normal;
+  }
+
+  .message-done-button {
+    margin-top: 5px;
   }
 }
