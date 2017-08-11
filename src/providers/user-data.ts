@@ -22,7 +22,7 @@ import { Jobsite                       } from '../domain/jobsite'              ;
 export class UserData {
   public static appdata               : any = {
     ready      : false,
-    version    : "10.11.21",
+    version    : "10.11.22",
     homeLoading: false,
     attempts   : 0,
     homeReady  : false,

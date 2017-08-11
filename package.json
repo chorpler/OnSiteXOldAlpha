@@ -1,6 +1,6 @@
 {
     "name": "onsitex",
-    "version": "10.11.21",
+    "version": "10.11.22",
     "author": {
         "name": "Michael Bates",
         "email": "hachero@gmail.com",
@@ -18,7 +18,7 @@
             "url": "https://www.starmobiledevelopers.com"
         }
     ],
-    "description": "OnSiteX: PouchDB Angular4 NodeJS Ionic3 CouchDB: a 'PANIC' Stack App",
+    "description": "OnSiteX: PouchDB Angular NodeJS Ionic CouchDB: a 'PANIC' Stack App",
     "keywords": [
         "SESA",
         "SESA Fleet Services",

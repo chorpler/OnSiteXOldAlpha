@@ -1,3 +1,6 @@
+###General Life Advice
+To be a great programmer, you should apparently be [perpetually drunk](http://www.cbsnews.com/news/can-alcohol-make-men-smarter-study-suggests-yes/).
+
 ###Online Educational Sites
 [PacktPub](https://www.packtpub.com/)
   -User/Pass: michael.a.bates@gmail.com   1xAZA8834V9HBR4Fs
@@ -124,8 +127,11 @@ baldbuilders@gmail.com 5OR6GreenPigsRun
 ### Steam
 hachero: xRJ0EJtL
 
+### Brain.fm
+michael.a.bates@gmail.com: FL05B22EZ4ZVQX9sY15499fSRT91
 
 
+### Hey! This has nothing to do with software development! Dafuq?
 Sins of a Solar Empire - Diplomacy: Product key: ED847-E8257-2F9BF-1D9F1-698EB-73D6A
 Sins of a Solar Empire (Digital Download): Product key: E4E80-645D0-A55D0-126B0-A837E-FBFDA
 Sins of a Solar Empire: Entrenchment: Product key: A2A58-2EF52-26802-99140-C8075-ECC5C

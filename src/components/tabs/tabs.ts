@@ -128,7 +128,7 @@ export class TabsComponent implements OnInit {
   }
 
   getActiveNav() {
-    TabsComponent.nav = this.app.getActiveNav();
+    TabsComponent.nav = this.app.getActiveNavs()[0];
     this.nav = TabsComponent.nav;
   }
 
