@@ -25,7 +25,7 @@ ret: number = 26            // second report end
 rst: number = 26            // third report start
 ret: number = 29            // third report end
 now we convert to "time" strings...
-
+  
 ```js
 // using third report start time...
 let rst = i
