@@ -15,7 +15,7 @@ hours for a shift starts at 0.  As reports are added, the repair times are added
 shift hours are merely added up to return a total number of hours in decimal
 for easthetics we can easily calculate a "start time" and "end time" in hour format -but not using moment.  There is no practical benefit in that.
 In this example we will consider three reports for this shift: 3hrs, 5hrs and 3hrs.
-we import the tech's shift start time, tsst: 6 PM.  
+we import the tech's shift start time, tsst: 6 PM.
 
 tsst is parsed to 6 + 12 = 18
 rst: number = 18            // first report start
@@ -25,7 +25,7 @@ ret: number = 26            // second report end
 rst: number = 26            // third report start
 ret: number = 29            // third report end
 now we convert to "time" strings...
-  
+
 ```js
 // using third report start time...
 let rst = i
