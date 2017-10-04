@@ -852,7 +852,7 @@ export class ReportPage implements OnInit {
         if (this.tech.getClient() === 'HALLIBURTON' || this.tech.getClient() === 'HB') {
           if(unitLen !== 8) {
             let response = await this.showPossibleError('unit');
-            if(response) {
+            if(!response) {
               // this.unitNumberInput.setFocus();
               setTimeout(() => {
                 // this.zone.run(() => { this.unitNumberInput.setFocus(); });
@@ -863,7 +863,7 @@ export class ReportPage implements OnInit {
           }
           if(woLen !== 9) {
             let response = await this.showPossibleError('wo');
-            if(response) {
+            if(!response) {
               // this.workOrderNumberInput.setFocus();
               setTimeout(() => {
                 // this.zone.run(() => { this.workOrderNumberInput.setFocus(); });

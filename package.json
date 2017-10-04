@@ -193,11 +193,9 @@
     },
     "devDependencies": {
         "@ionic/app-scripts": "^2.0.1",
-        "@ionic/cli-plugin-cordova": "^1.4.0",
-        "@ionic/cli-plugin-ionic-angular": "1.4.1",
         "@ionic/cli-plugin-proxy": "^1.4.1",
         "@types/cordova": "^0.0.34",
-        "ionic": "^3.7.0",
+        "ionic": "3.12.0",
         "node-sass": "^4.5.3",
         "tslint": "^5.5.0",
         "tslint-eslint-rules": "^4.1.1",
