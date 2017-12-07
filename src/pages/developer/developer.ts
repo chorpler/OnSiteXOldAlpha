@@ -46,17 +46,17 @@ export class DeveloperPage implements OnInit {
               public tabs      : TabsComponent    ,
   ) {
     window['onsitedev'] = this;
-    if(this.platform.is('cordova') && this.geoloc.isEnabled()) {
-      this.GeolocStatus = true;
-    } else {
-      this.GeolocStatus = false;
-    }
   }
 
   // timeStamp() { this.onSiteTimeStamp = this.timeSrvc.getTimeStamp(); }
 
   ionViewDidLoad() {
     Log.l('ionViewDidLoad DeveloperPage');
+    if(this.platform.is('cordova') && this.geoloc.isEnabled()) {
+      this.GeolocStatus = true;
+    } else {
+      this.GeolocStatus = false;
+    }
   }
 
   ngOnInit() {
@@ -78,12 +78,12 @@ export class DeveloperPage implements OnInit {
   //   Log.l("checkTestDatabases(): PREFS are now:\n", this.prefs.getPrefs());
   // }
 
-  public toggleBackgroundGeolocation() {
+  public toggleBackgroundGeolocation(evt?:any) {
     if(this.platform.is('cordova')) {
       if(this.GeolocStatus) {
         this.geoloc.startBackgroundGeolocation().then((res) => {
           Log.l("toggleBackgroundGeolocation(): Background Geolocation turned on.\n", res);
-          this.GeolocStatus = true;
+          // this.GeolocStatus = true;
           // this.geolocToggle = this.GeolocStatus;
         }).catch((err) => {
           Log.l("toggleBackgroundGeolocation(): Background Geolocation could not be tuned on.");
@@ -93,7 +93,7 @@ export class DeveloperPage implements OnInit {
       // if (this.geoloc.isEnabled()) {
         this.geoloc.endBackgroundGeolocation().then((res) => {
           Log.l("toggleBackgroundGeolocation(): Background Geolocation turned off.\n", res);
-          this.GeolocStatus = false;
+          // this.GeolocStatus = false;
           // this.geolocToggle = this.GeolocStatus;
         }).catch((err) => {
           Log.l("toggleBackgroundGeolocation(): Background Geolocation could not be turned off.");

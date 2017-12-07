@@ -13,7 +13,7 @@ import { PayrollPeriod                                                       } f
 import { Preferences                                                         } from '../../providers/preferences'   ;
 import { TranslateService                                                    } from '@ngx-translate/core'           ;
 import { TabsComponent                                                       } from '../../components/tabs/tabs'    ;
-import { OrderBy                                                             } from '../../pipes/pipes'             ;
+// import { OrderBy                                                             } from '../../pipes/pipes'             ;
 import { STRINGS                                                             } from '../../config/config.strings'   ;
 import { SmartAudio                                                          } from '../../providers/smart-audio'   ;
 
@@ -404,7 +404,10 @@ export class ReportHistory implements OnInit {
       Log.e(err);
       this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
     });
+  }
 
+  public doRefresh(event?:any) {
+    Log.l("Refreshing!");
   }
 
 }

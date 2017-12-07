@@ -9,7 +9,7 @@ import { WorkOrder     } from './workorder'         ;
 import { ReportOther   } from './reportother'       ;
 import { Message       } from './message'           ;
 import { Comment       } from './comment'           ;
-import { PayrollPeriod } from './payroll-period.ts' ;
+import { PayrollPeriod } from './payroll-period'    ;
 
 @NgModule({
   declarations: [

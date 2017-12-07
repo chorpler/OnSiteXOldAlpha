@@ -162,10 +162,6 @@ export class WorkOrder {
 
   public serialize(tech:Employee) {
     Log.l("WorkOrder.serialize(): Now serializing report from:\n", this);
-    // let ts = moment(this.timestamp);
-    // Log.l("WorkOrder.serialize(): timestamp moment is now:\n", ts);
-    // this.timestamp = ts.toExcel();
-    // this.timestampM = ts;
     let newReport = {_id: ""};
     let len = fields.length;
     for(let i = 0; i < len; i++) {

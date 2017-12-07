@@ -1,7 +1,7 @@
 import { Injectable                    } from '@angular/core'                  ;
 import { Events, Platform, App         } from 'ionic-angular'                  ;
 import { Storage                       } from '@ionic/storage'                 ;
-import { NativeStorage                 } from 'ionic-native/native-storage'    ;
+import { NativeStorage                 } from '@ionic-native/native-storage'   ;
 import { Device                        } from '@ionic-native/device'           ;
 import { AppVersion                    } from '@ionic-native/app-version'      ;
 import { UniqueDeviceID                } from '@ionic-native/unique-device-id' ;
@@ -22,7 +22,7 @@ import { Jobsite                       } from '../domain/jobsite'              ;
 export class UserData {
   public static appdata               : any = {
     ready      : false,
-    version    : "10.11.22",
+    version    : "10.12.10",
     homeLoading: false,
     attempts   : 0,
     homeReady  : false,
@@ -470,16 +470,16 @@ export class UserData {
     });
   }
 
-  getPlatforms() {
+  public getPlatforms() {
   	return this.platform.platforms();
   }
 
-  getPlatform() {
+  public getPlatform() {
   	let p = this.platform;
   	return p.is('ios') ? 'ios' : p.is('android') ? 'android' : (p.is('windows') && p.is('mobile')) ? 'winphone' : 'nonphone';
   }
 
-  getTechName() {
+  public getTechName() {
     let tp = UserData.techProfile;
     if(tp) {
       return `${tp.avatarName} (${tp.firstName} ${tp.lastName})`;
@@ -488,15 +488,15 @@ export class UserData {
     }
   }
 
-  getShift():Shift {
+  public getShift():Shift {
     return UserData.shift;
   }
 
-  setShift(shift:Shift) {
+  public setShift(shift:Shift) {
     UserData.shift = shift;
   }
 
-  getWorkOrderList():Array<WorkOrder> {
+  public getWorkOrderList():Array<WorkOrder> {
     let periods = this.getPayrollPeriods();
     let newReports = new Array<WorkOrder>();
     for(let period of periods) {
@@ -512,12 +512,12 @@ export class UserData {
     return UserData.reports;
   }
 
-  setWorkOrderList(list:Array<any>) {
+  public setWorkOrderList(list:Array<any>) {
     UserData.reports = list;
     // UserData.techWOArrayInitialized = true;
   }
 
-  getReportOtherList():Array<ReportOther> {
+  public getReportOtherList():Array<ReportOther> {
     let periods = this.getPayrollPeriods();
     let newReports = new Array<ReportOther>();
     for (let period of periods) {
@@ -533,7 +533,7 @@ export class UserData {
     return UserData.otherReports;
   }
 
-  setReportOtherList(others:Array<ReportOther>) {
+  public setReportOtherList(others:Array<ReportOther>) {
     UserData.otherReports = others;
     this.otherReports = UserData.otherReports;
     return this.otherReports;
@@ -619,7 +619,7 @@ export class UserData {
   //   return payPeriodTotal;
   // }
 
-  getUsername() {
+  public getUsername() {
     if(UserData.loginData && UserData.loginData.user) {
       return UserData.loginData.user;
     } else {
@@ -627,7 +627,7 @@ export class UserData {
     }
   }
 
-  getPassword() {
+  public getPassword() {
     if(UserData.loginData && UserData.loginData.pass) {
       return UserData.loginData.pass;
     } else {
@@ -635,11 +635,11 @@ export class UserData {
     }
   }
 
-  getCredentials() {
+  public getCredentials() {
     return UserData.loginData;
   }
 
-  storeCredentials(loginData:any, pass?:any) {
+  public storeCredentials(loginData:any, pass?:any) {
     if(typeof loginData == 'object') {
       UserData.loginData = loginData;
       // UserData.userLoggedIn = true;
@@ -651,7 +651,7 @@ export class UserData {
     }
   }
 
-  getLoginStatus() {
+  public getLoginStatus() {
     Log.l("UD.getLoginStatus(): login status is:\n",
     UserData.userLoggedIn);
     Log.l("UD.getLoginStatus(): creds are: ",
@@ -661,20 +661,20 @@ export class UserData {
     return UserData.userLoggedIn;
   }
 
-  setLoginStatus(status:boolean) {
+  public setLoginStatus(status:boolean) {
     UserData.userLoggedIn = status;
   }
 
-  clearCredentials() {
+  public clearCredentials() {
     UserData.userLoggedIn = false;
     UserData.loginData = null;
   }
 
-  logout() {
+  public logout() {
     this.clearCredentials();
   }
 
-  woArrayInitialized() {
+  public woArrayInitialized() {
     if (UserData.techWOArrayInitialized) {
       return true;
     } else {
@@ -682,7 +682,7 @@ export class UserData {
     }
   }
 
-  getCurrentPayrollWeek(date?:any) {
+  public getCurrentPayrollWeek(date?:any) {
     let scheduleStartsOnDay = 3;
     let now = moment();
     if(isMoment(date)) {
@@ -698,7 +698,7 @@ export class UserData {
     return cpw;
   }
 
-  getPayrollPeriodForDate(date?:any) {
+  public getPayrollPeriodForDate(date?:any) {
     let now = moment();
     if(isMoment(date)) {
       now = moment(date);
@@ -1224,8 +1224,7 @@ export class UserData {
     let m = now.minute() * 6;
     let h = 30 * ((now.hour() % 12) + (now.minute() / 60));
     let hands = { 'hours': h, 'minutes': m, 'seconds': 0 };
-    Log.l("Setting clock hands to:\n",
-    hands);
+    Log.l("Setting clock hands to:\n", hands);
     this.setClockHands(hands);
   }
 

@@ -8,7 +8,7 @@ import { WorkOrder     } from './workorder'         ;
 import { ReportOther   } from './reportother'       ;
 import { Message       } from './message'           ;
 import { Comment       } from './comment'           ;
-import { PayrollPeriod } from './payroll-period.ts' ;
+import { PayrollPeriod } from './payroll-period'    ;
 
 export module OnSiteX {
 
@@ -24,5 +24,5 @@ export { WorkOrder     } from './workorder'         ;
 export { ReportOther   } from './reportother'       ;
 export { Message       } from './message'           ;
 export { Comment       } from './comment'           ;
-export { PayrollPeriod } from './payroll-period.ts' ;
+export { PayrollPeriod } from './payroll-period'    ;
 

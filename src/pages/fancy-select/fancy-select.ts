@@ -9,10 +9,10 @@ import { Log, moment, Moment, isMoment                                          
 import { PayrollPeriod                                                                             } from '../../domain/payroll-period'                ;
 import { Shift                                                                                     } from '../../domain/shift'                         ;
 import { WorkOrder                                                                                 } from '../../domain/workorder'                     ;
-import { Status                                                                                    } from '../../providers/status'                     ;
+// import { Status                                                                                    } from '../../providers/status'                     ;
 import { UserData                                                                                  } from '../../providers/user-data'                  ;
 import { sprintf                                                                                   } from 'sprintf-js'                                 ;
-import { FancySelectComponent                                                                      } from '../../components/fancy-select/fancy-select' ;
+// import { FancySelectComponent                                                                      } from '../../components/fancy-select/fancy-select' ;
 import { TranslateService                                                                          } from '@ngx-translate/core'                        ;
 import { Preferences                                                                               } from '../../providers/preferences'                ;
 import { STRINGS                                                                                   } from '../../config/config.strings'                ;

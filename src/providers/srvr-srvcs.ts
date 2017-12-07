@@ -1,18 +1,17 @@
-import 'rxjs/add/operator/map'                                ;
-import { Injectable          } from '@angular/core'                ;
-import { Http                } from '@angular/http'                ;
-import { PouchDBService      } from '../providers/pouchdb-service' ;
-import { Log, moment, Moment } from '../config/config.functions'   ;
-import { UserData            } from '../providers/user-data'       ;
-import { Message             } from '../domain/message'            ;
-import { Preferences         } from '../providers/preferences'     ;
-import { Comment             } from '../domain/comment'            ;
-import { Jobsite             } from '../domain/jobsite'            ;
-import { WorkOrder           } from '../domain/workorder'          ;
-import { ReportOther         } from '../domain/reportother'        ;
-import { Employee            } from '../domain/employee'           ;
-import { Shift               } from '../domain/shift'              ;
-import { PayrollPeriod       } from '../domain/payroll-period'     ;
+import { Injectable              } from '@angular/core'                ;
+import { Http                    } from '@angular/http'                ;
+import { PouchDBService          } from '../providers/pouchdb-service' ;
+import { Log, moment, Moment, oo } from '../config/config.functions'   ;
+import { UserData                } from '../providers/user-data'       ;
+import { Message                 } from '../domain/message'            ;
+import { Preferences             } from '../providers/preferences'     ;
+import { Comment                 } from '../domain/comment'            ;
+import { Jobsite                 } from '../domain/jobsite'            ;
+import { WorkOrder               } from '../domain/workorder'          ;
+import { ReportOther             } from '../domain/reportother'        ;
+import { Employee                } from '../domain/employee'           ;
+import { Shift                   } from '../domain/shift'              ;
+import { PayrollPeriod           } from '../domain/payroll-period'     ;
 
 export const noDD     = "_\uffff";
 export const noDesign = {include_docs: true, startkey: noDD };
@@ -48,7 +47,7 @@ export class SrvrSrvcs {
 
   public static getAuthHeaders(user: string, pass: string) {
     let authToken = 'Basic ' + window.btoa(user + ':' + pass);
-    let ajaxOpts = { headers: { Authorization: authToken } };
+    let ajaxOpts = { "headers": { "Authorization": authToken } };
     return ajaxOpts;
   }
 
@@ -89,7 +88,7 @@ export class SrvrSrvcs {
     // ajaxOpts['headers']['Content-Type'] = "application/json";
     // ajaxOpts['headers']['Accept'] = "application/json";
     // let URL = `${SrvrSrvcs.getBaseURL()}/sesa_geolocation`;
-    let URL = `${SrvrSrvcs.getInsecureLoginBaseURL(user, pass)}/sesa_geolocation`;
+    let URL = `${SrvrSrvcs.getInsecureLoginBaseURL(user, pass)}/sesa-geolocation`;
     return URL;
   }
 
@@ -147,7 +146,7 @@ export class SrvrSrvcs {
     });
   }
 
-  loginToServer(user:string, pass:string, dbname?:string, auto?:boolean) {
+  public loginToServer(user:string, pass:string, dbname?:string, auto?:boolean) {
   	let adapter = this.prefs.SERVER.protocol;
     return new Promise((resolve,reject) => {
       let dbURL = '_session';
@@ -213,7 +212,7 @@ export class SrvrSrvcs {
 		});
   }
 
-  getTechProfile() {
+  public getTechProfile() {
     let db1 = SrvrSrvcs.addDB(this.prefs.DB.reports);
     return new Promise((resolve,reject) => {
       db1.get('_local/techProfile').then((res) => {
@@ -227,7 +226,7 @@ export class SrvrSrvcs {
     });
   }
 
-  getUserData(user) {
+  public getUserData(user) {
     let rdb1 = SrvrSrvcs.addRDB(this.prefs.DB.reports);
 		return rdb1.getUser(user);
   }
@@ -275,7 +274,7 @@ export class SrvrSrvcs {
     }
   }
 
-  saveTechProfile(doc) {
+  public saveTechProfile(doc) {
     Log.l("Server.saveTechProfile(): Attempting to save local techProfile...");
     // let updateFunction = (original) => {}
     let localID = '_local/techProfile';
@@ -344,7 +343,7 @@ export class SrvrSrvcs {
     });
   }
 
-  getReportsForTech(tech:string, dates?:any):Promise<Array<WorkOrder>> {
+  public getReportsForTech(tech:string, dates?:any):Promise<Array<WorkOrder>> {
     return new Promise((resolve, reject) => {
       let u = this.ud.getUsername();
       let p = this.ud.getPassword();
@@ -396,14 +395,14 @@ export class SrvrSrvcs {
     // });
   }
 
-  getReportsOtherForTech(tech: string, dates?: any):Promise<Array<ReportOther>> {
+  public getReportsOtherForTech(tech: string, dates?: any):Promise<Array<ReportOther>> {
     return new Promise((resolve, reject) => {
       let u = this.ud.getUsername();
       let p = this.ud.getPassword();
       // let c = this.ud.getCredentials();
       // Log.l("getReportsForTech(): Got credentials:\n", c);
       let query: any = { selector: { username: { $eq: tech } }, limit: 10000 };
-      Log.l("getReportsForTech(): Using database: ", this.prefs.DB.reports);
+      Log.l("getReportsOtherForTech(): Using database: ", this.prefs.DB.reports);
       if (dates) {
         if (dates['start'] !== undefined && dates['end'] === undefined) {
           query.selector = { $and: [{ username: { $eq: tech } }, { rprtDate: { $eq: dates['start'] } }] };
@@ -448,7 +447,7 @@ export class SrvrSrvcs {
     });
   }
 
-  getReports(user: string) {
+  public getReports(user: string) {
     return new Promise((resolve,reject) => {
       let u = this.ud.getUsername();
       let p = this.ud.getPassword();
@@ -477,12 +476,12 @@ export class SrvrSrvcs {
 		});
   }
 
-  updateDoc(doc) {
+  public updateDoc(doc) {
     // return SrvrSrvcs.staticRDB.put(doc);
     Log.l("Server.updateDoc(): Nope.");
   }
 
-  deleteDoc(dbname, docToDelete) {
+  public deleteDoc(dbname, docToDelete) {
     Log.l(`deleteDoc(): Attempting to delete doc:...`, docToDelete);
     return new Promise((resolve,reject) => {
       let rdb1 = this.addRDB(dbname);
@@ -521,7 +520,7 @@ export class SrvrSrvcs {
     });
   }
 
-  syncToServer(dbname: string, pdb: any) {
+  public syncToServer(dbname: string, pdb: any) {
     Log.l(`syncToServer(): About to attempt replication of '${dbname}'->remote`);
     var ev2 = function(b) { Log.l(b.status); Log.l(b);};
     var db1 = this.addDB(dbname);
@@ -539,7 +538,7 @@ export class SrvrSrvcs {
     });
   }
 
-  syncFromServer(dbname: string) {
+  public syncFromServer(dbname: string) {
     Log.l(`syncFromServer(): About to attempt replication of remote->'${dbname}' with options:\n`, this.prefs.SERVER.repopts);
     // let ev2 = function(b) { Log.l(b.status); Log.l(b);};
     let db1 = this.addDB(dbname);
@@ -570,7 +569,7 @@ export class SrvrSrvcs {
     });
   }
 
-  fetchNewMessages():Promise<Array<Message>> {
+  public fetchNewMessages():Promise<Array<Message>> {
     Log.l('fetchNewMessages(): Getting messages...');
     let out = new Array<Message>();
     let remote = new Array<Message>();
@@ -654,7 +653,7 @@ export class SrvrSrvcs {
     });
   }
 
-  saveReadMessage(message:Message) {
+  public saveReadMessage(message:Message) {
     return new Promise((resolve, reject) => {
       let dbname = this.prefs.DB.messages;
       let db1 = this.addDB(dbname);
@@ -909,6 +908,43 @@ export class SrvrSrvcs {
         reject(err);
       })
     });
+  }
+
+  public async saveGeolocation(location:any) {
+    try {
+      let db = this.prefs.getDB();
+      let rdb1 = this.addRDB(db.geolocation);
+      let locDoc:any = oo.clone(location);
+      let user = this.ud.getUsername();
+      let ts   = moment();
+      locDoc.username = user;
+      let id = `${user}_${ts.format()}`;
+      locDoc._id = id;
+      let res = await rdb1.upsert(id, (doc) => {
+        if(doc && doc._id && doc._rev) {
+          let rev = doc._rev;
+          doc = locDoc;
+          doc._rev = rev;
+        } else {
+          doc = locDoc;
+          delete doc._rev;
+        }
+        return doc;
+      });
+      if(!res.ok && !res.updated) {
+        Log.l("saveGeolocation(): Upsert error!");
+        Log.w(res);
+        throw new Error(res);
+      } else {
+        Log.l("saveGeolocation(): Successfully saved!");
+        return res;
+      }
+    } catch(err) {
+      Log.l(`saveGeolocation(): Error saving location!`);
+      Log.e(err);
+      throw new Error(err);
+    }
+
   }
 
 }

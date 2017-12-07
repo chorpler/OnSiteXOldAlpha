@@ -1,18 +1,18 @@
-import { Component, OnInit, NgZone                                           } from '@angular/core'                   ;
-import { IonicPage, NavController, Platform, ModalController, ViewController } from 'ionic-angular'                   ;
-import { DBSrvcs                                                             } from '../../providers/db-srvcs'        ;
-import { Login                                                               } from '../login/login'                  ;
-import { Log, moment, Moment                                                 } from '../../config/config.functions'   ;
-import { AuthSrvcs                                                           } from '../../providers/auth-srvcs'      ;
-import { SrvrSrvcs                                                           } from '../../providers/srvr-srvcs'      ;
-import { AlertService                                                        } from '../../providers/alerts'          ;
-import { TabsComponent                                                       } from '../../components/tabs/tabs'      ;
-import { TranslateService                                                    } from '@ngx-translate/core'             ;
-import { AppVersion                                                          } from '@ionic-native/app-version'       ;
-import { StorageService                                                      } from '../../providers/storage-service' ;
-import { Preferences                                                         } from '../../providers/preferences'     ;
-import { UserData                                                            } from '../../providers/user-data'       ;
-import { IonDigitKeyboardCmp, IonDigitKeyboardOptions                        } from '../components/ion-digit-keyboard/';
+import { Component, OnInit, NgZone                                           } from '@angular/core'                       ;
+import { IonicPage, NavController, Platform, ModalController, ViewController } from 'ionic-angular'                       ;
+import { DBSrvcs                                                             } from '../../providers/db-srvcs'            ;
+import { Login                                                               } from '../login/login'                      ;
+import { Log, moment, Moment                                                 } from '../../config/config.functions'       ;
+import { AuthSrvcs                                                           } from '../../providers/auth-srvcs'          ;
+import { SrvrSrvcs                                                           } from '../../providers/srvr-srvcs'          ;
+import { AlertService                                                        } from '../../providers/alerts'              ;
+import { TabsComponent                                                       } from '../../components/tabs/tabs'          ;
+import { TranslateService                                                    } from '@ngx-translate/core'                 ;
+import { AppVersion                                                          } from '@ionic-native/app-version'           ;
+import { StorageService                                                      } from '../../providers/storage-service'     ;
+import { Preferences                                                         } from '../../providers/preferences'         ;
+import { UserData                                                            } from '../../providers/user-data'           ;
+import { IonDigitKeyboardCmp, IonDigitKeyboardOptions                        } from '../../components/ion-digit-keyboard' ;
 
 
 @IonicPage({ name: 'Settings' })

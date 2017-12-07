@@ -1,3 +1,4 @@
+import * as JSON8                    from 'json8'                   ;
 import * as momentous from 'moment';
 import * as parseFormat from 'moment-parseformat';
 import 'moment-recur';
@@ -22,6 +23,12 @@ import * as timer from 'moment-timer';
 var _emptyFunc = function () { };
 
 export type Moment = momentous.Moment;
+
+export const oo        = JSON8        ;
+export const json8     = JSON8        ;
+
+window['oo'] = oo;
+
 var mom = momentous;
 // export moment;
 momentous['parseFormat'] = parseFormat;

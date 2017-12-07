@@ -1,16 +1,15 @@
-import { Injectable, NgZone } from '@angular/core'              ;
-import { Http               } from '@angular/http'              ;
-import { Log, CONSOLE       } from '../config/config.functions' ;
-import { Storage            } from '@ionic/storage'             ;
-import { NativeStorage      } from 'ionic-native'               ;
-import 'rxjs/add/operator/map'                                  ;
-import { Network            } from '@ionic-native/network'      ;
-import { AlertService     } from './alerts'                   ;
+import { Injectable, NgZone } from '@angular/core'                ;
+import { Http               } from '@angular/http'                ;
+import { Log, CONSOLE       } from '../config/config.functions'   ;
+import { Storage            } from '@ionic/storage'               ;
+import { NativeStorage      } from '@ionic-native/native-storage' ;
+import { Network            } from '@ionic-native/network'        ;
+import { AlertService       } from './alerts'                     ;
 
 @Injectable()
 /**
  * @class NetworkStatus
- *        
+ *
  */
 export class NetworkStatus {
 
@@ -36,7 +35,7 @@ export class NetworkStatus {
   }
 
   public static getNetworkType() {
-    return NetworkStatus.network.type;    
+    return NetworkStatus.network.type;
   }
 
   public static isConnected() {
@@ -77,7 +76,7 @@ export class NetworkStatus {
           NetworkStatus.watchForDisconnect();
         }
       }, 3000);
-    }); 
+    });
   }
 
 }

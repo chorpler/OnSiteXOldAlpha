@@ -1,14 +1,15 @@
+# How peculiar! Someone deleted this whole file and smacked Mike, just for fun!
 # Calcs for start and end time
 
 Note: Do not use "moment" functions anywhere near this as this will be converted into some sort of date object.
-sst = 0 // shift start time
+sst = 0       // shift start time
 tpsst: string // tech profile shift start time ex: "6 PM"
-tsst: number // tech shift start time ex: 18
-rhs: number // report hours
-rst: number // report start time
-ret: number // report end time
-rsts: number // report start time string
-rets: number // report end time string
+tsst: number  // tech shift start time ex: 18
+rhs: number   // report hours
+rst: number   // report start time
+ret: number   // report end time
+rsts: number  // report start time string
+rets: number  // report end time string
 
 Shift start time, sst, should be calculated from 0 as a number rather than a date function.  The number of 
 hours for a shift starts at 0.  As reports are added, the repair times are added.  (i.e. 3 + 5 + 3...) and returned as shift length, sl
