@@ -72,13 +72,9 @@ export class ClockComponent implements OnInit,OnDestroy {
       this.setTimeHands(time);
     }, this.timer);
     this.intervalHandles.push(intervalHandle);
-    Log.l("startClock(): Clock started, interval handle is '%d'", intervalHandle);
   }
 
   public stopClock() {
-    // if (this.intervalHandle) {
-    //   clearInterval(this.intervalHandle);
-    // }
     this.stopAllClocks();
     if (this.timeoutHandle) {
       clearTimeout(this.timeoutHandle);
