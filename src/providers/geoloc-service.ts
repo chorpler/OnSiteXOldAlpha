@@ -3,7 +3,7 @@ import { Http                                               } from '@angular/htt
 import { Subscription                                       } from 'rxjs/Subscription'
 import { Platform, ToastController,                         } from 'ionic-angular'                                  ;
 import { Storage                                            } from '@ionic/storage'                                 ;
-import { Geofence                                           } from '@ionic-native/geofence'                         ;
+// import { Geofence                                           } from '@ionic-native/geofence'                         ;
 import { BackgroundGeolocation, BackgroundGeolocationConfig } from '@ionic-native/background-geolocation'           ;
 import { BackgroundGeolocationResponse                      } from '@ionic-native/background-geolocation'           ;
 import { Geolocation                                        } from '../domain/geolocation'                          ;
@@ -17,7 +17,7 @@ import { Preferences                                        } from '../providers
 
 @Injectable()
 export class GeolocService {
-  public static PREFS:any = new Preferences();
+  public static PREFS:any = new Preferences()  ;
   public prefs       :any = GeolocService.PREFS;
   public geolocSub   :Subscription;
   public config      :BackgroundGeolocationConfig = {
@@ -29,13 +29,13 @@ export class GeolocService {
     maxLocations          : 5000  ,
     syncThreshold         : 10    ,
     stopOnStillActivity   : false ,
-    debug                 : true , // enable this hear sounds for background-geolocation life-cycle.
+    debug                 : true  , // enable this hear sounds for background-geolocation life-cycle.
     stopOnTerminate       : true  , // enable this to clear background location settings when the app terminates
     startForeground       : true  ,
-    interval              : 30000,
-    fastestInterval       : 5000,
-    activitiesInterval    : 15000,
-    distanceFilter        : 10,
+    interval              : 30000 ,
+    fastestInterval       : 5000  ,
+    activitiesInterval    : 15000 ,
+    distanceFilter        : 10    ,
     notificationTitle     : 'OnSiteX Geolocation',
     notificationText      : 'Geolocation currently enabled',
     // notificationIconLarge : 'OnSiteX_64.png',

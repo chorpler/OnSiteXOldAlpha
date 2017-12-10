@@ -1,5 +1,5 @@
 <!-- Generated template for the ClockComponent component -->
-<div class="clock-steampunk">
+<div class="clock-steampunk" [style.zoom]="getZoom()">
   <div class="clkbkg"></div>
   <div class="g1 rotateCog"></div>
   <div class="g2 rotateGears"></div>
@@ -14,7 +14,7 @@
   <div class="g11"></div>
   <div class="clock"></div>
   <div class="clock2"></div>
-  <div #containerSeconds id="containerSeconds" class="containerSeconds" [ngStyle]="{transform: rotate(hands['seconds'])}"><div class="secondsHnd rotateSeconds"></div></div>
-  <div #containerMinutes id="containerMinutes" class="containerMinutes" [ngStyle]="{transform: rotate(hands['minutes'])}"><div class="minutesHnd rotateMinutes"></div></div>
-  <div #containerHours   id="containerHours"   class="containerHours"   [ngStyle]="{transform: rotate(hands['hours'])}"><div class="hoursHnd rotateHours"    ></div></div>
+  <div #containerSeconds id="containerSeconds" class="containerSeconds" [style.transform]="rotate(seconds)"><div class="secondsHnd rotateSeconds"></div></div>
+  <div #containerMinutes id="containerMinutes" class="containerMinutes" [style.transform]="rotate(minutes)"><div class="minutesHnd rotateMinutes"></div></div>
+  <div #containerHours   id="containerHours"   class="containerHours"   [style.transform]="rotate(hours)"  ><div class="hoursHnd rotateHours"    ></div></div>
 </div>

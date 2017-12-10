@@ -12,8 +12,8 @@
 <ion-content padding [ngStyle]="{'margin-top': fixedHeight}"> -->
 <!-- <div #fixed ion-fixed></div> -->
 <ion-content padding class="page-content report-history-page-content">
-  <ion-refresher (ionRefresh)="doRefresh($event)">
-    <ion-refresher-content pullingText="Pull to refresh..." refreshingText="Refreshing..."></ion-refresher-content>
+  <!-- <ion-refresher (ionRefresh)="doRefresh($event)"> -->
+    <!-- <ion-refresher-content pullingText="Pull to refresh..." refreshingText="Refreshing..."></ion-refresher-content> -->
     <div class="waiting-clock" *ngIf="!pageReady">
       <clock></clock>
     </div>
@@ -385,6 +385,6 @@
         </ion-item-group>
       </ion-list>
     </div>
-  </ion-refresher>
+  <!-- </ion-refresher> -->
 </ion-content>
 <onsite-tabs></onsite-tabs>

@@ -159,8 +159,12 @@ export class CommentPage implements OnInit {
     });
   }
 
-  closeCommentPage() {
+  public closeCommentPage() {
     this.viewCtrl.dismiss();
+  }
+
+  public cancel() {
+    this.closeCommentPage();
   }
 
 }

@@ -64,6 +64,7 @@ export class TabsComponent implements OnInit {
   constructor( public app: App, public platform: Platform, public zone: NgZone, public translate: TranslateService, public ud:UserData, public alert:AlertService, public msg:MessageService) {
     this.getActiveNav();
     window['onsitetabs'] = this;
+    window['onsitetabsstatic'] = TabsComponent;
     this.enumPages = Pages.OnSiteHome;
     this.enumPagesDef = Pages;
   }

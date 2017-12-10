@@ -227,7 +227,7 @@ export class DBSrvcs {
     });
   }
 
-  getDoc(dbname:string, docID) {
+  public getDoc(dbname:string, docID) {
     return new Promise((resolve, reject) => {
       let db1 = this.addDB(dbname);
       db1.get(docID).then((result) => {
@@ -241,7 +241,7 @@ export class DBSrvcs {
     });
   }
 
-  updateDoc(dbname:string, newDoc) {
+  public updateDoc(dbname:string, newDoc) {
     return new Promise((resolve,reject) => {
       let db1 = this.addDB(dbname);
       // let newDoc = doc;
@@ -273,7 +273,7 @@ export class DBSrvcs {
     });
   }
 
-  deleteDoc(dbname, newDoc) {
+  public deleteDoc(dbname, newDoc) {
     return new Promise((resolve,reject) => {
       Log.l(`deleteDoc(): Attempting to delete doc ${newDoc._id}...`);
       let db1 = this.addDB(dbname);

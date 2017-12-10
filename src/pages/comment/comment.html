@@ -20,7 +20,7 @@
         <ion-textarea class="comment-textarea" [(ngModel)]="comment.message"></ion-textarea>
       </ion-item>
     </ion-list>
-    <button ion-button type="button" color="light" (tap)="cancel()">{{'cancel' | translate}}</button>
-    <button ion-button type="submit" color="primary" (tap)="submitComment()">{{'send_comment' | translate}}</button>
+    <button ion-button type="button" color="light" (tap)="cancel($event)">{{'cancel' | translate}}</button>
+    <button ion-button type="submit" color="primary" (tap)="submitComment($event)">{{'send_comment' | translate}}</button>
   </ion-card>
 </ion-content>

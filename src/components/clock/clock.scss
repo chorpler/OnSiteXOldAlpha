@@ -307,91 +307,91 @@ clock {
     background-size: 350px 350px !important;
     z-index: 40 !important;
   }
-  .rotateHours {
-    position: absolute;
-    top: 0px;
-    // left: 0px;
-    -webkit-animation-name: rotate1;
-    animation-name: rotate1;
-    -webkit-animation-timing-function: linear;
-    animation-timing-function: linear;
-    -webkit-animation-delay: 0s;
-    animation-delay: 0s;
-    -webkit-animation-iteration-count: infinite;
-    animation-iteration-count: infinite;
-    -webkit-animation-direction: normal;
-    animation-direction: normal;
-    -webkit-animation-fill-mode: none;
-    animation-fill-mode: none;
-    -webkit-animation-play-state: running;
-    animation-play-state: running;
-    transition-timing-function: linear;
-    -webkit-animation-duration: 43200s !important;
-    animation-duration: 43200s !important;
-  }
-  .rotateMinutes {
-    position: absolute;
-    top: 0px;
-    -webkit-animation-name: TicToc3;
-    animation-name: TicToc3;
-    -webkit-animation-timing-function: linear;
-    animation-timing-function: linear;
-    -webkit-animation-delay: 0s;
-    animation-delay: 0s;
-    -webkit-animation-iteration-count: infinite;
-    animation-iteration-count: infinite;
-    -webkit-animation-direction: normal;
-    animation-direction: normal;
-    -webkit-animation-fill-mode: none;
-    animation-fill-mode: none;
-    -webkit-animation-play-state: running;
-    animation-play-state: running;
-    transition-timing-function: linear;
-    -webkit-animation-duration: 3600s !important;
-    animation-duration: 3600s !important;
-  }
-  .rotateSeconds {
-    position: absolute;
-    top: 0px;
-    -webkit-animation-name: TicToc3;
-    animation-name: TicToc3;
-    -webkit-animation-timing-function: linear;
-    animation-timing-function: linear;
-    -webkit-animation-delay: 0s;
-    animation-delay: 0s;
-    -webkit-animation-iteration-count: infinite;
-    animation-iteration-count: infinite;
-    -webkit-animation-direction: normal;
-    animation-direction: normal;
-    -webkit-animation-fill-mode: none;
-    animation-fill-mode: none;
-    -webkit-animation-play-state: running;
-    animation-play-state: running;
-    transition-timing-function: linear;
-    -webkit-animation-duration: 60s !important;
-    animation-duration: 60s !important;
-  }
-  .rotateSeconds2 {
-    position: absolute;
-    top: 0px;
-    -webkit-animation-name: TicToc3;
-    animation-name: TicToc3;
-    -webkit-animation-timing-function: linear;
-    animation-timing-function: linear;
-    -webkit-animation-delay: 0s;
-    animation-delay: 0s;
-    -webkit-animation-iteration-count: infinite;
-    animation-iteration-count: infinite;
-    -webkit-animation-direction: normal;
-    animation-direction: normal;
-    -webkit-animation-fill-mode: none;
-    animation-fill-mode: none;
-    -webkit-animation-play-state: running;
-    animation-play-state: running;
-    transition-timing-function: linear;
-    -webkit-animation-duration: 60s !important;
-    animation-duration: 60s !important;
-  }
+  // .rotateHours {
+  //   position: absolute;
+  //   top: 0px;
+  //   // left: 0px;
+  //   -webkit-animation-name: rotate1;
+  //   animation-name: rotate1;
+  //   -webkit-animation-timing-function: linear;
+  //   animation-timing-function: linear;
+  //   -webkit-animation-delay: 0s;
+  //   animation-delay: 0s;
+  //   -webkit-animation-iteration-count: infinite;
+  //   animation-iteration-count: infinite;
+  //   -webkit-animation-direction: normal;
+  //   animation-direction: normal;
+  //   -webkit-animation-fill-mode: none;
+  //   animation-fill-mode: none;
+  //   -webkit-animation-play-state: running;
+  //   animation-play-state: running;
+  //   transition-timing-function: linear;
+  //   -webkit-animation-duration: 43200s !important;
+  //   animation-duration: 43200s !important;
+  // }
+  // .rotateMinutes {
+  //   position: absolute;
+  //   top: 0px;
+  //   -webkit-animation-name: TicToc3;
+  //   animation-name: TicToc3;
+  //   -webkit-animation-timing-function: linear;
+  //   animation-timing-function: linear;
+  //   -webkit-animation-delay: 0s;
+  //   animation-delay: 0s;
+  //   -webkit-animation-iteration-count: infinite;
+  //   animation-iteration-count: infinite;
+  //   -webkit-animation-direction: normal;
+  //   animation-direction: normal;
+  //   -webkit-animation-fill-mode: none;
+  //   animation-fill-mode: none;
+  //   -webkit-animation-play-state: running;
+  //   animation-play-state: running;
+  //   transition-timing-function: linear;
+  //   -webkit-animation-duration: 3600s !important;
+  //   animation-duration: 3600s !important;
+  // }
+  // .rotateSeconds {
+  //   position: absolute;
+  //   top: 0px;
+  //   -webkit-animation-name: TicToc3;
+  //   animation-name: TicToc3;
+  //   -webkit-animation-timing-function: linear;
+  //   animation-timing-function: linear;
+  //   -webkit-animation-delay: 0s;
+  //   animation-delay: 0s;
+  //   -webkit-animation-iteration-count: infinite;
+  //   animation-iteration-count: infinite;
+  //   -webkit-animation-direction: normal;
+  //   animation-direction: normal;
+  //   -webkit-animation-fill-mode: none;
+  //   animation-fill-mode: none;
+  //   -webkit-animation-play-state: running;
+  //   animation-play-state: running;
+  //   transition-timing-function: linear;
+  //   -webkit-animation-duration: 60s !important;
+  //   animation-duration: 60s !important;
+  // }
+  // .rotateSeconds2 {
+  //   position: absolute;
+  //   top: 0px;
+  //   -webkit-animation-name: TicToc3;
+  //   animation-name: TicToc3;
+  //   -webkit-animation-timing-function: linear;
+  //   animation-timing-function: linear;
+  //   -webkit-animation-delay: 0s;
+  //   animation-delay: 0s;
+  //   -webkit-animation-iteration-count: infinite;
+  //   animation-iteration-count: infinite;
+  //   -webkit-animation-direction: normal;
+  //   animation-direction: normal;
+  //   -webkit-animation-fill-mode: none;
+  //   animation-fill-mode: none;
+  //   -webkit-animation-play-state: running;
+  //   animation-play-state: running;
+  //   transition-timing-function: linear;
+  //   -webkit-animation-duration: 60s !important;
+  //   animation-duration: 60s !important;
+  // }
   .clock div {
     position: absolute !important;
     top: 0;

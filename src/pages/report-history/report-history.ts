@@ -201,7 +201,7 @@ export class ReportHistory implements OnInit {
     // });
   }
 
-  itemTapped(event, item:WorkOrder|ReportOther, shift:Shift) {
+  public itemTapped(event, item:WorkOrder|ReportOther, shift:Shift) {
     let shiftToSend = null;
     let lang = this.lang;
     Log.l("itemTapped(): Now looking for report:\n", item);
@@ -282,70 +282,112 @@ export class ReportHistory implements OnInit {
     // }
   }
 
-  addNewReportForShift(shift: Shift) {
+  public addNewReportForShift(shift: Shift) {
     Log.l("addNewReportForShift(): Got shift to send:\n", shift);
     this.tabs.goToPage('Report', { mode: 'Add', shift: shift, payroll_period: this.period });
   }
 
-  deleteWorkOrder(event:Event, report:WorkOrder, shift:Shift) {
-    Log.l("deleteWorkOrder() clicked ... with event:\n", event);
+  // public deleteWorkOrder(event:Event, report:WorkOrder, shift:Shift) {
+  //   Log.l("deleteWorkOrder() clicked ... with event:\n", event);
+  //   let lang = this.lang;
+  //   let db = this.prefs.getDB();
+  //   this.audio.play('deletereport');
+  //   this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
+  //     if (res) {
+  //       this.alert.showSpinner(lang['spinner_deleting_report']);
+  //       Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
+  //       let wo:WorkOrder = report;
+  //       this.db.deleteDoc(db.reports, wo).then((res) => {
+  //         Log.l("deleteWorkOrder(): Success:\n", res);
+  //         let tmpReport = wo;
+  //         let reports = this.ud.getWorkOrderList();
+  //         let i = reports.indexOf(wo);
+  //         Log.l("Going to delete work order %d in the list.", i);
+  //         if (i > -1) {
+  //           tmpReport = reports.splice(i, 1)[0];
+  //         }
+  //         shift.removeShiftReport(tmpReport);
+  //         this.ud.removeReport(tmpReport);
+  //         return this.server.syncToServer(db.reports, db.reports);
+  //       }).then(res => {
+  //         Log.l(`deleteWorkOrder(): Synchronized local '${db.reports}' to remote.`)
+  //         // return this.server.deleteDoc(db.reports, wo);
+  //         // .then((res) => {
+  //       // }).then(res => {
+  //         Log.l("deleteWorkOrder(): Success:\n", res);
+  //         // this.items.splice(i, 1);
+  //         // let i = this.reports.indexOf(report);
+  //         let tmpReport = report;
+  //         // if(i > -1) {
+  //           // tmpReport = this.reports.splice(i, 1)[0];
+  //         // }
+  //         // i = this.filtReports[reportDate].indexOf(item);
+  //         // let tmpReport = this.filtReports[reportDate].splice(i, 1)[0];
+  //         Log.l(`deleteWorkOrder(): Successfully deleted report '${report._id}' from server.`);
+  //         Log.l(`deleteWorkOrder(): About to delete report '${report._id}' from shift '${shift.getShiftSerial()}'...\n`, report);
+  //         shift.removeShiftReport(tmpReport);
+  //         // this.ud.removeReport(tmpReport);
+  //         this.alert.hideSpinner();
+  //       }).catch((err) => {
+  //         this.alert.hideSpinner();
+  //         Log.l("deleteWorkOrder(): Error!");
+  //         Log.e(err);
+  //         this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
+  //       });
+  //     } else {
+  //       Log.l("User canceled deletion.");
+  //     }
+  //   }).catch((err) => {
+  //     this.alert.hideSpinner();
+  //     Log.l("deleteWorkOrder(): Error!");
+  //     Log.e(err);
+  //     this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
+  //   });
+  // }
+
+  public async deleteWorkOrder(event:Event, report:WorkOrder, shift:Shift) {
     let lang = this.lang;
-    let db = this.prefs.getDB();
-    this.audio.play('deletereport');
-    this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
-      if (res) {
+    try {
+      Log.l("deleteWorkOrder() clicked ... with event:\n", event);
+      let db = this.prefs.getDB();
+      this.audio.play('deletereport');
+      let confirm = await this.alert.showConfirm(lang['confirm'], lang['delete_report']);
+      if(confirm) {
         this.alert.showSpinner(lang['spinner_deleting_report']);
         Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
         let wo:WorkOrder = report;
-        this.db.deleteDoc(db.reports, wo).then((res) => {
-          Log.l("deleteWorkOrder(): Success:\n", res);
-          let tmpReport = wo;
-          let reports = this.ud.getWorkOrderList();
-          let i = reports.indexOf(wo);
-          Log.l("Going to delete work order %d in the list.", i);
-          if (i > -1) {
-            tmpReport = reports.splice(i, 1)[0];
-          }
-          shift.removeShiftReport(tmpReport);
-          this.ud.removeReport(tmpReport);
-          return this.server.syncToServer(db.reports, db.reports);
-        }).then(res => {
-          Log.l(`deleteWorkOrder(): Synchronized local '${db.reports}' to remote.`)
-          // return this.server.deleteDoc(db.reports, wo);
-          // .then((res) => {
-        // }).then(res => {
-          Log.l("deleteWorkOrder(): Success:\n", res);
-          // this.items.splice(i, 1);
-          // let i = this.reports.indexOf(report);
-          let tmpReport = report;
-          // if(i > -1) {
-            // tmpReport = this.reports.splice(i, 1)[0];
-          // }
-          // i = this.filtReports[reportDate].indexOf(item);
-          // let tmpReport = this.filtReports[reportDate].splice(i, 1)[0];
-          Log.l(`deleteWorkOrder(): Successfully deleted report '${report._id}' from server.`);
-          Log.l(`deleteWorkOrder(): About to delete report '${report._id}' from shift '${shift.getShiftSerial()}'...\n`, report);
-          shift.removeShiftReport(tmpReport);
-          // this.ud.removeReport(tmpReport);
-          this.alert.hideSpinner();
-        }).catch((err) => {
-          this.alert.hideSpinner();
-          Log.l("deleteWorkOrder(): Error!");
-          Log.e(err);
-          this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
-        });
+        let res = await this.db.deleteDoc(db.reports, wo);
+        Log.l("deleteWorkOrder(): Success:\n", res);
+        let tmpReport = wo;
+        let reports = this.ud.getWorkOrderList();
+        let i = reports.indexOf(wo);
+        Log.l("Going to delete work order %d in the list.", i);
+        if (i > -1) {
+          tmpReport = reports.splice(i, 1)[0];
+        }
+        shift.removeShiftReport(tmpReport);
+        this.ud.removeReport(tmpReport);
+        let syncRes = await this.server.syncToServer(db.reports, db.reports);
+
+        Log.l(`deleteWorkOrder(): Synchronized local '${db.reports}' to remote.`)
+        Log.l("deleteWorkOrder(): Success:\n", res);
+        let tmpReport2 = report;
+        Log.l(`deleteWorkOrder(): Successfully deleted report '${report._id}' from server.`);
+        Log.l(`deleteWorkOrder(): About to delete report '${report._id}' from shift '${shift.getShiftSerial()}'...\n`, report);
+        shift.removeShiftReport(tmpReport2);
+        this.alert.hideSpinner();
       } else {
         Log.l("User canceled deletion.");
       }
-    }).catch((err) => {
+    } catch(err) {
       this.alert.hideSpinner();
       Log.l("deleteWorkOrder(): Error!");
       Log.e(err);
       this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
-    });
+    }
   }
 
-  deleteOtherReport(event:Event, other:ReportOther, shift:Shift) {
+  public deleteOtherReport(event:Event, other:ReportOther, shift:Shift) {
     Log.l("deleteOtherReport() clicked ... with event:\n", event);
     let lang = this.lang;
     let db = this.prefs.getDB();
