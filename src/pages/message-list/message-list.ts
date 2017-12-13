@@ -34,7 +34,18 @@ export class MessageListPage implements OnInit {
   public msgModal : any            = null  ;
   public pageReady: boolean        = false ;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public zone:NgZone, public translate:TranslateService, public db:DBSrvcs, public server:SrvrSrvcs, public msg:MessageService, public tabs:TabsComponent, public modalCtrl:ModalController, public ud:UserData) {
+  constructor(
+    public navCtrl   : NavController    ,
+    public navParams : NavParams        ,
+    public zone      : NgZone           ,
+    public translate : TranslateService ,
+    public db        : DBSrvcs          ,
+    public server    : SrvrSrvcs        ,
+    public msg       : MessageService   ,
+    public tabs      : TabsComponent    ,
+    public modalCtrl : ModalController  ,
+    public ud        : UserData         ,
+  ) {
     window["onsitemessages"] = this;
   }
 

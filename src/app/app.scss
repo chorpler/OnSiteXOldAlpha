@@ -152,23 +152,27 @@ ion-app.ios ion-content > .scroll-content {
 
 .waiting-clock {
   display: flex;
-  --widthA: 350px;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  // --widthA: 350px;
   width: 40vw;
   height: 40vh;
+  width: 100%;
+  height: 100%;
   margin-left: auto;
   margin-right: auto;
-  min-width: 350px;
-  min-height: 350px;
-  min-width: var(--widthA);
-  min-height: var(--widthA);
-  align-items: center;
-  justify-content: space-around;
-  margin-top: calc(15vh);
+  // min-width: 350px;
+  // min-height: 350px;
+  // min-width: var(--widthA);
+  // min-height: var(--widthA);
+  // margin-top: calc(15vh + 56px);
 
 
   clock {
-    flex: 1 1 auto;
-    height: 100%;
+    flex: 0 1 auto;
+    // height: 100%;
   }
   // margin-left: auto;
   // margin-right: auto;

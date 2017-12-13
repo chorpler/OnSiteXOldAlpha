@@ -1,10 +1,10 @@
-import { Injectable                                                                                         } from '@angular/core'              ;
-import { Http                                                                                               } from '@angular/http'              ;
-import { NavParams, LoadingController, PopoverController, ModalController, AlertController, ToastController } from 'ionic-angular'              ;
-import { Log                                                                                                } from '../config/config.functions' ;
-import { TranslateService                                                                                   } from '@ngx-translate/core'        ;
-import 'rxjs/add/operator/map';
 import * as UUID from 'uuid';
+import { Injectable                                        } from '@angular/core'           ;
+import { HttpClient                                        } from '@angular/common/http'    ;
+import { NavParams, LoadingController, PopoverController,  } from 'ionic-angular'           ;
+import { ModalController, AlertController, ToastController } from 'ionic-angular'           ;
+import { Log                                               } from 'config/config.functions' ;
+import { TranslateService                                  } from '@ngx-translate/core'     ;
 
 /*
   Generated class for the AlertService provider.
@@ -30,7 +30,7 @@ export class AlertService {
   public popoverData    : any                     =null                  ;
   public UUID           : any                     = UUID                 ;
 
-  constructor(public http: Http, public loadingCtrl: LoadingController, public popoverCtrl:PopoverController, public modalCtrl:ModalController, public alertCtrl:AlertController, public toastCtrl:ToastController, public translate:TranslateService) {
+  constructor(public http: HttpClient, public loadingCtrl: LoadingController, public popoverCtrl:PopoverController, public modalCtrl:ModalController, public alertCtrl:AlertController, public toastCtrl:ToastController, public translate:TranslateService) {
     Log.l('Hello AlertService Provider');
     window['onsitealerts'] = this;
     window['UUID'] = UUID;

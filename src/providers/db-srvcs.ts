@@ -1,15 +1,15 @@
-import { Injectable, NgZone                                                                } from '@angular/core'                ;
-import { Http                                                                              } from '@angular/http'                ;
-import { Log, CONSOLE, moment, Moment, isMoment                                            } from '../config/config.functions'   ;
-import { Storage                                                                           } from '@ionic/storage'               ;
-import { NativeStorage                                                                     } from '@ionic-native/native-storage' ;
-import { PouchDBService                                                                    } from './pouchdb-service'            ;
-import { AuthSrvcs                                                                         } from './auth-srvcs'                 ;
-import { AlertService                                                                      } from './alerts'                     ;
-import { SrvrSrvcs                                                                         } from './srvr-srvcs'                 ;
-import { UserData                                                                          } from './user-data'                  ;
-import { Preferences                                                                       } from './preferences'                ;
-import { Employee, Jobsite, WorkOrder, ReportOther, Message, Comment, Shift, PayrollPeriod } from '../domain/domain-classes'     ;
+import { Injectable, NgZone                         } from '@angular/core'                ;
+import { Log, CONSOLE, moment, Moment, isMoment     } from 'config/config.functions'      ;
+import { Storage                                    } from '@ionic/storage'               ;
+import { NativeStorage                              } from '@ionic-native/native-storage' ;
+import { PouchDBService                             } from './pouchdb-service'            ;
+import { AuthSrvcs                                  } from './auth-srvcs'                 ;
+import { AlertService                               } from './alerts'                     ;
+import { SrvrSrvcs                                  } from './srvr-srvcs'                 ;
+import { UserData                                   } from './user-data'                  ;
+import { Preferences                                } from './preferences'                ;
+import { Employee, Jobsite, WorkOrder, ReportOther, } from 'domain/domain-classes'        ;
+import { Message, Comment, Shift, PayrollPeriod     } from 'domain/domain-classes'        ;
 
 
 export const noDD = "_\uffff";
@@ -37,7 +37,7 @@ export class DBSrvcs {
   // public static PREFS         : any = new Preferences()                            ;
   // public prefs                : any = DBSrvcs.PREFS                                ;
 
-  constructor(public http: Http, public zone: NgZone, private storage: Storage, private auth: AuthSrvcs, private server: SrvrSrvcs, public ud:UserData) {
+  constructor(public zone: NgZone, private storage: Storage, private auth: AuthSrvcs, private server: SrvrSrvcs, public ud:UserData) {
     DBSrvcs.StaticPouchDB = PouchDBService.PouchInit();
     this.PouchDB = DBSrvcs.StaticPouchDB;
 

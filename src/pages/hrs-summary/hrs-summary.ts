@@ -11,7 +11,12 @@ import { TabsComponent           } from '../../components/tabs/tabs' ;
 
 export class HrsSummaryPage {
 
-  constructor(public navCtrl:NavController, public navParams:NavParams, public platform:Platform, public tabs:TabsComponent) {
+  constructor(
+    public navCtrl   : NavController ,
+    public navParams : NavParams     ,
+    public platform  : Platform      ,
+    // public tabs      : TabsComponent ,
+  ) {
     window['hourssummary'] = this;
   }
 

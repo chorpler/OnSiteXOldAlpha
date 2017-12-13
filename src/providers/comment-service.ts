@@ -1,14 +1,13 @@
 import { Injectable          } from '@angular/core'                  ;
-import { Http                } from '@angular/http'                  ;
-import { Log, moment, Moment } from '../config/config.functions'     ;
 import { Platform, App       } from 'ionic-angular'                  ;
 import { Device              } from '@ionic-native/device'           ;
 import { UniqueDeviceID      } from '@ionic-native/unique-device-id' ;
-import { AlertService        } from '../providers/alerts'            ;
-import { Employee            } from '../domain/employee'             ;
-import { Comment             } from '../domain/comment'              ;
-import { UserData            } from '../providers/user-data'         ;
-import 'rxjs/add/operator/map';
+import { HttpClient          } from '@angular/common/http'           ;
+import { Log, moment, Moment } from 'config/config.functions'        ;
+import { AlertService        } from 'providers/alerts'               ;
+import { Employee            } from 'domain/employee'                ;
+import { Comment             } from 'domain/comment'                 ;
+import { UserData            } from 'providers/user-data'            ;
 
 /*
   Generated class for the CommentProvider provider.

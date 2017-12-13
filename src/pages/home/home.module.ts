@@ -1,14 +1,13 @@
-import { NgModule                         } from '@angular/core'                      ;
-import { HomePage                         } from './home'                             ;
-import { BrowserAnimationsModule          } from '@angular/platform-browser/animations'   ;
-import { IonicPageModule                  } from 'ionic-angular'                      ;
-import { Http                             } from '@angular/http'                      ;
-import { ClockComponentModule             } from '../../components/clock/clock.module';
-import { TabsComponentModule              } from '../../components/tabs/tabs.module'  ;
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core'                ;
-import { TranslateHttpLoader              } from '@ngx-translate/http-loader'         ;
-import { createTranslateLoader            } from '../../config/customTranslateLoader' ;
-import { PipesModule                      } from '../../pipes/pipes.module'           ;
+import { NgModule                         } from '@angular/core'                        ;
+import { HomePage                         } from './home'                               ;
+import { IonicPageModule                  } from 'ionic-angular'                        ;
+import { HttpClient                       } from '@angular/common/http'                 ;
+import { ClockComponentModule             } from 'components/clock/clock.module'        ;
+import { TabsComponentModule              } from 'components/tabs/tabs.module'          ;
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core'                  ;
+import { TranslateHttpLoader              } from '@ngx-translate/http-loader'           ;
+import { createTranslateLoader            } from 'config/customTranslateLoader'         ;
+import { PipesModule                      } from 'pipes/pipes.module'                   ;
 
 @NgModule({
   declarations: [HomePage],
@@ -21,7 +20,7 @@ import { PipesModule                      } from '../../pipes/pipes.module'     
       loader: {
         provide: TranslateLoader,
         useFactory: (createTranslateLoader),
-        deps: [Http]
+        deps: [HttpClient]
       }
     }),
   // ],
@@ -30,7 +29,7 @@ import { PipesModule                      } from '../../pipes/pipes.module'     
   ],
   exports: [
     HomePage,
-    TabsComponentModule,
+    // TabsComponentModule,
    ]
 })
 export class HomePageModule { }

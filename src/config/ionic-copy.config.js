@@ -36,7 +36,7 @@ module.exports = {
     dest: '{{WWW}}/assets/audio'
   },
   copyGeolocationIcons: {
-    src: ['{{SRC}}/assets/icon/OnSiteX_16.png', '{{SRC}}/assets/icon/OnSiteX_64.png'],
+    src: ['{{SRC}}/assets/icon/onsitex_16.png', '{{SRC}}/assets/icon/onsitex_64.png'],
     dest: 'platforms/android/res/drawable'
   }
 }

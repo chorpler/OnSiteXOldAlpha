@@ -30,7 +30,7 @@ export class ClockComponent implements OnInit,OnDestroy {
   public timeoutHandle:any;
   public timer:number = 1000;
   public now  :Moment = moment()                        ;
-  public hands:any    = UserData.getClockHands(this.now);
+  // public hands:any    = UserData.getClockHands(this.now);
   public hours:number = 0;
   public minutes:number = 0;
   public seconds:number = 0;

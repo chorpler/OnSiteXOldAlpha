@@ -1,10 +1,10 @@
 import { NgModule                         } from '@angular/core'                      ;
-import { Http                             } from '@angular/http'                      ;
+import { HttpClient                       } from '@angular/common/http'               ;
 import { IonicPageModule                  } from 'ionic-angular'                      ;
 import { CommentPage                      } from './comment'                          ;
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core'                ;
 import { TranslateHttpLoader              } from '@ngx-translate/http-loader'         ;
-import { createTranslateLoader            } from '../../config/customTranslateLoader' ;
+import { createTranslateLoader            } from 'config/customTranslateLoader' ;
 
 @NgModule({
   declarations: [
@@ -16,7 +16,7 @@ import { createTranslateLoader            } from '../../config/customTranslateLo
       loader: {
         provide: TranslateLoader,
         useFactory: (createTranslateLoader),
-        deps: [Http]
+        deps: [HttpClient]
       },
     }),
   ],

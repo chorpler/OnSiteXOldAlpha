@@ -1,17 +1,17 @@
-import { Injectable              } from '@angular/core'                ;
-import { Http                    } from '@angular/http'                ;
-import { PouchDBService          } from '../providers/pouchdb-service' ;
-import { Log, moment, Moment, oo } from '../config/config.functions'   ;
-import { UserData                } from '../providers/user-data'       ;
-import { Message                 } from '../domain/message'            ;
-import { Preferences             } from '../providers/preferences'     ;
-import { Comment                 } from '../domain/comment'            ;
-import { Jobsite                 } from '../domain/jobsite'            ;
-import { WorkOrder               } from '../domain/workorder'          ;
-import { ReportOther             } from '../domain/reportother'        ;
-import { Employee                } from '../domain/employee'           ;
-import { Shift                   } from '../domain/shift'              ;
-import { PayrollPeriod           } from '../domain/payroll-period'     ;
+import { Injectable              } from '@angular/core'           ;
+import { HttpClient              } from '@angular/common/http'    ;
+import { Log, moment, Moment, oo } from 'config/config.functions' ;
+import { PouchDBService          } from './pouchdb-service'       ;
+import { UserData                } from './user-data'             ;
+import { Preferences             } from './preferences'           ;
+import { Message                 } from 'domain/message'          ;
+import { Comment                 } from 'domain/comment'          ;
+import { Jobsite                 } from 'domain/jobsite'          ;
+import { WorkOrder               } from 'domain/workorder'        ;
+import { ReportOther             } from 'domain/reportother'      ;
+import { Employee                } from 'domain/employee'         ;
+import { Shift                   } from 'domain/shift'            ;
+import { PayrollPeriod           } from 'domain/payroll-period'   ;
 
 export const noDD     = "_\uffff";
 export const noDesign = {include_docs: true, startkey: noDD };
@@ -35,7 +35,7 @@ export class SrvrSrvcs {
   public static prefs         : any    = new Preferences()                                      ;
   public prefs                : any    = SrvrSrvcs.prefs                                        ;
 
-  constructor(public http: Http, public ud:UserData) {
+  constructor(public http:HttpClient, public ud:UserData) {
     Log.l("Hello SrvrSrvcs provider");
     window["ServerServices"] = this;
     window["SrvrSrvcs"] = SrvrSrvcs;

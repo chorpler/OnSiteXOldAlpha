@@ -1,5 +1,5 @@
 import { Injectable                                         } from '@angular/core'                                  ;
-import { Http                                               } from '@angular/http'                                  ;
+import { HttpClient                                         } from '@angular/common/http'                           ;
 import { Subscription                                       } from 'rxjs/Subscription'
 import { Platform, ToastController,                         } from 'ionic-angular'                                  ;
 import { Storage                                            } from '@ionic/storage'                                 ;
@@ -45,7 +45,7 @@ export class GeolocService {
   public geolocateStatus : boolean = false;
 
   constructor(
-    public http      : Http                  ,
+    public http      : HttpClient            ,
     public platform  : Platform              ,
     public geolocate : BackgroundGeolocation ,
     public auth      : AuthSrvcs             ,

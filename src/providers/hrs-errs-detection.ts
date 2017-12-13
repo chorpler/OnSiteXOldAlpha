@@ -1,12 +1,11 @@
-import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
-import 'rxjs/add/operator/map';
+import { Injectable } from '@angular/core'        ;
+import { HttpClient } from '@angular/common/http' ;
 
 
 @Injectable()
 export class HrsErrsDetection {
 
-  constructor(public http: Http) {
+  constructor(public http: HttpClient) {
     console.log('Hello HrsErrsDetection Provider');
   }
 

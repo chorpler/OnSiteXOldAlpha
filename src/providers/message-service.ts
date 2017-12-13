@@ -1,12 +1,11 @@
-import 'rxjs/add/operator/map';
-import { Injectable                    } from '@angular/core'              ;
-import { Http                          } from '@angular/http'              ;
-import { Log, isMoment, moment, Moment } from '../config/config.functions' ;
-import { SrvrSrvcs                     } from './srvr-srvcs'               ;
-import { DBSrvcs                       } from './db-srvcs'                 ;
-import { AlertService                  } from './alerts'                   ;
-import { Message                       } from '../domain/message'          ;
-import { UserData                      } from '../providers/user-data'     ;
+import { Injectable                    } from '@angular/core'           ;
+import { HttpClient                    } from '@angular/common/http'    ;
+import { Log, isMoment, moment, Moment } from 'config/config.functions' ;
+import { SrvrSrvcs                     } from './srvr-srvcs'            ;
+import { DBSrvcs                       } from './db-srvcs'              ;
+import { AlertService                  } from './alerts'                ;
+import { Message                       } from 'domain/message'          ;
+import { UserData                      } from 'providers/user-data'     ;
 
 @Injectable()
 export class MessageService {

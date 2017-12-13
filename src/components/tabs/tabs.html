@@ -1,7 +1,7 @@
-<ion-footer no-border>
+<!-- <ion-footer no-border>
   <ion-toolbar>
     <div id="onsite-nav">
-      <button ion-button icon-only [disabled]="allTabs.disabled" (tap)="goToPage(tab.name)" (press)="aboutPage($event, tab.name)" *ngFor="let tab of tabInfo; let i=index">
+     <button ion-button icon-only [disabled]="allTabs.disabled" (tap)="goToPage(tab.name)" (press)="aboutPage($event, tab.name)" *ngFor="let tab of tabInfo; let i=index">
         <ion-icon [class.hlght]="tab.active" id="tab{{i+1}}" [name]="tab.icon">
           <div class="badge-container" >
             <div class="msg-badge" [class.hide]='tab.hideBadge'>{{tab.badgeCount}}</div>
@@ -10,4 +10,32 @@
       </button>
     </div>
   </ion-toolbar>
-</ion-footer>
+</ion-footer> -->
+
+<div class="onsite-tab-bar" id="onsite-nav" *ngIf="tabsReady">
+  <!-- <div class="tab-button" [class.clickDisabled]="allTabs.disabled" (tap)="goToPage(tab.name)" (press)="aboutPage($event, tab.name)" *ngFor="let tab of tabInfo; let i=index"> -->
+  <div class="onsite-tab-button" [class.clickDisabled]="tabServ.isDisabled()" (click)="goToPage(tab.name)" *ngFor="let tab of tabInfo; let i=index">
+    <!-- <ion-icon [class.hlght]="tab.active" [name]="tab.icon" id="tab{{i+1}}"> -->
+    <div class="icon-container">
+      <i class="tab-icon-ionic" [ngClass]="getIcon(i)"></i>
+      <div class="badge-container">
+        <div class="msg-badge" [class.hide]="tab.hideBadge">{{tab.badgeCount}}</div>
+        <div class="sk-circle waiting-badge" [class.hideSpinner]="hideArray[i]">
+          <div class="sk-circle1 sk-child"></div>
+          <div class="sk-circle2 sk-child"></div>
+          <div class="sk-circle3 sk-child"></div>
+          <div class="sk-circle4 sk-child"></div>
+          <div class="sk-circle5 sk-child"></div>
+          <div class="sk-circle6 sk-child"></div>
+          <div class="sk-circle7 sk-child"></div>
+          <div class="sk-circle8 sk-child"></div>
+          <div class="sk-circle9 sk-child"></div>
+          <div class="sk-circle10 sk-child"></div>
+          <div class="sk-circle11 sk-child"></div>
+          <div class="sk-circle12 sk-child"></div>
+        </div>
+      </div>
+    </div>
+    <!-- </ion-icon> -->
+  </div>
+</div>

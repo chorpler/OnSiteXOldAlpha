@@ -1,4 +1,4 @@
-import { Log, isMoment, moment, Moment             } from '../config/config.functions' ;
+import { Log, isMoment, moment, Moment             } from 'config/config.functions' ;
 import { sprintf                                   } from 'sprintf-js'                 ;
 import { WorkOrder, ReportOther, Jobsite, Employee } from './domain-classes'           ;
 
@@ -133,7 +133,7 @@ export class Shift {
   }
 
   public getShiftDate():Moment {
-    let date = moment.fromExcel(this.getShiftID());
+    let date = moment().fromExcel(this.getShiftID());
     return date;
   }
 

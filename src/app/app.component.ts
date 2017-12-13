@@ -1,5 +1,4 @@
-import { Http                                         } from '@angular/http'                     ;
-import { Component, ViewChild                         } from '@angular/core'                     ;
+import { Component, ViewChild, OnInit,                } from '@angular/core'                     ;
 import { Platform, Nav, ToastController, Events, App  } from 'ionic-angular'                     ;
 import { StatusBar                                    } from '@ionic-native/status-bar'          ;
 import { SplashScreen                                 } from '@ionic-native/splash-screen'       ;
@@ -8,34 +7,33 @@ import { Push, PushObject, PushOptions                } from '@ionic-native/push
 import { LocalNotifications                           } from '@ionic-native/local-notifications' ;
 import { AppVersion                                   } from '@ionic-native/app-version'         ;
 import { AppUpdate                                    } from '@ionic-native/app-update'          ;
-import { UserData                                     } from '../providers/user-data'            ;
-import { PouchDBService                               } from '../providers/pouchdb-service'      ;
-import { DBSrvcs                                      } from '../providers/db-srvcs'             ;
-import { SrvrSrvcs                                    } from '../providers/srvr-srvcs'           ;
-import { AuthSrvcs                                    } from '../providers/auth-srvcs'           ;
-import { AlertService                                 } from '../providers/alerts'               ;
-import { NetworkStatus                                } from '../providers/network-status'       ;
-import { GeolocService                                } from '../providers/geoloc-service'       ;
-import { Log, CONSOLE, moment, Moment                 } from '../config/config.functions'        ;
-import { HomePage                                     } from '../pages/home/home'                ;
-import { MessageService                               } from '../providers/message-service'      ;
-import { TabsComponent                                } from '../components/tabs/tabs'           ;
-import { Preferences                                  } from '../providers/preferences'          ;
+import { UserData                                     } from 'providers/user-data'               ;
+import { PouchDBService                               } from 'providers/pouchdb-service'         ;
+import { DBSrvcs                                      } from 'providers/db-srvcs'                ;
+import { SrvrSrvcs                                    } from 'providers/srvr-srvcs'              ;
+import { AuthSrvcs                                    } from 'providers/auth-srvcs'              ;
+import { AlertService                                 } from 'providers/alerts'                  ;
+import { NetworkStatus                                } from 'providers/network-status'          ;
+import { GeolocService                                } from 'providers/geoloc-service'          ;
+import { Log, CONSOLE, moment, Moment                 } from 'config/config.functions'           ;
+import { HomePage                                     } from 'pages/home/home'                   ;
+import { MessageService                               } from 'providers/message-service'         ;
+import { TabsComponent                                } from 'components/tabs/tabs'              ;
+import { Preferences                                  } from 'providers/preferences'             ;
 import { TranslateService                             } from '@ngx-translate/core'               ;
-import { SmartAudio                                   } from '../providers/smart-audio'          ;
-import { Jobsite                                      } from '../domain/jobsite'                 ;
-import { ReportOther                                  } from '../domain/reportother'             ;
-import { WorkOrder                                    } from '../domain/workorder'               ;
-import { Employee                                     } from '../domain/employee'                ;
-import { Shift                                        } from '../domain/shift'                   ;
-import { PayrollPeriod                                } from '../domain/payroll-period'          ;
-import { Message                                      } from '../domain/message'                 ;
-import { IonDigitKeyboardCmp, IonDigitKeyboardOptions } from '../components/ion-digit-keyboard/' ;
-
-import * as rxjs from 'rxjs';
+import { SmartAudio                                   } from 'providers/smart-audio'             ;
+import { Jobsite                                      } from 'domain/jobsite'                    ;
+import { ReportOther                                  } from 'domain/reportother'                ;
+import { WorkOrder                                    } from 'domain/workorder'                  ;
+import { Employee                                     } from 'domain/employee'                   ;
+import { Shift                                        } from 'domain/shift'                      ;
+import { PayrollPeriod                                } from 'domain/payroll-period'             ;
+import { Message                                      } from 'domain/message'                    ;
+import { IonDigitKeyboardCmp, IonDigitKeyboardOptions } from 'components/ion-digit-keyboard'     ;
+import { TabsService                                  } from 'providers/tabs-service'            ;
 
 @Component({ templateUrl: 'app.html' })
-export class OnSiteApp {
+export class OnSiteApp implements OnInit {
   @ViewChild(Nav) nav: Nav;
 
   public title                   : string  = 'OnSiteHome'      ;
@@ -53,6 +51,7 @@ export class OnSiteApp {
   public appLanguages            : Array<string> = ['en','es'] ;
   public keysetup                : any                         ;
   public messageCheckTimeout     : any                         ;
+  public hiddenArray             : Array<boolean>              ;
 
   constructor(
     public platform    : Platform          ,
@@ -69,7 +68,8 @@ export class OnSiteApp {
     public auth        : AuthSrvcs         ,
     public server      : SrvrSrvcs         ,
     public events      : Events            ,
-    public tabs        : TabsComponent     ,
+    public tabServ     : TabsService       ,
+    // public tabs        : TabsComponent     ,
     public app         : App               ,
     public translate   : TranslateService  ,
     public alert       : AlertService      ,
@@ -81,26 +81,42 @@ export class OnSiteApp {
   ) {
     window['onsiteapp'] = this;
     window['moment'] = moment;
-    window['rxjs'] = rxjs;
-    this.initializeApp();
   }
 
-  initializeApp() {
+  ngOnInit() {
+    Log.l(`OnSiteApp: ngOnInit() fired`);
+    this.platform.ready().then(res => {
+      this.initializeApp(res);
+    });
+  }
+
+  initializeApp(vagueParameter:any) {
     Log.l("AppComponent: Initializing app...");
+    this.hiddenArray = this.tabServ.getHiddenArray();
     this.keysetup = {visible: false, width: '100%', swipeToHide: true};
 
-    this.platform.ready().then(res => {
-      Log.l("OnSite: platform ready returned:\n", res);
-      return this.getAppVersion();
-    }).then((res) => {
+    Log.l("OnSite: platform ready returned:\n", vagueParameter);
+    this.getAppVersion().then((res) => {
       this.platform.registerBackButtonAction(() => {
-        if (this.backButtonPressedAlready) {
-          this.platform.exitApp();
-        } else {
-          this.alert.showToast("Press back again to exit", 2000);
-          this.backButtonPressedAlready = true;
-          setTimeout(() => { this.backButtonPressedAlready = false; }, 2000)
-        }
+        let page = this.nav && this.nav.getActive ? this.nav.getActive() : {name: "none", id: "none"};
+        if(page && page.id) {
+          let pageName = page.id;
+          if(pageName === 'OnSiteHome') {
+            if (this.backButtonPressedAlready) {
+              this.platform.exitApp();
+            } else {
+              this.alert.showToast("Press back again to exit", 2000);
+              this.backButtonPressedAlready = true;
+              setTimeout(() => { this.backButtonPressedAlready = false; }, 2000)
+            }
+          } else {
+            if(this.nav.canGoBack()) {
+              this.nav.pop();
+            } else {
+              this.nav.setRoot('OnSiteHome');
+            }
+          }
+        };
       });
       this.translate.setDefaultLang('en');
       this.statusBar.styleDefault();
@@ -194,10 +210,13 @@ export class OnSiteApp {
         }
         this.checkLogin().then(res => {
           Log.l("OnSite.bootApp(): User passed login check. Should be fine. Checking for Android app update.");
-          this.checkForAndroidUpdate().then(res => {
-            Log.l("OnSite.bootApp(): Done with Android update check. Now getting all data from server.");
-            return this.server.getAllData(this.tech);
-          }).then(res => {
+          // this.checkForAndroidUpdate().then(res => {
+          //   Log.l("OnSite.bootApp(): Done with Android update check. Now getting all data from server.");
+            // return
+            this.server.getAllData(this.tech)
+            // ;
+          // })
+          .then(res => {
             this.data = res;
             this.ud.setData(this.data);
             return this.msg.getMessages();
@@ -392,6 +411,18 @@ export class OnSiteApp {
         resolve("Platform is not Android, not running update check");
       }
     });
+  }
+
+  public goToTab(idx:number) {
+    Log.l(`OnSiteConsoleX.goToTab(${idx}) running...`)
+    let tabInfo = this.tabServ.getTabArray();
+    let tab:any = tabInfo[idx];
+    if(tab) {
+      let name = tab.name;
+      Log.l(`OnSiteConsoleX.goToTab(${idx}) found tab '${name}', going there.`)
+      this.tabServ.setActive(idx);
+      this.rootPage = name;
+    }
   }
 }
 

@@ -1,9 +1,15 @@
 import * as JSON8                    from 'json8'                   ;
 import * as momentous from 'moment';
-import * as parseFormat from 'moment-parseformat';
-import 'moment-recur';
+import * as JSON5p0 from 'json5';
+// import * as parseFormat from 'moment-parseformat';
+// import 'moment-recur';
 // import * as momentround from 'moment-round';
-import * as timer from 'moment-timer';
+// import * as timer from 'moment-timer';
+// import { moment } from 'lib/moment-excel';
+// import { moment as momentX } from 'lib/moment-excel';
+import 'lib/moment-excel';
+import 'lib/moment-excel-statics';
+
 
 // Author: David Sargeant
 // Releasd: 2017-06-11
@@ -23,127 +29,132 @@ import * as timer from 'moment-timer';
 var _emptyFunc = function () { };
 
 export type Moment = momentous.Moment;
+export const moment = momentous;
 
-export const oo        = JSON8        ;
-export const json8     = JSON8        ;
+export const oo        = JSON8;
+export const json8     = JSON8;
+
+export const json5     = JSON5p0;
+export const JSON5     = JSON5p0;
 
 window['oo'] = oo;
+window['json5'] = json5;
 
-var mom = momentous;
-// export moment;
-momentous['parseFormat'] = parseFormat;
-momentous['timer'] = timer;
-// momentous['round'] = momentround;
+// var mom = momentous;
+// // export moment;
+// momentous['parseFormat'] = parseFormat;
+// momentous['timer'] = timer;
+// // momentous['round'] = momentround;
 
-momentous.fn['round'] = function (precision:number, key:string, direction?:string):Moment {
-  if (typeof direction === 'undefined') {
-    direction = 'round';
-  }
+// momentous.fn['round'] = function (precision:number, key:string, direction?:string):Moment {
+//   if (typeof direction === 'undefined') {
+//     direction = 'round';
+//   }
 
-  var keys = ['Hours', 'Minutes', 'Seconds', 'Milliseconds'];
-  var maxValues = [24, 60, 60, 1000];
+//   var keys = ['Hours', 'Minutes', 'Seconds', 'Milliseconds'];
+//   var maxValues = [24, 60, 60, 1000];
 
-  // Capitalize first letter
-  key = key.charAt(0).toUpperCase() + key.slice(1).toLowerCase();
+//   // Capitalize first letter
+//   key = key.charAt(0).toUpperCase() + key.slice(1).toLowerCase();
 
-  // make sure key is plural
-  if (key.indexOf('s', key.length - 1) === -1) {
-    key += 's';
-  }
-  var value = 0;
-  var rounded = false;
-  var subRatio = 1;
-  var maxValue;
-  for (var i in keys) {
-    var k = keys[i];
-    if (k === key) {
-      value = this._d['get' + key]();
-      maxValue = maxValues[i];
-      rounded = true;
-    } else if (rounded) {
-      subRatio *= maxValues[i];
-      value += this._d['get' + k]() / subRatio;
-      this._d['set' + k](0);
-    }
-  };
+//   // make sure key is plural
+//   if (key.indexOf('s', key.length - 1) === -1) {
+//     key += 's';
+//   }
+//   var value = 0;
+//   var rounded = false;
+//   var subRatio = 1;
+//   var maxValue;
+//   for (var i in keys) {
+//     var k = keys[i];
+//     if (k === key) {
+//       value = this._d['get' + key]();
+//       maxValue = maxValues[i];
+//       rounded = true;
+//     } else if (rounded) {
+//       subRatio *= maxValues[i];
+//       value += this._d['get' + k]() / subRatio;
+//       this._d['set' + k](0);
+//     }
+//   };
 
-  value = Math[direction](value / precision) * precision;
-  value = Math.min(value, maxValue);
-  this._d['set' + key](value);
+//   value = Math[direction](value / precision) * precision;
+//   value = Math.min(value, maxValue);
+//   this._d['set' + key](value);
 
-  return this;
-}
+//   return this;
+// }
 
-momentous.fn['ceil'] = function (precision, key) {
-  return this.round(precision, key, 'ceil');
-}
+// momentous.fn['ceil'] = function (precision, key) {
+//   return this.round(precision, key, 'ceil');
+// }
 
-momentous.fn['floor'] = function (precision, key) {
-  return this.round(precision, key, 'floor');
-}
-
-
+// momentous.fn['floor'] = function (precision, key) {
+//   return this.round(precision, key, 'floor');
+// }
 
 
-var moment2excel = function(mo?:Date|Moment|string|boolean, dayOnly?:boolean) {
-  let xlDate;
-  let XLDay0 = moment([1900, 0, 1]).startOf('day');
-  let value;
-  if(mo) {
-    if(typeof mo === 'boolean') {
-      value  = this;
-      xlDate = Math.trunc(moment(value).diff(XLDay0, 'days', true) + 2);
-    } else {
-      value = mo;
-      if(dayOnly) {
-        xlDate = Math.trunc(moment(value).diff(XLDay0, 'days', true) + 2);
-      } else {
-        xlDate = moment(value).diff(XLDay0, 'days', true) + 2;
-      }
-    }
-  } else {
-    value  = this;
-    xlDate = moment(value).diff(XLDay0, 'days', true) + 2;
-  }
-  return xlDate;
-};
 
-var excel2moment = function(days:number|string) {
-  let value;
-  if(typeof days === 'number') {
-    value = days;
-  } else if (typeof days === 'string') {
-    let tmp1 = Number(days);
-    if (!isNaN(tmp1)) {
-      value = tmp1;
-    } else {
-      throw new TypeError("Cannot convert Excel date if it is not a number or numberlike string: " + days + " (" + typeof days + ")");
-    }
-  } else {
-    throw new TypeError("Cannot convert Excel date if it is not a number or numberlike string: " + days + " (" + typeof days + ")");
-  }
-  var XLDay0 = moment([1900, 0, 1, 0, 0, 0]);
-  var now = moment();
-  var daysInMilliseconds = moment.duration(moment.duration(value - 2, 'days').asMilliseconds());
-  var newMoment = moment(XLDay0).add(daysInMilliseconds);
-  let tzDifference = now.utcOffset() - XLDay0.utcOffset();
-  // Log.l("New Moment and XLDay0 TZ difference is (%d - %d = %d):", now.utcOffset(), XLDay0.utcOffset(), tzDifference);
-  // Log.l(newMoment);
-  // Log.l(XLDay0);
-  window['xldays'] = { xlday0: XLDay0, value: value, now: newMoment };
-  newMoment.subtract(tzDifference, 'minutes').round(10, 'milliseconds');
-  return newMoment;
-}
 
-// momentous['toExcel'] = moment2excel;
-momentous.fn['toExcel'] = moment2excel;
-// momentous['fromExcel'] = excel2moment;
-momentous.fn['fromExcel'] = excel2moment;
-mom['fromExcel'] = excel2moment;
-// moment2excel.bind(moments);
-// excel2moment.bind(moments);
-// export type Moment = Momentous;
-export var moment = mom;
+// var moment2excel = function(mo?:Date|Moment|string|boolean, dayOnly?:boolean) {
+//   let xlDate;
+//   let XLDay0 = moment([1900, 0, 1]).startOf('day');
+//   let value;
+//   if(mo) {
+//     if(typeof mo === 'boolean') {
+//       value  = this;
+//       xlDate = Math.trunc(moment(value).diff(XLDay0, 'days', true) + 2);
+//     } else {
+//       value = mo;
+//       if(dayOnly) {
+//         xlDate = Math.trunc(moment(value).diff(XLDay0, 'days', true) + 2);
+//       } else {
+//         xlDate = moment(value).diff(XLDay0, 'days', true) + 2;
+//       }
+//     }
+//   } else {
+//     value  = this;
+//     xlDate = moment(value).diff(XLDay0, 'days', true) + 2;
+//   }
+//   return xlDate;
+// };
+
+// var excel2moment = function(days:number|string) {
+//   let value;
+//   if(typeof days === 'number') {
+//     value = days;
+//   } else if (typeof days === 'string') {
+//     let tmp1 = Number(days);
+//     if (!isNaN(tmp1)) {
+//       value = tmp1;
+//     } else {
+//       throw new TypeError("Cannot convert Excel date if it is not a number or numberlike string: " + days + " (" + typeof days + ")");
+//     }
+//   } else {
+//     throw new TypeError("Cannot convert Excel date if it is not a number or numberlike string: " + days + " (" + typeof days + ")");
+//   }
+//   var XLDay0 = moment([1900, 0, 1, 0, 0, 0]);
+//   var now = moment();
+//   var daysInMilliseconds = moment.duration(moment.duration(value - 2, 'days').asMilliseconds());
+//   var newMoment = moment(XLDay0).add(daysInMilliseconds);
+//   let tzDifference = now.utcOffset() - XLDay0.utcOffset();
+//   // Log.l("New Moment and XLDay0 TZ difference is (%d - %d = %d):", now.utcOffset(), XLDay0.utcOffset(), tzDifference);
+//   // Log.l(newMoment);
+//   // Log.l(XLDay0);
+//   window['xldays'] = { xlday0: XLDay0, value: value, now: newMoment };
+//   newMoment.subtract(tzDifference, 'minutes').round(10, 'milliseconds');
+//   return newMoment;
+// }
+
+// // momentous['toExcel'] = moment2excel;
+// momentous.fn['toExcel'] = moment2excel;
+// // momentous['fromExcel'] = excel2moment;
+// momentous.fn['fromExcel'] = excel2moment;
+// mom['fromExcel'] = excel2moment;
+// // moment2excel.bind(moments);
+// // excel2moment.bind(moments);
+// // export type Moment = Momentous;
+// export var moment = mom;
 
 export const isMoment = function (val: any) { return (moment.isMoment(val) && moment(val).isValid()); }
 export const sizeOf = function (val: any) {

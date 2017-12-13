@@ -1,29 +1,29 @@
-import { sprintf                                          } from 'sprintf-js'                    ;
-import { Component, OnInit, Input, NgZone, ViewChild      } from '@angular/core'                 ;
-import { Http                                             } from '@angular/http'                 ;
-import { DomSanitizer                                     } from '@angular/platform-browser'     ;
-import { trigger, state, style, animate, transition       } from '@angular/animations'           ;
-import { TranslateService                                 } from '@ngx-translate/core'           ;
-import { Pipe, PipeTransform                              } from '@angular/core'                 ;
-import { Platform, IonicPage, NavParams, Events           } from 'ionic-angular'                 ;
-import { NavController, ToastController                   } from 'ionic-angular'                 ;
-import { ModalController,ViewController,PopoverController } from 'ionic-angular'                 ;
-import { Log, moment, isMoment, Moment                    } from '../../config/config.functions' ;
-import { DBSrvcs                                          } from '../../providers/db-srvcs'      ;
-import { AuthSrvcs                                        } from '../../providers/auth-srvcs'    ;
-import { SrvrSrvcs                                        } from '../../providers/srvr-srvcs'    ;
-import { AlertService                                     } from '../../providers/alerts'        ;
-import { UserData                                         } from '../../providers/user-data'     ;
-import { WorkOrder                                        } from '../../domain/workorder'        ;
-import { ReportOther                                      } from '../../domain/reportother'      ;
-import { Shift                                            } from '../../domain/shift'            ;
-import { PayrollPeriod                                    } from '../../domain/payroll-period'   ;
-import { Employee                                         } from '../../domain/employee'         ;
-import { TabsComponent                                    } from '../../components/tabs/tabs'    ;
-import { STRINGS                                          } from '../../config/config.strings'   ;
-import { Preferences                                      } from '../../providers/preferences'   ;
-import { SafePipe                                         } from '../../pipes/safe'              ;
-import { SmartAudio                                       } from '../../providers/smart-audio'   ;
+import { sprintf                                          } from 'sprintf-js'                ;
+import { Component, OnInit, Input, NgZone, ViewChild      } from '@angular/core'             ;
+import { HttpClient                                       } from '@angular/common/http'      ;
+import { DomSanitizer                                     } from '@angular/platform-browser' ;
+import { trigger, state, style, animate, transition       } from '@angular/animations'       ;
+import { TranslateService                                 } from '@ngx-translate/core'       ;
+import { Pipe, PipeTransform                              } from '@angular/core'             ;
+import { Platform, IonicPage, NavParams, Events           } from 'ionic-angular'             ;
+import { NavController, ToastController                   } from 'ionic-angular'             ;
+import { ModalController,ViewController,PopoverController } from 'ionic-angular'             ;
+import { Log, moment, isMoment, Moment                    } from 'config/config.functions'   ;
+import { DBSrvcs                                          } from 'providers/db-srvcs'        ;
+import { AuthSrvcs                                        } from 'providers/auth-srvcs'      ;
+import { SrvrSrvcs                                        } from 'providers/srvr-srvcs'      ;
+import { AlertService                                     } from 'providers/alerts'          ;
+import { UserData                                         } from 'providers/user-data'       ;
+import { WorkOrder                                        } from 'domain/workorder'          ;
+import { ReportOther                                      } from 'domain/reportother'        ;
+import { Shift                                            } from 'domain/shift'              ;
+import { PayrollPeriod                                    } from 'domain/payroll-period'     ;
+import { Employee                                         } from 'domain/employee'           ;
+import { TabsComponent                                    } from 'components/tabs/tabs'      ;
+import { STRINGS                                          } from 'config/config.strings'     ;
+import { Preferences                                      } from 'providers/preferences'     ;
+import { SafePipe                                         } from 'pipes/safe'                ;
+import { SmartAudio                                       } from 'providers/smart-audio'     ;
 
 enum Icons {
   'box-check-no'   = 0,
@@ -77,7 +77,7 @@ export class HomePage {
   static pageError                   : boolean       = false                    ;
   static databases                   : any           = HomePage.PREFS.DB        ;
   static checkboxSVG                 : any           = UserData.getSVGData()    ;
-  static hands                       : any        = UserData.getClockHands()    ;
+  // static hands                       : any        = UserData.getClockHands()    ;
   static translations                : Array<string> = []                       ;
 
   public PREFS                       : any                 = HomePage.PREFS           ;
@@ -117,11 +117,11 @@ export class HomePage {
   public pageError                   : boolean             = HomePage.pageError;
   public databases                   : any                 = this.PREFS.DB            ;
   public checkboxSVG                 : any                 = UserData.getSVGData()    ;
-  public hands                       : any                 = HomePage.hands  ;
+  // public hands                       : any                 = HomePage.hands  ;
   public translations                : Array<string>       = HomePage.translations;
   public justLoggedIn                : boolean             = false                    ;
 
-  constructor(public http        : Http,
+  constructor(public http        : HttpClient,
               public platform    : Platform,
               public navCtrl     : NavController,
               public modalCtrl   : ModalController,
@@ -665,7 +665,7 @@ export class HomePage {
 
   toggleClock() {
     let now = moment();
-    this.ud.updateClock(now);
+    // this.ud.updateClock(now);
     this.dataReady = !this.dataReady;
     let hpr = this.ud.isHomePageReady();
     this.ud.setHomePageReady(!hpr);

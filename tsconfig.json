@@ -1,5 +1,18 @@
 {
   "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "app/*"        : [ "app/*"        ] ,
+      "assets/*"     : [ "assets/*"     ] ,
+      "components/*" : [ "components/*" ] ,
+      "config/*"     : [ "config/*"     ] ,
+      "directives/*" : [ "directives/*" ] ,
+      "domain/*"     : [ "domain/*"     ] ,
+      "lib/*"        : [ "lib/*"        ] ,
+      "pages/*"      : [ "pages/*"      ] ,
+      "pipes/*"      : [ "pipes/*"      ] ,
+      "providers/*"  : [ "providers/*"  ]
+    },
     "allowSyntheticDefaultImports": true,
     "declaration": false,
     "emitDecoratorMetadata": true,
@@ -14,10 +27,7 @@
     "target": "es2015"
   },
   "include": [
-    "src/config/config.types.d.ts",
     "src/**/*.ts"
-    // "node_modules/moment/moment.d.ts"
-
   ],
   "exclude": [
     "node_modules",

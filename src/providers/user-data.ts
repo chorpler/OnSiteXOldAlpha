@@ -1,3 +1,4 @@
+// import * as HashMap from '@typed/hashmap';
 import { Injectable                    } from '@angular/core'                  ;
 import { Events, Platform, App         } from 'ionic-angular'                  ;
 import { Storage                       } from '@ionic/storage'                 ;
@@ -5,18 +6,17 @@ import { NativeStorage                 } from '@ionic-native/native-storage'   ;
 import { Device                        } from '@ionic-native/device'           ;
 import { AppVersion                    } from '@ionic-native/app-version'      ;
 import { UniqueDeviceID                } from '@ionic-native/unique-device-id' ;
-import { Log, isMoment, moment, Moment } from '../config/config.functions'     ;
-import { STRINGS                       } from '../config/config.strings'       ;
+import { Log, isMoment, moment, Moment } from 'config/config.functions'     ;
+import { STRINGS                       } from 'config/config.strings'       ;
 import { DBSrvcs                       } from './db-srvcs'                     ;
 import { Preferences                   } from './preferences'                  ;
-import { Shift                         } from '../domain/shift'                ;
-import { PayrollPeriod                 } from '../domain/payroll-period'       ;
-import { WorkOrder                     } from '../domain/workorder'            ;
-import { ReportOther                   } from '../domain/reportother'          ;
-import { Employee                      } from '../domain/employee'             ;
-import { Message                       } from '../domain/message'              ;
-import { Jobsite                       } from '../domain/jobsite'              ;
-// import * as HashMap from '@typed/hashmap';
+import { Shift                         } from 'domain/shift'                ;
+import { PayrollPeriod                 } from 'domain/payroll-period'       ;
+import { WorkOrder                     } from 'domain/workorder'            ;
+import { ReportOther                   } from 'domain/reportother'          ;
+import { Employee                      } from 'domain/employee'             ;
+import { Message                       } from 'domain/message'              ;
+import { Jobsite                       } from 'domain/jobsite'              ;
 
 @Injectable()
 export class UserData {
@@ -1123,122 +1123,122 @@ export class UserData {
     return UserData.getSVGData();
   }
 
-  public static getClockHands(time?:Moment|Date|string|number) {
-    let tiempo;
-    let hands = UserData.hands;
-    if(!time) {
-      return hands;
-    }
-    if(isMoment(time) || time instanceof Date) {
-      tiempo = moment(time);
-    } else if(typeof time === 'string') {
-      tiempo = moment(time);
-    } else if(typeof time === 'number') {
-      tiempo = moment.fromExcel(time);
-    } else {
-      Log.w("getClockHands(): Parameter must be Moment|Date|string|number, type is %s.", typeof time);
-      Log.w(time);
-      return hands;
-    }
+  // public static getClockHands(time?:Moment|Date|string|number) {
+  //   let tiempo;
+  //   let hands = UserData.hands;
+  //   if(!time) {
+  //     return hands;
+  //   }
+  //   if(isMoment(time) || time instanceof Date) {
+  //     tiempo = moment(time);
+  //   } else if(typeof time === 'string') {
+  //     tiempo = moment(time);
+  //   } else if(typeof time === 'number') {
+  //     tiempo = moment().fromExcel(time);
+  //   } else {
+  //     Log.w("getClockHands(): Parameter must be Moment|Date|string|number, type is %s.", typeof time);
+  //     Log.w(time);
+  //     return hands;
+  //   }
 
-    UserData.updateClock(tiempo);
-    return hands;
-  }
+  //   UserData.updateClock(tiempo);
+  //   return hands;
+  // }
 
-  public getClockHands(time?:Moment|Date|string|number) {
-    return UserData.getClockHands(time);
-  }
+  // public getClockHands(time?:Moment|Date|string|number) {
+  //   return UserData.getClockHands(time);
+  // }
 
-  public static getClockHand(hand: string) {
-    let hnd = typeof hand === 'string' ? hand.toLowerCase() : hand;
-    let h = hnd[0];
-    if (h === 'h') {
-      hnd = 'hours';
-    } else if (h === 'm') {
-      hnd = 'minutes';
-    } else if (h === 's') {
-      hnd = 'seconds';
-    } else {
-      Log.w("getClockHand() called without a parameter of 'hours', 'minutes', or 'seconds'. Just setting hour hand.");
-      hnd = 'hours';
-    }
-    return this.hands[hnd];
-  }
+  // public static getClockHand(hand: string) {
+  //   let hnd = typeof hand === 'string' ? hand.toLowerCase() : hand;
+  //   let h = hnd[0];
+  //   if (h === 'h') {
+  //     hnd = 'hours';
+  //   } else if (h === 'm') {
+  //     hnd = 'minutes';
+  //   } else if (h === 's') {
+  //     hnd = 'seconds';
+  //   } else {
+  //     Log.w("getClockHand() called without a parameter of 'hours', 'minutes', or 'seconds'. Just setting hour hand.");
+  //     hnd = 'hours';
+  //   }
+  //   return this.hands[hnd];
+  // }
 
-  public static setClockHand(hand:string, degrees:number) {
-    let hnd = typeof hand === 'string' ? hand.toLowerCase() : hand;
-    let h = hnd[0];
-    if(degrees < -360 || degrees > 360) {
-      Log.w("setHourHand() called with degrees outside range (-360<deg<360): %s",
-    degrees);
-      return null;
-    } else if(h === 'h') {
-      hnd = 'hours';
-    } else if(h === 'm') {
-      hnd = 'minutes';
-    } else if(h === 's') {
-      hnd = 'seconds';
-    } else {
-      Log.w("setHourHand() called without a parameter of 'hours', 'minutes', or 'seconds'. Just setting hour hand.");
-      hnd = 'hours';
-    }
-    this.hands[hnd] = degrees;
-  }
+  // public static setClockHand(hand:string, degrees:number) {
+  //   let hnd = typeof hand === 'string' ? hand.toLowerCase() : hand;
+  //   let h = hnd[0];
+  //   if(degrees < -360 || degrees > 360) {
+  //     Log.w("setHourHand() called with degrees outside range (-360<deg<360): %s",
+  //   degrees);
+  //     return null;
+  //   } else if(h === 'h') {
+  //     hnd = 'hours';
+  //   } else if(h === 'm') {
+  //     hnd = 'minutes';
+  //   } else if(h === 's') {
+  //     hnd = 'seconds';
+  //   } else {
+  //     Log.w("setHourHand() called without a parameter of 'hours', 'minutes', or 'seconds'. Just setting hour hand.");
+  //     hnd = 'hours';
+  //   }
+  //   this.hands[hnd] = degrees;
+  // }
 
-  public static setClockHands(hands:any) {
-    let error = false;
-    if(hands && typeof hands === 'object') {
-      let keys = Object.keys(hands);
+  // public static setClockHands(hands:any) {
+  //   let error = false;
+  //   if(hands && typeof hands === 'object') {
+  //     let keys = Object.keys(hands);
 
-      for (let keyString of keys) {
-        let key = keyString.toLowerCase().trim();
-        if (key !== 'hours' && key !== 'minutes' && key !== 'seconds') {
-          Log.e("setClockHands() requires an object of type {hours: x, minutes:y, seconds: z} where x, y, and z are the number of degrees to set the hand to.");
-          error = true;
-        } else {
-          if(!(typeof hands[key] === 'number' && (hands[key] <= 360 || hands[key] >= -360))) {
-            error = true;
-            break;
-          }
-        }
-      }
-      if(error) {
-        Log.e("setClockHands() requires an object of type {hours: x, minutes:y, seconds: z} where x, y, and z are the number of degrees to set the hand to (-360 <= deg <= 360).");
-        return null;
-      } else {
-        for(let key of keys) {
-          this.hands[key] = hands[key];
-        }
-      }
-    } else {
-      Log.e("setClockHands() requires an object of type {hours: x, minutes:y, seconds: z} where x, y, and z are the number of degrees to set the hand to (-360 <= deg <= 360).");
-      return null;
-    }
-    return this.hands;
-  }
+  //     for (let keyString of keys) {
+  //       let key = keyString.toLowerCase().trim();
+  //       if (key !== 'hours' && key !== 'minutes' && key !== 'seconds') {
+  //         Log.e("setClockHands() requires an object of type {hours: x, minutes:y, seconds: z} where x, y, and z are the number of degrees to set the hand to.");
+  //         error = true;
+  //       } else {
+  //         if(!(typeof hands[key] === 'number' && (hands[key] <= 360 || hands[key] >= -360))) {
+  //           error = true;
+  //           break;
+  //         }
+  //       }
+  //     }
+  //     if(error) {
+  //       Log.e("setClockHands() requires an object of type {hours: x, minutes:y, seconds: z} where x, y, and z are the number of degrees to set the hand to (-360 <= deg <= 360).");
+  //       return null;
+  //     } else {
+  //       for(let key of keys) {
+  //         this.hands[key] = hands[key];
+  //       }
+  //     }
+  //   } else {
+  //     Log.e("setClockHands() requires an object of type {hours: x, minutes:y, seconds: z} where x, y, and z are the number of degrees to set the hand to (-360 <= deg <= 360).");
+  //     return null;
+  //   }
+  //   return this.hands;
+  // }
 
-  public static updateClock(time:Moment|Date) {
-    let now = time ? moment(time) : moment();
-    /* Convert hours, minutes, and seconds for current time into degrees of a circle, with the simpler but more confusing math */
-    let s = now.second() * 6;
-    let m = now.minute() * 6;
-    let h = 30 * ((now.hour() % 12) + (now.minute() / 60));
-    let hands = { 'hours': h, 'minutes': m, 'seconds': 0 };
-    Log.l("Setting clock hands to:\n", hands);
-    this.setClockHands(hands);
-  }
+  // public static updateClock(time:Moment|Date) {
+  //   let now = time ? moment(time) : moment();
+  //   /* Convert hours, minutes, and seconds for current time into degrees of a circle, with the simpler but more confusing math */
+  //   let s = now.second() * 6;
+  //   let m = now.minute() * 6;
+  //   let h = 30 * ((now.hour() % 12) + (now.minute() / 60));
+  //   let hands = { 'hours': h, 'minutes': m, 'seconds': 0 };
+  //   Log.l("Setting clock hands to:\n", hands);
+  //   this.setClockHands(hands);
+  // }
 
-  public setClockHand(hand: string, degrees: number) {
-    return UserData.setClockHand(hand, degrees);
-  }
+  // public setClockHand(hand: string, degrees: number) {
+  //   return UserData.setClockHand(hand, degrees);
+  // }
 
-  public setClockHands(hands: any) {
-    return UserData.setClockHands(hands);
-  }
+  // public setClockHands(hands: any) {
+  //   return UserData.setClockHands(hands);
+  // }
 
-  public updateClock(time: Moment | Date) {
-    return UserData.updateClock(time);
-  }
+  // public updateClock(time: Moment | Date) {
+  //   return UserData.updateClock(time);
+  // }
 
   public reloadApp() {
     let loc              = window.location ;

@@ -1,16 +1,12 @@
 import { Injectable, NgZone } from '@angular/core'                ;
-import { Http               } from '@angular/http'                ;
-import { Log, CONSOLE       } from '../config/config.functions'   ;
+import { HttpClient,        } from '@angular/common/http'         ;
+import { Log, CONSOLE       } from 'config/config.functions'      ;
 import { Storage            } from '@ionic/storage'               ;
 import { NativeStorage      } from '@ionic-native/native-storage' ;
 import { Network            } from '@ionic-native/network'        ;
 import { AlertService       } from './alerts'                     ;
 
 @Injectable()
-/**
- * @class NetworkStatus
- *
- */
 export class NetworkStatus {
 
   public static isOnline: boolean = true;
@@ -64,7 +60,7 @@ export class NetworkStatus {
     let connectSubscription = NetworkStatus.network.onConnect().subscribe(() => {
       Log.l('network connected!');
       // We just got a connection but we need to wait briefly
-       // before we determine the connection type.  Might need to wait 
+       // before we determine the connection type.  Might need to wait
       // prior to doing any api requests as well.
       setTimeout(() => {
         NetworkStatus.isOnline = true;

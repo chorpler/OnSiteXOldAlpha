@@ -8,7 +8,7 @@
       <span class="app-user" *ngIf="ud.getTechName()">{{ud.getTechName()}}</span>
     </ion-title>
     <ion-buttons right>
-      <button ion-button color="primary" icon-only (tap)="toggleClock()">
+      <button ion-button color="primary" icon-only (tap)="toggleClock($event)">
         <ion-icon class="header-clock-icon" name="ios-clock-outline"></ion-icon>
       </button>
       <button ion-button color="primary" icon-only (tap)="showHelp($event)">
@@ -19,168 +19,176 @@
 </ion-header>
 
 <ion-content padding class="page-content home-page-content">
-  <div class="waiting-clock" *ngIf="ud.isAppLoaded() && !(dataReady && ud.isHomePageReady())" (tap)="toggleClock()">
-    <clock></clock>
-  </div>
-   <ion-card no-lines class="shift-summary" *ngIf="dataReady && ud.isHomePageReady()">
-    <ion-card-header class="home-card-header-payroll-period">
-      <ion-item class="home-card-header-payroll-period-label-item">
-        <ion-label class="home-card-header-payroll-period-label-label">{{'payroll_period' | translate}}</ion-label>
-      </ion-item>
-      <ion-list radio-group [(ngModel)]="period">
-        <ion-item *ngFor="let payperiod of payrollPeriods">
-          <ion-label>{{payperiod.getPayrollPeriodDescription()}}</ion-label>
-          <ion-radio [value]="payperiod" (ionSelect)="changedPayrollPeriod(payperiod)"></ion-radio>
+  <div *ngIf="ud.isAppLoaded() && ud.isHomePageReady() && dataReady; then homeDisplay; else homeClockDisplay"></div>
+  <ng-template #homeClockDisplay>
+    <div class="waiting-clock">
+      <clock class="clock-home"></clock>
+    </div>
+  </ng-template>
+  <ng-template #homeDisplay>
+    <ion-card no-lines class="shift-summary">
+      <ion-card-header class="home-card-header-payroll-period">
+        <ion-item class="home-card-header-payroll-period-label-item">
+          <ion-label class="home-card-header-payroll-period-label-label">{{'payroll_period' | translate}}</ion-label>
         </ion-item>
+        <ion-list radio-group [(ngModel)]="period">
+          <ion-item *ngFor="let payperiod of payrollPeriods">
+            <ion-label>{{payperiod.getPayrollPeriodDescription()}}</ion-label>
+            <ion-radio [value]="payperiod" (ionSelect)="changedPayrollPeriod(payperiod)"></ion-radio>
+          </ion-item>
+        </ion-list>
+      </ion-card-header>
+      <ion-list no-lines no-border class="home-card-body-list" *ngIf="period">
+        <ion-item class="ion-item-button-like" *ngFor="let shift of period.shifts; let i=index" (tap)="showShiftReports(shift)">
+          <span class="fake-row">
+            <span class="fake-column fake-col-01">
+              <ion-icon class="shft-num-icon">{{numChars[shift.shift_number]}}</ion-icon>
+            </span>
+            <span class="fake-column fake-col-02">
+              <span class="fake-wrapper" *ngIf="ud.isTechUpdated()">
+                <span class="fake-wrapper" *ngIf="!shift.getShiftReportsStatus().workHours">
+                  <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().otherReportHours">
+                    0 / {{tech.getShiftLength()}} Hrs.
+                  </span>
+                  <span class="shift-text" *ngIf="shift.getShiftReportsStatus().otherReportHours">
+                    {{shift.getShiftReportsStatus().code}} / {{shift.getShiftReportsStatus().code}}
+                  </span>
+                </span>
+                <span class="fake-wrapper" *ngIf="shift.getShiftReportsStatus().workHours">
+                  <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().otherReportHours">
+                    {{shift.getNormalHours()}} / {{tech.getShiftLength()}}  Hrs.
+                  </span>
+                  <span class="shift-text" *ngIf="shift.getShiftReportsStatus().otherReportHours">
+                    {{shift.getShiftReportsStatus().code}} + {{shift.getNormalHours()}} Hrs.
+                  </span>
+                </span>
+              </span>
+              <span class="fake-wrapper" *ngIf="!ud.isTechUpdated() && shift.getShiftLength() === 'off'">
+                <span class="fake-wrapper" *ngIf="!shift.getShiftReportsStatus().workHours">
+                  <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().otherReportHours">
+                    {{'off' | translate}}
+                  </span>
+                  <span class="shift-text" *ngIf="shift.getShiftReportsStatus().otherReportHours">
+                    {{shift.getShiftReportsStatus().code}} / {{shift.getShiftReportsStatus().code}}
+                  </span>
+                </span>
+                <span class="fake-wrapper" *ngIf="shift.getShiftReportsStatus().workHours">
+                  <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().otherReportHours">
+                    {{shift.getNormalHours()}} / {{'off' | translate}}  Hrs.
+                  </span>
+                  <span class="shift-text" *ngIf="shift.getShiftReportsStatus().otherReportHours">
+                    {{shift.getShiftReportsStatus().code}} + {{shift.getNormalHours()}} Hrs.
+                  </span>
+                </span>
+              </span>
+              <span class="fake-wrapper" *ngIf="!ud.isTechUpdated() && shift.getShiftLength() !== 'off'">
+                <span class="fake-wrapper" *ngIf="!shift.getShiftReportsStatus().workHours">
+                  <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().otherReportHours">
+                    0 / {{shift.getShiftLength()}} Hrs.
+                  </span>
+                  <span class="shift-text" *ngIf="shift.getShiftReportsStatus().otherReportHours">
+                    {{shift.getShiftReportsStatus().code}} / {{shift.getShiftReportsStatus().code}} Hrs.
+                  </span>
+                </span>
+                <span class="fake-wrapper" *ngIf="shift.getShiftReportsStatus().workHours">
+                  <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().otherReportHours">
+                    {{shift.getNormalHours()}} / {{shift.getShiftLength()}} Hrs.
+                  </span>
+                  <span class="shift-text" *ngIf="shift.getShiftReportsStatus().otherReportHours">
+                    {{shift.getShiftReportsStatus().code}} + {{shift.getNormalHours()}}  Hrs.
+                  </span>
+                </span>
+              </span>
+            </span>
+            <span class="fake-column fake-col-03">
+              <span class="normal-txt">{{shift.getStartTime().format("ddd, MMM D")}}</span>
+            </span>
+            <span class="fake-column fake-col-04">
+              <ion-icon item-end class="chk-box-icon" [ngClass]="shift.getShiftStatus()" [innerHTML]="getCheckboxSVG(shift) | safe: 'html'" (tap)="possibleSound(shift)"></ion-icon>
+            </span>
+          </span>
+        </ion-item>
+        <ion-list-header class="blank-list-header" ></ion-list-header>
+        <ion-list-header class="home-hours-submitted">
+          {{"home_hours_submitted_for_payroll_period" | translate}}:
+          <ion-note item-end>
+            {{ period.getNormalHours() }}
+          </ion-note>
+        </ion-list-header>
+        <ion-list-header class="home-hours-extended">
+          {{"extended_hours" | translate}} :
+          <ion-note item-end>
+            {{ period.getBonusHours() }}
+          </ion-note>
+        </ion-list-header>
+        <ion-list-header class="home-hours-training">
+          {{"training_hours" | translate}} :
+          <ion-note item-end>
+            {{ period.getTrainingHours() }}
+          </ion-note>
+        </ion-list-header>
+        <ion-list-header class="home-hours-travel">
+          {{"travel_hours" | translate}} :
+          <ion-note item-end>
+            {{ period.getTravelHours() }}
+          </ion-note>
+        </ion-list-header>
+        <ion-list-header class="home-hours-other" *ngIf="period.getSpecialHours('Standby').hours">
+          {{"standby_hours" | translate}} :
+          <ion-note item-end>
+            {{ period.getSpecialHours('Standby').hours }}
+          </ion-note>
+        </ion-list-header>
+        <ion-list-header class="home-hours-other" *ngIf="period.getSpecialHours('Standby: HB Duncan').hours">
+          {{"standby_hb_duncan_hours" | translate}} :
+          <ion-note item-end>
+            {{ period.getSpecialHours('Standby: HB Duncan').hours }}
+          </ion-note>
+        </ion-list-header>
+        <ion-list-header class="home-hours-other" *ngIf="period.getSpecialHours('Sick').hours">
+          {{"sick_hours" | translate}} :
+          <ion-note item-end>
+            {{ period.getSpecialHours('Sick').hours }}
+          </ion-note>
+        </ion-list-header>
+        <ion-list-header class="home-hours-other" *ngIf="period.getSpecialHours('Vacation').hours">
+          {{"vacation_hours" | translate}} :
+          <ion-note item-end>
+            {{ period.getSpecialHours('Vacation').hours }}
+          </ion-note>
+        </ion-list-header>
+        <ion-list-header class="home-hours-other" *ngIf="period.getSpecialHours('Holiday').hours">
+          {{"holiday_hours" | translate}} :
+          <ion-note item-end>
+            {{ period.getSpecialHours('Holiday').hours }}
+          </ion-note>
+        </ion-list-header>
+        <ion-list-header class="home-hours-total">
+          {{"total_payroll_hours" | translate}} :
+          <ion-note item-end>
+            {{ period.getTotalHours() }}
+          </ion-note>
+        </ion-list-header>
       </ion-list>
-    </ion-card-header>
-    <ion-list no-lines no-border class="home-card-body-list" *ngIf="period">
-      <ion-item class="ion-item-button-like" *ngFor="let shift of period.shifts; let i=index" (tap)="showShiftReports(shift)">
-        <span class="fake-row">
-          <span class="fake-column fake-col-01">
-            <ion-icon class="shft-num-icon">{{numChars[shift.shift_number]}}</ion-icon>
-          </span>
-          <span class="fake-column fake-col-02">
-            <span class="fake-wrapper" *ngIf="ud.isTechUpdated()">
-              <span class="fake-wrapper" *ngIf="!shift.getShiftReportsStatus().workHours">
-                <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().otherReportHours">
-                  0 / {{tech.getShiftLength()}} Hrs.
-                </span>
-                <span class="shift-text" *ngIf="shift.getShiftReportsStatus().otherReportHours">
-                  {{shift.getShiftReportsStatus().code}} / {{shift.getShiftReportsStatus().code}}
-                </span>
-              </span>
-              <span class="fake-wrapper" *ngIf="shift.getShiftReportsStatus().workHours">
-                <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().otherReportHours">
-                  {{shift.getNormalHours()}} / {{tech.getShiftLength()}}  Hrs.
-                </span>
-                <span class="shift-text" *ngIf="shift.getShiftReportsStatus().otherReportHours">
-                  {{shift.getShiftReportsStatus().code}} + {{shift.getNormalHours()}} Hrs.
-                </span>
-              </span>
-            </span>
-            <span class="fake-wrapper" *ngIf="!ud.isTechUpdated() && shift.getShiftLength() === 'off'">
-              <span class="fake-wrapper" *ngIf="!shift.getShiftReportsStatus().workHours">
-                <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().otherReportHours">
-                  {{'off' | translate}}
-                </span>
-                <span class="shift-text" *ngIf="shift.getShiftReportsStatus().otherReportHours">
-                  {{shift.getShiftReportsStatus().code}} / {{shift.getShiftReportsStatus().code}}
-                </span>
-              </span>
-              <span class="fake-wrapper" *ngIf="shift.getShiftReportsStatus().workHours">
-                <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().otherReportHours">
-                  {{shift.getNormalHours()}} / {{'off' | translate}}  Hrs.
-                </span>
-                <span class="shift-text" *ngIf="shift.getShiftReportsStatus().otherReportHours">
-                  {{shift.getShiftReportsStatus().code}} + {{shift.getNormalHours()}} Hrs.
-                </span>
-              </span>
-            </span>
-            <span class="fake-wrapper" *ngIf="!ud.isTechUpdated() && shift.getShiftLength() !== 'off'">
-              <span class="fake-wrapper" *ngIf="!shift.getShiftReportsStatus().workHours">
-                <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().otherReportHours">
-                  0 / {{shift.getShiftLength()}} Hrs.
-                </span>
-                <span class="shift-text" *ngIf="shift.getShiftReportsStatus().otherReportHours">
-                  {{shift.getShiftReportsStatus().code}} / {{shift.getShiftReportsStatus().code}} Hrs.
-                </span>
-              </span>
-              <span class="fake-wrapper" *ngIf="shift.getShiftReportsStatus().workHours">
-                <span class="shift-text" *ngIf="!shift.getShiftReportsStatus().otherReportHours">
-                  {{shift.getNormalHours()}} / {{shift.getShiftLength()}} Hrs.
-                </span>
-                <span class="shift-text" *ngIf="shift.getShiftReportsStatus().otherReportHours">
-                  {{shift.getShiftReportsStatus().code}} + {{shift.getNormalHours()}}  Hrs.
-                </span>
-              </span>
-            </span>
-          </span>
-          <span class="fake-column fake-col-03">
-            <span class="normal-txt">{{shift.getStartTime().format("ddd, MMM D")}}</span>
-          </span>
-          <span class="fake-column fake-col-04">
-            <ion-icon item-end class="chk-box-icon" [ngClass]="shift.getShiftStatus()" [innerHTML]="getCheckboxSVG(shift) | safe: 'html'" (tap)="possibleSound(shift)"></ion-icon>
-          </span>
-        </span>
-      </ion-item>
-      <ion-list-header class="blank-list-header" ></ion-list-header>
-      <ion-list-header class="home-hours-submitted">
-        {{"home_hours_submitted_for_payroll_period" | translate}}:
-        <ion-note item-end>
-          {{ period.getNormalHours() }}
-        </ion-note>
-      </ion-list-header>
-      <ion-list-header class="home-hours-extended">
-        {{"extended_hours" | translate}} :
-        <ion-note item-end>
-          {{ period.getBonusHours() }}
-        </ion-note>
-      </ion-list-header>
-      <ion-list-header class="home-hours-training">
-        {{"training_hours" | translate}} :
-        <ion-note item-end>
-          {{ period.getTrainingHours() }}
-        </ion-note>
-      </ion-list-header>
-      <ion-list-header class="home-hours-travel">
-        {{"travel_hours" | translate}} :
-        <ion-note item-end>
-          {{ period.getTravelHours() }}
-        </ion-note>
-      </ion-list-header>
-      <ion-list-header class="home-hours-other" *ngIf="period.getSpecialHours('Standby').hours">
-        {{"standby_hours" | translate}} :
-        <ion-note item-end>
-          {{ period.getSpecialHours('Standby').hours }}
-        </ion-note>
-      </ion-list-header>
-      <ion-list-header class="home-hours-other" *ngIf="period.getSpecialHours('Standby: HB Duncan').hours">
-        {{"standby_hb_duncan_hours" | translate}} :
-        <ion-note item-end>
-          {{ period.getSpecialHours('Standby: HB Duncan').hours }}
-        </ion-note>
-      </ion-list-header>
-      <ion-list-header class="home-hours-other" *ngIf="period.getSpecialHours('Sick').hours">
-        {{"sick_hours" | translate}} :
-        <ion-note item-end>
-          {{ period.getSpecialHours('Sick').hours }}
-        </ion-note>
-      </ion-list-header>
-      <ion-list-header class="home-hours-other" *ngIf="period.getSpecialHours('Vacation').hours">
-        {{"vacation_hours" | translate}} :
-        <ion-note item-end>
-          {{ period.getSpecialHours('Vacation').hours }}
-        </ion-note>
-      </ion-list-header>
-      <ion-list-header class="home-hours-other" *ngIf="period.getSpecialHours('Holiday').hours">
-        {{"holiday_hours" | translate}} :
-        <ion-note item-end>
-          {{ period.getSpecialHours('Holiday').hours }}
-        </ion-note>
-      </ion-list-header>
-      <ion-list-header class="home-hours-total">
-        {{"total_payroll_hours" | translate}} :
-        <ion-note item-end>
-          {{ period.getTotalHours() }}
-        </ion-note>
-      </ion-list-header>
-    </ion-list>
-  </ion-card>
-  <p class="home-grid-key-caption" *ngIf="dataReady && ud.isHomePageReady()">{{'letter_code' | translate}}</p>
-  <ion-grid center class="home-grid-key" *ngIf="dataReady && ud.isHomePageReady()">
-    <ion-row class="home-grid-row">
-      <ion-col col-1 class="home-grid-col1">T</ion-col>         <ion-col col-4 class="home-grid-col2">{{'key_training' | translate}}</ion-col>
-      <ion-col col-1 offset-1 class="home-grid-col1">Q</ion-col><ion-col col-4 class="home-grid-col4">{{'key_travel' | translate}}</ion-col>
-    </ion-row>
-    <ion-row class="home-grid-row">
-      <ion-col col-1 class="home-grid-col1">M</ion-col>         <ion-col col-4 class="home-grid-col2">{{'key_training_and_travel' | translate}}</ion-col>
-      <ion-col col-1 offset-1 class="home-grid-col1">S</ion-col><ion-col col-4 class="home-grid-col4">{{'key_standby_duncan' | translate}}</ion-col>
-    </ion-row>
-    <ion-row class="home-grid-row">
-      <ion-col col-1 class="home-grid-col1">E</ion-col>         <ion-col col-4 class="home-grid-col2">{{'key_sick_day_or_hours' | translate}}</ion-col>
-      <ion-col col-1 offset-1 class="home-grid-col1">H</ion-col><ion-col col-4 class="home-grid-col4">{{'key_holiday' | translate}}</ion-col>
-    </ion-row>
-  </ion-grid>
+    </ion-card>
+    <p class="home-grid-key-caption" *ngIf="dataReady && ud.isHomePageReady()">{{'letter_code' | translate}}</p>
+    <ion-grid center class="home-grid-key" *ngIf="dataReady && ud.isHomePageReady()">
+      <ion-row class="home-grid-row">
+        <ion-col col-1 class="home-grid-col1">T</ion-col>         <ion-col col-4 class="home-grid-col2">{{'key_training' | translate}}</ion-col>
+        <ion-col col-1 offset-1 class="home-grid-col1">Q</ion-col><ion-col col-4 class="home-grid-col4">{{'key_travel' | translate}}</ion-col>
+      </ion-row>
+      <ion-row class="home-grid-row">
+        <ion-col col-1 class="home-grid-col1">M</ion-col>         <ion-col col-4 class="home-grid-col2">{{'key_training_and_travel' | translate}}</ion-col>
+        <ion-col col-1 offset-1 class="home-grid-col1">S</ion-col><ion-col col-4 class="home-grid-col4">{{'key_standby_duncan' | translate}}</ion-col>
+      </ion-row>
+      <ion-row class="home-grid-row">
+        <ion-col col-1 class="home-grid-col1">E</ion-col>         <ion-col col-4 class="home-grid-col2">{{'key_sick_day_or_hours' | translate}}</ion-col>
+        <ion-col col-1 offset-1 class="home-grid-col1">H</ion-col><ion-col col-4 class="home-grid-col4">{{'key_holiday' | translate}}</ion-col>
+      </ion-row>
+    </ion-grid>
+  </ng-template>
 </ion-content>
-<onsite-tabs></onsite-tabs>
+<div class="waiting-clock" *ngIf="ud.isAppLoaded() && !(dataReady && ud.isHomePageReady())" (tap)="toggleClock()">
+  <clock></clock>
+</div>
+

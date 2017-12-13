@@ -1,3 +1,11 @@
+/**
+ * Name: Comment domain class
+ * Vers: 1.1.2
+ * Date: 2017-12-12
+ * Auth: David Sargeant
+ * Logs: 1.1.2 2017-12-12: Initial model
+ */
+
 import { Log, moment, Moment } from '../config/config.functions'     ;
 
 export class Comment {

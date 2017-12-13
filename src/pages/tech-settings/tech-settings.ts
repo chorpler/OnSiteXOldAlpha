@@ -85,11 +85,16 @@ export class TechSettingsPage implements OnInit {
   siteInfo          : Map<any,any> = new Map()      ;
   dataReady         : boolean = false;              ;
 
-  constructor( public navCtrl: NavController, public navParams    : NavParams,
-               public db     : DBSrvcs      , public translate    : TranslateService,
-               public tabs   : TabsComponent, public viewCtrl     : ViewController,
-               public ud     : UserData     , public alert        : AlertService,
-               public zone   : NgZone       ,
+  constructor(
+    public navCtrl   : NavController    ,
+    public navParams : NavParams        ,
+    public db        : DBSrvcs          ,
+    public translate : TranslateService ,
+    public tabs      : TabsComponent    ,
+    public viewCtrl  : ViewController   ,
+    public ud        : UserData         ,
+    public alert     : AlertService     ,
+    public zone      : NgZone           ,
   ) {
 
     window["onsite"] = window["onsite"] || {};

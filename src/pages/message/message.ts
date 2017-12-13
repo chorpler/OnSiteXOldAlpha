@@ -29,7 +29,17 @@ export class MessagePage implements OnInit {
   public message:Message = null;
   public pageReady:boolean = false;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public translate:TranslateService, public db:DBSrvcs, public server:SrvrSrvcs, public msg:MessageService, public tabs:TabsComponent, public viewCtrl: ViewController, public alert:AlertService) {
+  constructor(
+    public navCtrl   : NavController    ,
+    public navParams : NavParams        ,
+    public translate : TranslateService ,
+    public db        : DBSrvcs          ,
+    public server    : SrvrSrvcs        ,
+    public msg       : MessageService   ,
+    public tabs      : TabsComponent    ,
+    public viewCtrl  : ViewController   ,
+    public alert     : AlertService     ,
+  ) {
     window["onsitemessages"] = this;
     if(this.navParams.get('message') !== undefined) { this.message = this.navParams.get('message');}
   }

@@ -3,7 +3,9 @@ clock {
     position: absolute;
   }
   display: flex;
-  width: 50%;
+  // width: 50%;
+  width: 350px;
+  height: 350px;
   margin-left: auto;
   margin-right: auto;
   .containerSeconds {

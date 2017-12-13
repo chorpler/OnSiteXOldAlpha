@@ -6,21 +6,43 @@
 
 <ion-content padding class="page-content comment-page-content">
   <ion-card>
-    <ion-list>
-      <ion-item>
+    <!-- <ion-list> -->
+      <div class="comment-item">
+        <span class="item-label">{{'user' | translate}}</span>
+        <span class="item-data">
+          <input class="item-input" [(ngModel)]="comment.technician" />
+        </span>
+      </div>
+      <div class="comment-item">
+        <span class="item-label">{{'message_subject' | translate}}</span>
+        <span class="item-data">
+          <input class="item-input" [(ngModel)]="comment.subject" />
+        </span>
+      </div>
+      <div class="comment-item">
+        <span class="item-label">{{'comment' | translate}}</span>
+        <span class="item-data">
+          <textarea class="item-textarea" [(ngModel)]="comment.message"></textarea>
+        </span>
+      </div>
+      <!-- <ion-item class="ion-item-box">
         <ion-label floating>{{'user' | translate}}</ion-label>
         <ion-input class="comment-user" [(ngModel)]="comment.technician"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label>{{'message_subject' | translate}}</ion-label>
+      </ion-item> -->
+      <!-- <ion-item class="ion-item-box">
+        <ion-label floating>{{'message_subject' | translate}}</ion-label>
         <ion-input class="comment-subject" [(ngModel)]="comment.subject"></ion-input>
       </ion-item>
-      <ion-item>
-        <ion-label floating>{{'comment' | translate}}</ion-label>
-        <ion-textarea class="comment-textarea" [(ngModel)]="comment.message"></ion-textarea>
-      </ion-item>
-    </ion-list>
-    <button ion-button type="button" color="light" (tap)="cancel($event)">{{'cancel' | translate}}</button>
-    <button ion-button type="submit" color="primary" (tap)="submitComment($event)">{{'send_comment' | translate}}</button>
+      <ion-item class="ion-item-box">
+        <span class="textarea-wrapper">
+          <span class="comment-textarea-title">{{'comment' | translate}}</span>
+          <ion-textarea class="comment-textarea" [(ngModel)]="comment.message"></ion-textarea>
+        </span>
+      </ion-item> -->
+    <!-- </ion-list> -->
+    <span class="button-wrapper">
+      <button class="comment-button" ion-button type="button" color="light" (tap)="cancel($event)">{{'cancel' | translate}}</button>
+      <button class="comment-button" ion-button type="submit" color="primary" (tap)="submitComment($event)">{{'send_comment' | translate}}</button>
+    </span>
   </ion-card>
 </ion-content>

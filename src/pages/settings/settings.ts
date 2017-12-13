@@ -41,7 +41,20 @@ export class Settings implements OnInit {
   public weeksToShowList : Array<number> = []             ;
   public weeksToShow     : number        = this.prefs.getPayrollPeriodCount();
 
-  constructor( public navCtrl: NavController, public platform: Platform,  public auth: AuthSrvcs, public server:SrvrSrvcs, public alert: AlertService, public tabs: TabsComponent, public translate: TranslateService, public version:AppVersion, public storage:StorageService, public modalCtrl:ModalController, public ud:UserData, public zone:NgZone) {
+  constructor(
+    public navCtrl   : NavController    ,
+    public platform  : Platform         ,
+    public auth      : AuthSrvcs        ,
+    public server    : SrvrSrvcs        ,
+    public alert     : AlertService     ,
+    public tabs      : TabsComponent    ,
+    public translate : TranslateService ,
+    public version   : AppVersion       ,
+    public storage   : StorageService   ,
+    public modalCtrl : ModalController  ,
+    public ud        : UserData         ,
+    public zone      : NgZone           ,
+  ) {
     window["onsitesettings"] = this;
     this.keysetup = { visible: false, width: '100%', swipeToHide: true };
   }
