@@ -1,18 +1,19 @@
-import { Component, OnInit, NgZone                                           } from '@angular/core'                       ;
-import { IonicPage, NavController, Platform, ModalController, ViewController } from 'ionic-angular'                       ;
-import { DBSrvcs                                                             } from '../../providers/db-srvcs'            ;
-import { Login                                                               } from '../login/login'                      ;
-import { Log, moment, Moment                                                 } from '../../config/config.functions'       ;
-import { AuthSrvcs                                                           } from '../../providers/auth-srvcs'          ;
-import { SrvrSrvcs                                                           } from '../../providers/srvr-srvcs'          ;
-import { AlertService                                                        } from '../../providers/alerts'              ;
-import { TabsComponent                                                       } from '../../components/tabs/tabs'          ;
-import { TranslateService                                                    } from '@ngx-translate/core'                 ;
-import { AppVersion                                                          } from '@ionic-native/app-version'           ;
-import { StorageService                                                      } from '../../providers/storage-service'     ;
-import { Preferences                                                         } from '../../providers/preferences'         ;
-import { UserData                                                            } from '../../providers/user-data'           ;
-import { IonDigitKeyboardCmp, IonDigitKeyboardOptions                        } from '../../components/ion-digit-keyboard' ;
+// import { TabsComponent                                                       } from 'components/tabs/tabs'          ;
+import { Component, OnInit, NgZone, OnDestroy, AfterViewInit              } from '@angular/core'                 ;
+import { IonicPage, NavController, Platform, ModalController, ViewController } from 'ionic-angular'                 ;
+import { DBSrvcs                                                             } from 'providers/db-srvcs'            ;
+import { Login                                                               } from 'pages/login/login'             ;
+import { Log, moment, Moment                                                 } from 'config/config.functions'       ;
+import { AuthSrvcs                                                           } from 'providers/auth-srvcs'          ;
+import { SrvrSrvcs                                                           } from 'providers/srvr-srvcs'          ;
+import { AlertService                                                        } from 'providers/alerts'              ;
+import { TranslateService                                                    } from '@ngx-translate/core'           ;
+import { AppVersion                                                          } from '@ionic-native/app-version'     ;
+import { StorageService                                                      } from 'providers/storage-service'     ;
+import { Preferences                                                         } from 'providers/preferences'         ;
+import { UserData                                                            } from 'providers/user-data'           ;
+import { IonDigitKeyboardCmp, IonDigitKeyboardOptions                        } from 'components/ion-digit-keyboard' ;
+import { TabsService                                                         } from 'providers/tabs-service'        ;
 
 
 @IonicPage({ name: 'Settings' })
@@ -21,7 +22,7 @@ import { IonDigitKeyboardCmp, IonDigitKeyboardOptions                        } f
   templateUrl: 'settings.html',
 })
 
-export class Settings implements OnInit {
+export class Settings implements OnInit,OnDestroy,AfterViewInit {
   public title           : string     = "App Settings"    ;
   public lang            : any                            ;
   public confirmTitle    : string     = ""                ;
@@ -47,7 +48,8 @@ export class Settings implements OnInit {
     public auth      : AuthSrvcs        ,
     public server    : SrvrSrvcs        ,
     public alert     : AlertService     ,
-    public tabs      : TabsComponent    ,
+    // public tabs      : TabsComponent    ,
+    public tabServ   : TabsService      ,
     public translate : TranslateService ,
     public version   : AppVersion       ,
     public storage   : StorageService   ,
@@ -59,17 +61,26 @@ export class Settings implements OnInit {
     this.keysetup = { visible: false, width: '100%', swipeToHide: true };
   }
 
+  ionViewDidEnter() {
+    Log.l("Settings: ionViewDidEnter() called");
+  }
+
   ngOnInit() {
     Log.l("Settings: ngOnInit() called");
     if (!(this.ud.isAppLoaded() && this.ud.isHomePageReady())) {
-      this.tabs.goToPage('OnSiteHome');
+      this.tabServ.goToPage('OnSiteHome');
     } else {
       this.runFromInit();
     }
   }
 
-  ionViewDidEnter() {
-    Log.l("Settings: ionViewDidEnter() called");
+  ngOnDestroy() {
+    Log.l("Settings: ngOnDestroy() fired");
+  }
+
+  ngAfterViewInit() {
+    Log.l("Settings: ngAfterViewInit() fired");
+    this.tabServ.setPageLoaded();
   }
 
   runFromInit() {

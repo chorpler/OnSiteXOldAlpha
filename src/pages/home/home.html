@@ -8,7 +8,7 @@
       <span class="app-user" *ngIf="ud.getTechName()">{{ud.getTechName()}}</span>
     </ion-title>
     <ion-buttons right>
-      <button ion-button color="primary" icon-only (tap)="toggleClock($event)">
+      <button ion-button color="primary" icon-only (click)="toggleClock($event)">
         <ion-icon class="header-clock-icon" name="ios-clock-outline"></ion-icon>
       </button>
       <button ion-button color="primary" icon-only (tap)="showHelp($event)">
@@ -18,12 +18,12 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding class="page-content home-page-content">
+<ion-content padding class="page-content home-page-content" *ngIf="ud.isAppLoaded() && dataReady">
   <div *ngIf="ud.isAppLoaded() && ud.isHomePageReady() && dataReady; then homeDisplay; else homeClockDisplay"></div>
   <ng-template #homeClockDisplay>
-    <div class="waiting-clock">
+    <!-- <div class="waiting-clock">
       <clock class="clock-home"></clock>
-    </div>
+    </div> -->
   </ng-template>
   <ng-template #homeDisplay>
     <ion-card no-lines class="shift-summary">
@@ -188,7 +188,7 @@
     </ion-grid>
   </ng-template>
 </ion-content>
-<div class="waiting-clock" *ngIf="ud.isAppLoaded() && !(dataReady && ud.isHomePageReady())" (tap)="toggleClock()">
+<!-- <div class="waiting-clock" *ngIf="ud.isAppLoaded() && !(dataReady && ud.isHomePageReady())" (tap)="toggleClock()">
   <clock></clock>
 </div>
-
+ -->

@@ -2,7 +2,7 @@ import { NgModule                         } from '@angular/core'                
 import { IonicPageModule                  } from 'ionic-angular'                ;
 import { DeveloperPage                    } from './developer'                  ;
 import { HttpClient                       } from '@angular/common/http'         ;
-import { TabsComponentModule              } from 'components/tabs/tabs.module'  ;
+// import { TabsComponentModule              } from 'components/tabs/tabs.module'  ;
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core'          ;
 import { TranslateHttpLoader              } from '@ngx-translate/http-loader'   ;
 import { createTranslateLoader            } from 'config/customTranslateLoader' ;
@@ -23,11 +23,11 @@ import { createTranslateLoader            } from 'config/customTranslateLoader' 
         deps: [HttpClient],
       }
     }),
-    TabsComponentModule,
+    // TabsComponentModule,
   ],
   exports: [
     DeveloperPage,
-    TabsComponentModule,
+    // TabsComponentModule,
 ]
 })
 export class DeveloperPageModule {}

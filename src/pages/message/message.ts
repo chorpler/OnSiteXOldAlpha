@@ -1,17 +1,18 @@
-import { Component, OnInit                                   } from '@angular/core'                   ;
-import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular'                   ;
-import { TabsComponent                                       } from '../../components/tabs/tabs'      ;
-import { TranslateService                                    } from '@ngx-translate/core'             ;
-import { DBSrvcs                                             } from '../../providers/db-srvcs'        ;
-import { SrvrSrvcs                                           } from '../../providers/srvr-srvcs'      ;
-import { STRINGS                                             } from '../../config/config.strings'     ;
-import { Pipe, PipeTransform                                 } from '@angular/core'                   ;
-import { DomSanitizer                                        } from '@angular/platform-browser'       ;
-import { SafePipe                                            } from '../../pipes/safe'                ;
-import { Message                                             } from '../../domain/message'            ;
-import { AlertService                                        } from '../../providers/alerts'          ;
-import { MessageService                                      } from '../../providers/message-service' ;
-import { Log, moment, Moment, isMoment                       } from '../../config/config.functions'   ;
+// import { TabsComponent                                       } from 'components/tabs/tabs'      ;
+import { Log, moment, Moment, isMoment                       } from 'config/config.functions'   ;
+import { Component, OnInit, OnDestroy, AfterViewInit,        } from '@angular/core'             ;
+import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular'             ;
+import { Pipe, PipeTransform                                 } from '@angular/core'             ;
+import { DomSanitizer                                        } from '@angular/platform-browser' ;
+import { TranslateService                                    } from '@ngx-translate/core'       ;
+import { DBSrvcs                                             } from 'providers/db-srvcs'        ;
+import { SrvrSrvcs                                           } from 'providers/srvr-srvcs'      ;
+import { STRINGS                                             } from 'config/config.strings'     ;
+import { SafePipe                                            } from 'pipes/safe'                ;
+import { Message                                             } from 'domain/message'            ;
+import { AlertService                                        } from 'providers/alerts'          ;
+import { MessageService                                      } from 'providers/message-service' ;
+import { TabsService                                         } from 'providers/tabs-service'    ;
 
 @IonicPage({
   name: 'Message'
@@ -36,7 +37,8 @@ export class MessagePage implements OnInit {
     public db        : DBSrvcs          ,
     public server    : SrvrSrvcs        ,
     public msg       : MessageService   ,
-    public tabs      : TabsComponent    ,
+    // public tabs      : TabsComponent    ,
+    public tabServ   : TabsService      ,
     public viewCtrl  : ViewController   ,
     public alert     : AlertService     ,
   ) {
@@ -63,16 +65,25 @@ export class MessagePage implements OnInit {
     Log.l("MessagesPage: ngOnInit() fired");
   }
 
-  changedMessage(message:Message) {
+  ngOnDestroy() {
+    Log.l("MessagesPage: ngOnDestroy() fired");
+  }
+
+  ngAfterViewInit() {
+    Log.l("MessagesPage: ngAfterViewInit() fired");
+    this.tabServ.setPageLoaded();
+  }
+
+  public changedMessage(message:Message) {
     Log.l("changedMessage(): Message changed to:\n", message);
   }
 
-  closeMessage() {
+  public closeMessage() {
     Log.l("closeMessage(): User clicked close message.");
     if(!this.message.read) {
-      this.tabs.decrementMessageBadge();
+      this.tabServ.decrementMessageBadge();
       this.message.setMessageRead();
-      this.server.saveReadMessage(this.message).then(res => {
+      this.db.saveReadMessage(this.message).then(res => {
         Log.l("closeMessage(): Saved read message status.");
         this.viewCtrl.dismiss();
       }).catch(err => {

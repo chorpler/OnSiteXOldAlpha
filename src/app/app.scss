@@ -16,6 +16,49 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 // ion-content div.scroll-content{
+@mixin button-like-block {
+  cursor: pointer;
+  @media screen and (min-width:767px), screen and (min-device-width:767px) {
+    &:hover {
+      background-color: rgba(0, 0, 220, 0.2);
+      i {
+        color: white;
+      }
+    }
+  }
+  &:active {
+    background-color: rgba(0, 0, 220, 0.4);
+    i {
+      color: white;
+    }
+  }
+}
+@mixin button-like-icon {
+  cursor: pointer;
+  @media screen and (min-width:767px), screen and (min-device-width:767px) {
+    &:hover {
+      color: rgba(0, 0, 220, 1.0);
+    }
+  }
+  &:active {
+    color: rgba(220, 0, 220, 1.0);
+  }
+}
+
+@mixin button-like-menu {
+  cursor: pointer;
+}
+
+.block-button-like {
+  @include button-like-block;
+}
+.icon-button-like {
+  @include button-like-icon;
+}
+.menu-button-like {
+  @include button-like-menu;
+}
+
 .ionic-root-nav-element {
 
 }
@@ -45,7 +88,25 @@ ion-app.ios ion-content > .scroll-content {
   margin-top: unset !important;
 }
 
+::-webkit-scrollbar {
+  width: 10px;
+  // display: none;
+  opacity: 0;
+}
 
+// ::-webkit-scrollbar-track {
+//   background: rgba(255, 91, 71, 0.5);
+//   border-left: 4px solid white;
+//   border-right: 4px solid white;
+// }
+
+::-webkit-scrollbar-thumb {
+  // width: 4px;
+  // opacity: 0.5;
+  background: #CCCCCC;
+  border-left: 3px solid white;
+  border-right: 3px solid white;
+}
 
 
 .loading-md .loading-wrapper {
@@ -119,55 +180,55 @@ ion-app.ios ion-content > .scroll-content {
 }
 
 .app-title {
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
   .toolbar-title {
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-start;
+    flex-flow: column nowrap;
+    justify-content: center;
     align-content: center;
+    .app-page-title {
+      display: block;
+      flex: 0 1 auto;
+      align-self: center;
+    }
+    .app-user {
+      display: block;
+      flex: 0 1 auto;
+      align-self: center;
+      text-align: center;
+      font-size: 12px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      color: blue;
+      font-style: italic;
+    }
   }
-}
-.app-page-title {
-  flex: 1 0 auto;
-  align-self: baseline;
-}
-
-// .app-title {
-//   @extend ion-title;
-//   @extend .toolbar-title;
-//   @extend .toolbar-title-md;
-//   @extend .toolbar-title-ios;
-// }
-
-.app-user {
-  flex: 1 0 auto;
-  align-self: baseline;
-  text-align: center;
-  font-size: 12px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  color: blue;
-  font-style: italic;
 }
 
 .waiting-clock {
+  // margin-top: 56px;
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
   align-content: center;
   align-items: center;
-  // --widthA: 350px;
+  --widthA: 350px;
   width: 40vw;
   height: 40vh;
   width: 100%;
   height: 100%;
   margin-left: auto;
   margin-right: auto;
-  // min-width: 350px;
-  // min-height: 350px;
-  // min-width: var(--widthA);
-  // min-height: var(--widthA);
+  min-width: 350px;
+  min-height: 350px;
+  min-width: var(--widthA);
+  min-height: var(--widthA);
   // margin-top: calc(15vh + 56px);
+  z-index: -1;
 
 
   clock {
@@ -191,13 +252,13 @@ ion-app.ios ion-content > .scroll-content {
 }
 
 ion-app.ios .waiting-clock {
-  margin-left: calc(50vw - 350px/2);
-  margin-right: calc(50vw - 350px/2);
+  // margin-left: calc(50vw - 350px/2);
+  // margin-right: calc(50vw - 350px/2);
 }
 
 ion-app.ios .scroll-content {
   padding-bottom: 100px !important;
-  margin-top: 10px !important;
+  // margin-top: 10px !important;
 }
 
 ion-popover.popover-template.popover-ios .scroll-content {

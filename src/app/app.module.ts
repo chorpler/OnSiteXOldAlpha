@@ -1,3 +1,6 @@
+// import { CustomTranslateLoaderModule                             } from 'config/customTranslateLoader.module'  ;
+// import { createJSON5TranslateLoader                              } from 'config/customTranslateLoader'         ;
+// import { TabsComponentModule                                     } from 'components/tabs/tabs.module'          ;
 import 'intl'                                                                                                  ;
 import 'intl/locale-data/jsonp/en'                                                                             ;
 import { BrowserModule                                           } from '@angular/platform-browser'            ;
@@ -37,10 +40,7 @@ import { AlertService                                            } from 'provide
 import { GeolocService                                           } from 'providers/geoloc-service'             ;
 import { PouchDBService                                          } from 'providers/pouchdb-service'            ;
 import { StorageService                                          } from 'providers/storage-service'            ;
-// import { CustomTranslateLoaderModule                             } from 'config/customTranslateLoader.module'  ;
 import { createTranslateLoader                                   } from 'config/customTranslateLoader'         ;
-// import { createJSON5TranslateLoader                              } from 'config/customTranslateLoader'         ;
-import { TabsComponentModule                                     } from 'components/tabs/tabs.module'          ;
 import { TabsComponent                                           } from 'components/tabs/tabs'                 ;
 import { PipesModule                                             } from 'pipes/pipes.module'                   ;
 import { Preferences                                             } from 'providers/preferences'                ;
@@ -49,14 +49,19 @@ import { MessageService                                          } from 'provide
 import { CommentService                                          } from 'providers/comment-service'            ;
 import { TabsService                                             } from 'providers/tabs-service'               ;
 import { IonDigitKeyboard                                        } from 'components/ion-digit-keyboard'        ;
-import { ClockComponentModule                                    } from 'components/clock/clock.module'        ;
+// import { ClockComponentModule                                    } from 'components/clock/clock.module'        ;
+import { ClockComponent                                          } from 'components/clock/clock'               ;
 
 @NgModule({
   declarations: [
     OnSiteApp,
+    TabsComponent,
+    ClockComponent,
   ],
   entryComponents: [
-    OnSiteApp
+    OnSiteApp,
+    TabsComponent,
+    ClockComponent,
   ],
   bootstrap: [
     IonicApp
@@ -64,7 +69,7 @@ import { ClockComponentModule                                    } from 'compone
   imports: [
     BrowserModule,
     // BrowserAnimationsModule,
-    TabsComponentModule,
+    // TabsComponentModule,
     IonicModule.forRoot(OnSiteApp),
     IonicStorageModule.forRoot({
       name: '__onsitestorage',
@@ -82,7 +87,7 @@ import { ClockComponentModule                                    } from 'compone
     }),
     IonDigitKeyboard,
     PipesModule,
-    ClockComponentModule,
+    // ClockComponentModule,
     // MultiPickerModule,
   ],
 
@@ -116,7 +121,7 @@ import { ClockComponentModule                                    } from 'compone
     GeolocService,
     PouchDBService,
     StorageService,
-    TabsComponent,
+    // TabsComponent,
     AppVersion,
     Preferences,
     SmartAudio,

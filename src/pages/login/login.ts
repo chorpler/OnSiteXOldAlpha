@@ -1,17 +1,18 @@
-import { Component, OnInit                                                                 } from '@angular/core'                  ;
-import { IonicPage, NavController, NavParams, Platform, LoadingController, AlertController } from 'ionic-angular'                  ;
-import { PopoverController, ViewController, Events                                         } from 'ionic-angular'                  ;
-import { FormGroup, FormControl, Validators                                                } from "@angular/forms"                 ;
-import { AuthSrvcs                                                                         } from '../../providers/auth-srvcs'     ;
-import { SrvrSrvcs                                                                         } from '../../providers/srvr-srvcs'     ;
-import { DBSrvcs                                                                           } from '../../providers/db-srvcs'       ;
-import { AlertService                                                                      } from '../../providers/alerts'         ;
-import { NetworkStatus                                                                     } from '../../providers/network-status' ;
-import { UserData                                                                          } from '../../providers/user-data'      ;
-import { Preferences                                                                       } from '../../providers/preferences'    ;
-import { Log                                                                               } from '../../config/config.functions'  ;
-import { TabsComponent                                                                     } from '../../components/tabs/tabs'     ;
-import { TranslateService                                                                  } from '@ngx-translate/core'            ;
+// import { TabsComponent                                                                     } from '../../components/tabs/tabs'     ;
+import { Component, OnInit                                                                 } from '@angular/core'            ;
+import { IonicPage, NavController, NavParams, Platform, LoadingController, AlertController } from 'ionic-angular'            ;
+import { PopoverController, ViewController, Events                                         } from 'ionic-angular'            ;
+import { FormGroup, FormControl, Validators                                                } from "@angular/forms"           ;
+import { AuthSrvcs                                                                         } from 'providers/auth-srvcs'     ;
+import { SrvrSrvcs                                                                         } from 'providers/srvr-srvcs'     ;
+import { DBSrvcs                                                                           } from 'providers/db-srvcs'       ;
+import { AlertService                                                                      } from 'providers/alerts'         ;
+import { NetworkStatus                                                                     } from 'providers/network-status' ;
+import { UserData                                                                          } from 'providers/user-data'      ;
+import { Preferences                                                                       } from 'providers/preferences'    ;
+import { Log                                                                               } from 'config/config.functions'  ;
+import { TranslateService                                                                  } from '@ngx-translate/core'      ;
+import { TabsService                                                                       } from 'providers/tabs-service'   ;
 
 @IonicPage({name: 'Login'})
 @Component({
@@ -51,7 +52,8 @@ export class Login implements OnInit {
     public viewCtrl : ViewController,
     public ud       : UserData,
     public events   : Events,
-    public tabs     : TabsComponent,
+    // public tabs     : TabsComponent,
+    public tabServ  : TabsService,
     public translate: TranslateService,
   ) {
     window['loginscreen'] = this;
@@ -63,7 +65,7 @@ export class Login implements OnInit {
 
   ngOnInit() {
     if (!(this.ud.isAppLoaded())) {
-      this.tabs.goToPage('OnSiteHome');
+      this.tabServ.goToPage('OnSiteHome');
     } else {
       this.runFromInit();
     }
@@ -128,11 +130,13 @@ export class Login implements OnInit {
         // this.ud.reloadApp();
         if(this.mode === 'modal') {
           creds['justLoggedIn'] = true;
-          this.tabs.setTabDisable(false);
+          // this.tabServ.setTabDisable(false);
+          this.tabServ.enableTabs();
           this.viewCtrl.dismiss(creds);
         } else {
-          this.tabs.setTabDisable(false);
-          this.tabs.goToPage('OnSiteHome', creds);
+          // this.tabServ.setTabDisable(false);
+          this.tabServ.enableTabs();
+          this.tabServ.goToPage('OnSiteHome', creds);
         }
       }).catch((err) => {
         Log.l("loginAttempt(): Error validating and saving user info.");

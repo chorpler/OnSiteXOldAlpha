@@ -1,8 +1,8 @@
-import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
-import { Login } from './login';
-import { TranslateModule } from '@ngx-translate/core';
-import { TabsComponentModule } from '../../components/tabs/tabs.module'
+import { NgModule            } from '@angular/core'       ;
+import { IonicPageModule     } from 'ionic-angular'       ;
+import { Login               } from './login'             ;
+import { TranslateModule     } from '@ngx-translate/core' ;
+// import { TabsComponentModule } from 'components/tabs/tabs.module'
 
 
 @NgModule({
@@ -12,11 +12,11 @@ import { TabsComponentModule } from '../../components/tabs/tabs.module'
   imports: [
     IonicPageModule.forChild(Login),
     TranslateModule.forChild(),
-    TabsComponentModule,
+    // TabsComponentModule,
   ],
   exports: [
     Login,
-    TabsComponentModule,
+    // TabsComponentModule,
   ]
 })
 export class LoginModule {}

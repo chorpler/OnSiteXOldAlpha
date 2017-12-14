@@ -576,6 +576,34 @@ export class DBSrvcs {
     });
   }
 
-
+  public async saveReadMessage(message:Message) {
+    try {
+      let dbname = this.prefs.DB.messages;
+      let db1 = this.addDB(dbname);
+      let out = message.serialize();
+      Log.l("saveReadMessage(): Now attempting to save serialized message:\n", out);
+      // db1.putIfNotExists()
+      let res = await db1.upsert(message._id, (doc) => {
+        if(doc && doc._rev) {
+          doc.read = true;
+          return doc;
+        } else {
+          return message;
+        }
+      });
+      if(!res.ok && !res.updated) {
+        Log.l("saveReadMessage(): Upsert error, return did not contain 'ok' or 'updated' for message:\n", message);
+        Log.e(res);
+        throw new Error(res);
+      } else {
+        Log.l("saveReadMessage(): Successfully saved message, result:\n", res);
+        return res;
+      }
+    } catch(err) {
+      Log.l(`saveReadMessage(): Error while upserting message.read=true.`);
+      Log.e(err);
+      throw new Error(err);
+    }
+  }
 
 }

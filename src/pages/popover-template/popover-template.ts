@@ -1,10 +1,10 @@
-import { Component, OnInit} from '@angular/core';
-import { IonicPage, ViewController, PopoverController, NavController, NavParams } from 'ionic-angular';
-import { TranslateService } from '@ngx-translate/core';
-import { Pipe, PipeTransform } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import { SafePipe } from '../../pipes/safe';
-import { Log } from '../../config/config.functions';
+import { Component, OnInit                                                      } from '@angular/core'             ;
+import { IonicPage, ViewController, PopoverController, NavController, NavParams } from 'ionic-angular'             ;
+import { TranslateService                                                       } from '@ngx-translate/core'       ;
+import { Pipe, PipeTransform                                                    } from '@angular/core'             ;
+import { DomSanitizer                                                           } from '@angular/platform-browser' ;
+import { SafePipe                                                               } from 'pipes/safe'                ;
+import { Log                                                                    } from 'config/config.functions'   ;
 
 /**
  * Generated class for the PopoverTemplatePage page.

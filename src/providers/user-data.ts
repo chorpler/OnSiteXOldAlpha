@@ -6,17 +6,17 @@ import { NativeStorage                 } from '@ionic-native/native-storage'   ;
 import { Device                        } from '@ionic-native/device'           ;
 import { AppVersion                    } from '@ionic-native/app-version'      ;
 import { UniqueDeviceID                } from '@ionic-native/unique-device-id' ;
-import { Log, isMoment, moment, Moment } from 'config/config.functions'     ;
-import { STRINGS                       } from 'config/config.strings'       ;
+import { Log, isMoment, moment, Moment } from 'config/config.functions'        ;
+import { STRINGS                       } from 'config/config.strings'          ;
 import { DBSrvcs                       } from './db-srvcs'                     ;
 import { Preferences                   } from './preferences'                  ;
-import { Shift                         } from 'domain/shift'                ;
-import { PayrollPeriod                 } from 'domain/payroll-period'       ;
-import { WorkOrder                     } from 'domain/workorder'            ;
-import { ReportOther                   } from 'domain/reportother'          ;
-import { Employee                      } from 'domain/employee'             ;
-import { Message                       } from 'domain/message'              ;
-import { Jobsite                       } from 'domain/jobsite'              ;
+import { Shift                         } from 'domain/shift'                   ;
+import { PayrollPeriod                 } from 'domain/payroll-period'          ;
+import { WorkOrder                     } from 'domain/workorder'               ;
+import { ReportOther                   } from 'domain/reportother'             ;
+import { Employee                      } from 'domain/employee'                ;
+import { Message                       } from 'domain/message'                 ;
+import { Jobsite                       } from 'domain/jobsite'                 ;
 
 @Injectable()
 export class UserData {
@@ -51,6 +51,7 @@ export class UserData {
   public static HAS_SEEN_TUTORIAL     = 'hasSeenTutorial'                              ;
   public static BOOT_STATUS           : any                  =   {finished: false }    ;
   public BOOT_STATUS                  : any                  = UserData.BOOT_STATUS    ;
+  public timeoutHandle                : any                                            ;
   public static shift                 : Shift                                          ;
   public static current_shift_hours   : any                                            ;
   public static circled_numbers       : Array<string>                                  ;
@@ -219,16 +220,13 @@ export class UserData {
 
   public static getUnreadMessageCount() {
     let msgs = UserData.messages;
-    let messages = msgs.filter(a => {
-      return !a['read'];
-    })
-    let count = messages.length;
-    // let count = 0;
-    // for(let msg of msgs) {
-    //   if(!msg.read) {
-    //     count++;
-    //   }
-    // }
+    let messages = msgs.filter((a:Message) => {
+      return !a.read;
+    });
+    let count = 0;
+    if(messages) {
+      count = messages.length;
+    }
     return count;
   }
 
@@ -482,7 +480,8 @@ export class UserData {
   public getTechName() {
     let tp = UserData.techProfile;
     if(tp) {
-      return `${tp.avatarName} (${tp.firstName} ${tp.lastName})`;
+      // return `${tp.avatarName} (${tp.firstName} ${tp.lastName})`;
+      return `${tp.firstName} ${tp.lastName} (${tp.avatarName})`;
     } else {
       return '';
     }
@@ -1256,10 +1255,13 @@ export class UserData {
     Log.l("Now updating perfectly normal event, with devtix at %d.", UserData.appdata.devtix);
     if(UserData.appdata.devtix >= 3) {
       UserData.appdata.devtix = 0;
+      if(this.timeoutHandle) {
+        clearTimeout(this.timeoutHandle);
+      }
       this.setSpecialDeveloper(!this.isSpecialDeveloper());
     } else {
       if(UserData.appdata.devtix++ === 0) {
-        setTimeout(() => {
+        this.timeoutHandle = setTimeout(() => {
           UserData.appdata.devtix = 0;
         }, 5000);
       }

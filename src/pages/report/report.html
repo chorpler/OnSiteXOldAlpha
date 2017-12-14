@@ -69,14 +69,14 @@
           <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{workOrder.location_id}}</p></span>
         </span>
         <span class="report-dev-info" *ngIf="(prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && ud.isDeveloper()">
-          <span class="report-dev-group" *ngIf="prefs.getShowID()"   ><p class="report-dev-header">ID:</p><ion-input class="report-dev-data report-ion-input">{{workOrder.getReportID()}}</ion-input></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowRev()"  ><p class="report-dev-header">Rev:</p><ion-input class="report-dev-data report-ion-input">{{workOrder._rev}}</ion-input></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><ion-input class="report-dev-data report-ion-input">{{workOrder.report_date}}</ion-input></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Start:</p><ion-input class="report-dev-data report-ion-input">{{workOrder.time_start}}</ion-input></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">End:</p><ion-input class="report-dev-data report-ion-input">{{workOrder.time_end}}</ion-input></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><ion-input class="report-dev-data report-ion-input">{{workOrder.client}}</ion-input></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><ion-input class="report-dev-data report-ion-input">{{workOrder.location}}</ion-input></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><ion-input class="report-dev-data report-ion-input">{{workOrder.location_id}}</ion-input></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowID()"   ><p class="report-dev-header">ID:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder._id" [ngModelOptions]="{standalone: true}"></ion-input></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowRev()"  ><p class="report-dev-header">Rev:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder._rev" [ngModelOptions]="{standalone: true}"></ion-input></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder.report_date" [ngModelOptions]="{standalone: true}"></ion-input></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Start:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder.time_start" [ngModelOptions]="{standalone: true}"></ion-input></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">End:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder.time_end" [ngModelOptions]="{standalone: true}"></ion-input></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder.client" [ngModelOptions]="{standalone: true}"></ion-input></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder.location" [ngModelOptions]="{standalone: true}"></ion-input></span>
+          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder.location_id" [ngModelOptions]="{standalone: true}"></ion-input></span>
         </span>
         <ion-item>
           <ion-label>{{'repair_time' | translate}}</ion-label>

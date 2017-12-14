@@ -1,15 +1,17 @@
-import { sprintf                                      } from 'sprintf-js'                             ;
-import { Component, OnInit, NgZone                    } from '@angular/core'                          ;
-import { FormGroup, FormControl, Validators           } from "@angular/forms"                         ;
-import { IonicPage, NavController, NavParams          } from 'ionic-angular'                          ;
-import { ViewController                               } from 'ionic-angular'                          ;
-import { TranslateService                             } from '@ngx-translate/core'                    ;
-import { Log, sizeOf, isMoment, moment, Moment        } from '../../config/config.functions'          ;
-import { DBSrvcs                                      } from '../../providers/db-srvcs'               ;
-import { UserData                                     } from '../../providers/user-data'              ;
-import { AlertService                                 } from '../../providers/alerts'                 ;
-import { TabsComponent                                } from '../../components/tabs/tabs'             ;
-import { Employee,Jobsite                             } from '../../domain/domain-classes'            ;
+// import { TabsComponent                         } from 'components/tabs/tabs'    ;
+import { sprintf                               } from 'sprintf-js'              ;
+import { Component, OnInit, OnDestroy, NgZone  } from '@angular/core'           ;
+import { AfterViewInit,                     } from '@angular/core'           ;
+import { FormGroup, FormControl, Validators    } from "@angular/forms"          ;
+import { IonicPage, NavController, NavParams   } from 'ionic-angular'           ;
+import { ViewController                        } from 'ionic-angular'           ;
+import { TranslateService                      } from '@ngx-translate/core'     ;
+import { Log, sizeOf, isMoment, moment, Moment } from 'config/config.functions' ;
+import { DBSrvcs                               } from 'providers/db-srvcs'      ;
+import { UserData                              } from 'providers/user-data'     ;
+import { AlertService                          } from 'providers/alerts'        ;
+import { Employee,Jobsite                      } from 'domain/domain-classes'   ;
+import { TabsService                           } from 'providers/tabs-service'  ;
 
 export const _cmp = (a,b) => {
   if(a === undefined || b === undefined || a['fullName'] === undefined || b['fullName'] === undefined) {
@@ -42,7 +44,7 @@ export const _sort = (a,b,sortField?) => {
   selector: 'page-tech-settings',
   templateUrl: 'tech-settings.html',
 })
-export class TechSettingsPage implements OnInit {
+export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
   // @ViewChild('ionheader') mapElement: ElementRef;
   fixedHeight       : any        = "0px"            ;
   _cmp              : any        = _cmp             ;
@@ -90,7 +92,8 @@ export class TechSettingsPage implements OnInit {
     public navParams : NavParams        ,
     public db        : DBSrvcs          ,
     public translate : TranslateService ,
-    public tabs      : TabsComponent    ,
+    // public tabs      : TabsComponent    ,
+    public tabServ   : TabsService      ,
     public viewCtrl  : ViewController   ,
     public ud        : UserData         ,
     public alert     : AlertService     ,
@@ -98,8 +101,8 @@ export class TechSettingsPage implements OnInit {
   ) {
 
     window["onsite"] = window["onsite"] || {};
-    window["onsite"]["settings"] = this;
-    window["onsite"]["settingsClass"] = TechSettingsPage;
+    window["onsite"]["techsettings"] = this;
+    window["onsite"]["techsettingsClass"] = TechSettingsPage;
     window["techsettings"] = this;
     window["_cmp"] = _cmp;
     window["_dedupe"] = _dedupe;
@@ -108,6 +111,22 @@ export class TechSettingsPage implements OnInit {
 
   ngOnInit() {
     // this.fixedHeight = this.mapElement.nativeElement.fixed;
+    Log.l("TechSettingsPage: ngOnInit() fired");
+    if(this.ud.isAppLoaded()) {
+      this.runWhenReady();
+    }
+  }
+
+  ngOnDestroy() {
+    Log.l("TechSettingsPage: ngOnDestroy() fired");
+  }
+
+  ngAfterViewInit() {
+    Log.l("TechSettingsPage: ngAfterViewInit() fired");
+    this.tabServ.setPageLoaded();
+  }
+
+  public runWhenReady() {
     let translations = [
       'error',
       'spinner_saving_tech_profile',
@@ -439,7 +458,7 @@ export class TechSettingsPage implements OnInit {
         } else {
           Log.l('Mode = ' + this.mode );
           this.alert.hideSpinner();
-          this.tabs.goToPage('OnSiteHome');
+          this.tabServ.goToPage('OnSiteHome');
         }
       }).catch((err) => {
         Log.l("onSubmit(): Error saving techProfile!");
@@ -461,7 +480,7 @@ export class TechSettingsPage implements OnInit {
     if(this.mode === 'modal') {
       this.viewCtrl.dismiss();
     } else {
-      this.tabs.goToPage('OnSiteHome');
+      this.tabServ.goToPage('OnSiteHome');
     }
   }
 }

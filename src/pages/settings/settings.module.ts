@@ -5,8 +5,8 @@ import { Settings                         } from './settings'                   
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core'                                     ;
 import { TranslateHttpLoader              } from '@ngx-translate/http-loader'                              ;
 import { createTranslateLoader            } from 'config/customTranslateLoader'                            ;
-import { TabsComponentModule              } from 'components/tabs/tabs.module'                             ;
-import { ClockComponentModule             } from 'components/clock/clock.module'                           ;
+// import { TabsComponentModule              } from 'components/tabs/tabs.module'                             ;
+// import { ClockComponentModule             } from 'components/clock/clock.module'                           ;
 import { IonDigitKeyboard                 } from 'components/ion-digit-keyboard/ion-digit-keyboard.module' ;
 
 @NgModule({
@@ -22,13 +22,13 @@ import { IonDigitKeyboard                 } from 'components/ion-digit-keyboard/
         deps: [HttpClient],
       }
     }),
-    TabsComponentModule,
-    ClockComponentModule,
+    // TabsComponentModule,
+    // ClockComponentModule,
     IonDigitKeyboard,
   ],
   exports: [
     Settings,
-    TabsComponentModule,
+    // TabsComponentModule,
   ]
 })
 export class SettingsModule {}

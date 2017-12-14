@@ -1,4 +1,6 @@
 import { Component, ViewChild, OnInit,                } from '@angular/core'                     ;
+import { ComponentFactoryResolver, ViewContainerRef,  } from '@angular/core'                     ;
+import { ElementRef,                                  } from '@angular/core'                     ;
 import { Platform, Nav, ToastController, Events, App  } from 'ionic-angular'                     ;
 import { StatusBar                                    } from '@ionic-native/status-bar'          ;
 import { SplashScreen                                 } from '@ionic-native/splash-screen'       ;
@@ -35,6 +37,7 @@ import { TabsService                                  } from 'providers/tabs-ser
 @Component({ templateUrl: 'app.html' })
 export class OnSiteApp implements OnInit {
   @ViewChild(Nav) nav: Nav;
+  @ViewChild('tabsTarget') tabsTarget;
 
   public title                   : string  = 'OnSiteHome'      ;
   public rootPage                : any                         ;
@@ -58,6 +61,7 @@ export class OnSiteApp implements OnInit {
     public toast       : ToastController   ,
     public statusBar   : StatusBar         ,
     public splashScreen: SplashScreen      ,
+    public cfResolver  : ComponentFactoryResolver,
     public net         : NetworkStatus     ,
     public push        : Push              ,
     public localNotify : LocalNotifications,
@@ -94,6 +98,10 @@ export class OnSiteApp implements OnInit {
     Log.l("AppComponent: Initializing app...");
     this.hiddenArray = this.tabServ.getHiddenArray();
     this.keysetup = {visible: false, width: '100%', swipeToHide: true};
+    // let componentFactory = this.cfResolver.resolveComponentFactory(TabsComponent);
+    // let vcRef = this.tabsTarget.viewContainer;
+    // let tabsComponentRef = vcRef.createComponent(componentFactory);
+    // let instance:TabsComponent = tabsComponentRef.instance as TabsComponent;
 
     Log.l("OnSite: platform ready returned:\n", vagueParameter);
     this.getAppVersion().then((res) => {

@@ -1,23 +1,25 @@
-import { Component, OnInit, NgZone                     } from '@angular/core'                   ;
-import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular'                   ;
-import { AuthSrvcs                                     } from '../../providers/auth-srvcs'      ;
-import { GeolocService                                 } from '../../providers/geoloc-service'  ;
-import { AlertService                                  } from '../../providers/alerts'          ;
-import { Log, moment, Moment                           } from '../../config/config.functions'   ;
-import { DBSrvcs                                       } from '../../providers/db-srvcs'        ;
-import { SmartAudio                                    } from '../../providers/smart-audio'     ;
-import { TranslateModule, TranslateLoader              } from '@ngx-translate/core'             ;
-import { TranslateHttpLoader                           } from '@ngx-translate/http-loader'      ;
-import { TranslateService                              } from '@ngx-translate/core'             ;
-import { TabsComponent                                 } from '../../components/tabs/tabs'      ;
-import { Preferences                                   } from '../../providers/preferences'     ;
+// import { TabsComponent                                 } from 'components/tabs/tabs'       ;
+import { Component, OnInit, OnDestroy, AfterViewInit,  } from '@angular/core'              ;
+import { NgZone                                        } from '@angular/core'              ;
+import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular'              ;
+import { AuthSrvcs                                     } from 'providers/auth-srvcs'       ;
+import { GeolocService                                 } from 'providers/geoloc-service'   ;
+import { AlertService                                  } from 'providers/alerts'           ;
+import { Log, moment, Moment                           } from 'config/config.functions'    ;
+import { DBSrvcs                                       } from 'providers/db-srvcs'         ;
+import { SmartAudio                                    } from 'providers/smart-audio'      ;
+import { TranslateModule, TranslateLoader              } from '@ngx-translate/core'        ;
+import { TranslateHttpLoader                           } from '@ngx-translate/http-loader' ;
+import { TranslateService                              } from '@ngx-translate/core'        ;
+import { Preferences                                   } from 'providers/preferences'      ;
+import { TabsService                                   } from 'providers/tabs-service'     ;
 
 @IonicPage({name: 'DevPage'})
 @Component({
   selector: 'page-developer',
   templateUrl: 'developer.html',
 })
-export class DeveloperPage implements OnInit {
+export class DeveloperPage implements OnInit,OnDestroy,AfterViewInit {
 
   public title          : string        = 'Developers'              ;
   public static PREFS   : any           = new Preferences()         ;
@@ -34,16 +36,19 @@ export class DeveloperPage implements OnInit {
   public payrollPeriodCount:number      = this.prefs.getPayrollPeriodCount();
   public showSite       : boolean       = this.prefs.getShowSite()  ;
 
-  constructor(public navCtrl   : NavController    ,
-              public navParams : NavParams        ,
-              public platform  : Platform         ,
-              public zone      : NgZone           ,
-              public geoloc    : GeolocService    ,
-              public db        : DBSrvcs          ,
-              public audio     : SmartAudio       ,
-              public alert     : AlertService     ,
-              public translate : TranslateService ,
-              public tabs      : TabsComponent    ,
+  constructor(
+    public navCtrl   : NavController    ,
+    public navParams : NavParams        ,
+    public platform  : Platform         ,
+    public zone      : NgZone           ,
+    public geoloc    : GeolocService    ,
+    public db        : DBSrvcs          ,
+    public audio     : SmartAudio       ,
+    public alert     : AlertService     ,
+    public translate : TranslateService ,
+    // public tabs      : TabsComponent    ,
+    public tabServ   : TabsService      ,
+
   ) {
     window['onsitedev'] = this;
   }
@@ -60,11 +65,20 @@ export class DeveloperPage implements OnInit {
   }
 
   ngOnInit() {
-    Log.l("Developer Settings page loaded.");
+    Log.l("DeveloperPage: ngOnInit() fired");
     // this.testDatabases = this.prefs.DB.reports === 'test-reports' ? true : false;
     // this.GeolocStatus  = this.geoloc.isEnabled();
     this.GeolocStatus  = false;
     this.databaseNames = Object.keys(this.prefs.DB);
+  }
+
+  ngOnDestroy() {
+    Log.l("DeveloperPage: ngOnDestroy() fired");
+  }
+
+  ngAfterViewInit() {
+    Log.l("DeveloperPage: ngAfterViewInit() fired");
+    this.tabServ.setPageLoaded();
   }
 
   // checkTestDatabase() {
@@ -220,6 +234,6 @@ export class DeveloperPage implements OnInit {
 
   public cancel() {
     this.audio.play('dropit');
-    this.tabs.goToPage('OnSiteHome');
+    this.tabServ.goToPage('OnSiteHome');
   }
 }

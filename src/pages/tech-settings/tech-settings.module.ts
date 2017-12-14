@@ -1,8 +1,8 @@
-import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
-import { TechSettingsPage } from './tech-settings';
-import { TranslateModule } from '@ngx-translate/core';
-import { TabsComponentModule } from '../../components/tabs/tabs.module'
+import { NgModule            } from '@angular/core'       ;
+import { IonicPageModule     } from 'ionic-angular'       ;
+import { TechSettingsPage    } from './tech-settings'     ;
+import { TranslateModule     } from '@ngx-translate/core' ;
+// import { TabsComponentModule } from 'components/tabs/tabs.module'
 
 
 @NgModule({
@@ -12,11 +12,11 @@ import { TabsComponentModule } from '../../components/tabs/tabs.module'
   imports: [
     IonicPageModule.forChild(TechSettingsPage),
     TranslateModule.forChild(),
-    TabsComponentModule,
+    // TabsComponentModule,
   ],
   exports: [
     TechSettingsPage,
-    TabsComponentModule,
+    // TabsComponentModule,
   ]
 })
 export class TechSettingsPageModule {}

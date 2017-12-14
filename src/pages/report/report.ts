@@ -1,28 +1,30 @@
-import { Component, OnInit, ViewChild, NgZone                  } from '@angular/core'                     ;
-import { FormsModule, ReactiveFormsModule                      } from "@angular/forms"                    ;
-import { FormBuilder, FormGroup, FormControl, Validators       } from "@angular/forms"                    ;
-import { IonicPage, NavController, NavParams                   } from 'ionic-angular'                     ;
-import { LoadingController, PopoverController, ModalController } from 'ionic-angular'                     ;
-import { DBSrvcs                                               } from '../../providers/db-srvcs'          ;
-import { SrvrSrvcs                                             } from '../../providers/srvr-srvcs'        ;
-import { AuthSrvcs                                             } from '../../providers/auth-srvcs'        ;
-import { AlertService                                          } from '../../providers/alerts'            ;
-import { SmartAudio                                            } from '../../providers/smart-audio'       ;
-import { Log, moment, Moment, isMoment                         } from '../../config/config.functions'     ;
-import { PayrollPeriod                                         } from '../../domain/payroll-period'       ;
-import { Shift                                                 } from '../../domain/shift'                ;
-import { WorkOrder                                             } from '../../domain/workorder'            ;
-import { Employee                                              } from '../../domain/employee'             ;
-import { ReportOther                                           } from '../../domain/reportother'          ;
 // import { Status                                                } from '../../providers/status'            ;
-import { Jobsite                                               } from '../../domain/jobsite'              ;
-import { UserData                                              } from '../../providers/user-data'         ;
-import { sprintf                                               } from 'sprintf-js'                        ;
-import { STRINGS                                               } from '../../config/config.strings'       ;
-import { Preferences                                           } from '../../providers/preferences'       ;
-import { TabsComponent                                         } from '../../components/tabs/tabs'        ;
-import { TranslateService                                      } from '@ngx-translate/core'               ;
-import 'rxjs/add/operator/debounceTime'                                                                   ;
+// import { TabsComponent                                         } from 'components/tabs/tabs'        ;
+import 'rxjs/add/operator/debounceTime'                                                         ;
+import { Component, OnInit, ViewChild, NgZone, OnDestroy,      } from '@angular/core'           ;
+import { AfterViewInit,                                     } from '@angular/core'           ;
+import { FormsModule, ReactiveFormsModule                      } from "@angular/forms"          ;
+import { FormBuilder, FormGroup, FormControl, Validators       } from "@angular/forms"          ;
+import { IonicPage, NavController, NavParams                   } from 'ionic-angular'           ;
+import { LoadingController, PopoverController, ModalController } from 'ionic-angular'           ;
+import { DBSrvcs                                               } from 'providers/db-srvcs'      ;
+import { SrvrSrvcs                                             } from 'providers/srvr-srvcs'    ;
+import { AuthSrvcs                                             } from 'providers/auth-srvcs'    ;
+import { AlertService                                          } from 'providers/alerts'        ;
+import { SmartAudio                                            } from 'providers/smart-audio'   ;
+import { Log, moment, Moment, isMoment                         } from 'config/config.functions' ;
+import { PayrollPeriod                                         } from 'domain/payroll-period'   ;
+import { Shift                                                 } from 'domain/shift'            ;
+import { WorkOrder                                             } from 'domain/workorder'        ;
+import { Employee                                              } from 'domain/employee'         ;
+import { ReportOther                                           } from 'domain/reportother'      ;
+import { Jobsite                                               } from 'domain/jobsite'          ;
+import { UserData                                              } from 'providers/user-data'     ;
+import { sprintf                                               } from 'sprintf-js'              ;
+import { STRINGS                                               } from 'config/config.strings'   ;
+import { Preferences                                           } from 'providers/preferences'   ;
+import { TranslateService                                      } from '@ngx-translate/core'     ;
+import { TabsService                                           } from 'providers/tabs-service'  ;
 
 export const focusDelay = 500;
 
@@ -34,7 +36,7 @@ export const focusDelay = 500;
   templateUrl: 'report.html'
 })
 
-export class ReportPage implements OnInit {
+export class ReportPage implements OnInit,OnDestroy,AfterViewInit {
   @ViewChild('unitNumberInput') unitNumberInput;
   @ViewChild('workOrderNumberInput') workOrderNumberInput;
 
@@ -130,7 +132,8 @@ export class ReportPage implements OnInit {
     public audio        : SmartAudio,
     public modal        : ModalController,
     public zone         : NgZone,
-    public tabs         : TabsComponent,
+    // public tabs         : TabsComponent,
+    public tabServ      : TabsService,
     public ud           : UserData,
     public translate    : TranslateService,
   ) {
@@ -145,8 +148,23 @@ export class ReportPage implements OnInit {
   ngOnInit() {
     Log.l("Report.ngOnInit(): navParams are:\n", this.navParams);
     if (!(this.ud.isAppLoaded() && this.ud.isHomePageReady())) {
-      this.tabs.goToPage('OnSiteHome');
+      this.tabServ.goToPage('OnSiteHome');
     }
+    if(this.ud.isAppLoaded()) {
+      this.runWhenReady();
+    }
+  }
+
+  ngOnDestroy() {
+    Log.l("ReportPage: ngOnDestroy() fired");
+  }
+
+  ngAfterViewInit() {
+    Log.l("ReportPage: ngAfterViewInit() fired");
+    this.tabServ.setPageLoaded();
+  }
+
+  public runWhenReady() {
     this.dataReady = false;
     if (this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
     if (this.navParams.get('type') !== undefined) { this.type = this.navParams.get('type'); }
@@ -684,7 +702,7 @@ export class ReportPage implements OnInit {
 
     let p = this.ud.getPayrollPeriods();
     if(!p) {
-      this.tabs.goToPage('OnSiteHome');
+      this.tabServ.goToPage('OnSiteHome');
     } else {
       this.payrollPeriods = this.ud.getPayrollPeriods();
       if(this.period) {
@@ -968,12 +986,12 @@ export class ReportPage implements OnInit {
         this.currentRepairHours = 0;
         // this.ud.updateShifts();
         if(this.prefs.getStayInReports()) {
-          this.tabs.goToPage('Report');
+          this.tabServ.goToPage('Report');
           // this.createFreshReport();
           // this.initializeForm();
           // this.initializeFormListeners();
         } else {
-          this.tabs.goToPage('ReportHistory');
+          this.tabServ.goToPage('ReportHistory');
         }
       }).catch((err) => {
         Log.l("processWO(): Error saving work order to local database.");
@@ -993,7 +1011,7 @@ export class ReportPage implements OnInit {
         // this.ud.addNewReport(newWO);
         // this.ud.updateShifts();
         this.currentRepairHours = 0;
-        this.tabs.goToPage('ReportHistory');
+        this.tabServ.goToPage('ReportHistory');
       }).catch((err) => {
         Log.l("processWO(): Error saving work order to local database.");
         Log.e(err);
@@ -1026,7 +1044,7 @@ export class ReportPage implements OnInit {
         this.initializeForm();
         this.initializeFormListeners();
       } else {
-        this.tabs.goToPage('ReportHistory');
+        this.tabServ.goToPage('ReportHistory');
       }
       // if(this.mode === 'Add') {
       //   this.tabs.goToPage('OnSiteHome');
@@ -1043,9 +1061,9 @@ export class ReportPage implements OnInit {
   cancel() {
     Log.l("ReportPage: User canceled work order.");
     if (this.mode === 'Add' || this.mode === 'Añadir') {
-      this.tabs.goToPage('OnSiteHome');
+      this.tabServ.goToPage('OnSiteHome');
     } else {
-      this.tabs.goToPage('ReportHistory');
+      this.tabServ.goToPage('ReportHistory');
     }
   }
 
@@ -1205,7 +1223,7 @@ export class ReportPage implements OnInit {
         }).then(res => {
           Log.l(`deleteWorkOrder(): Synchronized local '${db.reports}' to remote.`)
           this.alert.hideSpinner();
-          this.tabs.goToPage('ReportHistory', {report_deleted: tmpReport});
+          this.tabServ.goToPage('ReportHistory', {report_deleted: tmpReport});
         }).catch((err) => {
           this.alert.hideSpinner();
           Log.l("deleteWorkOrder(): Error!");
@@ -1250,7 +1268,7 @@ export class ReportPage implements OnInit {
         }).then(res => {
           Log.l(`deleteOtherReport(): Synchronized local '${db.reports}' to remote.`);
           this.alert.hideSpinner();
-          this.tabs.goToPage('ReportHistory', { report_deleted: this.reportOther });
+          this.tabServ.goToPage('ReportHistory', { report_deleted: this.reportOther });
         }).catch((err) => {
           this.alert.hideSpinner();
           Log.l("deleteOtherReport(): Error!");

@@ -98,7 +98,7 @@ export class ClockComponent implements OnInit,OnDestroy {
     let timoutSececonds: number;
     let i:number;
     let now = time ? moment(time) : moment();
-    Log.l("setTimeHands(): setting to '%s'", now.format("HH:mm:ss"));
+    // Log.l("setTimeHands(): setting to '%s'", now.format("HH:mm:ss"));
     let hours = now.format("hh");
     let minutes = now.format("mm");
     let seconds = now.format("ss.SSS");

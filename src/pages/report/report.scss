@@ -117,19 +117,30 @@ page-report {
   }
   .report-dev-group {
     display: flex;
-    flex: 1 0 auto;
-    flex-direction: row;
-    flex-wrap: nowrap;
+    flex: 0 1 auto;
+    flex-flow: row nowrap;
     justify-content: flex-start;
-  }
-  .report-dev-header {
-    flex: 1 0 auto;
-    max-width: 50px;
-    margin: 2px;
-  }
-  .report-dev-data {
-    flex: 1 0 auto;
-    text-overflow: ellipsis;
-    margin: 2px;
+    align-content: center;
+    align-items: center;
+    .report-dev-header {
+      flex: 1 0 auto;
+      width: 60px;
+      max-width: 60px;
+      text-align: right;
+      font-weight: bold;
+      margin: 2px;
+    }
+    .report-dev-data {
+      flex: 0 1 auto;
+      text-overflow: ellipsis;
+      margin: 2px;
+    }
+    .report-ion-input {
+      border: 1px dotted lightgrey;
+      padding: 2px;
+      input {
+        margin: 0;
+      }
+    }
   }
 }

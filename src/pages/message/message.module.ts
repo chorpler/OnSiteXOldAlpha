@@ -1,7 +1,7 @@
 import { NgModule                         } from '@angular/core'                ;
 import { IonicPageModule                  } from 'ionic-angular'                ;
 import { MessagePage                      } from './message'                    ;
-import { TabsComponentModule              } from 'components/tabs/tabs.module'  ;
+// import { TabsComponentModule              } from 'components/tabs/tabs.module'  ;
 import { HttpClient                       } from '@angular/common/http'         ;
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core'          ;
 import { TranslateHttpLoader              } from '@ngx-translate/http-loader'   ;
@@ -14,7 +14,7 @@ import { PipesModule                      } from 'pipes/pipes.module'           
   ],
   imports: [
     PipesModule,
-    TabsComponentModule,
+    // TabsComponentModule,
     TranslateModule.forChild({
       loader: {
         provide: TranslateLoader,
@@ -26,7 +26,7 @@ import { PipesModule                      } from 'pipes/pipes.module'           
   ],
   exports: [
     MessagePage,
-    TabsComponentModule
+    // TabsComponentModule
   ]
 })
 export class MessagePageModule {}

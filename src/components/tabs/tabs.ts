@@ -1,5 +1,7 @@
+import { Subscription                                           } from 'rxjs/Subscription'         ;
 import { Component, OnInit, OnDestroy, ViewChild, Input, Output } from '@angular/core'             ;
 import { NgZone, ApplicationRef, ChangeDetectorRef,             } from '@angular/core'             ;
+import { ViewContainerRef, ElementRef,                          } from '@angular/core'             ;
 import { App, Platform, Nav                                     } from 'ionic-angular'             ;
 import { TranslateService                                       } from '@ngx-translate/core'       ;
 import { UserData                                               } from 'providers/user-data'       ;
@@ -7,56 +9,55 @@ import { AlertService                                           } from 'provider
 import { MessageService                                         } from 'providers/message-service' ;
 import { TabsService                                            } from 'providers/tabs-service'    ;
 import { Log, moment, Moment                                    } from 'config/config.functions'   ;
-
-enum Pages {
-  'OnSiteHome'    = 0,
-  'Report'        = 1,
-  'ReportHistory' = 2,
-  'User'          = 3,
-  'Message List'  = 4,
-  'Settings'      = 5,
-  'DevPage'       = 6,
-}
+import { Tab, Pages                                             } from 'config/config.types'       ;
 
 @Component({
   selector: 'onsite-tabs',
   templateUrl: 'tabs.html'
 })
 export class TabsComponent implements OnInit,OnDestroy {
-  @Input('hideArray') hideArray:Array<boolean>;
+  @Input('hideArray') hideArray:Array<boolean> = [];
+  @ViewChild('tabsContainer', {read: ViewContainerRef}) tabsContainer:ElementRef;
   public lang:any;
+  public pageSub:Subscription;
   public static nav:any;
   public nav:any = TabsComponent.nav;
   public change:any;
+  public ready:boolean = false;
+  public get tabInfo():Array<Tab> { return this.tabServ.tabInfo; };
+  public tabArray:Array<any> = [];
+  // public tabInfo:Array<any> = [];
   // public static unreadMessageCount:number = 0;
   // public get unreadMessageCount():number { return TabsComponent.unreadMessageCount;};
   // public set unreadMessageCount(value:number) { TabsComponent.unreadMessageCount = value;};
-  public static tabClass: Array<boolean> = [ false, false, false, false, false, false, false ];
-  public tabClass:Array<boolean> = TabsComponent.tabClass;
-  public static allTabs:any = {'disabled': false};
-  public allTabs:any = TabsComponent.allTabs;
-  public static ready:boolean = false;
-  public static get tabInfo() { return UserData.isDeveloper() ? TabsComponent.tabArrayDev : TabsComponent.tabArray; };
-  public static tabArray:any = [
-    { name: 'OnSiteHome'    , fullName: 'OnSite Home'        , waiting: false, icon: 'ios-home-outline'     , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
-    { name: 'Report'        , fullName: 'Report'             , waiting: false, icon: 'ios-document-outline' , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
-    { name: 'ReportHistory' , fullName: 'Report History'     , waiting: false, icon: 'ios-folder-outline'   , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
-    { name: 'User'          , fullName: 'User'               , waiting: false, icon: 'ios-contact-outline'  , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
-    { name: 'Message List'  , fullName: 'Messages'           , waiting: false, icon: 'ios-text-outline'     , active: false, get badgeCount():number { return UserData.getUnreadMessageCount();}, set badgeCount(value:number) {}, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
-    { name: 'Settings'      , fullName: 'Settings'           , waiting: false, icon: 'ios-settings-outline' , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
-  ];
-  public static tabArrayDev:any = [
-    ...TabsComponent.tabArray,
-    { name: 'DevPage', fullName: 'Developer Settings', icon: 'options', active: false, badgeCount: 0, get hideBadge() { return this.badgeCount <= 0 ? true : false }, set hideBadge(val: boolean) { } }
-  ];
+  // public static tabClass: Array<boolean> = [ false, false, false, false, false, false, false ];
+  // public tabClass:Array<boolean> = TabsComponent.tabClass;
+  // public static allTabs:any = {'disabled': false};
+  // public allTabs:any = TabsComponent.allTabs;
+  // public static ready:boolean = false;
+  // public static get tabInfo() { return UserData.isDeveloper() ? TabsComponent.tabArrayDev : TabsComponent.tabArray; };
+  // public static tabArray:any = [
+  //   { name: 'OnSiteHome'    , fullName: 'OnSite Home'        , waiting: false, icon: 'ios-home-outline'     , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
+  //   { name: 'Report'        , fullName: 'Report'             , waiting: false, icon: 'ios-document-outline' , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
+  //   { name: 'ReportHistory' , fullName: 'Report History'     , waiting: false, icon: 'ios-folder-outline'   , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
+  //   { name: 'User'          , fullName: 'User'               , waiting: false, icon: 'ios-contact-outline'  , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
+  //   { name: 'Message List'  , fullName: 'Messages'           , waiting: false, icon: 'ios-text-outline'     , active: false, get badgeCount():number { return UserData.getUnreadMessageCount();}, set badgeCount(value:number) {}, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
+  //   { name: 'Settings'      , fullName: 'Settings'           , waiting: false, icon: 'ios-settings-outline' , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
+  // ];
+  // public static tabArrayDev:any = [
+  //   ...TabsComponent.tabArray,
+  //   { name: 'DevPage', fullName: 'Developer Settings', icon: 'options', active: false, badgeCount: 0, get hideBadge() { return this.badgeCount <= 0 ? true : false }, set hideBadge(val: boolean) { } }
+  // ];
 
-  public get tabInfo():any {return TabsComponent.tabInfo; };
-  public get ready():boolean {return TabsComponent.ready;};
-  public set ready(value:boolean) { TabsComponent.ready = value;};
+  // public get tabInfo():any {return TabsComponent.tabInfo; };
+
+  // public get ready():boolean {return TabsComponent.ready;};
+  // public set ready(value:boolean) { TabsComponent.ready = value;};
+
   // public static tab:any = {
   //   'OnSiteHome': {}
   // };
-  public get tabArray():any {return TabsComponent.tabArray;};
+  // public get tabArray():any {return TabsComponent.tabArray;};
   public onSitePage     : any     ;
   public userLoggedIn   : boolean ;
   public userIsDeveloper: boolean =false ;
@@ -89,75 +90,14 @@ export class TabsComponent implements OnInit,OnDestroy {
     this.enumPagesDef = Pages;
   }
 
-  public static wait(val:number) {
-    let out = !TabsComponent.tabInfo[val].waiting;
-    // Log.l("wait(%d): value is ", val, out);
-    return out;
-  }
-
-  public static showWait(val:number) {
-    TabsComponent.tabInfo[val].waiting = false;
-  }
-
-  public static hideWait(val:number) {
-    TabsComponent.tabInfo[val].waiting = true;
-  }
-
-  public static toggleWait(val:number) {
-    TabsComponent.tabInfo[val].waiting = !TabsComponent.tabArray[val].waiting;
-    return TabsComponent.tabInfo[val].waiting;
-  }
-
-  public hide(val:number) {
-    return TabsComponent.wait(val);
-  }
-
-  public wait(val:number) {
-    return TabsComponent.wait(val);
-  }
-
-  public showWait(val:number) {
-    return TabsComponent.showWait(val);
-  }
-
-  public hideWait(val:number) {
-    return TabsComponent.hideWait(val);
-  }
-
-  public toggleWait(val:number) {
-    // TabsComponent.tabArray[val].waiting = !TabsComponent.tabArray[val].waiting;
-    // return TabsComponent.tabArray[val].waiting;
-    return TabsComponent.toggleWait(val);
-  }
-
-  public hideroo(value:number) {
-    let toHide = this.hider[value];
-    let style = {'hideSpinner': toHide};
-    return style;
-  }
-
-  // public static getUnreadMessageCount():number {
-  //   let ret = TabsComponent.unreadMessageCount ? TabsComponent.unreadMessageCount : 0;
-  //   return ret;
-  // }
-
-  // public getUnreadMessageCount():number {
-  //   if(this && this.msg && this.msg.getNewMessageCount) {
-  //     let msgs = this.msg.getNewMessageCount();
-  //     TabsComponent.unreadMessageCount = msgs ? msgs : 0;
-  //     return TabsComponent.unreadMessageCount;
-  //   } else {
-  //     return 0;
-  //   }
-  // }
-
   ngOnInit() {
     Log.l("TabsComponent: ngOnInit() fired")
     this.platform.ready().then(res => {
       this.change = ChangeDetectorRef;
       this.getActiveNav();
-      this.tabServ.setTabArray(this.tabInfo);
-      this.tabServ.setupTabs();
+      // this.tabServ.setTabArray(this.tabInfo);
+      // this.tabServ.setupTabs();
+      this.initializeSubscriptions();
       let translations = [
         'help_home',
         'help_reports',
@@ -185,7 +125,10 @@ export class TabsComponent implements OnInit,OnDestroy {
       });
       this.tabsReady = true;
       if(UserData.isAppLoaded()) {
-        if (this.onSitePage === 'Login') { this.setTabDisable(true); }
+        // if (this.onSitePage === 'Login') { this.setTabDisable(true); }
+        if (this.onSitePage === 'Login') {
+          this.tabServ.disableTabs();
+        }
 
         //  else {
           // if(this.isDeveloper()) {
@@ -202,7 +145,99 @@ export class TabsComponent implements OnInit,OnDestroy {
 
   ngOnDestroy() {
     Log.l("TabsComponent: ngOnDestroy() fired");
+    if(this.pageSub && !this.pageSub.closed) {
+      this.pageSub.unsubscribe();
+    }
   }
+
+  public initializeSubscriptions() {
+    this.pageSub = this.tabServ.pageChanged().subscribe((data:{page:string, params?:any}) => {
+      let page = data.page;
+      let params = data.params;
+      if(params) {
+        this.goToPage(page, params);
+      } else {
+        this.goToPage(page);
+      }
+    });
+  }
+
+  // public getHider(idx:number) {
+  //   // return this.hider[idx];
+  //   let out = this.tabServ.hidden[idx];
+  //   return out;
+  // }
+
+  // public static wait(val:number) {
+  //   let out = !TabsComponent.tabInfo[val].waiting;
+  //   // Log.l("wait(%d): value is ", val, out);
+  //   return out;
+  // }
+
+  // public static showWait(val:number) {
+  //   TabsComponent.tabInfo[val].waiting = false;
+  // }
+
+  // public static hideWait(val:number) {
+  //   TabsComponent.tabInfo[val].waiting = true;
+  // }
+
+  // public static toggleWait(val:number) {
+  //   TabsComponent.tabInfo[val].waiting = !TabsComponent.tabArray[val].waiting;
+
+  //   return TabsComponent.tabInfo[val].waiting;
+  // }
+
+  // public hide(val:number) {
+  //   return TabsComponent.wait(val);
+  // }
+
+  // public wait(val:number) {
+  //   return TabsComponent.wait(val);
+  // }
+
+  // public showWait(val:number) {
+  //   this.zone.run(() => {
+  //     return TabsComponent.showWait(val);
+  //   });
+  // }
+
+  // public hideWait(val:number) {
+  //   this.zone.run(() => {
+  //     return TabsComponent.hideWait(val);
+  //   });
+  // }
+
+  // public toggleWait(val:number) {
+  //   // TabsComponent.tabArray[val].waiting = !TabsComponent.tabArray[val].waiting;
+  //   // return TabsComponent.tabArray[val].waiting;
+  //   this.zone.run(() => {
+  //     // return TabsComponent.toggleWait(val);
+  //     this.hider[val] = !this.hider[val];
+  //     return this.hider[val];
+  //   });
+  // }
+
+  // public hideroo(value:number) {
+  //   let toHide = this.hider[value];
+  //   let style = {'hideSpinner': toHide};
+  //   return style;
+  // }
+
+  // public static getUnreadMessageCount():number {
+  //   let ret = TabsComponent.unreadMessageCount ? TabsComponent.unreadMessageCount : 0;
+  //   return ret;
+  // }
+
+  // public getUnreadMessageCount():number {
+  //   if(this && this.msg && this.msg.getNewMessageCount) {
+  //     let msgs = this.msg.getNewMessageCount();
+  //     TabsComponent.unreadMessageCount = msgs ? msgs : 0;
+  //     return TabsComponent.unreadMessageCount;
+  //   } else {
+  //     return 0;
+  //   }
+  // }
 
   public getActiveNav() {
     TabsComponent.nav = this.app.getActiveNavs()[0];
@@ -226,13 +261,18 @@ export class TabsComponent implements OnInit,OnDestroy {
 
     // this.highlightPageTab(pagename);
     // Log.l(`Tabs: found page ${pagename} at index ${Pages[pagename]}, getting NavController...`);
-    this.tabServ.setActive(idx);
+    if(idx > -1) {
+      this.tabServ.setActive(idx);
+    }
     this.getActiveNav();
     if(params) {
       // Log.l(`Tabs: found params, so now calling setRoot(${pagename}, ${params})...`);
       this.nav.setRoot(pagename, params);
     } else {
       // Log.l(`Tabs: no params, so now calling setRoot(${pagename})...`);
+      // setTimeout(() => {
+      //   this.tabServ.hidden[idx] = true;
+      // }, 1500);
       this.nav.setRoot(pagename);
     }
   }
@@ -254,9 +294,9 @@ export class TabsComponent implements OnInit,OnDestroy {
     }
   }
 
-  public setTabDisable(val:boolean) {
-    TabsComponent.allTabs.disabled = val;
-  }
+  // public setTabDisable(val:boolean) {
+  //   TabsComponent.allTabs.disabled = val;
+  // }
 
   public goHome() {
     // Log.l('entering page: OnSite Home' );
@@ -293,67 +333,67 @@ export class TabsComponent implements OnInit,OnDestroy {
     this.goToPage('DevPage');
   }
 
-  public highlightStatus(i: number) {
-    let ngClass = {'hlght': this.tabClass[i]};
-    return ngClass;
-  }
+  // public highlightStatus(i: number) {
+  //   let ngClass = {'hlght': this.tabClass[i]};
+  //   return ngClass;
+  // }
 
-  public highlightTab(tabIndx: number) {
-    /* For SHAME! An array .length call in the second clause of a for loop! If we add hundreds of tabs, there will be hell to pay, performance-wise! */
-    for( let i = 0; i < this.tabClass.length; i++ ) {
-      if( i === tabIndx ) { this.tabClass[i] = true; }
-      else { this.tabClass[i] = false; }
-    }
-  }
+  // public highlightTab(tabIndx: number) {
+  //   /* For SHAME! An array .length call in the second clause of a for loop! If we add hundreds of tabs, there will be hell to pay, performance-wise! */
+  //   for( let i = 0; i < this.tabClass.length; i++ ) {
+  //     if( i === tabIndx ) { this.tabClass[i] = true; }
+  //     else { this.tabClass[i] = false; }
+  //   }
+  // }
 
   public isDeveloper() {
     return this.ud.isDeveloper();
   }
 
-  public setMessageBadge(count:number) {
-    this.tabInfo[Pages['Message List']].badgeCount = count;
-    if(count <= 0) {
-      this.tabInfo[Pages['Message List']].hideBadge = true;
-      count = 0;
-    } else {
-      this.tabInfo[Pages['Message List']].hideBadge = false;
-    }
-  }
+  // public setMessageBadge(count:number) {
+  //   this.tabInfo[Pages['Message List']].badgeCount = count;
+  //   if(count <= 0) {
+  //     this.tabInfo[Pages['Message List']].hideBadge = true;
+  //     count = 0;
+  //   } else {
+  //     this.tabInfo[Pages['Message List']].hideBadge = false;
+  //   }
+  // }
 
-  public getMessageBadge() {
-    return this.tabInfo[Pages['Message List']].badgeCount;
-  }
+  // public getMessageBadge() {
+  //   return this.tabInfo[Pages['Message List']].badgeCount;
+  // }
 
-  public decrementMessageBadge() {
-    this.tabInfo[Pages['Message List']].badgeCount--;
-    let count = this.tabInfo[Pages['Message List']].badgeCount;
-    if (count <= 0) {
-      count = 0;
-      this.tabInfo[Pages['Message List']].hideBadge = true;
-    } else {
-      this.tabInfo[Pages['Message List']].hideBadge = false;
-    }
-  }
+  // public decrementMessageBadge() {
+  //   this.tabInfo[Pages['Message List']].badgeCount--;
+  //   let count = this.tabInfo[Pages['Message List']].badgeCount;
+  //   if (count <= 0) {
+  //     count = 0;
+  //     this.tabInfo[Pages['Message List']].hideBadge = true;
+  //   } else {
+  //     this.tabInfo[Pages['Message List']].hideBadge = false;
+  //   }
+  // }
 
-  public incrementMessageBadge() {
-    this.tabInfo[Pages['Message List']].badgeCount++
-    let count = this.tabInfo[Pages['Message List']].badgeCount;
-    if (count <= 0) {
-      this.tabInfo[Pages['Message List']].hideBadge = true;
-    } else {
-      this.tabInfo[Pages['Message List']].hideBadge = false;
-    }
-  }
+  // public incrementMessageBadge() {
+  //   this.tabInfo[Pages['Message List']].badgeCount++
+  //   let count = this.tabInfo[Pages['Message List']].badgeCount;
+  //   if (count <= 0) {
+  //     this.tabInfo[Pages['Message List']].hideBadge = true;
+  //   } else {
+  //     this.tabInfo[Pages['Message List']].hideBadge = false;
+  //   }
+  // }
 
-  public showWaiting(tab:number) {
-    this.tabArray[tab].waiting = true;
-  }
-  public hideWaiting(tab:number) {
-    this.tabArray[tab].waiting = false;
-  }
-  public toggleWaiting(tab:number) {
-    this.tabArray[tab].waiting = !this.tabArray[tab].waiting;
-  }
+  // public showWaiting(tab:number) {
+  //   this.tabArray[tab].waiting = true;
+  // }
+  // public hideWaiting(tab:number) {
+  //   this.tabArray[tab].waiting = false;
+  // }
+  // public toggleWaiting(tab:number) {
+  //   this.tabArray[tab].waiting = !this.tabArray[tab].waiting;
+  // }
 
   public terminateApp() {
     let lang = this.translate.instant(['confirm_exit_title', 'confirm_exit_message']);
@@ -392,12 +432,16 @@ export class TabsComponent implements OnInit,OnDestroy {
   }
 
   public getIcon(idx:number) {
-    let tab = this.tabInfo[idx];
-    let name = tab.icon;
-    let className =  `ion-${name}`;
-    let style:any = {};
-    style[className] = true;
-    return style;
+    return this.tabServ.getIcon(idx);
   }
+
+  // public getIcon(idx:number) {
+  //   let tab = this.tabInfo[idx];
+  //   let name = tab.icon;
+  //   let className =  `ion-${name}`;
+  //   let style:any = {};
+  //   style[className] = true;
+  //   return style;
+  // }
 
 }

@@ -1,7 +1,7 @@
-import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
-import { HrsSummaryPage } from './hrs-summary';
-import { TabsComponentModule } from '../../components/tabs/tabs.module';
+import { NgModule            } from '@angular/core'               ;
+import { IonicPageModule     } from 'ionic-angular'               ;
+import { HrsSummaryPage      } from './hrs-summary'               ;
+// import { TabsComponentModule } from 'components/tabs/tabs.module' ;
 
 @NgModule({
   declarations: [
@@ -9,11 +9,11 @@ import { TabsComponentModule } from '../../components/tabs/tabs.module';
   ],
   imports: [
     IonicPageModule.forChild(HrsSummaryPage),
-    TabsComponentModule,
+    // TabsComponentModule,
   ],
   exports: [
     HrsSummaryPage,
-    TabsComponentModule,
+    // TabsComponentModule,
   ]
 })
 export class HrsSummaryPageModule {}

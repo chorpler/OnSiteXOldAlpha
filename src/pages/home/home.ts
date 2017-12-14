@@ -1,5 +1,7 @@
+// import { TabsComponent                                    } from 'components/tabs/tabs'      ;
 import { sprintf                                          } from 'sprintf-js'                ;
 import { Component, OnInit, Input, NgZone, ViewChild      } from '@angular/core'             ;
+import { AfterViewChecked, AfterViewInit, OnDestroy,      } from '@angular/core'             ;
 import { HttpClient                                       } from '@angular/common/http'      ;
 import { DomSanitizer                                     } from '@angular/platform-browser' ;
 import { trigger, state, style, animate, transition       } from '@angular/animations'       ;
@@ -19,19 +21,20 @@ import { ReportOther                                      } from 'domain/reporto
 import { Shift                                            } from 'domain/shift'              ;
 import { PayrollPeriod                                    } from 'domain/payroll-period'     ;
 import { Employee                                         } from 'domain/employee'           ;
-import { TabsComponent                                    } from 'components/tabs/tabs'      ;
+import { TabsService                                      } from 'providers/tabs-service'    ;
 import { STRINGS                                          } from 'config/config.strings'     ;
 import { Preferences                                      } from 'providers/preferences'     ;
 import { SafePipe                                         } from 'pipes/safe'                ;
 import { SmartAudio                                       } from 'providers/smart-audio'     ;
+import { Icons                                            } from 'config/config.types'       ;
 
-enum Icons {
-  'box-check-no'   = 0,
-  'box-check-yes'  = 1,
-  'flag-blank'     = 2,
-  'flag-checkered' = 3,
-  'unknown'        = 4,
-}
+// enum Icons {
+//   'box-check-no'   = 0,
+//   'box-check-yes'  = 1,
+//   'flag-blank'     = 2,
+//   'flag-checkered' = 3,
+//   'unknown'        = 4,
+// }
 
 @IonicPage({
   name: 'OnSiteHome'
@@ -40,7 +43,7 @@ enum Icons {
   selector: 'page-home',
   templateUrl: 'home.html',
 })
-export class HomePage {
+export class HomePage implements OnInit,OnDestroy,AfterViewInit {
   static PREFS                       : any           = new Preferences()        ;
   static EVENTS                      : Events                                   ;
   static startupHandler              : any                                      ;
@@ -133,7 +136,8 @@ export class HomePage {
               public ud          : UserData,
               public db          : DBSrvcs,
               public events      : Events,
-              public tabs        : TabsComponent,
+              // public tabs        : TabsComponent,
+              public tabServ     : TabsService,
               public alert       : AlertService,
               public zone        : NgZone,
               public translate   : TranslateService,
@@ -191,13 +195,27 @@ export class HomePage {
     }
   }
 
+  ngOnInit() {
+    Log.l("HomePage: ngOnInit() fired");
+  }
+
+  ngOnDestroy() {
+    Log.l("HomePage: ngOnDestroy() fired");
+  }
+
+  ngAfterViewInit() {
+    Log.l("HomePage: ngAfterViewInit() fired");
+    // this.tabServ.setPageLoaded();
+  }
+
   ionViewDidEnter() {
     Log.l("HomePage: ionViewDidEnter() called. First wait to make sure app is finished loading.");
     var caller = this;
     let lang = this.lang;
     // if(HomePage.homePageStatus.startupFinished) {
     // Log.l("HomePage.ionViewDidEnter(): startup already finished, just continuing with runEveryTime()...");
-    this.tabs.highlightPageTab('OnSiteHome');
+    // this.tabs.highlightPageTab('OnSiteHome');
+    this.tabServ.active[0] = true;
     let loaded = this.ud.isAppLoaded();
     let ready = this.ud.isHomePageReady();
     let loading = this.ud.isHomePageLoading();
@@ -327,6 +345,7 @@ export class HomePage {
       this.ud.setHomePageReady(true);
       HomePage.homePageStatus.startupFinished = true;
       this.dataReady = true;
+      this.tabServ.setPageLoaded();
     }).catch(err => {
       Log.l("Error fetching tech work orders!");
       Log.e(err);
@@ -571,7 +590,8 @@ export class HomePage {
     //   else { console.log("Login Modal did not succeed."); }
     // });
     // loginPage.present();
-    this.tabs.goToPage('Login');
+    // this.tabs.goToPage('Login');
+    this.tabServ.goToPage('Login');
   }
 
   getCheckboxSVG(shift:Shift) {
@@ -640,9 +660,9 @@ export class HomePage {
 
   showShiftReports(shift:Shift) {
     if(shift.getAllShiftReports().length > 0) {
-      this.tabs.goToPage('ReportHistory', {mode: 'Shift', shift: shift, payroll_period: this.period});
+      this.tabServ.goToPage('ReportHistory', {mode: 'Shift', shift: shift, payroll_period: this.period});
     } else {
-      this.tabs.goToPage('Report', {mode: 'Add', shift: shift, payroll_period: this.period});
+      this.tabServ.goToPage('Report', {mode: 'Add', shift: shift, payroll_period: this.period});
     }
     // if(this.ud.getWorkOrdersForShift(shift.getShiftSerial()).length > 0) {
     //   this.tabs.goToPage('ReportHistory', {mode: 'Shift', shift: shift, payroll_period: this.period});
@@ -663,12 +683,18 @@ export class HomePage {
     this.ud.setHomePeriod(this.period);
   }
 
-  toggleClock() {
+  toggleClock(event?:any) {
+    Log.l("toggleClock(): Event is:\n", event);
+    // if(event && event.shiftKey) {
+    //   this.tabServ.hidden[2] = !this.tabServ.hidden[2];
+    //   return;
+    // }
     let now = moment();
     // this.ud.updateClock(now);
     this.dataReady = !this.dataReady;
-    let hpr = this.ud.isHomePageReady();
-    this.ud.setHomePageReady(!hpr);
+    this.ud.showClock = !this.ud.showClock;
+    // let hpr = this.ud.isHomePageReady();
+    // this.ud.setHomePageReady(!hpr);
   }
 
 }

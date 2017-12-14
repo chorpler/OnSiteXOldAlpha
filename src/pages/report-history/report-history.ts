@@ -1,21 +1,23 @@
-import { Component, OnInit, ChangeDetectionStrategy, NgZone                  } from '@angular/core'                 ;
-import { IonicPage, NavController, NavParams, LoadingController, ItemSliding } from 'ionic-angular'                 ;
-import { DBSrvcs                                                             } from '../../providers/db-srvcs'      ;
-import { AuthSrvcs                                                           } from '../../providers/auth-srvcs'    ;
-import { SrvrSrvcs                                                           } from '../../providers/srvr-srvcs'    ;
-import { UserData                                                            } from '../../providers/user-data'     ;
-import { AlertService                                                        } from '../../providers/alerts'        ;
-import { Log, isMoment, moment, Moment                                       } from '../../config/config.functions' ;
-import { WorkOrder                                                           } from '../../domain/workorder'        ;
-import { ReportOther                                                         } from '../../domain/reportother'      ;
-import { Shift                                                               } from '../../domain/shift'            ;
-import { PayrollPeriod                                                       } from '../../domain/payroll-period'   ;
-import { Preferences                                                         } from '../../providers/preferences'   ;
-import { TranslateService                                                    } from '@ngx-translate/core'           ;
-import { TabsComponent                                                       } from '../../components/tabs/tabs'    ;
-// import { OrderBy                                                             } from '../../pipes/pipes'             ;
-import { STRINGS                                                             } from '../../config/config.strings'   ;
-import { SmartAudio                                                          } from '../../providers/smart-audio'   ;
+// import { TabsComponent                                                       } from 'components/tabs/tabs'    ;
+// import { OrderBy                                                             } from 'pipes/pipes'             ;
+import { Component, OnInit, ChangeDetectionStrategy, NgZone,                 } from '@angular/core'           ;
+import { OnDestroy, AfterViewInit,                                        } from '@angular/core'           ;
+import { IonicPage, NavController, NavParams, LoadingController, ItemSliding } from 'ionic-angular'           ;
+import { DBSrvcs                                                             } from 'providers/db-srvcs'      ;
+import { AuthSrvcs                                                           } from 'providers/auth-srvcs'    ;
+import { SrvrSrvcs                                                           } from 'providers/srvr-srvcs'    ;
+import { UserData                                                            } from 'providers/user-data'     ;
+import { AlertService                                                        } from 'providers/alerts'        ;
+import { Log, isMoment, moment, Moment                                       } from 'config/config.functions' ;
+import { WorkOrder                                                           } from 'domain/workorder'        ;
+import { ReportOther                                                         } from 'domain/reportother'      ;
+import { Shift                                                               } from 'domain/shift'            ;
+import { PayrollPeriod                                                       } from 'domain/payroll-period'   ;
+import { Preferences                                                         } from 'providers/preferences'   ;
+import { TranslateService                                                    } from '@ngx-translate/core'     ;
+import { STRINGS                                                             } from 'config/config.strings'   ;
+import { SmartAudio                                                          } from 'providers/smart-audio'   ;
+import { TabsService                                                         } from 'providers/tabs-service'  ;
 
 export const _sortReports = (a:WorkOrder,b:WorkOrder):number => {
   let dateA  = a['report_date'];
@@ -49,7 +51,7 @@ export const _sortOtherReports = (a:ReportOther,b:ReportOther):number => {
 templateUrl: 'report-history.html',
 // changeDetection: ChangeDetectionStrategy.OnPush })
 })
-export class ReportHistory implements OnInit {
+export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
   public title        : string           = 'Reports'                                                    ;
   public lang         : any                                                                             ;
   public pageReady    : boolean          = false                                                        ;
@@ -68,18 +70,26 @@ export class ReportHistory implements OnInit {
   public prefs        : any                  = ReportHistory.PREFS                                      ;
   public shiftToUse   : Shift                = null                                                     ;
   public numChars     : Array<string>        = STRINGS.NUMCHARS                                         ;
-  constructor( public navCtrl  : NavController    , public navParams  : NavParams         ,
-               public db       : DBSrvcs          , public alert      : AlertService      ,
-               private auth    : AuthSrvcs        , public loadingCtrl: LoadingController ,
-               public server   : SrvrSrvcs        , public ud         : UserData          ,
-               public translate: TranslateService , public tabs       : TabsComponent     ,
-               public zone     : NgZone           , public audio      : SmartAudio        ,
+  constructor(
+    public navCtrl     : NavController     ,
+    public navParams   : NavParams         ,
+    public db          : DBSrvcs           ,
+    public alert       : AlertService      ,
+    private auth       : AuthSrvcs         ,
+    public loadingCtrl : LoadingController ,
+    public server      : SrvrSrvcs         ,
+    public ud          : UserData          ,
+    public translate   : TranslateService  ,
+    // public tabs        : TabsComponent     ,
+    public tabServ     : TabsService       ,
+    public zone        : NgZone            ,
+    public audio       : SmartAudio        ,
   ) {
     window["onsitereporthistory"] = this;
   }
 
   ngOnInit() {
-    Log.l("ReportHistory: ngOnInit called...");
+    Log.l("ReportHistory: ngOnInit() fired");
     // if (!(this.ud.isAppLoaded() && this.ud.isHomePageReady())) {
     //   this.tabs.goToPage('OnSiteHome');
     // } else {
@@ -87,12 +97,21 @@ export class ReportHistory implements OnInit {
     // }
   }
 
+  ngOnDestroy() {
+    Log.l("ReportHistory: ngOnDestroy() fired");
+  }
+
+  ngAfterViewInit() {
+    Log.l("ReportHistory: ngAfterViewInit() fired");
+    this.tabServ.setPageLoaded();
+  }
+
   ionViewDidEnter() {
     Log.l("ReportHistory: ionViewDidEnter called...");
     window["onsitereporthistory"] = this;
     this.pageReady = false;
     if(!(this.ud.isAppLoaded() && this.ud.isHomePageReady())) {
-      this.tabs.goToPage('OnSiteHome');
+      this.tabServ.goToPage('OnSiteHome');
     } else {
       this.runOnPageLoad();
     }
@@ -271,9 +290,9 @@ export class ReportHistory implements OnInit {
     // if(shiftToSend) {
       Log.l("itemTapped(): Got shift to send:\n", shift);
       if(item['type'] && item['type'] !== 'Work Report') {
-        this.tabs.goToPage('Report', {mode: 'Edit', reportOther: report, shift: shift, payroll_period: this.period, type: item['type']});
+        this.tabServ.goToPage('Report', {mode: 'Edit', reportOther: report, shift: shift, payroll_period: this.period, type: item['type']});
       } else if(item instanceof WorkOrder) {
-        this.tabs.goToPage('Report', {mode: 'Edit', workOrder: report, shift: shift, payroll_period: this.period});
+        this.tabServ.goToPage('Report', {mode: 'Edit', workOrder: report, shift: shift, payroll_period: this.period});
       } else {
         this.alert.showAlert(lang['error'] + " PEBCAK-002", lang['error_report_not_found']);
       }
@@ -284,7 +303,7 @@ export class ReportHistory implements OnInit {
 
   public addNewReportForShift(shift: Shift) {
     Log.l("addNewReportForShift(): Got shift to send:\n", shift);
-    this.tabs.goToPage('Report', { mode: 'Add', shift: shift, payroll_period: this.period });
+    this.tabServ.goToPage('Report', { mode: 'Add', shift: shift, payroll_period: this.period });
   }
 
   // public deleteWorkOrder(event:Event, report:WorkOrder, shift:Shift) {

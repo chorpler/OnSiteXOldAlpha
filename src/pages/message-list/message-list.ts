@@ -1,17 +1,19 @@
-import { Component, OnInit, NgZone                            } from '@angular/core'                   ;
-import { Pipe, PipeTransform                                  } from '@angular/core'                   ;
-import { DomSanitizer                                         } from '@angular/platform-browser'       ;
-import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular'                   ;
-import { TranslateService                                     } from '@ngx-translate/core'             ;
-import { Log, isMoment, moment, Moment                        } from '../../config/config.functions'   ;
-import { STRINGS                                              } from '../../config/config.strings'     ;
-import { TabsComponent                                        } from '../../components/tabs/tabs'      ;
-import { DBSrvcs                                              } from '../../providers/db-srvcs'        ;
-import { SrvrSrvcs                                            } from '../../providers/srvr-srvcs'      ;
-import { UserData                                             } from '../../providers/user-data'       ;
-import { SafePipe                                             } from '../../pipes/safe'                ;
-import { Message                                              } from '../../domain/message'            ;
-import { MessageService                                       } from '../../providers/message-service' ;
+// import { TabsComponent                                        } from 'components/tabs/tabs'      ;
+import { Component, OnInit, OnDestroy, NgZone,                } from '@angular/core'             ;
+import { AfterViewInit,                                       } from '@angular/core'             ;
+import { Pipe, PipeTransform                                  } from '@angular/core'             ;
+import { DomSanitizer                                         } from '@angular/platform-browser' ;
+import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular'             ;
+import { TranslateService                                     } from '@ngx-translate/core'       ;
+import { Log, isMoment, moment, Moment                        } from 'config/config.functions'   ;
+import { STRINGS                                              } from 'config/config.strings'     ;
+import { DBSrvcs                                              } from 'providers/db-srvcs'        ;
+import { SrvrSrvcs                                            } from 'providers/srvr-srvcs'      ;
+import { UserData                                             } from 'providers/user-data'       ;
+import { SafePipe                                             } from 'pipes/safe'                ;
+import { Message                                              } from 'domain/message'            ;
+import { MessageService                                       } from 'providers/message-service' ;
+import { TabsService                                          } from 'providers/tabs-service'    ;
 
 export const _msgSort = (a, b) => {
   let timeA = moment(a.date);
@@ -26,7 +28,7 @@ export const _msgSort = (a, b) => {
   selector: 'page-message-list',
   templateUrl: 'message-list.html',
 })
-export class MessageListPage implements OnInit {
+export class MessageListPage implements OnInit,OnDestroy,AfterViewInit {
   public lang     : any                    ;
   public language : string = "en"          ;
   public messages : Array<Message> = []    ;
@@ -42,7 +44,8 @@ export class MessageListPage implements OnInit {
     public db        : DBSrvcs          ,
     public server    : SrvrSrvcs        ,
     public msg       : MessageService   ,
-    public tabs      : TabsComponent    ,
+    // public tabs      : TabsComponent    ,
+    public tabServ   : TabsService      ,
     public modalCtrl : ModalController  ,
     public ud        : UserData         ,
   ) {
@@ -51,6 +54,15 @@ export class MessageListPage implements OnInit {
 
   ngOnInit() {
     Log.l("MessageListPage: ngOnInit() fired");
+  }
+
+  ngOnDestroy() {
+    Log.l("MessageListPage: ngOnDestroy() fired");
+  }
+
+  ngAfterViewInit() {
+    Log.l("MessageListPage: ngAfterViewInit() fired");
+    this.tabServ.setPageLoaded();
   }
 
   ionViewDidLoad() {
@@ -100,7 +112,7 @@ export class MessageListPage implements OnInit {
 
   closeMessages() {
     Log.l("closeMessages(): User clicked close messages.");
-    this.tabs.goToPage('OnSiteHome');
+    this.tabServ.goToPage('OnSiteHome');
   }
 
 

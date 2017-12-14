@@ -661,7 +661,7 @@ export class SrvrSrvcs {
       Log.l("saveReadMessage(): Now attempting to save serialized message:\n", out);
       // db1.putIfNotExists()
       db1.upsert(message._id, (doc) => {
-        if(typeof doc === 'object' && Object.keys(doc).length > 0 && typeof doc['read'] !== undefined && (doc.read === false || doc.read === null)) {
+        if(doc && doc._rev) {
           doc.read = true;
           return doc;
         } else {

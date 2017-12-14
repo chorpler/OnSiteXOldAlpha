@@ -1,5 +1,6 @@
-<div class="waiting-clock" *ngIf="!ud.isAppLoaded() && ud.showClock">
+<div class="waiting-clock" *ngIf="ud.showClock">
   <clock></clock>
 </div>
 <ion-nav class="ionic-root-nav-element" [root]="rootPage"></ion-nav>
-<onsite-tabs [hideArray]="hiddenArray"></onsite-tabs>
+<onsite-tabs></onsite-tabs>
+<ng-template #tabsTarget></ng-template>
