@@ -12,7 +12,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content class="page-content report-page-content">
+<ion-content class="page-content report-page-content" (swipe)="tabServ.handleSwipe($event)">
   <div class="data-elements" *ngIf="dataReady && selectedShift">
     <div class="work-order-payroll-hours-header">
       <span class="shift-hours-header" [ngClass]="getShiftHoursStatus(selectedShift)" *ngIf="workOrderForm && workOrderForm.value && workOrderForm.value.selected_shift">
@@ -47,192 +47,210 @@
             <ion-option *ngFor="let type of selReportType" [value]="type">{{type.name | translate}}</ion-option>
           </ion-select>
         </ion-item>
-        <ion-item (tap)="showFancySelect()" class="item item-button ion-item-button-like">
+        <ion-item (tap)="showFancySelect($select)" class="item item-button ion-item-button-like">
           <ion-label>{{'shift_date' | translate}}</ion-label>
           <ion-input #shiftDateResults class="shift-date-select-results" [value]="selectedShift.toString(translate)" readonly></ion-input>
           <!-- <ion-input #shiftDateResults [disabled]="shiftDateInputDisabled" class="shift-date-select-results" [value]="selectedShift.toString(translate)"></ion-input> -->
           <ion-icon item-right class="shift-date-select-icon" name="md-arrow-dropdown"></ion-icon>
         </ion-item>
       </ion-list>
+      <ion-list class="report-form-list" [ngSwitch]="type.name">
 
 <!-- ******************************************************************************************************************************  -->
 <!--WORK REPORT  -->
-      <ion-list *ngIf="type.name==='work_report'">
-        <span class="report-dev-info" *ngIf="(prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && !ud.isDeveloper()">
-          <span class="report-dev-group" *ngIf="prefs.getShowID()"   ><p class="report-dev-header">ID:</p><p class="report-dev-data">{{workOrder.getReportID()}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowRev()"  ><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{workOrder._rev}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{workOrder.report_date}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Start:</p><p class="report-dev-data">{{workOrder.time_start}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">End:</p><p class="report-dev-data">{{workOrder.time_end}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{workOrder.client}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{workOrder.location}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{workOrder.location_id}}</p></span>
-        </span>
-        <span class="report-dev-info" *ngIf="(prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && ud.isDeveloper()">
-          <span class="report-dev-group" *ngIf="prefs.getShowID()"   ><p class="report-dev-header">ID:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder._id" [ngModelOptions]="{standalone: true}"></ion-input></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowRev()"  ><p class="report-dev-header">Rev:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder._rev" [ngModelOptions]="{standalone: true}"></ion-input></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder.report_date" [ngModelOptions]="{standalone: true}"></ion-input></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Start:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder.time_start" [ngModelOptions]="{standalone: true}"></ion-input></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">End:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder.time_end" [ngModelOptions]="{standalone: true}"></ion-input></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder.client" [ngModelOptions]="{standalone: true}"></ion-input></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder.location" [ngModelOptions]="{standalone: true}"></ion-input></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder.location_id" [ngModelOptions]="{standalone: true}"></ion-input></span>
-        </span>
-        <ion-item>
-          <ion-label>{{'repair_time' | translate}}</ion-label>
-          <ion-multi-picker class="repair-hours-picker" item-content [separator]="':'" [multiPickerColumns]="chooseHours" formControlName="repair_time"></ion-multi-picker>
-          <ion-icon item-right class="shift-repair-time-icon" name="md-arrow-dropdown"></ion-icon>
-        </ion-item>
-        <ion-item>
-          <ion-label floating>{{'unit_number' | translate}}</ion-label>
-          <ion-input #unitNumberInput type="text" formControlName="unit_number"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label floating>{{'work_order_number' | translate}}</ion-label>
-          <ion-input #workOrderNumberInput type="text" formControlName="work_order_number"></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label floating>{{'job_notes' | translate}}</ion-label>
-          <ion-textarea formControlName="notes"></ion-textarea>
-        </ion-item>
-        <ion-item *ngIf="syncError" class="alert danger">
-          <div>{{'report_submit_error' | translate}}</div>
-        </ion-item>
-      </ion-list>
+      <ng-container *ngSwitchCase="null || undefined || 'work_report'">
+        <ion-list>
+          <span class="report-dev-info" *ngIf="(prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && !ud.isDeveloper()">
+            <span class="report-dev-group" *ngIf="prefs.getShowID()"   ><p class="report-dev-header">ID:</p><p class="report-dev-data">{{workOrder.getReportID()}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowRev()"  ><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{workOrder._rev}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{workOrder.report_date}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Start:</p><p class="report-dev-data">{{workOrder.time_start}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">End:</p><p class="report-dev-data">{{workOrder.time_end}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{workOrder.client}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{workOrder.location}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{workOrder.location_id}}</p></span>
+          </span>
+          <span class="report-dev-info" *ngIf="(prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && ud.isDeveloper()">
+            <span class="report-dev-group" *ngIf="prefs.getShowID()"   ><p class="report-dev-header">ID:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder._id" [ngModelOptions]="{standalone: true}"></ion-input></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowRev()"  ><p class="report-dev-header">Rev:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder._rev" [ngModelOptions]="{standalone: true}"></ion-input></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder.report_date" [ngModelOptions]="{standalone: true}"></ion-input></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Start:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder.time_start" [ngModelOptions]="{standalone: true}"></ion-input></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">End:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder.time_end" [ngModelOptions]="{standalone: true}"></ion-input></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder.client" [ngModelOptions]="{standalone: true}"></ion-input></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder.location" [ngModelOptions]="{standalone: true}"></ion-input></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><ion-input class="report-dev-data report-ion-input" [(ngModel)]="workOrder.location_id" [ngModelOptions]="{standalone: true}"></ion-input></span>
+          </span>
+          <ion-item>
+            <ion-label>{{'repair_time' | translate}}</ion-label>
+            <ion-multi-picker class="repair-hours-picker" item-content [separator]="':'" [multiPickerColumns]="chooseHours" formControlName="repair_time"></ion-multi-picker>
+            <ion-icon item-right class="shift-repair-time-icon" name="md-arrow-dropdown"></ion-icon>
+          </ion-item>
+          <ion-item>
+            <ion-label floating>{{'unit_number' | translate}}</ion-label>
+            <ion-input #unitNumberInput type="text" formControlName="unit_number"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label floating>{{'work_order_number' | translate}}</ion-label>
+            <ion-input #workOrderNumberInput type="text" formControlName="work_order_number"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label floating>{{'job_notes' | translate}}</ion-label>
+            <ion-textarea formControlName="notes"></ion-textarea>
+          </ion-item>
+          <ion-item *ngIf="syncError" class="alert danger">
+            <div>{{'report_submit_error' | translate}}</div>
+          </ion-item>
+        </ion-list>
+      </ng-container>
 
 <!-- TRAVEL  -->
-      <ion-list *ngIf="type.name==='travel'">
-        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
-          <span class="report-dev-group" *ngIf="prefs.getShowID()"><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{reportOther._rev}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{reportOther.report_date}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{reportOther.client}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{reportOther.location}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{reportOther.location_id}}</p></span>
-        </span>
-        <ion-item>
-          <ion-label>{{'travel' | translate}} </ion-label>
-          <ion-select formControlName="travel_location">
-            <ion-option *ngFor="let travel_location of selTravelLocation" [value]="travel_location">{{travel_location.name | translate}}</ion-option>
-          </ion-select>
-        </ion-item>
-        <ion-item>
-          <ion-label class="report-time-label">{{'travel_hours' | translate}} </ion-label>
-          <ion-input class="report-time-input" formControlName="time"></ion-input>
-        </ion-item>
-      </ion-list>
+      <ng-container *ngSwitchCase="'travel'">
+        <ion-list>
+          <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
+            <span class="report-dev-group" *ngIf="prefs.getShowID()"><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{reportOther._rev}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{reportOther.report_date}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{reportOther.client}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{reportOther.location}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{reportOther.location_id}}</p></span>
+          </span>
+          <ion-item>
+            <ion-label>{{'travel' | translate}} </ion-label>
+            <ion-select formControlName="travel_location">
+              <ion-option *ngFor="let travel_location of selTravelLocation" [value]="travel_location">{{travel_location.name | translate}}</ion-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label class="report-time-label">{{'travel_hours' | translate}} </ion-label>
+            <ion-input class="report-time-input" formControlName="time"></ion-input>
+          </ion-item>
+        </ion-list>
+      </ng-container>
 
 <!-- TRAINING  -->
-      <ion-list *ngIf="type.name==='training'">
-        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
-          <span class="report-dev-group" *ngIf="prefs.getShowID()"><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{reportOther._rev}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{reportOther.report_date}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{reportOther.client}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{reportOther.location}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{reportOther.location_id}}</p></span>
-        </span>
-        <ion-item>
-          <ion-label>{{'training' | translate}}</ion-label>
-          <ion-select formControlName="training_type">
-              <ion-option *ngFor="let training_type of selTrainingType" [value]="training_type">{{training_type.name | translate}}</ion-option>
-          </ion-select>
-        </ion-item>
-        <ion-item>
-          <ion-label class="report-time-label">{{'training_hours' | translate}}</ion-label>
-          <ion-input class="report-time-input" formControlName="time" placeholder="2"></ion-input>
-        </ion-item>
-      </ion-list>
+      <ng-container *ngSwitchCase="'training'">
+        <ion-list *ngIf="type.name==='training'">
+          <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
+            <span class="report-dev-group" *ngIf="prefs.getShowID()"><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{reportOther._rev}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{reportOther.report_date}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{reportOther.client}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{reportOther.location}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{reportOther.location_id}}</p></span>
+          </span>
+          <ion-item>
+            <ion-label>{{'training' | translate}}</ion-label>
+            <ion-select formControlName="training_type">
+                <ion-option *ngFor="let training_type of selTrainingType" [value]="training_type">{{training_type.name | translate}}</ion-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label class="report-time-label">{{'training_hours' | translate}}</ion-label>
+            <ion-input class="report-time-input" formControlName="time" placeholder="2"></ion-input>
+          </ion-item>
+        </ion-list>
+      </ng-container>
 
 <!-- STANDBY (BILLABLE)  -->
-      <ion-list *ngIf="type.name==='standby'">
-        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
-          <span class="report-dev-group" *ngIf="prefs.getShowID()"><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{reportOther._rev}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{reportOther.report_date}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{reportOther.client}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{reportOther.location}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{reportOther.location_id}}</p></span>
-        </span>
-        <ion-item>
-          <ion-label class="report-time-label">{{'standby' | translate}}</ion-label>
-          <ion-input class="report-time-input" formControlName="time" type="number" placeholder="8"></ion-input>
-        </ion-item>
-      </ion-list>
+      <ng-container *ngSwitchCase="'standby'">
+        <ion-list>
+          <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
+            <span class="report-dev-group" *ngIf="prefs.getShowID()"><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{reportOther._rev}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{reportOther.report_date}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{reportOther.client}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{reportOther.location}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{reportOther.location_id}}</p></span>
+          </span>
+          <ion-item>
+            <ion-label class="report-time-label">{{'standby' | translate}}</ion-label>
+            <ion-input class="report-time-input" formControlName="time" type="number" placeholder="8"></ion-input>
+          </ion-item>
+        </ion-list>
+      </ng-container>
 
 <!-- DUNCAN STANDBY  -->
-      <ion-list *ngIf="type.name==='standby_hb_duncan'">
-        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
-          <span class="report-dev-group" *ngIf="prefs.getShowID()"><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{reportOther._rev}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{reportOther.report_date}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{reportOther.client}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{reportOther.location}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{reportOther.location_id}}</p></span>
-        </span>
-        <ion-item>
-          <ion-label class="report-time-label">{{'standby_hb_duncan' | translate}}</ion-label>
-          <ion-input class="report-time-input" formControlName="time" placeholder="8"></ion-input>
-        </ion-item>
-      </ion-list>
+      <ng-container *ngSwitchCase="'standby_hb_duncan'">
+        <ion-list>
+          <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
+            <span class="report-dev-group" *ngIf="prefs.getShowID()"><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{reportOther._rev}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{reportOther.report_date}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{reportOther.client}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{reportOther.location}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{reportOther.location_id}}</p></span>
+          </span>
+          <ion-item>
+            <ion-label class="report-time-label">{{'standby_hb_duncan' | translate}}</ion-label>
+            <ion-input class="report-time-input" formControlName="time" placeholder="8"></ion-input>
+          </ion-item>
+        </ion-list>
+      </ng-container>
 
 <!-- SICK TIME  -->
-      <ion-list *ngIf="type.name==='sick'">
-        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
-          <span class="report-dev-group" *ngIf="prefs.getShowID()"><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{reportOther._rev}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{reportOther.report_date}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{reportOther.client}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{reportOther.location}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{reportOther.location_id}}</p></span>
-        </span>
-        <ion-item>
-          <ion-label>{{'all_day' | translate}}</ion-label>
-          <ion-toggle formControlName="allDay"></ion-toggle>
-        </ion-item>
-        <ion-item>
-          <ion-label class="report-time-label">{{'sick_hours' | translate}}</ion-label>
-          <ion-input class="report-time-input" formControlName="time" value="8"></ion-input>
-        </ion-item>
-      </ion-list>
+      <ng-container *ngSwitchCase="'sick'">
+        <ion-list>
+          <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
+            <span class="report-dev-group" *ngIf="prefs.getShowID()"><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{reportOther._rev}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{reportOther.report_date}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{reportOther.client}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{reportOther.location}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{reportOther.location_id}}</p></span>
+          </span>
+          <ion-item>
+            <ion-label>{{'all_day' | translate}}</ion-label>
+            <ion-toggle formControlName="allDay"></ion-toggle>
+          </ion-item>
+          <ion-item>
+            <ion-label class="report-time-label">{{'sick_hours' | translate}}</ion-label>
+            <ion-input class="report-time-input" formControlName="time" value="8"></ion-input>
+          </ion-item>
+        </ion-list>
+      </ng-container>
 
 <!-- VACATION  -->
-      <ion-list *ngIf="type.name==='vacation'">
-        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
-          <span class="report-dev-group" *ngIf="prefs.getShowID()"><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{reportOther._rev}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{reportOther.report_date}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{reportOther.client}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{reportOther.location}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{reportOther.location_id}}</p></span>
-        </span>
-        <ion-item>
-          <ion-label class="report-time-label">{{'vacation_hours' | translate}}</ion-label>
-          <ion-input class="report-time-input" formControlName="time" value="8"></ion-input>
-        </ion-item>
-      </ion-list>
+      <ng-container *ngSwitchCase="'vacation'">
+        <ion-list>
+          <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
+            <span class="report-dev-group" *ngIf="prefs.getShowID()"><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{reportOther._rev}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{reportOther.report_date}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{reportOther.client}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{reportOther.location}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{reportOther.location_id}}</p></span>
+          </span>
+          <ion-item>
+            <ion-label class="report-time-label">{{'vacation_hours' | translate}}</ion-label>
+            <ion-input class="report-time-input" formControlName="time" value="8"></ion-input>
+          </ion-item>
+        </ion-list>
+      </ng-container>
 
 <!-- HOLIDAY  -->
-      <ion-list *ngIf="type.name==='holiday'">
-        <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
-          <span class="report-dev-group" *ngIf="prefs.getShowID()" ><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{reportOther._rev}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{reportOther.report_date}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{reportOther.client}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{reportOther.location}}</p></span>
-          <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{reportOther.location_id}}</p></span>
-        </span>
-        <ion-item>
-          <ion-label class="report-time-label">{{'holiday_hours' | translate}}</ion-label>
-          <ion-input class="report-time-input" formControlName="time" value="8"></ion-input>
-        </ion-item>
-      </ion-list>
+      <ng-container *ngSwitchCase="'holiday'">
+        <ion-list>
+          <span class="report-dev-info" *ngIf="prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()">
+            <span class="report-dev-group" *ngIf="prefs.getShowID()" ><p class="report-dev-header">ID:</p><p class="report-dev-data">{{reportOther.getReportID()}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowRev()"><p class="report-dev-header">Rev:</p><p class="report-dev-data">{{reportOther._rev}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><p class="report-dev-header">Date:</p><p class="report-dev-data">{{reportOther.report_date}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Client:</p><p class="report-dev-data">{{reportOther.client}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">Location:</p><p class="report-dev-data">{{reportOther.location}}</p></span>
+            <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><p class="report-dev-header">LocID:</p><p class="report-dev-data">{{reportOther.location_id}}</p></span>
+          </span>
+          <ion-item>
+            <ion-label class="report-time-label">{{'holiday_hours' | translate}}</ion-label>
+            <ion-input class="report-time-input" formControlName="time" value="8"></ion-input>
+          </ion-item>
+        </ion-list>
+      </ng-container>
 
 <!-- ******************************************************************************************************************************  -->
-
-      <button type="submit" ion-button block color="favorite" *ngIf="mode==='Add'">{{'submit_report' | translate}}</button>
-      <button type="submit" ion-button block color="favorite" *ngIf="mode==='Edit'">{{'save_report' | translate}}</button>
-      <button type="button" ion-button block color="light" (tap)="cancel()">{{'cancel' | translate}}</button>
+      </ion-list>
+      <!-- <button type="submit" ion-button block color="favorite" *ngIf="mode==='Add'">{{'submit_report' | translate}}</button> -->
+      <!-- <button type="submit" class="report-button save"   ion-button block color="favorite" *ngIf="mode==='Edit'">{{'save_report' | translate}}</button> -->
+      <button type="submit" class="report-button save"   ion-button block color="favorite">{{'save_report' | translate}}</button>
+      <button type="button" class="report-button cancel" ion-button block color="light" (tap)="cancel($event)">{{'cancel' | translate}}</button>
     </form>
   </div>
 </ion-content>

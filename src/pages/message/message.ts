@@ -7,12 +7,12 @@ import { DomSanitizer                                        } from '@angular/pl
 import { TranslateService                                    } from '@ngx-translate/core'       ;
 import { DBSrvcs                                             } from 'providers/db-srvcs'        ;
 import { SrvrSrvcs                                           } from 'providers/srvr-srvcs'      ;
-import { STRINGS                                             } from 'config/config.strings'     ;
 import { SafePipe                                            } from 'pipes/safe'                ;
 import { Message                                             } from 'domain/message'            ;
 import { AlertService                                        } from 'providers/alerts'          ;
 import { MessageService                                      } from 'providers/message-service' ;
 import { TabsService                                         } from 'providers/tabs-service'    ;
+import { Pages                                               } from 'config/config.types'       ;
 
 @IonicPage({
   name: 'Message'

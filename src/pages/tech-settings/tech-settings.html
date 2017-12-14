@@ -7,7 +7,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding class="xtra-top-padding page-content tech-settings-page-content">
+<ion-content padding class="xtra-top-padding page-content tech-settings-page-content" (swipe)="tabServ.handleSwipe($event)">
   <div class="tech-settings-form" *ngIf="techSettingsReady">
     <ion-list>
       <ion-item class="tech-settings-input-item">

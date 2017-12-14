@@ -1,7 +1,7 @@
 // import { TabsComponent                         } from 'components/tabs/tabs'    ;
 import { sprintf                               } from 'sprintf-js'              ;
 import { Component, OnInit, OnDestroy, NgZone  } from '@angular/core'           ;
-import { AfterViewInit,                     } from '@angular/core'           ;
+import { AfterViewInit,                        } from '@angular/core'           ;
 import { FormGroup, FormControl, Validators    } from "@angular/forms"          ;
 import { IonicPage, NavController, NavParams   } from 'ionic-angular'           ;
 import { ViewController                        } from 'ionic-angular'           ;
@@ -12,6 +12,7 @@ import { UserData                              } from 'providers/user-data'     
 import { AlertService                          } from 'providers/alerts'        ;
 import { Employee,Jobsite                      } from 'domain/domain-classes'   ;
 import { TabsService                           } from 'providers/tabs-service'  ;
+import { Pages                                 } from 'config/config.types'     ;
 
 export const _cmp = (a,b) => {
   if(a === undefined || b === undefined || a['fullName'] === undefined || b['fullName'] === undefined) {
@@ -123,7 +124,7 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
 
   ngAfterViewInit() {
     Log.l("TechSettingsPage: ngAfterViewInit() fired");
-    this.tabServ.setPageLoaded();
+    this.tabServ.setPageLoaded(Pages.User);
   }
 
   public runWhenReady() {

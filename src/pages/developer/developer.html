@@ -4,7 +4,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding class="page-content developer-page-content">
+<ion-content padding class="page-content developer-page-content" (swipe)="tabServ.handleSwipe($event)">
   <button ion-button block color="primary" (tap)="updatePreferences()">Save</button>
   <button ion-button block color="light" type="button" (tap)="cancel()">Cancel</button>
   <ion-item-group>

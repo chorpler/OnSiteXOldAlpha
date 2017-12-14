@@ -13,6 +13,7 @@ import { TranslateHttpLoader                           } from '@ngx-translate/ht
 import { TranslateService                              } from '@ngx-translate/core'        ;
 import { Preferences                                   } from 'providers/preferences'      ;
 import { TabsService                                   } from 'providers/tabs-service'     ;
+import { Pages                                         } from 'config/config.types'        ;
 
 @IonicPage({name: 'DevPage'})
 @Component({
@@ -78,7 +79,7 @@ export class DeveloperPage implements OnInit,OnDestroy,AfterViewInit {
 
   ngAfterViewInit() {
     Log.l("DeveloperPage: ngAfterViewInit() fired");
-    this.tabServ.setPageLoaded();
+    this.tabServ.setPageLoaded(Pages.DevPage);
   }
 
   // checkTestDatabase() {

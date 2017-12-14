@@ -1,1 +1,1 @@
-ionic cordova run android --device
+ionic cordova run android --device %1 %2 %3 %4 %5 %6 %7 %8 %9

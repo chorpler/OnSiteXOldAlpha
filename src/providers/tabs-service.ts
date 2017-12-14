@@ -57,6 +57,7 @@ export class TabsService {
   public active:Array<boolean> = [];
   public badges:Array<number> = [];
   public disabled:boolean = false;
+  public currentTab:number = 0;
   public pageSub:Subscription;
   public pageEvent:Subject<any> = new Subject<any>();
   public pageLoadedEvent:Subject<any> = new Subject<any>();
@@ -112,6 +113,7 @@ export class TabsService {
           if(params) {
             out.params = params;
           }
+          this.currentTab = i;
           this.pageEvent.next(out);
         } else {
           Log.e(`goToPage('${value}'): Tab called '${value}' not found!`);
@@ -135,11 +137,14 @@ export class TabsService {
     }
   }
 
-  public setPageLoaded() {
+  public setPageLoaded(tab?:number) {
     let tabCount = this.tabInfo.length;
     for(let i = 0; i < tabCount; i++) {
       // this.hidden[i] = true;
       this.setHidden(i, true);
+    }
+    if(tab !== undefined) {
+      this.setActive(tab);
     }
   }
 
@@ -248,6 +253,56 @@ export class TabsService {
 
   public decrementMessageBadge() {
 
+  }
+
+  public handleSwipe(event?:any) {
+    Log.l("handleSwipe(): Event is:\n", event);
+    let swipe = event;
+    let dX = event.deltaX, dY = event.deltaY;
+    if(dX > 0) {
+      /* Swipe right, move left */
+      this.moveLeft();
+    } else if(dX < 0) {
+      /* Swipe left, move right */
+      this.moveRight();
+    }
+    // if(swipe.direction === 2) {
+    //   /* Swipe left, so move right */
+    //   this.moveRight();
+    // } else if(swipe.direction === 4) {
+    //   /* Swipe right, so move left */
+    //   this.moveLeft();
+    // }
+  }
+
+  public moveLeft() {
+    let tab = this.currentTab;
+    switch (tab) {
+      case Pages.OnSiteHome: /* Can't move left, do nothing */ break;
+      case Pages.Report: this.goToPage('OnSiteHome'); break;
+      case Pages.ReportHistory: this.goToPage('Report'); break;
+      case Pages.User: this.goToPage('ReportHistory'); break;
+      case Pages.MessageList: this.goToPage('User'); break;
+      case Pages.Settings: this.goToPage('Message List'); break;
+      case Pages.DevPage: this.goToPage('Settings'); break;
+      default:
+        break;
+    }
+  }
+
+  public moveRight() {
+    let tab = this.currentTab;
+    switch (tab) {
+      case Pages.OnSiteHome: this.goToPage('Report'); break;
+      case Pages.Report: this.goToPage('ReportHistory'); break;
+      case Pages.ReportHistory: this.goToPage('User'); break;
+      case Pages.User: this.goToPage('Message List'); break;
+      case Pages.MessageList: this.goToPage('Settings'); break;
+      case Pages.Settings: if(this.ud.isDeveloper()) { this.goToPage('DevPage') } else { /* Can't move right, do nothing */ }; break;
+      case Pages.DevPage: /* Can't move right, do nothing */ break;
+      default:
+        break;
+    }
   }
 
 

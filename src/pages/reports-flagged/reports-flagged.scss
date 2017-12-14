@@ -1,0 +1,162 @@
+page-report-history {
+  .frozenToolbar {}
+  .reportHeaderList {}
+  .scrollList {
+    height: 80vh;
+  }
+  .center {
+    text-align: center;
+  }
+  [item-start] {
+    padding-left: 8%;
+  }
+  .reportListTitle {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.5em;
+    color: white;
+  }
+  .reportListHeader {
+    font-weight: bold;
+  }
+  .invisibleIcon {
+    visibility: hidden;
+  }
+  .reportList {}
+  .report-history-list-item-sliding {
+    cursor: pointer;
+    background-color: transparent;
+    // &:hover {
+    //   background-color: rgba(0, 0, 128, 0.3);
+    // }
+    &:active {
+      background-color: rgba(0, 0, 255, 0.5);
+    }
+    .ion-item {
+      background-color: transparent;
+    }
+
+  }
+  ion-item.report-history-list-item {
+    -webkit-tap-highlight-color: unset !important;
+    background-color: transparent;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    .item-inner {
+      background-color: transparent;
+      .input-wrapper {
+        background-color: transparent;
+        ion-label {
+          background-color: transparent;
+          div {
+            background-color: transparent;
+            span {
+              background-color: transparent;
+            }
+          }
+        }
+      }
+    }
+    div.report-history-report-item {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      align-items: center;
+    }
+  }
+  .report-history-list-item-icon {
+    cursor: pointer;
+  }
+  .report-history-list-item-label {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+  }
+  .report-history-group-date {
+    // max-height: 50px;
+  }
+  .report-history-divider-date {
+    // height: 75px;
+    max-height: 50px;
+  }
+  .ionic-button-icon-outline {
+    background-color: transparent !important;
+    background: none !important;
+    box-shadow: none;
+    height: 75px !important;
+    // max-height: 75px;
+    .button-inner {
+      padding-left: 15px;
+      padding-right: 15px;
+      // &:hover {
+      //   background-color: rgba(0, 0, 128, 0.3);
+      // }
+      &:active {
+        background-color: rgba(0, 0, 255, 0.5);
+        * {
+          color: white !important;
+        }
+      }
+    }
+    * {
+      cursor: pointer;
+    }
+  }
+  .ionic-icon-outline {
+    cursor: pointer;
+    font-size: 36px;
+    &:active {
+      color: white !important;
+    }
+  }
+  ion-icon.shft-num-icon {
+    font-size: 25px;
+  }
+  .report-history-report-item,
+  .report-history-report-notes-item {
+    flex: 1 0 auto;
+    text-align: left;
+  }
+  .report-history-report-item-header {
+    display: inline-block;
+    text-align: right;
+    font-weight: bold;
+  }
+  .report-history-report-item-data {
+    overflow: hidden;
+    text-align: left;
+  }
+  .report-history-report-date {
+    flex: 1 0 auto;
+    text-align: center;
+  }
+  .report-history-unit-number {
+    flex: 1 0 auto;
+    text-align: center;
+  }
+  .report-history-no-report {
+    flex: 1 0 auto;
+    text-align: center;
+    font-style: italic;
+  }
+  .report-history-notes-data {
+    text-overflow: ellipsis;
+    p {
+      max-width: 101px;
+      width: 100px;
+      text-overflow: ellipsis;
+    }
+  }
+  .item-group-id, .item-group-rev {
+    font-size: 12px;
+  }
+  .item-id-label, .item-rev-label {
+    margin-right: 5px;
+  }
+}

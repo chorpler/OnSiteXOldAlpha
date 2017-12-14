@@ -18,7 +18,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding class="page-content home-page-content" *ngIf="ud.isAppLoaded() && dataReady">
+<ion-content #ionContent (swipe)="tabServ.handleSwipe($event)" padding class="page-content home-page-content" [class.show-scrollbar]="showScrollbar" *ngIf="ud.isAppLoaded() && dataReady">
   <div *ngIf="ud.isAppLoaded() && ud.isHomePageReady() && dataReady; then homeDisplay; else homeClockDisplay"></div>
   <ng-template #homeClockDisplay>
     <!-- <div class="waiting-clock">
@@ -108,7 +108,7 @@
             </span>
           </span>
         </ion-item>
-        <ion-list-header class="blank-list-header" ></ion-list-header>
+        <!-- <ion-list-header class="blank-list-header" ></ion-list-header> -->
         <ion-list-header class="home-hours-submitted">
           {{"home_hours_submitted_for_payroll_period" | translate}}:
           <ion-note item-end>

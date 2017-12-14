@@ -60,7 +60,7 @@
     "ionic_source_map": "source-map",
     "ionic_bundler": "webpack",
     "ionic_source_map_types": "#inline-source-map",
-    "ionic_copy": "./src/config/ionic-copy.config.js",
+    "ionic_copy": "./config/ionic-copy.config.js",
     "ionic_webpack": "./config/webpack.config.js"
   },
   "homepage": "https://github.com/starmobiledevelopers/OnSiteX/",

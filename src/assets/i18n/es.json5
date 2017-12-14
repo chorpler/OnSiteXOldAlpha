@@ -118,6 +118,7 @@
   "report_submit_error_title": "Reporte Incompleto",
   "report_submit_error_message": "Por favor, seleccione cuántas horas y minutos este trabajo tomó.",
   "extended_hours": "Horas Extendidas",
+  "premium_hours": "Horas Primas",
   "total_payroll_hours": "Horas de Semana de Nómina",
   "submitting_comment": "Enviar comentario...",
   "could_not_submit_comment": "No se pudo enviar comentarios en este momento. Problema de conexión a Internet o servidor.",

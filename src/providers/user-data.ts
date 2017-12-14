@@ -7,7 +7,7 @@ import { Device                        } from '@ionic-native/device'           ;
 import { AppVersion                    } from '@ionic-native/app-version'      ;
 import { UniqueDeviceID                } from '@ionic-native/unique-device-id' ;
 import { Log, isMoment, moment, Moment } from 'config/config.functions'        ;
-import { STRINGS                       } from 'config/config.strings'          ;
+// import { STRINGS                       } from 'config/config.strings'          ;
 import { DBSrvcs                       } from './db-srvcs'                     ;
 import { Preferences                   } from './preferences'                  ;
 import { Shift                         } from 'domain/shift'                   ;
@@ -55,7 +55,7 @@ export class UserData {
   public static shift                 : Shift                                          ;
   public static current_shift_hours   : any                                            ;
   public static circled_numbers       : Array<string>                                  ;
-  public static circled_numbers_chars : Array<string>        = STRINGS.NUMCHARS        ;
+  // public static circled_numbers_chars : Array<string>        = STRINGS.NUMCHARS        ;
   public static get techWOArrayInitialized():boolean {return Boolean(UserData.reports && UserData.reports.length);};
   public static get shifts():Array<Shift> {return UserData.data.shifts;};
   public static get payrollPeriods():Array<PayrollPeriod> {return UserData.data.payrollPeriods;};

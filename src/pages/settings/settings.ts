@@ -1,5 +1,5 @@
 // import { TabsComponent                                                       } from 'components/tabs/tabs'          ;
-import { Component, OnInit, NgZone, OnDestroy, AfterViewInit              } from '@angular/core'                 ;
+import { Component, OnInit, NgZone, OnDestroy, AfterViewInit                 } from '@angular/core'                 ;
 import { IonicPage, NavController, Platform, ModalController, ViewController } from 'ionic-angular'                 ;
 import { DBSrvcs                                                             } from 'providers/db-srvcs'            ;
 import { Login                                                               } from 'pages/login/login'             ;
@@ -14,6 +14,7 @@ import { Preferences                                                         } f
 import { UserData                                                            } from 'providers/user-data'           ;
 import { IonDigitKeyboardCmp, IonDigitKeyboardOptions                        } from 'components/ion-digit-keyboard' ;
 import { TabsService                                                         } from 'providers/tabs-service'        ;
+import { Pages                                                               } from 'config/config.types'           ;
 
 
 @IonicPage({ name: 'Settings' })
@@ -80,7 +81,7 @@ export class Settings implements OnInit,OnDestroy,AfterViewInit {
 
   ngAfterViewInit() {
     Log.l("Settings: ngAfterViewInit() fired");
-    this.tabServ.setPageLoaded();
+    this.tabServ.setPageLoaded(Pages.Settings);
   }
 
   runFromInit() {

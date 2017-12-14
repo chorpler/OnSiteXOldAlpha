@@ -9,7 +9,7 @@
 </ion-header>
 
 
-<ion-content padding class="page-content message-list-page-content" *ngIf="pageReady && messages && !messages.length">
+<ion-content padding class="page-content message-list-page-content" (swipe)="tabServ.handleSwipe($event)" *ngIf="pageReady && messages && !messages.length">
   <ion-item>
     <div class="messages-no-message">{{'messages_no_messages' | translate}}</div>
   </ion-item>

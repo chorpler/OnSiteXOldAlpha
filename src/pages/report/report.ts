@@ -2,7 +2,7 @@
 // import { TabsComponent                                         } from 'components/tabs/tabs'        ;
 import 'rxjs/add/operator/debounceTime'                                                         ;
 import { Component, OnInit, ViewChild, NgZone, OnDestroy,      } from '@angular/core'           ;
-import { AfterViewInit,                                     } from '@angular/core'           ;
+import { AfterViewInit,                                        } from '@angular/core'           ;
 import { FormsModule, ReactiveFormsModule                      } from "@angular/forms"          ;
 import { FormBuilder, FormGroup, FormControl, Validators       } from "@angular/forms"          ;
 import { IonicPage, NavController, NavParams                   } from 'ionic-angular'           ;
@@ -21,10 +21,10 @@ import { ReportOther                                           } from 'domain/re
 import { Jobsite                                               } from 'domain/jobsite'          ;
 import { UserData                                              } from 'providers/user-data'     ;
 import { sprintf                                               } from 'sprintf-js'              ;
-import { STRINGS                                               } from 'config/config.strings'   ;
 import { Preferences                                           } from 'providers/preferences'   ;
 import { TranslateService                                      } from '@ngx-translate/core'     ;
 import { TabsService                                           } from 'providers/tabs-service'  ;
+import { Pages                                                 } from 'config/config.types'     ;
 
 export const focusDelay = 500;
 
@@ -161,7 +161,7 @@ export class ReportPage implements OnInit,OnDestroy,AfterViewInit {
 
   ngAfterViewInit() {
     Log.l("ReportPage: ngAfterViewInit() fired");
-    this.tabServ.setPageLoaded();
+    this.tabServ.setPageLoaded(Pages.Report);
   }
 
   public runWhenReady() {
@@ -745,7 +745,7 @@ export class ReportPage implements OnInit,OnDestroy,AfterViewInit {
     }
   }
 
-  public showFancySelect() {
+  public showFancySelect(event?:any) {
     Log.l("showFancySelect(): Called!");
     let options = [];
     let shifts = [];

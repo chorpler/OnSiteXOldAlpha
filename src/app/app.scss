@@ -1,4 +1,5 @@
 @import '../components/ion-digit-keyboard/ion-digit-keyboard';
+@import '../assets/fonts/onsitex_fonts';
 // http://ionicframework.com/docs/v2/theming/
 
 
@@ -63,30 +64,44 @@
 
 }
 
+ion-content {
+  &.page-content {
+    margin-top: 56px;
+    margin-bottom: 56px;
+    height: calc(100% - 56px - 56px);
+  // margin-bottom: 55px;
+    &.content-ios {
+      margin-top: 64px;
+      height: calc(100% - 64px - 56px);
+    }
+  }
+  .scroll-content {
+    margin-top: 2px !important;
+    padding-top: 3px !important;
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+    box-shadow: 0px 3px 10px 1px rgba(140,140,140,1);
+  }
+}
 .toolbar-ios {
   height: 56px;
 }
 .ion-page {
   background-color: #fff;
 }
-ion-content.page-content {
-    margin-top: 56px !important;
-    margin-bottom: 56px;
-    height: calc(100% - 56px - 56px);
-  // margin-bottom: 55px;
-}
+ion-content
 ion-app .fixed-content {
   margin-top: unset !important;
   display: none;
 }
 .scroll-content {
-  margin-top: 2px !important;
-  margin-left: 2px;
-  margin-right: 2px;
+  // margin-left: 2px;
+  // margin-right: 2px;
 }
 ion-app.ios ion-content > .scroll-content {
   margin-top: unset !important;
 }
+
 
 ::-webkit-scrollbar {
   width: 10px;
@@ -94,18 +109,49 @@ ion-app.ios ion-content > .scroll-content {
   opacity: 0;
 }
 
-// ::-webkit-scrollbar-track {
-//   background: rgba(255, 91, 71, 0.5);
-//   border-left: 4px solid white;
-//   border-right: 4px solid white;
-// }
+// // ::-webkit-scrollbar-track {
+// //   background: rgba(255, 91, 71, 0.5);
+// //   border-left: 4px solid white;
+// //   border-right: 4px solid white;
+// // }
 
+// &::-webkit-scrollbar-thumb {
+//   // width: 4px;
+//   // opacity: 0.5;
+//   background: #CCCCCC;
+//   border-left: 3px solid white;
+//   border-right: 3px solid white;
+// }
 ::-webkit-scrollbar-thumb {
-  // width: 4px;
-  // opacity: 0.5;
-  background: #CCCCCC;
+  // background: rgba(255, 0, 0, 0.25);
   border-left: 3px solid white;
   border-right: 3px solid white;
+}
+
+ion-content {
+  &.show-scrollbar {
+    .scroll-content {
+      // &::-webkit-scrollbar {
+      //   width: 10px;
+      //   // display: none;
+      //   opacity: 0;
+      // }
+
+      // ::-webkit-scrollbar-track {
+      //   background: rgba(255, 91, 71, 0.5);
+      //   border-left: 4px solid white;
+      //   border-right: 4px solid white;
+      // }
+
+      &::-webkit-scrollbar-thumb {
+        // width: 4px;
+        // opacity: 0.5;
+        background: rgba(255, 0, 0, 0.25);
+        border-left: 3px solid white;
+        border-right: 3px solid white;
+      }
+    }
+  }
 }
 
 

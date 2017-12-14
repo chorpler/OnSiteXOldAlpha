@@ -118,6 +118,7 @@
   "report_submit_error_title": "Incomplete Report",
   "report_submit_error_message": "Please select how many hours and minutes this job took.",
   "extended_hours": "Extended Hours",
+  "premium_hours": "Premium Hours",
   "total_payroll_hours": "Total Pay Period Hours",
   "submitting_comment": "Submitting comment...",
   "could_not_submit_comment": "Could not submit comment at this time. Internet or server connection problem.",

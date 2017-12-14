@@ -6,7 +6,6 @@ import { DomSanitizer                                         } from '@angular/p
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular'             ;
 import { TranslateService                                     } from '@ngx-translate/core'       ;
 import { Log, isMoment, moment, Moment                        } from 'config/config.functions'   ;
-import { STRINGS                                              } from 'config/config.strings'     ;
 import { DBSrvcs                                              } from 'providers/db-srvcs'        ;
 import { SrvrSrvcs                                            } from 'providers/srvr-srvcs'      ;
 import { UserData                                             } from 'providers/user-data'       ;
@@ -14,6 +13,7 @@ import { SafePipe                                             } from 'pipes/safe
 import { Message                                              } from 'domain/message'            ;
 import { MessageService                                       } from 'providers/message-service' ;
 import { TabsService                                          } from 'providers/tabs-service'    ;
+import { Pages                                                } from 'config/config.types'       ;
 
 export const _msgSort = (a, b) => {
   let timeA = moment(a.date);
@@ -62,7 +62,7 @@ export class MessageListPage implements OnInit,OnDestroy,AfterViewInit {
 
   ngAfterViewInit() {
     Log.l("MessageListPage: ngAfterViewInit() fired");
-    this.tabServ.setPageLoaded();
+    this.tabServ.setPageLoaded(Pages.MessageList);
   }
 
   ionViewDidLoad() {

@@ -46,12 +46,12 @@ export const _sortOtherReports = (a:ReportOther,b:ReportOther):number => {
 };
 
 
-@IonicPage({ name    : 'ReportHistory'                                           })
-@Component({ selector: 'page-report-history',
-templateUrl: 'report-history.html',
+@IonicPage({ name    : 'Flagged Reports'                                           })
+@Component({ selector: 'page-reports-flagged',
+templateUrl: 'reports-flagged.html',
 // changeDetection: ChangeDetectionStrategy.OnPush })
 })
-export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
+export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
   public title        : string           = 'Reports'                                                    ;
   public lang         : any                                                                             ;
   public pageReady    : boolean          = false                                                        ;
@@ -67,7 +67,7 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
   public data         : any                                                                             ;
   public loading      : any                                                                             ;
   public static PREFS : any                  = new Preferences()                                        ;
-  public prefs        : any                  = ReportHistory.PREFS                                      ;
+  public prefs        : any                  = ReportsFlaggedPage.PREFS                                      ;
   public shiftToUse   : Shift                = null                                                     ;
   constructor(
     public navCtrl     : NavController     ,
@@ -88,7 +88,7 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
   }
 
   ngOnInit() {
-    Log.l("ReportHistory: ngOnInit() fired");
+    Log.l("ReportsFlaggedPage: ngOnInit() fired");
     // if (!(this.ud.isAppLoaded() && this.ud.isHomePageReady())) {
     //   this.tabs.goToPage('OnSiteHome');
     // } else {
@@ -97,16 +97,16 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
   }
 
   ngOnDestroy() {
-    Log.l("ReportHistory: ngOnDestroy() fired");
+    Log.l("ReportsFlaggedPage: ngOnDestroy() fired");
   }
 
   ngAfterViewInit() {
-    Log.l("ReportHistory: ngAfterViewInit() fired");
-    this.tabServ.setPageLoaded(Pages.ReportHistory);
+    Log.l("ReportsFlaggedPage: ngAfterViewInit() fired");
+    this.tabServ.setPageLoaded(Pages.ReportsFlagged);
   }
 
   ionViewDidEnter() {
-    Log.l("ReportHistory: ionViewDidEnter called...");
+    Log.l("ReportsFlaggedPage: ionViewDidEnter called...");
     window["onsitereporthistory"] = this;
     this.pageReady = false;
     if(!(this.ud.isAppLoaded() && this.ud.isHomePageReady())) {
@@ -142,24 +142,24 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
     let lang = this.lang;
     // this.alert.showSpinner(lang['spinner_retrieving_reports']);
     if (this.shiftToUse !== null) {
-      Log.l("ReportHistory: Showing only shift:\n", this.shiftToUse);
+      Log.l("ReportsFlaggedPage: Showing only shift:\n", this.shiftToUse);
       this.shifts = [this.shiftToUse];
     } else {
-      Log.l("ReportHistory: Showing all shifts.");
+      Log.l("ReportsFlaggedPage: Showing all shifts.");
       this.periods = this.ud.getPayrollPeriods();
       this.period = this.periods[0];
       this.shifts = [];
-      Log.l("ReportHistory: Got payroll periods:\n", this.periods);
+      Log.l("ReportsFlaggedPage: Got payroll periods:\n", this.periods);
       for (let period of this.periods) {
         let periodShifts = period.getPayrollShifts();
         for (let shift of periodShifts) {
           this.shifts.push(shift);
         }
       }
-      Log.l("ReportHistory: Ended up with all shifts:\n", this.shifts);
+      Log.l("ReportsFlaggedPage: Ended up with all shifts:\n", this.shifts);
     }
     let u = this.ud.getUsername();
-    Log.l("ReportHistory: pulling reports...");
+    Log.l("ReportsFlaggedPage: pulling reports...");
     // this.server.getReportsForTech(u).then((res) => {
 
     for(let shift of this.shifts) {
@@ -174,7 +174,7 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
 
       // let unsortedReports = this.ud.getWorkOrderList();
       // this.reports = unsortedReports.sort(_sortReports);
-      // Log.l("ReportHistory: created date-sorted report list:\n", this.reports);
+      // Log.l("ReportsFlaggedPage: created date-sorted report list:\n", this.reports);
       // return
       // this.alert.hideSpinner(0, true);
       // this.alert.hideSpinner();
@@ -185,7 +185,7 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
       // ;
     // })
     // .then(res => {
-      // Log.l("ReportHistory: pulled ReportOther for tech:\n", res);
+      // Log.l("ReportsFlaggedPage: pulled ReportOther for tech:\n", res);
       // this.filtReports = {};
       // this.filterKeys = [];
       // let reportOthers = res.sort(_sortOtherReports);
@@ -213,7 +213,7 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
     // }).then(res => {
       this.pageReady = true;
     // }).catch(err => {
-    //   Log.l("ReportHistory: Error fetching reports!");
+    //   Log.l("ReportsFlaggedPage: Error fetching reports!");
     //   Log.e(err);
     //   this.alert.showAlert(lang['error_fetching_reports_title'], lang['error_fetching_reports_message']);
     // });

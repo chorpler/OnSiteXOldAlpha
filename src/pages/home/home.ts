@@ -1,14 +1,16 @@
 // import { TabsComponent                                    } from 'components/tabs/tabs'      ;
+import { Subscription                                     } from 'rxjs/Subscription'         ;
 import { sprintf                                          } from 'sprintf-js'                ;
 import { Component, OnInit, Input, NgZone, ViewChild      } from '@angular/core'             ;
 import { AfterViewChecked, AfterViewInit, OnDestroy,      } from '@angular/core'             ;
+import { ElementRef,                                      } from '@angular/core'             ;
 import { HttpClient                                       } from '@angular/common/http'      ;
 import { DomSanitizer                                     } from '@angular/platform-browser' ;
 import { trigger, state, style, animate, transition       } from '@angular/animations'       ;
 import { TranslateService                                 } from '@ngx-translate/core'       ;
 import { Pipe, PipeTransform                              } from '@angular/core'             ;
 import { Platform, IonicPage, NavParams, Events           } from 'ionic-angular'             ;
-import { NavController, ToastController                   } from 'ionic-angular'             ;
+import { NavController, ToastController, Content          } from 'ionic-angular'             ;
 import { ModalController,ViewController,PopoverController } from 'ionic-angular'             ;
 import { Log, moment, isMoment, Moment                    } from 'config/config.functions'   ;
 import { DBSrvcs                                          } from 'providers/db-srvcs'        ;
@@ -26,7 +28,7 @@ import { STRINGS                                          } from 'config/config.
 import { Preferences                                      } from 'providers/preferences'     ;
 import { SafePipe                                         } from 'pipes/safe'                ;
 import { SmartAudio                                       } from 'providers/smart-audio'     ;
-import { Icons                                            } from 'config/config.types'       ;
+import { Icons, Pages                                     } from 'config/config.types'       ;
 
 // enum Icons {
 //   'box-check-no'   = 0,
@@ -44,6 +46,8 @@ import { Icons                                            } from 'config/config.
   templateUrl: 'home.html',
 })
 export class HomePage implements OnInit,OnDestroy,AfterViewInit {
+  @ViewChild(Content) content:Content;
+  public scrollContent:ElementRef;
   static PREFS                       : any           = new Preferences()        ;
   static EVENTS                      : Events                                   ;
   static startupHandler              : any                                      ;
@@ -123,6 +127,9 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
   // public hands                       : any                 = HomePage.hands  ;
   public translations                : Array<string>       = HomePage.translations;
   public justLoggedIn                : boolean             = false                    ;
+  public showScrollbar               : boolean             = false                    ;
+  public scrollStartSub              : Subscription                                   ;
+  public scrollEndSub                : Subscription                                   ;
 
   constructor(public http        : HttpClient,
               public platform    : Platform,
@@ -162,6 +169,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     }
     HomePage.EVENTS = events;
     var caller = this;
+    // this.endWatchScroll();
     this.dataReady = false;
     if(!this.ud.isAppLoaded()) {
       Log.l("HOMEPAGE SAYS DON'T LOAD ME YET, D-BAG!");
@@ -184,10 +192,6 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
           // this.dataReady = true;
           Log.l("HomePage: stop trying to load prematurely!")
         }
-        // caller.translate.get().subscribe(result => {
-        //   caller.spinnerText = result;
-        //   caller.runEveryTime();
-        // });
       };
     }
     if(HomePage.homePageStatus.startupFinished === false) {
@@ -205,7 +209,50 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
 
   ngAfterViewInit() {
     Log.l("HomePage: ngAfterViewInit() fired");
+    // this.watchScroll();
+    // this.content.ionScrollStart.subscribe((data) => {
+    //   this.showScrollbar = true;
+    // });
+    // this.content.ionScrollEnd.subscribe((data) => {
+    //   this.showScrollbar = false;
+    // });
     // this.tabServ.setPageLoaded();
+  }
+
+  public scrollStarted(event?:any) {
+    Log.l("scrollStarted(): event is:\n", event);
+    this.showScrollbar = true;
+  }
+
+  public scrollEnded(event?:any) {
+    Log.l("scrollEnded(): event is:\n", event);
+    this.showScrollbar = false;
+  }
+
+  public scrolling(event?:any) {
+    Log.l("scrolling(): event is:\n", event);
+  }
+
+  public watchScroll() {
+    if(this.content && this.content.ionScrollStart) {
+      this.scrollStartSub = this.content.ionScrollStart.subscribe((data) => {
+        Log.l("ionScrollStart event fired! Scrolling started!")
+        this.showScrollbar = true;
+      });
+      Log.l("ionScrollEnd event fired! Scrolling over!")
+      this.scrollEndSub = this.content.ionScrollEnd.subscribe((data) => {
+        this.showScrollbar = false;
+      });
+    }
+  }
+
+  public endWatchScroll() {
+    if(this.scrollStartSub && !this.scrollStartSub.closed) {
+      this.scrollStartSub.unsubscribe();
+    }
+    if(this.scrollEndSub && !this.scrollEndSub.closed) {
+      this.scrollEndSub.unsubscribe();
+    }
   }
 
   ionViewDidEnter() {
@@ -294,7 +341,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     // this.
   }
 
-  runEveryTime() {
+  public runEveryTime() {
     // try {
       // let lang = this.translate.instant(['error', 'alert_retrieve_reports_error'])
     this.dataReady = false;
@@ -340,12 +387,14 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
       // this.countHoursForShifts();
       HomePage.homePageStatus.startupFinished = true;
       this.ud.setHomePageReady(true);
-      this.dataReady = true;
+      // this.watchScroll();
+      // this.dataReady = true;
       // this.alert.hideSpinner(0, true).then(res => {
       this.ud.setHomePageReady(true);
       HomePage.homePageStatus.startupFinished = true;
+      // this.watchScroll();
       this.dataReady = true;
-      this.tabServ.setPageLoaded();
+      this.tabServ.setPageLoaded(Pages.OnSiteHome);
     }).catch(err => {
       Log.l("Error fetching tech work orders!");
       Log.e(err);
@@ -416,15 +465,15 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     }
   }
 
-  static checkStartupStatus() {
+  public static checkStartupStatus() {
 
   }
 
-  checkStartupStatus() {
+  public checkStartupStatus() {
     return HomePage.checkStartupStatus();
   }
 
-  fetchTechWorkorders():Promise<Array<any>> {
+  public fetchTechWorkorders():Promise<Array<any>> {
     let techid = this.ud.getCredentials().user;
     return new Promise((resolve,reject) => {
       this.server.getReportsForTech(techid).then((res:Array<WorkOrder>) => {
@@ -546,7 +595,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     });
   }
 
-  isAuthorized() {
+  public isAuthorized() {
     Log.l("HomePage.isAuthorized(): Checking auth status...");
     let authorized = Boolean( this.loginData !== undefined
                               && this.loginData !== null
@@ -558,7 +607,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     return authorized;
   }
 
-  isLoggedIn() {
+  public isLoggedIn() {
     Log.l("HomePage.isLoggedIn(): Checking login status...");
     let loggedin = Boolean( this.isAuthorized() && this.userLoggedIn );
     Log.l("HomePage.isLoggedIn(): Login status: ", loggedin);
@@ -578,7 +627,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
   //   this.payrollPeriodBonusHours = this.ud.getPayrollHoursForPayrollPeriod(thisPayPeriod);
   // }
 
-  presentLoginModal() {
+  public presentLoginModal() {
     // let loginPage = this.modalCtrl.create('Login', {user: '', pass: ''}, { enableBackdropDismiss: false, cssClass: 'login-modal'});
     // loginPage.onDidDismiss(data => {
     //   Log.l("Got back:\n", data);
@@ -594,7 +643,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     this.tabServ.goToPage('Login');
   }
 
-  getCheckboxSVG(shift:Shift) {
+  public getCheckboxSVG(shift:Shift) {
     let checkBox = '?';
     let chks = this.checkboxSVG;
     let status = shift.getShiftStatus();
@@ -628,7 +677,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     // }
   }
 
-  getCheckbox(idx:number) {
+  public getCheckbox(idx:number) {
     let checkBox = '?';
     let hours = this.hoursTotalList[idx];
     let total = this.techProfile.shiftLength;
@@ -643,7 +692,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     return checkBox;
   }
 
-  showHelp(event:any) {
+  public showHelp(event:any) {
     this.audio.play('help');
     let params = { cssClass: 'popover-template', showBackdrop: true, enableBackdropDismiss: true, ev: event };
     let pup = this.popoverCtrl.create('Popover', {contents: 'home_app_help_text'}, params);
@@ -653,12 +702,12 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     pup.present();
   }
 
-  presentUserModal() {
+  public presentUserModal() {
     let TechSettings = this.modalCtrl.create('User', { mode: 'modal' });
     TechSettings.present();
   }
 
-  showShiftReports(shift:Shift) {
+  public showShiftReports(shift:Shift) {
     if(shift.getAllShiftReports().length > 0) {
       this.tabServ.goToPage('ReportHistory', {mode: 'Shift', shift: shift, payroll_period: this.period});
     } else {
@@ -671,19 +720,19 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     // }
   }
 
-  possibleSound(shift:Shift) {
+  public possibleSound(shift:Shift) {
     let status = shift.getShiftStatus();
     if(status === 'hoursOver') {
       this.audio.play('overtime');
     }
   }
 
-  changedPayrollPeriod(period:PayrollPeriod) {
+  public changedPayrollPeriod(period:PayrollPeriod) {
     Log.l("changedPayrollPeriod(): Payroll period changed to:\n", period);
     this.ud.setHomePeriod(this.period);
   }
 
-  toggleClock(event?:any) {
+  public toggleClock(event?:any) {
     Log.l("toggleClock(): Event is:\n", event);
     // if(event && event.shiftKey) {
     //   this.tabServ.hidden[2] = !this.tabServ.hidden[2];
@@ -691,8 +740,14 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     // }
     let now = moment();
     // this.ud.updateClock(now);
+    if(this.dataReady === true) {
+      // this.endWatchScroll();
+    }
     this.dataReady = !this.dataReady;
     this.ud.showClock = !this.ud.showClock;
+    // if(this.dataReady) {
+      // this.watchScroll();
+    // }
     // let hpr = this.ud.isHomePageReady();
     // this.ud.setHomePageReady(!hpr);
   }

@@ -7,11 +7,11 @@
   }
 
 page-home {
-  ion-content > div.scroll-content {
-    padding-top: 3px !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
+  // ion-content > div.scroll-content {
+  //   padding-top: 3px !important;
+  //   padding-left: 0 !important;
+  //   padding-right: 0 !important;
+  // }
   p.home-welcome {
     text-align: right;
     margin-top: 0;
@@ -145,6 +145,7 @@ page-home {
   .home-card-header-payroll-period {
     text-align: center;
     border-bottom: 1px solid #dedede;
+    padding: 2px;
     // margin-bottom: 5px;
   }
 
@@ -154,6 +155,8 @@ page-home {
 
   .home-card-header-payroll-period-label-label {
     text-align: center;
+    margin-top: 2px;
+    margin-bottom: 2px;
   }
 
   .home-card-header-payroll-period-data-item {
