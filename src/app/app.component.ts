@@ -34,6 +34,7 @@ import { Message                                      } from 'domain/message'   
 import { IonDigitKeyboardCmp, IonDigitKeyboardOptions } from 'components/ion-digit-keyboard'     ;
 import { TabsService                                  } from 'providers/tabs-service'            ;
 
+// export const homePage:string = "OnSiteHome";
 export const homePage:string = "Testing";
 
 @Component({ templateUrl: 'app.html' })
