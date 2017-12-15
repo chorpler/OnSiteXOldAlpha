@@ -1,5 +1,5 @@
-import { Log, isMoment, moment, Moment } from '../config/config.functions' ;
 import { sprintf                       } from 'sprintf-js'                 ;
+import { Log, isMoment, moment, Moment } from 'config/config.functions' ;
 import { Employee                      } from './employee'                 ;
 
 export const fields = [
@@ -20,6 +20,7 @@ export const fields = [
   "username",
   "shift_serial",
   "payroll_period",
+  "flagged",
   "_id",
   "_rev",
 ];
@@ -42,6 +43,7 @@ export class ReportOther {
   public username         : any;
   public shift_serial     : any;
   public payroll_period   : any;
+  public flagged          : boolean = false;
   public _id              : any;
   public _rev             : any;
 
@@ -63,6 +65,7 @@ export class ReportOther {
     this.username          = ""                    ;
     this.shift_serial      = ""                    ;
     this.payroll_period    = ""                    ;
+    this.flagged           = false                 ;
     this._id               = ""                    ;
     this._rev              = ""                    ;
   }
@@ -111,7 +114,7 @@ export class ReportOther {
   public serialize(tech:Employee) {
     Log.l("ReportOther.serialize(): Now serializing report...");
     // let ts = moment(this.timestamp);
-    // Log.l("WorkOrder.serialize(): timestamp moment is now:\n", ts);
+    // Log.l("Report.serialize(): timestamp moment is now:\n", ts);
     // let XLDate = moment([1900, 0, 1]);
     // let xlStamp = ts.diff(XLDate, 'days', true) + 2;
     // this.timestamp = xlStamp;

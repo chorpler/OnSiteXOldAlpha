@@ -7,7 +7,7 @@ import { SrvrSrvcs                                                           } f
 import { UserData                                                            } from 'providers/user-data'     ;
 import { AlertService                                                        } from 'providers/alerts'        ;
 import { Log, isMoment, moment, Moment                                       } from 'config/config.functions' ;
-import { WorkOrder, Report                                                   } from 'domain/domain-classes'   ;
+import { Report,                                                             } from 'domain/domain-classes'   ;
 import { ReportOther                                                         } from 'domain/reportother'      ;
 import { Shift                                                               } from 'domain/shift'            ;
 import { PayrollPeriod                                                       } from 'domain/payroll-period'   ;
@@ -17,21 +17,22 @@ import { SmartAudio                                                          } f
 import { TabsService                                                         } from 'providers/tabs-service'  ;
 import { Pages                                                               } from 'config/config.types'     ;
 
-export const _sortReports = (a:WorkOrder,b:WorkOrder):number => {
-  let dateA  = a['report_date'];
-  let dateB  = b['report_date'];
-  let startA = a['time_start'];
-  let startB = b['time_start'];
-  dateA  = isMoment(dateA)  ? dateA  : moment(dateA).startOf('day');
-  dateB  = isMoment(dateB)  ? dateB  : moment(dateB).startOf('day');
-  startA = isMoment(startA) ? startA : moment(startA);
-  startB = isMoment(startB) ? startB : moment(startB);
-  return dateA.isBefore(dateB) ? -1 : dateA.isAfter(dateB) ? 1 : startA.isBefore(startB) ? -1 : startA.isAfter(startB) ? 1 : 0;
+export const _sortReports = (a:Report,b:Report):number => {
+  let dateA  = a.report_date;
+  let dateB  = b.report_date;
+  let startA = a.time_start;
+  let startB = b.time_start;
+  // dateA  = isMoment(dateA)  ? dateA  : moment(dateA).startOf('day');
+  // dateB  = isMoment(dateB)  ? dateB  : moment(dateB).startOf('day');
+  // startA = isMoment(startA) ? startA : moment(startA);
+  // startB = isMoment(startB) ? startB : moment(startB);
+  // return dateA.isBefore(dateB) ? -1 : dateA.isAfter(dateB) ? 1 : startA.isBefore(startB) ? -1 : startA.isAfter(startB) ? 1 : 0;
+  return dateA > dateB ? 1 : dateA < dateB ? -1 : startA > startB ? 1 : startA < startB ? -1 : 0;
 };
 
 export const _sortOtherReports = (a:ReportOther,b:ReportOther):number => {
-  let dateA = a['report_date'];
-  let dateB = b['report_date'];
+  let dateA:Moment = a.report_date;
+  let dateB:Moment = b.report_date;
   dateA = isMoment(dateA) ? dateA : moment(dateA).startOf('day');
   dateB = isMoment(dateB) ? dateB : moment(dateB).startOf('day');
   return dateA.isBefore(dateB) ? -1 : dateA.isAfter(dateB) ? 1 : 0;
@@ -43,7 +44,6 @@ export const _sortOtherReports = (a:ReportOther,b:ReportOther):number => {
   // }
 };
 
-
 @IonicPage({ name    : 'Flagged Reports'                                           })
 @Component({ selector: 'page-reports-flagged',
 templateUrl: 'reports-flagged.html',
@@ -54,6 +54,7 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
   public pageReady    : boolean          = false                                                        ;
   public selectedItem : any                                                                             ;
   public items        : Array<{title: string, note: string}> = new Array<{title:string, note:string}>() ;
+  public allReports   : Array<Report>        = []                                                       ;
   public reports      : Array<Report>        = []                                                       ;
   public otherReports : Array<ReportOther>   = []
   public shifts       : Array<Shift>         = []                                                       ;
@@ -89,7 +90,7 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
   ngOnInit() {
     Log.l("ReportsFlaggedPage: ngOnInit() fired");
     if(this.ud.isAppLoaded()) {
-      this.runOnPageLoad();
+      this.runWhenReady();
     }
     // if (!(this.ud.isAppLoaded() && this.ud.isHomePageReady())) {
     //   this.tabs.goToPage('OnSiteHome');
@@ -118,9 +119,10 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
     // }
   }
 
-  public runOnPageLoad() {
+  public runWhenReady() {
     this.pageReady   = false ;
     this.reports     = []    ;
+    this.allReports  = []    ;
     // this.filterKeys  = []    ;
     // this.filtReports = {}    ;
 
@@ -146,10 +148,14 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
   }
 
   public generateFlaggedReportsList() {
-    let allReports:Report[] = this.ud.getData('reports');
+    let allReports:Report[] = this.allReports || [];
     let reports:Report[] = [];
     for(let report of allReports) {
       let wo = report.work_order_number.trim();
+      if(report.flagged === true) {
+        reports.push(report);
+        continue;
+      }
       if(report.client.toUpperCase() === 'HB' || report.client.toUpperCase() === "HALLIBURTON") {
         if(!wo) {
           reports.push(report);
@@ -183,7 +189,7 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
     // Log.l("itemTapped(): Got shift to send:\n", shift);
     //   if(item['type'] && item['type'] !== 'Work Report') {
     //     this.tabServ.goToPage('Report', {mode: 'Edit', reportOther: report, shift: shift, payroll_period: this.period, type: item['type']});
-    //   } else if(item instanceof WorkOrder) {
+    //   } else if(item instanceof Report) {
     //     this.tabServ.goToPage('Report', {mode: 'Edit', workOrder: report, shift: shift, payroll_period: this.period});
     //   } else {
     //     this.alert.showAlert(lang['error'] + " PEBCAK-002", lang['error_report_not_found']);
@@ -198,7 +204,7 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
     this.tabServ.goToPage('Report', { mode: 'Add', shift: shift, payroll_period: this.period });
   }
 
-  // public deleteWorkOrder(event:Event, report:WorkOrder, shift:Shift) {
+  // public deleteWorkOrder(event:Event, report:Report, shift:Shift) {
   //   Log.l("deleteWorkOrder() clicked ... with event:\n", event);
   //   let lang = this.lang;
   //   let db = this.prefs.getDB();
@@ -207,7 +213,7 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
   //     if (res) {
   //       this.alert.showSpinner(lang['spinner_deleting_report']);
   //       Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
-  //       let wo:WorkOrder = report;
+  //       let wo:Report = report;
   //       this.db.deleteDoc(db.reports, wo).then((res) => {
   //         Log.l("deleteWorkOrder(): Success:\n", res);
   //         let tmpReport = wo;
@@ -256,7 +262,7 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
   //   });
   // }
 
-  public async deleteWorkOrder(event:Event, report:WorkOrder, shift:Shift) {
+  public async deleteWorkOrder(event:Event, report:Report, shift:Shift) {
     let lang = this.lang;
     try {
       Log.l("deleteWorkOrder() clicked ... with event:\n", event);
@@ -266,7 +272,7 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
       if(confirm) {
         this.alert.showSpinner(lang['spinner_deleting_report']);
         Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
-        let wo:WorkOrder = report;
+        let wo:Report = report;
         let res = await this.db.deleteDoc(db.reports, wo);
         Log.l("deleteWorkOrder(): Success:\n", res);
         let tmpReport = wo;

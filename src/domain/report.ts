@@ -1,49 +1,53 @@
 /**
  * Name: Report domain class
- * Vers: 6.4.2
- * Date: 2017-11-14
+ * Vers: 6.5.1
+ * Date: 2017-12-15
  * Auth: David Sargeant
+ * Logs: 6.5.1 2017-12-15: Added flagged field, invoiced field, and invoices array
  * Logs: 6.4.2 2017-11-14: Fixed it so Excel dates in string format will also read in
  * Logs: 6.4.1 2017-11-12: Added ability to read report_date from rprtDate as an Excel date integer
  * Logs: 6.3.1: Added split_count and split_from
  */
 
-import { sprintf                                 } from 'sprintf-js'                 ;
-import { Log, isMoment, Moment, moment, oo       } from '../config/config.functions' ;
-import { Employee, Shift, PayrollPeriod, Jobsite } from '../domain/domain-classes'   ;
+import { sprintf                                 } from 'sprintf-js'              ;
+import { Log, isMoment, Moment, moment, oo       } from 'config/config.functions' ;
+import { Employee, Shift, PayrollPeriod, Jobsite } from 'domain/domain-classes'   ;
 
 export class Report {
-  public _id              : string ;
-  public _rev             : string ;
+  public _id              : string = "";
+  public _rev             : string = "";
   public time_start       : Moment ;
   public time_end         : Moment ;
-  public repair_hours     : number ;
-  public unit_number      : string ;
-  public work_order_number: string ;
-  public notes            : string ;
-  public report_date      : string ;
-  public last_name        : string ;
-  public first_name       : string ;
-  public shift            : string ;
-  public client           : string ;
-  public location         : string ;
-  public location_id      : string ;
-  public site_number      : number ;
-  // public location_2       : any ;
+  public repair_hours     : number = 0;
+  public unit_number      : string = "";
+  public work_order_number: string = "";
+  public notes            : string = "";
+  public report_date      : string = "";
+  public last_name        : string = "";
+  public first_name       : string = "";
+  public shift            : string = "";
+  public client           : string = "";
+  public location         : string = "";
+  public location_id      : string = "";
+  public site_number      : number = -1001;
   public shift_time       : Moment ;
-  public shift_length     : number ;
+  public shift_length     : number = 0;
   public shift_start_time : Moment ;
-  public technician       : string ;
-  public timestamp        : number ;
-  public username         : string ;
-  public shift_serial     : string ;
-  public payroll_period   : number ;
-  public invoiced         : boolean;
-  public invoiced_dates   : Array<Moment> = [];
+  public technician       : string = "";
+  public timestamp        : number = 0;
+  public timestampM       : Moment ;
+  public username         : string = "";
+  public shift_serial     : string = "";
+  public payroll_period   : number = 0;
   public change_log       : Array<any> = [];
-  public split_count      : number ;
-  public split_from       : string ;
-
+  public split_count      : number = 0;
+  public split_from       : string = "";
+  public flagged          : boolean = false;
+  public preauthed        : boolean = false;
+  public preauth_dates    : Array<any> = [];
+  public invoiced         : boolean = false;;
+  public invoiced_dates   : Array<string> = [];
+  public invoice_numbers  : Array<any> = [];
 
   /**
    * Create a Report object. All parameters are optional, and can be populated later from a serialized object document from database.
@@ -72,7 +76,7 @@ export class Report {
    *
    * @memberof Report
    */
-  constructor(start?: any, end?: any, hours?: any, unit?: any, wo?: any, nts?: any, date?: any, last?: any, first?: any, shift?: any, client?: any, loc?: any, locid?: any, loc2?: any, shiftTime?: any, shiftLength?: any, shiftStartTime?: any, tech?: any, timestamp?: any, user?: any, serial?:any, payroll?:any) {
+  constructor(start?:any, end?: any, hours?: any, unit?: any, wo?: any, nts?: any, date?: any, last?: any, first?: any, shift?: any, client?: any, loc?: any, locid?: any, loc2?: any, shiftTime?: any, shiftLength?: any, shiftStartTime?: any, tech?: any, timestamp?: any, user?: any, serial?:any, payroll?:any) {
     if(arguments.length === 1) {
       let doc = arguments[0];
       this.site_number = 0;
@@ -80,83 +84,99 @@ export class Report {
       this.invoiced_dates = [] ;
       this.readFromDoc(doc);
     } else {
-      this._id               =                   null ;
-      this._rev              =                   null ;
-      this.time_start        = start          || null ;
-      this.time_end          = end            || null ;
-      this.repair_hours      = hours          || null ;
-      this.unit_number       = unit           || null ;
-      this.work_order_number = wo             || null ;
-      this.notes             = nts            || null ;
-      this.report_date       = date           || null ;
-      this.last_name         = last           || null ;
-      this.first_name        = first          || null ;
-      this.shift             = shift          || null ;
-      this.client            = client         || null ;
-      this.location          = loc            || null ;
-      this.location_id       = locid          || "MNSHOP" ;
-      this.shift_serial      =                   null ;
-      this.shift_time        = shiftTime      || null ;
-      this.shift_length      = shiftLength    || null ;
-      this.shift_start_time  = shiftStartTime || null ;
-      this.technician        = tech           || null ;
-      this.timestamp         = timestamp      || null ;
-      this.username          = user           || null ;
-      this.shift_serial      =                   null ;
-      this.payroll_period    =                   null ;
-      this.site_number       = 1                      ;
-      this.invoiced          = false                  ;
-      this.invoiced_dates    = []                     ;
-      this.change_log        = []                     ;
-      this.split_count       = 0                      ;
+      this._id               = ""                                      ;
+      this._rev              = ""                                      ;
+      this.time_start        = start || this.time_start                ;
+      this.time_end          = end   || this.time_end                  ;
+      this.repair_hours      = hours || this.repair_hours              ;
+      this.unit_number       = unit  || this.unit_number               ;
+      this.work_order_number = wo    || this.work_order_number         ;
+      this.notes             = nts   || this.notes                     ;
+      this.report_date       = date  || this.report_date               ;
+      this.last_name         = last  || this.last_name                 ;
+      this.first_name        = first || this.first_name                ;
+      this.shift             = shift || this.shift                     ;
+      this.client            = client|| this.client                    ;
+      this.location          = loc   || this.location                  ;
+      this.location_id       = locid || "MNSHOP"                       ;
+      this.shift_serial      = ""                                      ;
+      this.shift_time        = shiftTime      || this.shift_time       ;
+      this.shift_length      = shiftLength    || this.shift_length     ;
+      this.shift_start_time  = shiftStartTime || this.shift_start_time ;
+      this.technician        = tech           || this.technician       ;
+      this.timestamp         = timestamp      || this.timestamp        ;
+      this.username          = user           || this.username         ;
+      this.shift_serial      = ""                                      ;
+      this.payroll_period    = 0                                       ;
+      this.site_number       = -1001                                   ;
+      this.invoiced          = false                                   ;
+      this.invoiced_dates    = []                                      ;
+      this.change_log        = []                                      ;
+      this.split_count       = 0                                       ;
+      this.split_from        = ""                                      ;
+      this.flagged           = false                                   ;
+      this.preauthed         = false                                   ;
+      this.preauth_dates     = []                                      ;
+      this.invoiced          = false                                   ;
+      this.invoiced_dates    = []                                      ;
+      this.invoice_numbers   = []                                      ;
     }
   }
 
   public readFromDoc(doc: any) {
     let fields = [
-      ["_id" , "_id"],
-      ["_rev", "_rev"],
-      ["repairHrs", "repair_hours"],
-      ["uNum", "unit_number"],
-      ["wONum", "work_order_number"],
-      ["notes", "notes"],
-      ["rprtDate", "report_date"],
-      ["lastName", "last_name"],
-      ["firstName", "first_name"],
-      ["client", "client"],
-      ["location", "location"],
-      ["locID", "location_id"],
-      ["shift", "shift_time"],
-      ["shiftLength", "shift_length"],
-      ["shiftStartTime", "shift_start_time"],
-      ["shiftSerial", "shift_serial"],
-      ["payrollPeriod", "payroll_period"],
-      ["technician", "technician"],
-      ["timeStamp", "timestamp"],
-      ["username", "username"],
-      ["site_number", "site_number"],
-      ["invoiced", "invoiced"],
-      ["invoiced_dates", "invoiced_dates"],
-      ["change_log", "change_log"],
+      ["_id"             , "_id"               ] ,
+      ["_rev"            , "_rev"              ] ,
+      ["repairHrs"       , "repair_hours"      ] ,
+      ["uNum"            , "unit_number"       ] ,
+      ["wONum"           , "work_order_number" ] ,
+      ["notes"           , "notes"             ] ,
+      ["rprtDate"        , "report_date"       ] ,
+      ["lastName"        , "last_name"         ] ,
+      ["firstName"       , "first_name"        ] ,
+      ["client"          , "client"            ] ,
+      ["location"        , "location"          ] ,
+      ["locID"           , "location_id"       ] ,
+      ["shift"           , "shift_time"        ] ,
+      ["shiftLength"     , "shift_length"      ] ,
+      ["shiftStartTime"  , "shift_start_time"  ] ,
+      ["shiftSerial"     , "shift_serial"      ] ,
+      ["payrollPeriod"   , "payroll_period"    ] ,
+      ["technician"      , "technician"        ] ,
+      ["timeStamp"       , "timestamp"         ] ,
+      ["timeStampM"      , "timestampM"        ] ,
+      ["username"        , "username"          ] ,
+      ["site_number"     , "site_number"       ] ,
+      ["invoiced"        , "invoiced"          ] ,
+      ["invoiced_dates"  , "invoiced_dates"    ] ,
+      ["change_log"      , "change_log"        ] ,
+      ["flagged"         , "flagged"           ] ,
+      ["preauthed"       , "preauthed"         ] ,
+      ["preauth_dates"   , "preauth_dates"     ] ,
+      ["invoiced"        , "invoiced"          ] ,
+      ["invoiced_dates"  , "invoiced_dates"    ] ,
+      ["invoice_numbers" , "invoice_numbers"   ] ,
     ];
     // try {
       let len = fields.length;
       for (let i = 0; i < len; i++) {
         let docKey = fields[i][0];
         let thisKey = fields[i][1];
-        this[thisKey] = doc[docKey];
+        // this[thisKey] = doc[docKey];
         if(thisKey === 'report_date') {
           // this[thisKey] = moment(doc[docKey], "YYYY-MM-DD");
           if(typeof doc[docKey] === 'number') {
-            this[thisKey] = moment.fromExcel(doc[docKey]).format("YYYY-MM-DD");
+            this[thisKey] = moment().fromExcel(doc[docKey]).format("YYYY-MM-DD");
           } else if(typeof doc[docKey] === 'string') {
             let xl = Number(doc[docKey]);
             if(!isNaN(xl)) {
-              this[thisKey] = moment.fromExcel(xl).format("YYYY-MM-DD")
+              this[thisKey] = moment().fromExcel(xl).format("YYYY-MM-DD")
             } else {
-              this[thisKey] = doc[docKey];
+              this[thisKey] = doc[docKey] ? doc[docKey] : this[thisKey];
             }
           }
+        } else {
+          this[thisKey] = doc[docKey] ? doc[docKey] : this[thisKey];
         }
       }
       if(!this.technician) {
@@ -220,31 +240,40 @@ export class Report {
     // }
   }
 
-  public serialize():any {
+  public serialize(tech?:Employee):any {
     let fields = [
-      ["_id", "_id"],
-      ["_rev", "_rev"],
-      ["repairHrs", "repair_hours"],
-      ["uNum", "unit_number"],
-      ["wONum", "work_order_number"],
-      ["notes", "notes"],
-      ["rprtDate", "report_date"],
-      ["lastName", "last_name"],
-      ["firstName", "first_name"],
-      ["client", "client"],
-      ["location", "location"],
-      ["locID", "location_id"],
-      ["shift", "shift_time"],
-      ["shiftLength", "shift_length"],
-      ["shiftStartTime", "shift_start_time"],
-      ["shiftSerial", "shift_serial"],
-      ["payrollPeriod", "payroll_period"],
-      ["technician", "technician"],
-      ["timeStamp", "timestamp"],
-      ["username", "username"],
-      ["timeStarts", "time_start"],
-      ["timeEnds", "time_end"],
-      ["change_log", "change_log"],
+      ["_id"             , "_id"               ] ,
+      ["_rev"            , "_rev"              ] ,
+      ["repairHrs"       , "repair_hours"      ] ,
+      ["uNum"            , "unit_number"       ] ,
+      ["wONum"           , "work_order_number" ] ,
+      ["notes"           , "notes"             ] ,
+      ["rprtDate"        , "report_date"       ] ,
+      ["lastName"        , "last_name"         ] ,
+      ["firstName"       , "first_name"        ] ,
+      ["client"          , "client"            ] ,
+      ["location"        , "location"          ] ,
+      ["locID"           , "location_id"       ] ,
+      ["shift"           , "shift_time"        ] ,
+      ["shiftLength"     , "shift_length"      ] ,
+      ["shiftStartTime"  , "shift_start_time"  ] ,
+      ["shiftSerial"     , "shift_serial"      ] ,
+      ["payrollPeriod"   , "payroll_period"    ] ,
+      ["technician"      , "technician"        ] ,
+      ["timeStamp"       , "timestamp"         ] ,
+      ["timeStampM"      , "timestampM"        ] ,
+      ["username"        , "username"          ] ,
+      ["timeStarts"      , "time_start"        ] ,
+      ["timeEnds"        , "time_end"          ] ,
+      ["change_log"      , "change_log"        ] ,
+      ["invoiced"        , "invoiced"          ] ,
+      ["invoiced_dates"  , "invoiced_dates"    ] ,
+      ["flagged"         , "flagged"           ] ,
+      ["preauthed"       , "preauthed"         ] ,
+      ["preauth_dates"   , "preauth_dates"     ] ,
+      ["invoiced"        , "invoiced"          ] ,
+      ["invoiced_dates"  , "invoiced_dates"    ] ,
+      ["invoice_numbers" , "invoice_numbers"   ] ,
     ];
     let doc:any = {};
     // try {
@@ -268,12 +297,31 @@ export class Report {
     return doc;
   }
 
+  public static deserialize(doc:any) {
+    let report = new Report();
+    report.readFromDoc(doc);
+    return report;
+  }
+
+  public deserialize(doc:any) {
+    this.readFromDoc(doc);
+    return this;
+  }
+
+  public getReportID():string {
+    if(this._id) {
+      return this._id;
+    } else {
+      return "";
+    }
+  }
+
   public getRepairHours():number {
     let val = Number(this.repair_hours) || 0;
     return val;
   }
 
-  public getRepairHoursString() {
+  public getRepairHoursString():string {
     let hours = this.getRepairHours();
     let h = Math.trunc(hours);
     let m = (hours - h) * 60;
@@ -281,29 +329,38 @@ export class Report {
     return out;
   }
 
-  public setStartTime(time: any) {
-    if (isMoment(time) || moment.isDate(time)) {
-      this.time_start = moment(time);
-      this.checkTimeCalculations(0);
+  public getReportDate(asString?:boolean):Moment|string {
+    let date = moment(this.report_date, "YYYY-MM-DD");
+    if(asString) {
+      return date.format("YYYY-MM-DD");
     } else {
-      Log.l("Report.setStartTime(): Needs a date/moment, was given this:\n", time);
+      return date;
     }
   }
 
-  public setEndTime(time: any) {
-    if (isMoment(time) || moment.isDate(time)) {
-      this.time_end = moment(time);
-      this.checkTimeCalculations(1);
-    } else {
-      Log.l("Report.setEndTime(): Needs a date/moment, was given this:\n", time);
-    }
+  public getStartTime():Moment {
+    return this.time_start;
+  }
+
+  public setStartTime(time:Date|Moment) {
+    this.time_start = moment(time);
+    this.checkTimeCalculations(0);
+  }
+
+  public getEndTime():Moment {
+    return this.time_end;
+  }
+
+  public setEndTime(time:Date|Moment) {
+    this.time_end = moment(time);
+    this.checkTimeCalculations(1);
   }
 
   public setRepairHours(duration: any) {
-    if (moment.isDuration(duration)) {
+    if(moment.isDuration(duration)) {
       this.repair_hours = duration.asHours();
       this.checkTimeCalculations(2);
-    } else if (typeof duration === 'number') {
+    } else if(typeof duration === 'number') {
       this.repair_hours = duration;
       this.checkTimeCalculations(2);
     } else {
@@ -313,15 +370,15 @@ export class Report {
 
   public adjustEndTime() {
     let start = this.time_start;
-    let time = this.repair_hours;
+    let time:any = this.repair_hours;
     let end = this.time_end;
     // Log.l("adjustEndTime(): Now adjusting end time of work report. time_start, repair_hours, and time_end are:\n", start, time, end);
-    // if (typeof time !== 'number') {
-    //   if (moment.isDuration(time)) {
-    //     time = time.asHours();
-    //   }
-    // }
-    if (start !== null && isMoment(start) && typeof time === 'number') {
+    if (typeof time !== 'number') {
+      if (moment.isDuration(time)) {
+        time = time.asHours();
+      }
+    }
+    if(start !== null && isMoment(start) && typeof time === 'number') {
       let newEnd = moment(start).add(time, 'hours');
       if (end.isSame(newEnd)) {
         Log.l("adjustEndTime(): No need, end time is already correct.");
@@ -334,7 +391,7 @@ export class Report {
     }
   }
 
-  public checkTimeCalculations(mode: number) {
+  public checkTimeCalculations(mode:number) {
     let start = this.time_start;
     let end = this.time_end;
     let time = this.repair_hours;

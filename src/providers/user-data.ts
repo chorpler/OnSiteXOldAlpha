@@ -12,7 +12,7 @@ import { DBSrvcs                       } from './db-srvcs'                     ;
 import { Preferences                   } from './preferences'                  ;
 import { Shift                         } from 'domain/shift'                   ;
 import { PayrollPeriod                 } from 'domain/payroll-period'          ;
-import { WorkOrder                     } from 'domain/workorder'               ;
+import { Report                     } from 'domain/report'               ;
 import { ReportOther                   } from 'domain/reportother'             ;
 import { Employee                      } from 'domain/employee'                ;
 import { Message                       } from 'domain/message'                 ;
@@ -59,12 +59,12 @@ export class UserData {
   public static get techWOArrayInitialized():boolean {return Boolean(UserData.reports && UserData.reports.length);};
   public static get shifts():Array<Shift> {return UserData.data.shifts;};
   public static get payrollPeriods():Array<PayrollPeriod> {return UserData.data.payrollPeriods;};
-  public static get reports():Array<WorkOrder> {return UserData.data.reports;};
+  public static get reports():Array<Report> {return UserData.data.reports;};
   public static get otherReports():Array<ReportOther> {return UserData.data.otherReports;};
   public static get messages():Array<Message> {return UserData.data.messages;};
   public static set shifts(value: Array<Shift>) { UserData.data.shifts = value;} ;
   public static set payrollPeriods(value:Array<PayrollPeriod>) {UserData.data.payrollPeriods = value;};
-  public static set reports(value:Array<WorkOrder>) {UserData.data.reports = value;};
+  public static set reports(value:Array<Report>) {UserData.data.reports = value;};
   public static set otherReports(value:Array<ReportOther>) {UserData.data.otherReports = value;};
   public static set messages(value:Array<Message>) {UserData.data.messages = value;};
   public static user                  : Employee             = null                    ;
@@ -100,11 +100,11 @@ export class UserData {
   public set appdata(value:any) { UserData.appdata = value;}                         ;
   public get shifts()                 : Array<Shift>         {return UserData.shifts;         };
   public get payrollPeriods()         : Array<PayrollPeriod> {return UserData.payrollPeriods; };
-  public get reports()                : Array<WorkOrder>     {return UserData.reports;        };
+  public get reports()                : Array<Report>     {return UserData.reports;        };
   public get otherReports()           : Array<ReportOther>   {return UserData.otherReports;   };
   public set shifts(value: Array<Shift>) { UserData.data.shifts = value; };
   public set payrollPeriods(value: Array<PayrollPeriod>) { UserData.data.payrollPeriods = value; };
-  public set reports(value: Array<WorkOrder>) { UserData.data.reports = value; };
+  public set reports(value: Array<Report>) { UserData.data.reports = value; };
   public set otherReports(value: Array<ReportOther>) { UserData.data.otherReports = value; };
   public get user()                         : Employee  { return UserData.user           ;};
   public get techProfile()                  : any       { return UserData.techProfile    ;};
@@ -402,7 +402,7 @@ export class UserData {
     return this.reports;
   }
 
-  public setReportsForTech(reports:Array<WorkOrder>) {
+  public setReportsForTech(reports:Array<Report>) {
     let workReports = [];
     for(let report of reports) {
       workReports.push(report);
@@ -496,9 +496,9 @@ export class UserData {
     UserData.shift = shift;
   }
 
-  public getWorkOrderList():Array<WorkOrder> {
+  public getWorkOrderList():Array<Report> {
     let periods = this.getPayrollPeriods();
-    let newReports = new Array<WorkOrder>();
+    let newReports = new Array<Report>();
     for(let period of periods) {
       let shifts = period.getPayrollShifts();
       for(let shift of shifts) {
@@ -539,7 +539,7 @@ export class UserData {
     return this.otherReports;
   }
 
-  // getWorkOrdersForShift(shift:Shift | string):Array<WorkOrder> {
+  // getWorkOrdersForShift(shift:Shift | string):Array<Report> {
   //   let result = [];
   //   let shift_serial = shift instanceof Shift ? shift.getShiftSerial() : shift;
   //   for(let report of UserData.reports) {
@@ -724,7 +724,7 @@ export class UserData {
   //     for(let shift of shifts) {
   //       // let shiftReports = shift.getShiftReports();
   //       let shiftDate = shift.getShiftDate().format("YYYY-MM-DD");
-  //       let shiftReports = new Array<WorkOrder>();
+  //       let shiftReports = new Array<Report>();
   //       let shiftOtherReports = new Array<ReportOther>();
   //       let exists = false;
   //       for(let report of reports) {
@@ -749,7 +749,7 @@ export class UserData {
   //   }
   // }
 
-  public addNewReport(newReport:WorkOrder) {
+  public addNewReport(newReport:Report) {
     // Log.l("addNewReport(): Now adding report:\n", newReport);
     // let reports = this.getWorkOrderList();
     let id = newReport.getReportID();
@@ -824,7 +824,7 @@ export class UserData {
     }
   }
 
-  public removeReport(report:WorkOrder) {
+  public removeReport(report:Report) {
     // let reports = this.getWorkOrderList();
     // let i = reports.indexOf(report);
     // if(i > -1) {
@@ -835,23 +835,23 @@ export class UserData {
     // this.updateShifts();
     let id = report.getReportID();
     let exists = false, existingReport = null, rightShift = null, index = -1;
-    let periods = this.getPayrollPeriods();
+    let periods:Array<PayrollPeriod> = this.getPayrollPeriods();
     let date = moment(report.report_date).startOf('day');
     loop1:
     for (let period of periods) {
-      let shifts = period.getPayrollShifts();
+      let shifts:Array<Shift> = period.getPayrollShifts();
       loop2:
       for (let shift of shifts) {
-        let shiftDate = shift.getShiftDate().startOf('day');
+        let shiftDate:Moment = shift.getShiftDate().startOf('day');
         if (moment(shiftDate).isSame(date, 'day')) {
           rightShift = shift;
         } else {
           continue loop2;
         }
-        let others = shift.getShiftReports();
+        let others:Array<ReportOther> = shift.getShiftOtherReports();
         let i = 0;
         for (let other of others) {
-          let rid = other.getReportID();
+          let rid:string = other.getReportID();
           if (id === rid) {
             exists = true;
             index = i;

@@ -18,7 +18,7 @@ import { AuthSrvcs                                        } from 'providers/auth
 import { SrvrSrvcs                                        } from 'providers/srvr-srvcs'      ;
 import { AlertService                                     } from 'providers/alerts'          ;
 import { UserData                                         } from 'providers/user-data'       ;
-import { WorkOrder                                        } from 'domain/workorder'          ;
+import { Report                                        } from 'domain/report'          ;
 import { ReportOther                                      } from 'domain/reportother'        ;
 import { Shift                                            } from 'domain/shift'              ;
 import { PayrollPeriod                                    } from 'domain/payroll-period'     ;
@@ -68,9 +68,9 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
   static hrsSubmitted                : number                                   ;
   static dataReady                   : boolean       = false                    ;
   static techProfile                 : any                                      ;
-  static techWorkOrders              : Array<WorkOrder>   = []                  ;
-  static shiftWorkOrders             : Array<WorkOrder>   = []                  ;
-  static payrollWorkOrders           : Array<WorkOrder>   = []                  ;
+  static techWorkOrders              : Array<Report>   = []                  ;
+  static shiftWorkOrders             : Array<Report>   = []                  ;
+  static payrollWorkOrders           : Array<Report>   = []                  ;
   static otherReports                : Array<ReportOther> = []                  ;
   static hoursTotalList              : Array<any>    = []                       ;
   static shifts                      : Array<Shift>  = []                       ;
@@ -108,9 +108,9 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
   public hrsSubmitted                : number              = HomePage.hrsSubmitted;
   public dataReady                   : boolean             = HomePage.dataReady;
   public techProfile                 : any                 = HomePage.techProfile;
-  public techWorkOrders              : Array<WorkOrder>    = HomePage.techWorkOrders;
-  public shiftWorkOrders             : Array<WorkOrder>    = HomePage.shiftWorkOrders;
-  public payrollWorkOrders           : Array<WorkOrder>    = HomePage.payrollWorkOrders;
+  public techWorkOrders              : Array<Report>    = HomePage.techWorkOrders;
+  public shiftWorkOrders             : Array<Report>    = HomePage.shiftWorkOrders;
+  public payrollWorkOrders           : Array<Report>    = HomePage.payrollWorkOrders;
   public otherReports                : Array<ReportOther>  = HomePage.otherReports;
   public hoursTotalList              : Array<any>          = HomePage.hoursTotalList;
   public shifts                      : Array<Shift>        = HomePage.shifts;
@@ -481,7 +481,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
   public fetchTechWorkorders():Promise<Array<any>> {
     let techid = this.ud.getCredentials().user;
     return new Promise((resolve,reject) => {
-      this.server.getReportsForTech(techid).then((res:Array<WorkOrder>) => {
+      this.server.getReportsForTech(techid).then((res:Array<Report>) => {
         Log.l(`HomePage: getReportsForTech(${techid}): Success! Result:\n`, res);
         for(let report of res) {
           this.ud.addNewReport(report);
@@ -504,7 +504,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
         Log.l("fetchTechWorkorders(): Payroll periods created as:\n", this.payrollPeriods);
         for(let period of this.payrollPeriods) {
           for(let shift of period.shifts) {
-            // let reports = new Array<WorkOrder>();
+            // let reports = new Array<Report>();
             // for(let report of this.techWorkOrders) {
             //   if(report.report_date === shift.start_time.format("YYYY-MM-DD")) {
             //     reports.push(report);

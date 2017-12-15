@@ -9,7 +9,7 @@ import { SrvrSrvcs                                                           } f
 import { UserData                                                            } from 'providers/user-data'     ;
 import { AlertService                                                        } from 'providers/alerts'        ;
 import { Log, isMoment, moment, Moment                                       } from 'config/config.functions' ;
-import { WorkOrder                                                           } from 'domain/workorder'        ;
+import { Report                                                              } from 'domain/report'           ;
 import { ReportOther                                                         } from 'domain/reportother'      ;
 import { Shift                                                               } from 'domain/shift'            ;
 import { PayrollPeriod                                                       } from 'domain/payroll-period'   ;
@@ -18,17 +18,19 @@ import { TranslateService                                                    } f
 import { SmartAudio                                                          } from 'providers/smart-audio'   ;
 import { TabsService                                                         } from 'providers/tabs-service'  ;
 import { Pages                                                               } from 'config/config.types'     ;
+import { STRINGS                                                             } from 'config/config.strings'   ;
 
-export const _sortReports = (a:WorkOrder,b:WorkOrder):number => {
-  let dateA  = a['report_date'];
-  let dateB  = b['report_date'];
-  let startA = a['time_start'];
-  let startB = b['time_start'];
-  dateA  = isMoment(dateA)  ? dateA  : moment(dateA).startOf('day');
-  dateB  = isMoment(dateB)  ? dateB  : moment(dateB).startOf('day');
-  startA = isMoment(startA) ? startA : moment(startA);
-  startB = isMoment(startB) ? startB : moment(startB);
-  return dateA.isBefore(dateB) ? -1 : dateA.isAfter(dateB) ? 1 : startA.isBefore(startB) ? -1 : startA.isAfter(startB) ? 1 : 0;
+export const _sortReports = (a:Report,b:Report):number => {
+  let dateA  = a.report_date;
+  let dateB  = b.report_date;
+  let startA = a.time_start;
+  let startB = b.time_start;
+  // dateA  = isMoment(dateA)  ? dateA  : moment(dateA).startOf('day');
+  // dateB  = isMoment(dateB)  ? dateB  : moment(dateB).startOf('day');
+  // startA = isMoment(startA) ? startA : moment(startA);
+  // startB = isMoment(startB) ? startB : moment(startB);
+  // return dateA.isBefore(dateB) ? -1 : dateA.isAfter(dateB) ? 1 : startA.isBefore(startB) ? -1 : startA.isAfter(startB) ? 1 : 0;
+  return dateA > dateB ? 1 : dateA < dateB ? -1 : startA > startB ? 1 : startA < startB ? -1 : 0;
 };
 
 export const _sortOtherReports = (a:ReportOther,b:ReportOther):number => {
@@ -57,7 +59,7 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
   public pageReady    : boolean          = false                                                        ;
   public selectedItem : any                                                                             ;
   public items        : Array<{title: string, note: string}> = new Array<{title:string, note:string}>() ;
-  public reports      : Array<WorkOrder>     = []                                                       ;
+  public reports      : Array<Report>     = []                                                       ;
   public otherReports : Array<ReportOther>   = []
   public shifts       : Array<Shift>         = []                                                       ;
   public periods      : Array<PayrollPeriod> = []                                                       ;
@@ -69,6 +71,7 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
   public static PREFS : any                  = new Preferences()                                        ;
   public prefs        : any                  = ReportHistory.PREFS                                      ;
   public shiftToUse   : Shift                = null                                                     ;
+  public numChars     : Array<string>        = STRINGS.NUMCHARS                                         ;
   constructor(
     public navCtrl     : NavController     ,
     public navParams   : NavParams         ,
@@ -109,9 +112,7 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
     Log.l("ReportHistory: ionViewDidEnter called...");
     window["onsitereporthistory"] = this;
     this.pageReady = false;
-    if(!(this.ud.isAppLoaded() && this.ud.isHomePageReady())) {
-      this.tabServ.goToPage('OnSiteHome');
-    } else {
+    if(this.ud.isAppLoaded()) {
       this.runOnPageLoad();
     }
   }
@@ -219,13 +220,13 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
     // });
   }
 
-  public itemTapped(event, item:WorkOrder|ReportOther, shift:Shift) {
+  public itemTapped(event, item:Report|ReportOther, shift:Shift) {
     let shiftToSend = null;
     let lang = this.lang;
     Log.l("itemTapped(): Now looking for report:\n", item);
     let report = item;
-    // if(report instanceof WorkOrder) {
-    //   Log.l("itemTapped(): Report was a WorkOrder:\n", item);
+    // if(report instanceof Report) {
+    //   Log.l("itemTapped(): Report was a Report:\n", item);
     //   outerloop:
     //   for(let shift of this.shifts) {
     //     let list = shift.getShiftReports();
@@ -288,10 +289,10 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
     // }
     // if(shiftToSend) {
       Log.l("itemTapped(): Got shift to send:\n", shift);
-      if(item['type'] && item['type'] !== 'Work Report') {
-        this.tabServ.goToPage('Report', {mode: 'Edit', reportOther: report, shift: shift, payroll_period: this.period, type: item['type']});
-      } else if(item instanceof WorkOrder) {
-        this.tabServ.goToPage('Report', {mode: 'Edit', workOrder: report, shift: shift, payroll_period: this.period});
+      if(item instanceof ReportOther) {
+        this.tabServ.goToPage('Report View', {mode: 'Edit', other: report, shift: shift, payroll_period: this.period, type: item.type});
+      } else if(item instanceof Report) {
+        this.tabServ.goToPage('Report View', {mode: 'Edit', report: report, shift: shift, payroll_period: this.period});
       } else {
         this.alert.showAlert(lang['error'] + " PEBCAK-002", lang['error_report_not_found']);
       }
@@ -302,10 +303,10 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
 
   public addNewReportForShift(shift: Shift) {
     Log.l("addNewReportForShift(): Got shift to send:\n", shift);
-    this.tabServ.goToPage('Report', { mode: 'Add', shift: shift, payroll_period: this.period });
+    this.tabServ.goToPage('Report View', { mode: 'Add', shift: shift, payroll_period: this.period });
   }
 
-  // public deleteWorkOrder(event:Event, report:WorkOrder, shift:Shift) {
+  // public deleteWorkOrder(event:Event, report:Report, shift:Shift) {
   //   Log.l("deleteWorkOrder() clicked ... with event:\n", event);
   //   let lang = this.lang;
   //   let db = this.prefs.getDB();
@@ -314,7 +315,7 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
   //     if (res) {
   //       this.alert.showSpinner(lang['spinner_deleting_report']);
   //       Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
-  //       let wo:WorkOrder = report;
+  //       let wo:Report = report;
   //       this.db.deleteDoc(db.reports, wo).then((res) => {
   //         Log.l("deleteWorkOrder(): Success:\n", res);
   //         let tmpReport = wo;
@@ -363,19 +364,19 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
   //   });
   // }
 
-  public async deleteWorkOrder(event:Event, report:WorkOrder, shift:Shift) {
+  public async deleteReport(report:Report, shift:Shift, event?:Event) {
     let lang = this.lang;
     try {
-      Log.l("deleteWorkOrder() clicked ... with event:\n", event);
+      Log.l("deleteReport() clicked ... with event:\n", event);
       let db = this.prefs.getDB();
       this.audio.play('deletereport');
       let confirm = await this.alert.showConfirm(lang['confirm'], lang['delete_report']);
       if(confirm) {
         this.alert.showSpinner(lang['spinner_deleting_report']);
-        Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
-        let wo:WorkOrder = report;
+        Log.l("deleteReport(): User confirmed deletion, deleting...");
+        let wo:Report = report;
         let res = await this.db.deleteDoc(db.reports, wo);
-        Log.l("deleteWorkOrder(): Success:\n", res);
+        Log.l("deleteReport(): Success:\n", res);
         let tmpReport = wo;
         let reports = this.ud.getWorkOrderList();
         let i = reports.indexOf(wo);
@@ -387,11 +388,11 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
         this.ud.removeReport(tmpReport);
         let syncRes = await this.server.syncToServer(db.reports, db.reports);
 
-        Log.l(`deleteWorkOrder(): Synchronized local '${db.reports}' to remote.`)
-        Log.l("deleteWorkOrder(): Success:\n", res);
+        Log.l(`deleteReport(): Synchronized local '${db.reports}' to remote.`)
+        Log.l("deleteReport(): Success:\n", res);
         let tmpReport2 = report;
-        Log.l(`deleteWorkOrder(): Successfully deleted report '${report._id}' from server.`);
-        Log.l(`deleteWorkOrder(): About to delete report '${report._id}' from shift '${shift.getShiftSerial()}'...\n`, report);
+        Log.l(`deleteReport(): Successfully deleted report '${report._id}' from server.`);
+        Log.l(`deleteReport(): About to delete report '${report._id}' from shift '${shift.getShiftSerial()}'...\n`, report);
         shift.removeShiftReport(tmpReport2);
         this.alert.hideSpinner();
       } else {
@@ -399,13 +400,13 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
       }
     } catch(err) {
       this.alert.hideSpinner();
-      Log.l("deleteWorkOrder(): Error!");
+      Log.l("deleteReport(): Error!");
       Log.e(err);
       this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
     }
   }
 
-  public deleteOtherReport(event:Event, other:ReportOther, shift:Shift) {
+  public deleteOtherReport(other:ReportOther, shift:Shift, event?:Event) {
     Log.l("deleteOtherReport() clicked ... with event:\n", event);
     let lang = this.lang;
     let db = this.prefs.getDB();

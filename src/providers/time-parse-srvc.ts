@@ -79,7 +79,7 @@
 //  * @private
 //  * @param {any} workOrderData
 //  *
-//  * @memberOf WorkOrder
+//  * @memberOf Report
 //  */
 //   calcEndTime(workOrderData) {
 //     const _Xdec = /(00|15|30|45)(?!\:\d{2})/;

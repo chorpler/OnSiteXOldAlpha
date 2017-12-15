@@ -17,10 +17,11 @@ const tabArrayDev:Array<Tab> = [
   { name: 'Message List'    , fullName: 'Messages'           , show: true  , role: 'user', icon: 'ios-text-outline'     , waiting: false, active: false, } ,
   { name: 'Settings'        , fullName: 'Settings'           , show: true  , role: 'user', icon: 'ios-settings-outline' , waiting: false, active: false, } ,
   { name: 'DevPage'         , fullName: 'Developer Settings' , show: true  , role: 'dev' , icon: 'md-options'           , waiting: false, active: false, } ,
-  { name: 'Report'          , fullName: 'Work Report'        , show: false , role: 'user', icon: 'ios-document-outline' , waiting: false, active: false, } ,
+  { name: 'Report View'     , fullName: 'Work Report'        , show: false , role: 'user', icon: 'ios-document-outline' , waiting: false, active: false, } ,
   { name: 'Message'         , fullName: 'Message'            , show: false , role: 'user', icon: 'ios-text-outline'     , waiting: false, active: false, } ,
   { name: 'Comment'         , fullName: 'Comment'            , show: false , role: 'user', icon: 'ios-text-outline'     , waiting: false, active: false, } ,
   { name: 'Fancy Select'    , fullName: 'Fancy Select'       , show: false , role: 'user', icon: 'ios-text-outline'     , waiting: false, active: false, } ,
+  { name: 'Testing'         , fullName: 'Testing'            , show: false , role: 'user', icon: 'ios-text-outline'     , waiting: false, active: false, } ,
 ];
 
 
@@ -265,9 +266,11 @@ export class TabsService {
     let dX = event.deltaX, dY = event.deltaY;
     if(dX > 0) {
       /* Swipe right, move left */
+      Log.l("handleSwipe(): attempting to move left...");
       this.moveLeft();
     } else if(dX < 0) {
       /* Swipe left, move right */
+      Log.l("handleSwipe(): attempting to move right...");
       this.moveRight();
     }
     // if(swipe.direction === 2) {

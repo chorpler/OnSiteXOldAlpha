@@ -349,7 +349,7 @@ export class Shift {
 
   public getShiftLength(newHours?:number|string) {
     let hrs = newHours ? String(newHours) : "";
-    let retVal = this.shift_length;
+    let retVal:any = this.shift_length;
     let regHours = this.getNormalHours();
     let status = this.getShiftReportsStatus();
     if(retVal == 0) {
@@ -599,11 +599,11 @@ export class Shift {
     return this.shift_reports;
   }
 
-  public getShiftReports() {
+  public getShiftReports():Array<Report> {
     return this.shift_reports;
   }
 
-  public getShiftOtherReports() {
+  public getShiftOtherReports():Array<ReportOther> {
     return this.other_reports;
   }
 
@@ -618,7 +618,7 @@ export class Shift {
     return output;
   }
 
-  public getOtherReports() {
+  public getOtherReports():Array<ReportOther> {
     return this.other_reports;
   }
 

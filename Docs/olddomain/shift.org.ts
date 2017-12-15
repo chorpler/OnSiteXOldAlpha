@@ -1,8 +1,8 @@
 import { Log, isMoment, moment, Moment             } from 'config/config.functions' ;
 import { sprintf                                   } from 'sprintf-js'                 ;
-import { WorkOrder, ReportOther, Jobsite, Employee } from './domain-classes'           ;
+import { Report, ReportOther, Jobsite, Employee } from './domain-classes'           ;
 
-export const _sortReports = (a: WorkOrder, b: WorkOrder): number => {
+export const _sortReports = (a: Report, b: Report): number => {
   let dateA = a['report_date'];
   let dateB = b['report_date'];
   let startA = a['time_start'];
@@ -29,7 +29,7 @@ export class Shift {
   public XL                  : any                           ;
   public shift_serial        : any                           ;
   public shift_hours         : any                           ;
-  public shift_reports       : Array<WorkOrder>   = []       ;
+  public shift_reports       : Array<Report>   = []       ;
   public other_reports       : Array<ReportOther> = []       ;
   public site                : Jobsite                       ;
   public tech                : Employee                      ;
@@ -421,12 +421,12 @@ export class Shift {
     return total;
   }
 
-  setShiftReports(reports: Array<WorkOrder>) {
+  setShiftReports(reports: Array<Report>) {
     this.shift_reports = reports;
     return this.shift_reports;
   }
 
-  addShiftReport(report: WorkOrder) {
+  addShiftReport(report: Report) {
     let reports = this.getShiftReports();
     let j = 0, i = -1;
     for (let rep of reports) {
@@ -450,7 +450,7 @@ export class Shift {
     // return this.shift_reports;
   }
 
-  removeShiftReport(report: WorkOrder) {
+  removeShiftReport(report: Report) {
     let reports = this.getShiftReports();
     let j = 0, i = -1;
     for (let rep of reports) {
@@ -478,8 +478,8 @@ export class Shift {
     return this.other_reports;
   }
 
-  getAllShiftReports(): Array<WorkOrder | ReportOther> {
-    let output: Array<WorkOrder | ReportOther> = [];
+  getAllShiftReports(): Array<Report | ReportOther> {
+    let output: Array<Report | ReportOther> = [];
     for (let report of this.getShiftReports()) {
       output.push(report);
     }

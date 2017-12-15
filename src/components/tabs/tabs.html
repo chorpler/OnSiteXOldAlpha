@@ -16,7 +16,7 @@
 
 <!-- <ion-footer no-border>
   <ion-toolbar> -->
-    <div class="onsite-tab-bar" id="onsite-nav" [class.disabled]="tabServ.isDisabled()">
+    <div class="onsite-tab-bar" id="onsite-nav" [class.disabled]="tabServ.isDisabled()" (pan)="tabServ.handleSwipe($event)">
       <div class="onsite-tab-button" [class.hide]="tab.show === false || tab.role==='dev' && !ud.isDeveloper()" [class.hlght]="tabServ.isActive(i)" (click)="tabServ.goToPage(tab.name)" *ngFor="let tab of tabServ.tabInfo; let i=index">
         <!-- <div *ngIf="tab.show === true; then visibleTab; else invisibleTab"></div> -->
         <div class="icon-container">

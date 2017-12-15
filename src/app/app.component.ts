@@ -26,7 +26,7 @@ import { TranslateService                             } from '@ngx-translate/cor
 import { SmartAudio                                   } from 'providers/smart-audio'             ;
 import { Jobsite                                      } from 'domain/jobsite'                    ;
 import { ReportOther                                  } from 'domain/reportother'                ;
-import { WorkOrder                                    } from 'domain/workorder'                  ;
+import { Report                                       } from 'domain/report'                     ;
 import { Employee                                     } from 'domain/employee'                   ;
 import { Shift                                        } from 'domain/shift'                      ;
 import { PayrollPeriod                                } from 'domain/payroll-period'             ;
@@ -34,7 +34,7 @@ import { Message                                      } from 'domain/message'   
 import { IonDigitKeyboardCmp, IonDigitKeyboardOptions } from 'components/ion-digit-keyboard'     ;
 import { TabsService                                  } from 'providers/tabs-service'            ;
 
-export const homePage = "OnSiteHome";
+export const homePage:string = "Testing";
 
 @Component({ templateUrl: 'app.html' })
 export class OnSiteApp implements OnInit {
@@ -95,7 +95,9 @@ export class OnSiteApp implements OnInit {
       if(homePage === 'OnSiteHome') {
         this.initializeApp(res);
       } else {
-        Log.l(`OnSiteApp: skipping boot and setting homepage to '${homePage}'`)
+        Log.l(`OnSiteApp: skipping boot and setting homepage to '${homePage}'`);
+        this.ud.showClock = false;
+        // this.ud.setAppLoaded(true);
         // this.nav.setRoot(homePage);
         this.rootPage = homePage;
       }

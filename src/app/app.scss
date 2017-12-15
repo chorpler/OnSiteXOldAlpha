@@ -104,7 +104,7 @@ ion-app.ios ion-content > .scroll-content {
 
 
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 1px;
   // display: none;
   opacity: 0;
 }
@@ -124,8 +124,8 @@ ion-app.ios ion-content > .scroll-content {
 // }
 ::-webkit-scrollbar-thumb {
   // background: rgba(255, 0, 0, 0.25);
-  border-left: 3px solid white;
-  border-right: 3px solid white;
+  // border-left: 3px solid white;
+  // border-right: 3px solid white;
 }
 
 ion-content {

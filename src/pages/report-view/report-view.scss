@@ -1,0 +1,161 @@
+
+.alert-with-icon {
+  // font-size: 24px;
+  .alert-icon {
+    font-size: 24px;
+  }
+  .alert-icon::before {
+    content: "  ";
+  }
+  .alert-icon::after {
+    content: "  ";
+  }
+}
+.alert-icon {
+  font-family: "Ionicons";
+}
+ion-content {
+  .scroll-content {
+    overflow-y: auto;
+  }
+}
+
+page-report-view {
+  .flagged {
+    color: red;
+  }
+  .date {
+    color: blue;
+  }
+  .time {
+    color: darkblue;
+  }
+  .fancy-select-caller-button {
+    border: 1px solid black;
+    width: 100%;
+  }
+  .ion-item-button-like {
+    // &:hover {
+    //   background-color: rgba(0, 0, 128, 0.2);
+    // }
+    &:active {
+      // background-color: rgba(0, 0, 255, 0.5);
+      ion-label {
+        color: white;
+      }
+      .shift-date-select-results {
+        color: white;
+      }
+    }
+  }
+  .work-order-payroll-hours-header {
+    font-size: 16px;
+    // font-size: 11px;
+    text-align: right;
+  }
+  .shift-hours-header {
+    font-weight: bold;
+  }
+  .shift-label {
+    font-weight: normal;
+  }
+  .shift-number {
+    font-weight: normal;
+  }
+  .shift-hours {
+    font-weight: bold;
+  }
+  .shift-date-select-results {
+    text-align: left;
+    cursor: pointer;
+    // width: 80%;
+    display: inline-block;
+    input {
+      cursor: pointer;
+      text-align: right;
+      opacity: 1 !important;
+      // width: 80%;
+    }
+  }
+  .shift-date-select-icon {
+    // border: 1px solid black;
+  }
+  .work-order-delete-button {
+    color: black;
+  }
+  .bar-button-md ion-icon, .bar-button-md[icon-only] ion-icon {
+    // color: grey !important;
+  }
+
+  .red {
+    color: red;
+  }
+
+  .darkred {
+    color: darkred;
+  }
+
+  .green {
+    color: green;
+  }
+
+  .black {
+    color: black;
+  }
+  .report-time-label {
+    color: black !important;
+    .item-input .label-md {
+      color: black;
+    }
+  }
+  .report-time-input input {
+    text-align: right;
+  }
+  .report-dev-info {
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    .report-dev-group {
+      display: flex;
+      flex: 0 1 auto;
+      flex-flow: row nowrap;
+      justify-content: flex-start;
+      align-content: center;
+      align-items: center;
+      .label {
+        flex: 1 0 auto;
+        width: 60px;
+        max-width: 60px;
+        text-align: right;
+        font-weight: bold;
+        margin: 2px;
+      }
+      .data {
+        flex: 0 1 auto;
+        text-overflow: ellipsis;
+        margin: 2px;
+      }
+      .report-ion-input {
+        border: 1px dotted lightgrey;
+        padding: 2px;
+        input {
+          margin: 0;
+        }
+      }
+    }
+  }
+  .report-button {
+    &.save {
+      height: 72px;
+      font-size: 24px;
+    }
+    &.cancel {
+
+    }
+  }
+  svg {
+    fill: currentColor;
+  }
+}

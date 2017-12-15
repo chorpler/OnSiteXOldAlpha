@@ -8,7 +8,7 @@ import { AlertService                               } from './alerts'           
 import { SrvrSrvcs                                  } from './srvr-srvcs'                 ;
 import { UserData                                   } from './user-data'                  ;
 import { Preferences                                } from './preferences'                ;
-import { Employee, Jobsite, WorkOrder, ReportOther, } from 'domain/domain-classes'        ;
+import { Employee, Jobsite, Report, ReportOther, } from 'domain/domain-classes'        ;
 import { Message, Comment, Shift, PayrollPeriod     } from 'domain/domain-classes'        ;
 
 
@@ -374,7 +374,7 @@ export class DBSrvcs {
     });
   }
 
-  public saveReport(report:WorkOrder) {
+  public saveReport(report:Report) {
     return new Promise((resolve,reject) => {
       let db1 = this.addDB(this.prefs.DB.reports);
       db1.upsert(report._id, (doc) => {

@@ -8,7 +8,7 @@ import { AuthSrvcs                                                              
 import { Log, moment, Moment, isMoment                                                             } from 'config/config.functions'              ;
 import { PayrollPeriod                                                                             } from 'domain/payroll-period'                ;
 import { Shift                                                                                     } from 'domain/shift'                         ;
-import { WorkOrder                                                                                 } from 'domain/workorder'                     ;
+import { Report                                                                                 } from 'domain/report'                     ;
 // import { Status                                                                                    } from 'providers/status'                     ;
 import { UserData                                                                                  } from 'providers/user-data'                  ;
 import { sprintf                                                                                   } from 'sprintf-js'                                 ;

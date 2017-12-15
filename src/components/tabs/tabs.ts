@@ -350,6 +350,11 @@ export class TabsComponent implements OnInit,OnDestroy {
     return this.ud.isDeveloper();
   }
 
+  public handleSwipe(event?:any) {
+    Log.l("handleSwipe(): Event is:\n", event);
+    this.tabServ.handleSwipe(event);
+  }
+
   // public setMessageBadge(count:number) {
   //   this.tabInfo[Pages['Message List']].badgeCount = count;
   //   if(count <= 0) {

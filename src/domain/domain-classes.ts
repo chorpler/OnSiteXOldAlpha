@@ -4,7 +4,6 @@ import { Geolocation   } from './geolocation'       ;
 import { Jobsite       } from './jobsite'           ;
 import { Street        } from './street'            ;
 import { Shift         } from './shift'             ;
-import { WorkOrder     } from './workorder'         ;
 import { Report        } from './report'
 import { ReportOther   } from './reportother'       ;
 import { Message       } from './message'           ;
@@ -22,7 +21,6 @@ export { Jobsite       } from './jobsite'           ;
 export { Street        } from './street'            ;
 export { Shift         } from './shift'             ;
 export { Report        } from './report'
-export { WorkOrder     } from './workorder'         ;
 export { ReportOther   } from './reportother'       ;
 export { Message       } from './message'           ;
 export { Comment       } from './comment'           ;

@@ -11,12 +11,8 @@
 <!-- <div #fixed ion-fixed></div>
 <ion-content padding [ngStyle]="{'margin-top': fixedHeight}"> -->
 <!-- <div #fixed ion-fixed></div> -->
-<ion-content padding class="page-content report-history-page-content" (swipe)="tabServ.handleSwipe($event)" *ngIf="pageReady">
+<ion-content padding class="page-content report-history-page-content" *ngIf="pageReady">
   <!-- <ion-refresher (ionRefresh)="doRefresh($event)"> -->
-    <!-- <ion-refresher-content pullingText="Pull to refresh..." refreshingText="Refreshing..."></ion-refresher-content> -->
-    <!-- <div class="waiting-clock" *ngIf="!pageReady">
-      <clock></clock>
-    </div> -->
     <div class="report-history-container">
       <ion-list class="reportList">
         <ion-item-group class="report-history-group-date" *ngFor="let shift of shifts; let i=index">
@@ -31,8 +27,8 @@
           <!-- <div class="report-history-reports-subcontainer" *ngIf="filtReports[filterKeys[i]].length">
             <div class="report-and-reportother-container" *ngFor="let report of filtReports[filterKeys[i]]"> -->
           <div class="report-history-reports-subcontainer" *ngIf="shift.getAllShiftReports()">
-            <div class="report-and-reportother-container" *ngFor="let report of shift.getAllShiftReports(); let i=index">
-              <ion-item-sliding #item{{i}} class="report-history-list-item-sliding" *ngIf="report.type===undefined || report.type==='Work Report'">
+            <div class="report-and-reportother-container" *ngFor="let report of shift.getAllShiftReports(); let j=index">
+              <ion-item-sliding #item{{i}} class="report-history-list-item-sliding" *ngIf="report.type===undefined || report.type==='Work Report' || report.type==='work_report'">
                 <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
                   <div class="report-history-report-item item-group-id" *ngIf="prefs.getShowID()">
                     <span class="report-history-report-item-header item-id-label">ID</span>
@@ -86,7 +82,7 @@
                   </div>
                 </ion-item>
                 <ion-item-options side="right">
-                  <button ion-button color="danger" (tap)="deleteWorkOrder($event, report, shift)">
+                  <button ion-button color="danger" (tap)="deleteReport(report, shift, $event)">
                     <ion-icon name="trash"></ion-icon>
                     {{"delete" | translate}}
                   </button>
@@ -128,7 +124,7 @@
                   </div>
                 </ion-item>
                 <ion-item-options side="right">
-                  <button ion-button color="danger" (tap)="deleteOtherReport($event, report, shift)">
+                  <button ion-button color="danger" (tap)="deleteOtherReport(report, shift, $event)">
                     <ion-icon name="trash"></ion-icon>
                     {{"delete" | translate}}
                   </button>
@@ -170,7 +166,7 @@
                   </div>
                 </ion-item>
                 <ion-item-options side="right">
-                  <button ion-button color="danger" (tap)="deleteOtherReport($event, report, shift)">
+                  <button ion-button color="danger" (tap)="deleteOtherReport(report, shift, $event)">
                     <ion-icon name="trash"></ion-icon>
                     {{"delete" | translate}}
                   </button>
@@ -217,7 +213,7 @@
                   </div>
                 </ion-item>
                 <ion-item-options side="right">
-                  <button ion-button color="danger" (tap)="deleteOtherReport($event, report, shift)">
+                  <button ion-button color="danger" (tap)="deleteOtherReport(report, shift, $event)">
                     <ion-icon name="trash"></ion-icon>
                     {{"delete" | translate}}
                   </button>
@@ -255,7 +251,7 @@
                   </div>
                 </ion-item>
                 <ion-item-options side="right">
-                  <button ion-button color="danger" (tap)="deleteOtherReport($event, report, shift)">
+                  <button ion-button color="danger" (tap)="deleteOtherReport(report, shift, $event)">
                     <ion-icon name="trash"></ion-icon>
                     {{"delete" | translate}}
                   </button>
@@ -293,7 +289,7 @@
                   </div>
                 </ion-item>
                 <ion-item-options side="right">
-                  <button ion-button color="danger" (tap)="deleteOtherReport($event, report, shift)">
+                  <button ion-button color="danger" (tap)="deleteOtherReport(report, shift, $event)">
                     <ion-icon name="trash"></ion-icon>
                     {{"delete" | translate}}
                   </button>
@@ -331,7 +327,7 @@
                   </div>
                 </ion-item>
                 <ion-item-options side="right">
-                  <button ion-button color="danger" (tap)="deleteOtherReport($event, report, shift)">
+                  <button ion-button color="danger" (tap)="deleteOtherReport(report, shift, $event)">
                     <ion-icon name="trash"></ion-icon>
                     {{"delete" | translate}}
                   </button>
@@ -369,7 +365,7 @@
                   </div>
                 </ion-item>
                 <ion-item-options side="right">
-                  <button ion-button color="danger" (tap)="deleteOtherReport($event, report, shift)">
+                  <button ion-button color="danger" (tap)="deleteOtherReport(report, shift, $event)">
                     <ion-icon name="trash"></ion-icon>
                     {{"delete" | translate}}
                   </button>

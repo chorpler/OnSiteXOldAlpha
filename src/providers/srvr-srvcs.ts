@@ -7,7 +7,7 @@ import { Preferences             } from './preferences'           ;
 import { Message                 } from 'domain/message'          ;
 import { Comment                 } from 'domain/comment'          ;
 import { Jobsite                 } from 'domain/jobsite'          ;
-import { WorkOrder               } from 'domain/workorder'        ;
+import { Report               } from 'domain/report'        ;
 import { ReportOther             } from 'domain/reportother'      ;
 import { Employee                } from 'domain/employee'         ;
 import { Shift                   } from 'domain/shift'            ;
@@ -343,11 +343,11 @@ export class SrvrSrvcs {
     });
   }
 
-  public getReportsForTech(tech:string, dates?:any):Promise<Array<WorkOrder>> {
+  public getReportsForTech(tech:string, dates?:any):Promise<Array<Report>> {
     return new Promise((resolve, reject) => {
       let u = this.ud.getUsername();
       let p = this.ud.getPassword();
-      let woArray = new Array<WorkOrder>();
+      let woArray = new Array<Report>();
       let query:any = {selector: {username: {$eq: tech}}, limit:10000};
       Log.l("getReportsForTech(): Using database: ", this.prefs.DB.reports);
       if(dates) {
@@ -368,9 +368,9 @@ export class SrvrSrvcs {
           // })
           .then((res) => {
             Log.l(`getReportsForTech(): Got reports for '${tech}':\n`, res);
-            // let woArray = new Array<WorkOrder>();
+            // let woArray = new Array<Report>();
             for(let doc of res.docs) {
-              let wo = new WorkOrder();
+              let wo = new Report();
               wo.readFromDoc(doc);
               woArray.push(wo);
             }
@@ -835,7 +835,7 @@ export class SrvrSrvcs {
         return this.getReportsForTech(username);
       }).then(res => {
         for (let doc of res) {
-          let report = new WorkOrder();
+          let report = new Report();
           report.readFromDoc(doc);
           data.reports.push(report);
         }

@@ -34,7 +34,7 @@ export const fields = [
   [ "_rev"              , "_rev"           ] ,
 ];
 
-export const _sortReports = (a: WorkOrder, b: WorkOrder): number => {
+export const _sortReports = (a:WorkOrder, b:WorkOrder): number => {
   let dateA = a['report_date'];
   let dateB = b['report_date'];
   let startA = a['time_start'];
@@ -204,7 +204,7 @@ export class WorkOrder {
   }
 
   public getReportDate(asString?:boolean):Moment|string {
-    let date = this.report_date;
+    let date = moment(this.report_date, "YYYY-MM-DD");
     if(asString) {
       return date.format("YYYY-MM-DD");
     } else {
@@ -212,23 +212,14 @@ export class WorkOrder {
     }
   }
 
-  public setStartTime(time:any) {
-    if (isMoment(time) || moment.isDate(time)) {
-      this.time_start = moment(time);
-      // this.report_date = moment(time).format("YYYY-MM-DD");
-      this.checkTimeCalculations(0);
-    } else {
-      Log.l("WorkOrder.setStartTime(): Needs a date/moment, was given this:\n", time);
-    }
+  public setStartTime(time:Date|Moment) {
+    this.time_start = moment(time);
+    this.checkTimeCalculations(0);
   }
 
-  public setEndTime(time:any) {
-    if (isMoment(time) || moment.isDate(time)) {
-      this.time_end = moment(time);
-      this.checkTimeCalculations(1);
-    } else {
-      Log.l("WorkOrder.setEndTime(): Needs a date/moment, was given this:\n", time);
-    }
+  public setEndTime(time:Date|Moment) {
+    this.time_end = moment(time);
+    this.checkTimeCalculations(1);
   }
 
   public setRepairHours(duration:any) {
