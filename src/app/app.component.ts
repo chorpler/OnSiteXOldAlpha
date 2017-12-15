@@ -34,6 +34,8 @@ import { Message                                      } from 'domain/message'   
 import { IonDigitKeyboardCmp, IonDigitKeyboardOptions } from 'components/ion-digit-keyboard'     ;
 import { TabsService                                  } from 'providers/tabs-service'            ;
 
+export const homePage = "OnSiteHome";
+
 @Component({ templateUrl: 'app.html' })
 export class OnSiteApp implements OnInit {
   @ViewChild(Nav) nav: Nav;
@@ -90,7 +92,13 @@ export class OnSiteApp implements OnInit {
   ngOnInit() {
     Log.l(`OnSiteApp: ngOnInit() fired`);
     this.platform.ready().then(res => {
-      this.initializeApp(res);
+      if(homePage === 'OnSiteHome') {
+        this.initializeApp(res);
+      } else {
+        Log.l(`OnSiteApp: skipping boot and setting homepage to '${homePage}'`)
+        // this.nav.setRoot(homePage);
+        this.rootPage = homePage;
+      }
     });
   }
 
@@ -154,17 +162,18 @@ export class OnSiteApp implements OnInit {
       //   }
       this.translate.get(['spinner_app_loading']).subscribe((result) => {
         let lang = result;
-        if(!callingClass.ud.isBootError()) {
-          callingClass.bootApp().then(res => {
+        if(!this.ud.isBootError()) {
+          this.bootApp().then(res => {
             Log.l("OnSite.initializeApp(): bootApp() returned successfully!");
-            callingClass.alert.hideSpinner(0, true).then(res => {
-              callingClass.ud.setAppLoaded(true);
-              callingClass.ud.showClock = false;
-              callingClass.rootPage = 'OnSiteHome';
-              setTimeout(() => {
-                Log.l("OnSite.bootApp(): Publishing startup event after timeout!");
-                callingClass.events.publish('startup:finished', true);
-              }, 50);
+            this.alert.hideSpinner(0, true).then(res => {
+              this.ud.setAppLoaded(true);
+              this.ud.showClock = false;
+              Log.l("OnSiteApp: boot finished, setting home page to 'OnSiteHome'.")
+              this.rootPage = 'OnSiteHome';
+              // setTimeout(() => {
+              //   Log.l("OnSite.bootApp(): Publishing startup event after timeout!");
+              //   callingClass.events.publish('startup:finished', true);
+              // }, 50);
             })
           }).catch(err => {
             Log.l("OnSite.initializeApp(): bootApp() returned error.");
@@ -175,18 +184,18 @@ export class OnSiteApp implements OnInit {
             // } else if(typeof err === 'string') {
             //   errorText = err;
             // }
-            callingClass.ud.setAppLoaded(true);
+            this.ud.setAppLoaded(true);
             // this.alert.showAlert("STARTUP ERROR", "Error on load, please tell developers:<br>\n<br>\n" + errorText).then(res => {
-            callingClass.ud.showClock = false;
-            callingClass.rootPage = 'Login';
+            this.ud.showClock = false;
+            this.rootPage = 'Login';
             // });
           });
         } else {
           Log.w("OnSite.initializeApp(): app boot error has been thrown.");
-          callingClass.ud.setAppLoaded(true);
+          this.ud.setAppLoaded(true);
           // this.alert.showAlert("STARTUP ERROR", "Unknown error on loading app.").then(res => {
           this.ud.showClock = false;
-          callingClass.rootPage = 'Login';
+          this.rootPage = 'Login';
           // });
         }
       });

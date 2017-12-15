@@ -1,15 +1,6 @@
-/**
- * Name: Jobsite domain class
- * Vers: 3.0.1
- * Date: 2017-12-15
- * Auth: David Sargeant
- * Logs: 3.0.1 2017-12-15: Merged app and console classes
- * Logs: 2.2.1 2017-08-30: Updated with site_number and new methods
- */
-
-import { Street                            } from './street'                ;
-import { Address                           } from './address'               ;
-import { Log, moment, Moment, isMoment, oo } from 'config/config.functions' ;
+import { Street                        } from './street'                   ;
+import { Address                       } from './address'                  ;
+import { Log, moment, Moment, isMoment } from '../config/config.functions' ;
 
 export class Jobsite {
   public _id                       : string  ;
@@ -17,7 +8,7 @@ export class Jobsite {
   public client                    : any     ;
   public location                  : any     ;
   public locID                     : any     ;
-  public loc2nd                    : any     ; /* deprecated in 2.0.1 */
+  public loc2nd                    : any     ;
   public address                   : Address ;
   public billing_address           : Address =this.address ;
   public latitude                  : number  ;
@@ -26,7 +17,7 @@ export class Jobsite {
   public account_number            : any     ;
   public travel_time               : number  ;
   public per_diem_rate             : number  ;
-  public lodging_rate              : number  ;
+  public loding_rate               : number  ;
   public requires_preauth          : boolean =false        ;
   public requires_preauth_pertech  : boolean =false        ;
   public requires_invoice_woreports: boolean =false        ;
@@ -38,44 +29,36 @@ export class Jobsite {
   public hoursList                 : any     ;
   public techShifts                : any     ;
   public schedule_name             : string  ;
-  public has_standby               : boolean  = false;
-  public sort_number               : number  ;
-  public site_number               : number = -1001;
   public shift_start_times         : any  = {"AM" :"06:00", "PM": "18:00"} ;
-
+  public sort_number               : number  ;
 
   constructor(inClient?:any, inLoc?: any, inLocID?:any, inAddress?:Address, inLat?:number, inLon?:number, inWI?:number) {
     this._id                        = ""         ;
-    this.client                     = inClient   || null       ;
-    this.location                   = inLoc      || null       ;
-    this.locID                      = inLocID    || null       ;
-    this.loc2nd                     = null       ;
-    this.address                    = inAddress  || null       ;
-    this.billing_address            = inAddress  || null       ;
-    this.latitude                   = inLat      || 26.17726   ;
-    this.longitude                  = inLon      || -97.964594 ;
-    this.within                     = inWI       || 500        ;
-    this.account_number             = ''         ;
-    this.travel_time                = 0          ;
-    this.per_diem_rate              = 0          ;
-    this.lodging_rate               = 0          ;
-    this.requires_preauth           = false      ;
-    this.requires_preauth_pertech   = false      ;
-    this.requires_invoice_woreports = false      ;
-    this.account_or_contract        = 'Contract' ;
-    this.billing_rate               = 65         ;
-    this.site_active                = true       ;
-    this.divisions                  =            {           } ;
-    this.shiftRotations             =            {           } ;
-    this.hoursList                  =            {           } ;
-    this.techShifts                 =            {           } ;
-    this.schedule_name              = ""         ;
-    this.has_standby                = false      ;
-    this.sort_number                = 0          ;
-    this.site_number                = -1001      ;
-
-    window['onsite'] = window['onsite'] || {};
-    window['onsite']['Jobsite'] = Jobsite;
+    this.client                     = inClient   || null         ;
+    this.location                   = inLoc      || null         ;
+    this.locID                      = inLocID    || null         ;
+    this.loc2nd                     = null                       ;
+    this.address                    = inAddress  || null         ;
+    this.billing_address            = inAddress  || null         ;
+    this.latitude                   = inLat      || 26.17726     ;
+    this.longitude                  = inLon      || -97.964594   ;
+    this.within                     = inWI       || 500          ;
+    this.account_number             = ''                         ;
+    this.travel_time                = 0                          ;
+    this.per_diem_rate              = 0                          ;
+    this.loding_rate                = 0                          ;
+    this.requires_preauth           = false                      ;
+    this.requires_preauth_pertech   = false                      ;
+    this.requires_invoice_woreports = false                      ;
+    this.account_or_contract        = 'Contract'                 ;
+    this.billing_rate               = 65                         ;
+    this.site_active                = true                       ;
+    this.divisions                  = {}                         ;
+    this.shiftRotations             = {}                         ;
+    this.hoursList                  = {}                         ;
+    this.techShifts                 = {}                         ;
+    this.schedule_name              = ""                         ;
+    this.sort_number                = 0                          ;
 
   }
 
@@ -92,21 +75,19 @@ export class Jobsite {
       Log.l("Can't read jobsite from:\n", doc);
       throw new Error("readFromDoc(): Jobsite cannot be read");
     }
-    if (doc.address !== undefined) {
-      this.address = new Address(new Street(doc.address.street.street1, doc.address.street.street2), doc.address.city, doc.address.state, doc.address.zipcode);
+    if(doc.address !== undefined) {
+      this.address = new Address(new Street(doc.address.street.street1, doc.address.street.street2), doc.address.city, doc.address.state, doc.address.zip);
     } else {
       this.address = new Address(new Street('', ''), '', '', '');
     }
     if (doc.billing_address !== undefined) {
-      this.billing_address = new Address(new Street(doc.billing_address.street.street1, doc.billing_address.street.street2), doc.billing_address.city, doc.billing_address.state, doc.billing_address.zipcode);
+      this.billing_address = new Address(new Street(doc.billing_address.street.street1, doc.billing_address.street.street2), doc.billing_address.city, doc.billing_address.state, doc.billing_address.zip);
     } else {
       this.billing_address = new Address(new Street('', ''), '', '', '');
     }
 
     for(let prop in doc) {
-      if(prop === 'lodging_rate' || prop === 'per_diem_rate' || prop === 'site_number') {
-        this[prop] = Number(doc[prop]);
-      } else if (prop !== 'address' && prop !== 'billing_address') {
+      if(prop !== 'address' && prop !== 'billing_address') {
         this[prop] = doc[prop];
       }
     }
@@ -124,24 +105,20 @@ export class Jobsite {
   }
 
   public serialize() {
-    var keys = Object.keys(this);
     let doc = {};
-    for(let key of keys) {
-      doc[key] = JSON.stringify(this[key]);
-    }
-    return doc;
+
   }
 
   public getSiteName() {
     let cli = this.client.fullName.toUpperCase();
     let loc = this.location.fullName.toUpperCase();
     let lid = this.locID.fullName.toUpperCase();
-    // let l2d = '';
-    // let laux = "NA";
-    // if (this.loc2nd && this.loc2nd.name) { laux = this.loc2nd.name; }
-    // if (laux !== "NA" && laux !== "N/A") {
-    //   l2d = this.loc2nd.fullName.toUpperCase();
-    // }
+    let l2d = '';
+    let laux = "NA";
+    if (this.loc2nd && this.loc2nd.name) { laux = this.loc2nd.name; }
+    if(laux !== "NA" && laux !== "N/A") {
+      l2d = this.loc2nd.fullName.toUpperCase();
+    }
 
     let siteName = '';
     if(this.client.name === "HB") {
@@ -152,9 +129,9 @@ export class Jobsite {
 
     siteName += `${loc}`;
 
-    // if (laux !== "NA" && laux !== "N/A") {
-    //   siteName += ` ${l2d}`;
-    // }
+    if(laux !== "NA" && laux !== "N/A") {
+      siteName += ` ${l2d}`;
+    }
 
     if(this.locID.name !== "MNSHOP") {
       siteName += ` ${lid}`
@@ -168,22 +145,23 @@ export class Jobsite {
     let cli = this.client.name.toUpperCase();
     let loc = this.location.fullName.toUpperCase();
     let lid = this.locID.name.toUpperCase();
-    // let l2d = '';
-    // let laux = "NA";
-    // if (this.loc2nd && this.loc2nd.name) { laux = this.loc2nd.name; }
-    // if (laux !== "NA" && laux !== "N/A") {
-      // l2d = this.loc2nd.fullName.toUpperCase();
-    // }
+    let l2d = '';
+    let laux = "NA";
+    if (this.loc2nd && this.loc2nd.name) { laux = this.loc2nd.name; }
+    if (laux !== "NA" && laux !== "N/A") {
+      l2d = this.loc2nd.fullName.toUpperCase();
+    }
 
     let siteName = `${cli}`;
     siteName    += ` ${loc}`;
 
-    // if (laux !== "NA" && laux !== "N/A") {
-      // siteName += ` ${l2d}`;
-    // }
+    if (laux !== "NA" && laux !== "N/A") {
+      siteName += ` ${l2d}`;
+    }
 
     siteName += ` ${lid}`;
     return siteName;
+
   }
 
   public getScheduleName() {
@@ -192,14 +170,6 @@ export class Jobsite {
 
   public setScheduleName(name:string) {
     this.schedule_name = name;
-  }
-
-  public getInvoiceName() {
-    let cli = this.client.fullName;
-    let loc = this.location.fullName;
-    let lid = this.locID.fullName;
-    let out = `${cli} ${loc} ${lid}`;
-    return out;
   }
 
   public getShiftTypes() {
@@ -219,31 +189,23 @@ export class Jobsite {
     }
   }
 
-  public getShiftRotations() {
-    return this.shiftRotations;
-  }
-
-  public setShiftRotations(value:any) {
-    this.shiftRotations = value;
-    return this.shiftRotations;
-  }
-
   public getSiteID() {
-    if (this._id) {
+    let siteid = '';
+    let cli = this.client.name.toUpperCase();
+    let loc = this.location.fullName.toUpperCase();
+    let l2d = '';
+    let lid = this.locID.name.toUpperCase();
+    let laux = "NA";
+    if(this.loc2nd && this.loc2nd.name) { laux = this.loc2nd.name; }
+    if(laux !== "NA" && laux !== "N/A") {
+      l2d = this.loc2nd.name.toUpperCase();
+      siteid = `${cli} ${loc} ${l2d} ${lid}`;
+    } else {
+      siteid = `${cli} ${loc} ${lid}`;
+    }
+    if(this._id) {
       return this._id;
     } else {
-      let siteid = '';
-      let cli = this.client.name.toUpperCase();
-      let loc = this.location.fullName.toUpperCase();
-      let lid = this.locID.name.toUpperCase();
-      // let laux = "NA";
-    // if (this.loc2nd && this.loc2nd.name) { laux = this.loc2nd.name; }
-    // if (laux !== "NA" && laux !== "N/A") {
-    //   l2d = this.loc2nd.name.toUpperCase();
-      // siteid = `${cli} ${loc} ${l2d} ${lid}`;
-    // } else {
-      siteid = `${cli} ${loc} ${lid}`;
-    // }
       return siteid;
     }
   }
@@ -312,15 +274,8 @@ export class Jobsite {
     if(this.hoursList[match] !== undefined) {
       oneHourList = this.hoursList[match];
     } else {
-      // if (shiftRotation === 'UNASSIGNED' || shiftRotation === 'DAYS OFF') {
-      if (shiftRotation === 'UNASSIGNED') {
-        oneHourList = { AM: ["0", "0", "0", "0", "0", "0", "0"], PM: ["0", "0", "0", "0", "0", "0", "0"] };
-        return oneHourList;
-      } else {
-        Log.e("Jobsite.getHoursList('%s', '%s'): Index not found!", match, shiftTime);
-        Log.l(this);
-        return null;
-      }
+      Log.e("Jobsite.getHoursList(%s): Index not found!", match);
+      return null;
     }
     if(shiftTime) {
       singleShiftList = oneHourList[shiftTime];
@@ -337,31 +292,9 @@ export class Jobsite {
     let hoursIndex = (dayIndex + 4) % 7;
     let shiftLength = list[hoursIndex];
     let output = shiftLength;
-    if(shiftLength == 0) {
-      output = "OFF";
+    if(shiftLength === 0) {
+      output = "off";
     }
     return output;
   }
-
-  public getSiteShiftLength(shiftType: string | object, shiftTime: string, date: Moment | Date) {
-    return this.getShiftLengthForDate(shiftType, shiftTime, date);
-  }
-
-  public getSiteNumber() {
-    return this.site_number;
-  }
-
-  public setSiteNumber(value:number) {
-    this.site_number = value;
-    return this.site_number;
-  }
-
-  public toJSON() {
-    return this.serialize();
-  }
-
-  public static fromJSON(doc:any) {
-    return new Jobsite().readFromDoc(doc);
-  }
-
 }

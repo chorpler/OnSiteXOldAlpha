@@ -152,55 +152,13 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
   ) {
     window["onsitehome"] = window["onsitehome"] ? window["onsitehome"] : this;
     Log.l("HomePage: Hi, I'm the HomePage class constructor!");
-    let translations = [
-      'error',
-      'startup_error',
-      'alert_retrieve_reports_error',
-      'spinner_fetching_reports'
-    ];
-    if(this.navParams.get('justLoggedIn') !== undefined) { this.justLoggedIn = this.navParams.get('justLoggedIn');}
-    HomePage.translations = translations;
-    this.translations = HomePage.translations;
-    // this.lang = this.translate.instant(translations);
-    if(!this.lang) {
-      this.translate.get(this.translations).subscribe((result: any) => {
-        this.lang = result;
-      });
-    }
-    HomePage.EVENTS = events;
-    var caller = this;
-    // this.endWatchScroll();
-    this.dataReady = false;
-    if(!this.ud.isAppLoaded()) {
-      Log.l("HOMEPAGE SAYS DON'T LOAD ME YET, D-BAG!");
-    }
-    if(HomePage.startupHandler === undefined || HomePage.startupHandler === null) {
-      HomePage.startupHandler = (homepage: any) => {
-        Log.l("HomePage.startupHandler(): startup:finished event detected. Target is:\n", homepage);
-        Log.l("HomePage.startupHandler(): now unsubscribing from startup:finished event...");
-        HomePage.EVENTS.unsubscribe('startup:finished', HomePage.startupHandler);
-        HomePage.homePageStatus.startupFinished = true;
-        Log.l("HomePage.startupHandler(): now executing runEveryTime() function...");
-        if(!this.ud.isHomePageReady()) {
-          if(!this.ud.isHomePageLoading()) {
-            Log.l("HomePage: Loading from ");
-            this.runEveryTime();
-          } else {
-            Log.l("HomePage: Stop trying to dual-load!");
-          }
-        } else {
-          // this.dataReady = true;
-          Log.l("HomePage: stop trying to load prematurely!")
-        }
-      };
-    }
-    if(HomePage.homePageStatus.startupFinished === false) {
-      this.events.subscribe('startup:finished', HomePage.startupHandler);
-    }
   }
 
   ngOnInit() {
     Log.l("HomePage: ngOnInit() fired");
+    if(this.ud.isAppLoaded()) {
+      this.runWhenReady();
+    }
   }
 
   ngOnDestroy() {
@@ -255,14 +213,61 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     }
   }
 
-  ionViewDidEnter() {
+  public constructorShit() {
+    // if(this.navParams.get('justLoggedIn') !== undefined) { this.justLoggedIn = this.navParams.get('justLoggedIn');}
+    // HomePage.EVENTS = events;
+    // var caller = this;
+    // this.endWatchScroll();
+    this.dataReady = false;
+    // if(!this.ud.isAppLoaded()) {
+    //   Log.l("HOMEPAGE SAYS DON'T LOAD ME YET, D-BAG!");
+    // }
+    // if(HomePage.startupHandler === undefined || HomePage.startupHandler === null) {
+    //   HomePage.startupHandler = (homepage: any) => {
+    //     Log.l("HomePage.startupHandler(): startup:finished event detected. Target is:\n", homepage);
+    //     Log.l("HomePage.startupHandler(): now unsubscribing from startup:finished event...");
+    //     HomePage.EVENTS.unsubscribe('startup:finished', HomePage.startupHandler);
+    //     HomePage.homePageStatus.startupFinished = true;
+    //     Log.l("HomePage.startupHandler(): now executing runEveryTime() function...");
+    //     if(!this.ud.isHomePageReady()) {
+    //       if(!this.ud.isHomePageLoading()) {
+    //         Log.l("HomePage: Loading from ");
+    //         this.runEveryTime();
+    //       } else {
+    //         Log.l("HomePage: Stop trying to dual-load!");
+    //       }
+    //     } else {
+    //       // this.dataReady = true;
+    //       Log.l("HomePage: stop trying to load prematurely!")
+    //     }
+    //   };
+    // }
+    // if(HomePage.homePageStatus.startupFinished === false) {
+    //   this.events.subscribe('startup:finished', HomePage.startupHandler);
+    // }
+
+  }
+
+  public runWhenReady() {
     Log.l("HomePage: ionViewDidEnter() called. First wait to make sure app is finished loading.");
-    var caller = this;
+    let translations = [
+      'error',
+      'startup_error',
+      'alert_retrieve_reports_error',
+      'spinner_fetching_reports'
+    ];
+    HomePage.translations = translations;
+    this.translations = HomePage.translations;
+    if(!this.lang) {
+      this.translate.get(this.translations).subscribe((result: any) => {
+        this.lang = result;
+      });
+    }
     let lang = this.lang;
     // if(HomePage.homePageStatus.startupFinished) {
     // Log.l("HomePage.ionViewDidEnter(): startup already finished, just continuing with runEveryTime()...");
     // this.tabs.highlightPageTab('OnSiteHome');
-    this.tabServ.active[0] = true;
+    this.tabServ.setActive(0);
     let loaded = this.ud.isAppLoaded();
     let ready = this.ud.isHomePageReady();
     let loading = this.ud.isHomePageLoading();
