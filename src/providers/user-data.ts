@@ -320,7 +320,8 @@ export class UserData {
   }
 
   public static isAppLoaded() {
-    return UserData.appdata !== undefined && UserData.appdata.ready !== undefined ? UserData.appdata.ready : false;
+    // return UserData.appdata !== undefined && UserData.appdata.ready !== undefined ? UserData.appdata.ready : false;
+    return UserData.appdata.ready;
   }
 
   public isAppLoaded() {

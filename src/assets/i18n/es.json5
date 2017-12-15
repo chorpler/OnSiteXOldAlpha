@@ -189,5 +189,7 @@
   "weeks_to_show": "Semanas",
   "startup_error": "Error durante el inicio de la aplicación:<br>\n<br>\n%s<br>\n<br>\n¿Intente reiniciar la aplicación?",
   "english": "Inglés",
-  "spanish": "Español"
+  "spanish": "Español",
+  "reports_flagged_title": "Reportes Marcados",
+  "no_flagged_reports": "Sin reportes marcados.",
 }

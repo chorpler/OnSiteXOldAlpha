@@ -1,19 +1,17 @@
 import { NgModule                         } from '@angular/core'                 ;
 import { HttpClient                       } from '@angular/common/http'          ;
 import { IonicPageModule                  } from 'ionic-angular'                 ;
-import { ReportHistory                    } from './report-history'              ;
-// import { TabsComponentModule              } from 'components/tabs/tabs.module'   ;
-// import { ClockComponentModule             } from 'components/clock/clock.module' ;
+import { ReportsFlaggedPage               } from './reports-flagged'             ;
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core'           ;
 import { TranslateHttpLoader              } from '@ngx-translate/http-loader'    ;
 import { createTranslateLoader            } from 'config/customTranslateLoader'  ;
 
 @NgModule({
   declarations: [
-    ReportHistory,
+    ReportsFlaggedPage,
   ],
   imports: [
-    IonicPageModule.forChild(ReportHistory),
+    IonicPageModule.forChild(ReportsFlaggedPage),
     TranslateModule.forChild({
       loader: {
         provide: TranslateLoader,
@@ -25,8 +23,8 @@ import { createTranslateLoader            } from 'config/customTranslateLoader' 
     // ClockComponentModule,
   ],
   exports: [
-    ReportHistory,
+    ReportsFlaggedPage,
     // TabsComponentModule,
   ]
 })
-export class ReportHistoryModule {}
+export class ReportsFlaggedPageModule {}

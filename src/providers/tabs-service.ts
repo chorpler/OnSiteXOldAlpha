@@ -10,13 +10,17 @@ import { Preferences                   } from './preferences'           ;
 import { UserData                      } from './user-data'             ;
 
 const tabArrayDev:Array<Tab> = [
-  { name: 'OnSiteHome'    , fullName: 'OnSite Home'        , icon: 'ios-home-outline'     , waiting: false, active: false, } ,
-  { name: 'Report'        , fullName: 'Report'             , icon: 'ios-document-outline' , waiting: false, active: false, } ,
-  { name: 'ReportHistory' , fullName: 'Report History'     , icon: 'ios-folder-outline'   , waiting: false, active: false, } ,
-  { name: 'User'          , fullName: 'User'               , icon: 'ios-contact-outline'  , waiting: false, active: false, } ,
-  { name: 'Message List'  , fullName: 'Messages'           , icon: 'ios-text-outline'     , waiting: false, active: false, } ,
-  { name: 'Settings'      , fullName: 'Settings'           , icon: 'ios-settings-outline' , waiting: false, active: false, } ,
-  { name: 'DevPage'       , fullName: 'Developer Settings' , icon: 'md-options'           , waiting: false, active: false, } ,
+  { name: 'OnSiteHome'      , fullName: 'OnSite Home'        , show: true  , role: 'user', icon: 'ios-home-outline'     , waiting: false, active: false, } ,
+  { name: 'Flagged Reports' , fullName: 'Flagged Reports'    , show: true  , role: 'user', icon: 'ios-document-outline' , waiting: false, active: false, } ,
+  { name: 'ReportHistory'   , fullName: 'Report History'     , show: true  , role: 'user', icon: 'ios-folder-outline'   , waiting: false, active: false, } ,
+  { name: 'User'            , fullName: 'User'               , show: true  , role: 'user', icon: 'ios-contact-outline'  , waiting: false, active: false, } ,
+  { name: 'Message List'    , fullName: 'Messages'           , show: true  , role: 'user', icon: 'ios-text-outline'     , waiting: false, active: false, } ,
+  { name: 'Settings'        , fullName: 'Settings'           , show: true  , role: 'user', icon: 'ios-settings-outline' , waiting: false, active: false, } ,
+  { name: 'DevPage'         , fullName: 'Developer Settings' , show: true  , role: 'dev' , icon: 'md-options'           , waiting: false, active: false, } ,
+  { name: 'Report'          , fullName: 'Work Report'        , show: false , role: 'user', icon: 'ios-document-outline' , waiting: false, active: false, } ,
+  { name: 'Message'         , fullName: 'Message'            , show: false , role: 'user', icon: 'ios-text-outline'     , waiting: false, active: false, } ,
+  { name: 'Comment'         , fullName: 'Comment'            , show: false , role: 'user', icon: 'ios-text-outline'     , waiting: false, active: false, } ,
+  { name: 'Fancy Select'    , fullName: 'Fancy Select'       , show: false , role: 'user', icon: 'ios-text-outline'     , waiting: false, active: false, } ,
 ];
 
 

@@ -189,5 +189,7 @@
   "weeks_to_show": "Weeks",
   "startup_error": "Error during app startup:<br>\n<br>\n%s<br>\n<br>\nTry to restart app?",
   "english": "English",
-  "spanish": "Spanish"
+  "spanish": "Spanish",
+  "reports_flagged_title": "Flagged Reports",
+  "no_flagged_reports": "No flagged reports.",
 }

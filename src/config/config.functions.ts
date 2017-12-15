@@ -9,7 +9,7 @@ import * as JSON5p0 from 'json5';
 // import { moment as momentX } from 'lib/moment-excel';
 import 'lib/moment-excel';
 import 'lib/moment-excel-statics';
-
+import { Report, Employee, Jobsite } from 'domain/domain-classes';
 
 // Author: David Sargeant
 // Releasd: 2017-06-11
@@ -39,6 +39,78 @@ export const JSON5     = JSON5p0;
 
 window['oo'] = oo;
 window['json5'] = json5;
+
+export const _dedupe = (array, property?) => {
+  let prop = "fullName";
+  if (property) {
+    prop = property;
+  }
+  return array.filter((obj, pos, arr) => {
+    return arr.map(mapObj => mapObj[prop]).indexOf(obj[prop]) === pos;
+  });
+}
+
+export const _matchCLL = (cll: string, sitecll: any) => {
+  let cll1 = cll.toUpperCase();
+  let cll2 = sitecll.name.toUpperCase();
+  let cll3 = sitecll.fullName.toUpperCase();
+  return Boolean(cll1 === cll2 || cll1 === cll3);
+};
+
+export const _matchSite = (tech: Employee, site: Jobsite) => {
+  let cli = tech.client;
+  let loc = tech.location;
+  let lid = tech.locID;
+  let client = site.client;
+  let location = site.location;
+  let locID = site.locID;
+  return Boolean(_matchCLL(cli, client) && _matchCLL(loc, location) && _matchCLL(lid, locID));
+};
+
+export const _matchReportSite = (report:Report, site: Jobsite) => {
+  let cli = report.client;
+  let loc = report.location;
+  let lid = report.location_id;
+  let client = site.client;
+  let location = site.location;
+  let locID = site.locID;
+  return Boolean(_matchCLL(cli, client) && _matchCLL(loc, location) && _matchCLL(lid, locID));
+};
+
+export const _matchSiteFromSchedule = (tech:Employee, sites:Array<Jobsite>) => {
+
+}
+
+export const _sortReports = (a: Report, b: Report): number => {
+  let dateA:any = a['report_date'];
+  let dateB:any = b['report_date'];
+  let startA = a['time_start'];
+  let startB = b['time_start'];
+  dateA = isMoment(dateA) ? dateA : moment(dateA).startOf('day');
+  dateB = isMoment(dateB) ? dateB : moment(dateB).startOf('day');
+  startA = isMoment(startA) ? startA : moment(startA);
+  startB = isMoment(startB) ? startB : moment(startB);
+  return dateA.isBefore(dateB) ? -1 : dateA.isAfter(dateB) ? 1 : startA.isBefore(startB) ? -1 : startA.isAfter(startB) ? 1 : 0;
+};
+
+export const enum ReportType {
+  'standby'  = 0,
+  'training' = 1,
+  'travel'   = 2,
+  'holiday'  = 3,
+  'vacation' = 4,
+  'sick'     = 5,
+};
+
+export const enum reportType {
+  'Standby'     = 0,
+  'Training'    = 1,
+  'Travel'      = 2,
+  'Holiday'     = 3,
+  'Vacation'    = 4,
+  'Sick'        = 5,
+  'Work Report' = 6,
+};
 
 // var mom = momentous;
 // // export moment;
