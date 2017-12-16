@@ -59,47 +59,47 @@ export class DBSrvcs {
    * Returns a copy of the PouchDB method, which can be used as normal.
    * @type {PouchDB}
    */
-  getAdapter() {
+  public getAdapter() {
     return this.PouchDB;
   }
 
-  getThisDB() {
+  public getThisDB() {
     return DBSrvcs.db;
   }
 
-  getDBs() {
+  public getDBs() {
     return DBSrvcs.pdb;
   }
 
-  getRDBs() {
+  public getRDBs() {
     return DBSrvcs.rdb;
   }
 
-  getServerInfo() {
+  public getServerInfo() {
     return this.prefs.SERVER.protocol + "://" + this.prefs.SERVER.server;
   }
 
-  addDB(dbname: string) {
+  public addDB(dbname:string) {
     return PouchDBService.addDB(dbname);
   }
 
-  static addDB(dbname: string) {
+  public static addDB(dbname:string) {
     return PouchDBService.addDB(dbname);
   }
 
-  addRDB(dbname: string) {
+  public addRDB(dbname:string) {
     return PouchDBService.addRDB(dbname);
   }
 
-  static addRDB(dbname: string) {
+  public static addRDB(dbname:string) {
     return PouchDBService.addRDB(dbname);
   }
 
-  static getRDB(dbname: string) {
+  public static getRDB(dbname:string) {
     return PouchDBService.addRDB(dbname);
   }
 
-  syncToServer(dbname: string) {
+  public syncToServer(dbname:string) {
     Log.l(`syncToServer(): About to attempt replication of '${dbname}'->remote`);
     let ev1 = (a) => { Log.l(a.status); Log.l(a);};
     let db1 = DBSrvcs.addDB(dbname);
@@ -117,7 +117,7 @@ export class DBSrvcs {
     return done;
   }
 
-  syncFromServer(dbname: string) {
+  public syncFromServer(dbname:string) {
     Log.l(`syncFromServer(): About to attempt replication of remote->'${dbname}'`);
     let ev2 = (b) => { Log.l(b.status); Log.l(b);};
     let db1 = DBSrvcs.addRDB(dbname);
@@ -135,7 +135,7 @@ export class DBSrvcs {
     return done;
   }
 
-  syncSquaredToServer(dbname: string) {
+  public syncSquaredToServer(dbname:string) {
     Log.l(`syncSquaredToServer(): About to attempt replication of '${dbname}'->remote`);
     // let ev2 = (b) => { Log.l(b.status); Log.l(b);};
     let db1 = this.addDB(dbname);
@@ -154,7 +154,7 @@ export class DBSrvcs {
     });
   }
 
-  syncSquaredFromServer(dbname: string) {
+  public syncSquaredFromServer(dbname:string) {
     Log.l(`syncSquaredFromServer(): About to attempt replication of remote->'${dbname}'`);
     let ev2 = (b) => { Log.l(b.status); Log.l(b);};
     let db1 = DBSrvcs.addRDB(dbname);
@@ -172,7 +172,7 @@ export class DBSrvcs {
     });
   }
 
-  public syncReportsFromServer(dbname: string) {
+  public syncReportsFromServer(dbname:string) {
     Log.l(`syncReportsFromServer(): Starting up...`);
     return new Promise((resolve,reject) => {
       let db1 = this.addDB(dbname);
@@ -192,7 +192,7 @@ export class DBSrvcs {
     });
   }
 
-  addDoc(dbname:string, newDoc) {
+  public addDoc(dbname:string, newDoc:any) {
     return new Promise((resolve, reject) => {
       Log.l(`addDoc(): Adding document to ${dbname}:\n`, newDoc);
       let db1 = this.addDB(dbname);
@@ -220,8 +220,8 @@ export class DBSrvcs {
           resolve(res);
         }
       }).catch((err) => {
-        // Log.l("addDocv(): Failed while trying to add document!");
-        console.error(err);
+        Log.l(`addDoc(): Failed while trying to add document '${newDoc._id}'`);
+        Log.e(err);
         reject(err);
       });
     });
@@ -318,7 +318,7 @@ export class DBSrvcs {
     });
   }
 
-  checkLocalDoc(dbname:string, docID:any) {
+  public checkLocalDoc(dbname:string, docID:any) {
     return new Promise((resolve, reject) => {
       let db1 = this.addDB(dbname);
       db1.get(docID).then((result) => {
@@ -331,7 +331,7 @@ export class DBSrvcs {
     })
   }
 
-  addLocalDoc(dbname:string, newDoc:any) {
+  public addLocalDoc(dbname:string, newDoc:any) {
     return new Promise((resolve, reject) => {
       let db1 = this.addDB(dbname);
       Log.l("addLocalDoc(): 01) Now removing and adding local doc:\n", newDoc);
@@ -363,7 +363,7 @@ export class DBSrvcs {
     });
   }
 
-  deleteLocalDoc(dbname:string, doc) {
+  public deleteLocalDoc(dbname:string, doc) {
     Log.l("Attempting to delete local document...");
     let db1 = this.addDB(dbname);
     return db1.remove(doc).then((res) => {
@@ -374,35 +374,35 @@ export class DBSrvcs {
     });
   }
 
-  public saveReport(report:Report) {
-    return new Promise((resolve,reject) => {
+  public async saveReport(report:Report) {
+    // return new Promise((resolve,reject) => {
+    try {
+      let reportDoc = report.serialize();
       let db1 = this.addDB(this.prefs.DB.reports);
-      db1.upsert(report._id, (doc) => {
-        if(doc) {
+      let res = await db1.upsert(report._id, (doc) => {
+        if(doc && doc._rev) {
           let rev = doc._rev;
-          doc = report;
+          doc = reportDoc;
           doc._rev = rev;
-          return doc;
         } else {
-          doc = report;
+          doc = reportDoc;
           delete doc._rev;
-          return doc;
         }
-      }).then(res => {
-        if(!res.ok && !res.updated) {
-          reject(res);
-        } else {
-          resolve(res);
-        }
-      }).catch(err => {
-        Log.l("saveReport(): Error saving report.");
-        Log.e(err);
-        reject(err);
+        return doc;
       });
-    });
+      if(!res.ok && !res.updated) {
+        throw new Error(`saveReport(): Upsert error for report '${report._id}'`);
+      } else {
+        return res;
+      }
+    } catch(err) {
+      Log.l(`saveReport(): Error saving report '${report._id}'`);
+      Log.e(err);
+      throw new Error(err);
+    }
   }
 
-  saveTechProfile(doc) {
+  public saveTechProfile(doc) {
     Log.l("Attempting to save local techProfile...");
     let rdb1, uid, newProfileDoc, strID, strRev;
     return new Promise((resolve, reject) => {
@@ -440,7 +440,7 @@ export class DBSrvcs {
     });
   }
 
-  getTechProfile() {
+  public getTechProfile() {
     let documentID = "_local/techProfile";
     return new Promise((resolve, reject) => {
       this.checkLocalDoc(this.prefs.DB.reports, documentID).then((res) => {
@@ -503,7 +503,7 @@ export class DBSrvcs {
     });
   }
 
-  getConfigData() {
+  public getConfigData() {
     let db1 = PouchDBService.addDB(this.prefs.DB.config);
     let clients = null, locations = null, locids = null, loc2nds = null, rotations = null, shiftTimes = null;
     db1.get('client').then(res => {
@@ -524,7 +524,7 @@ export class DBSrvcs {
     });
   }
 
-  savePreferences(prefs:any) {
+  public savePreferences(prefs:any) {
     return this.storage.set("PREFS", prefs).then((res) => {
       Log.l("savePreferences(): Successfully saved preferences:\n", prefs);
     }).catch((err) => {
@@ -533,7 +533,7 @@ export class DBSrvcs {
     });
   }
 
-  getPreferences() {
+  public getPreferences() {
     return this.storage.get("PREFS").then((prefs) => {
       if(prefs) {
         Log.l("getPreferences(): PREFS found, returning.")
@@ -548,32 +548,35 @@ export class DBSrvcs {
     });
   }
 
-  public saveReportOther(report: any) {
-    return new Promise((resolve, reject) => {
+  public async saveReportOther(report:ReportOther) {
+    try {
+      let reportDoc = report.serialize();
       let db1 = this.addDB(this.prefs.DB.reports_other);
-      db1.upsert(report._id, (doc) => {
-        let id = doc['_id'] || null;
-        let rev = doc['_rev'] || null;
-        doc = report;
-        if(id) { doc['_id'] = id; }
-        if(rev) { doc['_rev'] = rev; }
-        return doc;
-      }).then(res => {
-        Log.l("saveReportOther(): Save ReportOther via upsert, result:\n", res);
-        if(!res.ok && !res.updated) {
-          reject(res);
+      let res = await db1.upsert(report._id, (doc) => {
+        if(doc && doc._rev) {
+          let rev = doc._rev;
+          doc = reportDoc;
+          doc._rev = rev;
         } else {
-          return this.syncSquaredToServer(this.prefs.DB.reports_other);
+          doc = reportDoc;
+          delete doc._rev;
         }
-      }).then(res => {
+        return doc;
+      });
+      Log.l("saveReportOther(): Save ReportOther via upsert, result:\n", res);
+      if(!res.ok && !res.updated) {
+        // throw new Error(`saveReportOther(): Upsert error for document '${report._id}'`)
+        throw new Error(res);
+      } else {
+        res = await this.syncSquaredToServer(this.prefs.DB.reports_other);
         Log.l("saveReportOther(): Done synchronizing ReportOther to server.");
-        resolve(res);
-      }).catch(err => {
-        Log.l("saveReportOther(): Error saving report:\n", report);
-        Log.e(err);
-        reject(err);
-      })
-    });
+        return res;
+      }
+    } catch(err) {
+      Log.l(`saveReportOther(): Error saving ReportOther '${report._id}'`);
+      Log.e(err);
+      throw new Error(err);
+    }
   }
 
   public async saveReadMessage(message:Message) {

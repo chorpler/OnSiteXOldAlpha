@@ -38,6 +38,7 @@ export class Report {
   public timestampM       : Moment ;
   public username         : string = "";
   public shift_serial     : string = "";
+  public workSite         : string = "";
   public payroll_period   : number = 0;
   public change_log       : Array<any> = [];
   public split_count      : number = 0;
@@ -107,6 +108,7 @@ export class Report {
       this.timestamp         = timestamp      || this.timestamp        ;
       this.username          = user           || this.username         ;
       this.shift_serial      = ""                                      ;
+      this.workSite          = ""                                      ;
       this.payroll_period    = 0                                       ;
       this.site_number       = -1001                                   ;
       this.invoiced          = false                                   ;
@@ -141,6 +143,7 @@ export class Report {
       ["shiftLength"     , "shift_length"      ] ,
       ["shiftStartTime"  , "shift_start_time"  ] ,
       ["shiftSerial"     , "shift_serial"      ] ,
+      ["workSite"        , "workSite"          ] ,
       ["payrollPeriod"   , "payroll_period"    ] ,
       ["technician"      , "technician"        ] ,
       ["timeStamp"       , "timestamp"         ] ,
@@ -258,6 +261,7 @@ export class Report {
       ["shiftLength"     , "shift_length"      ] ,
       ["shiftStartTime"  , "shift_start_time"  ] ,
       ["shiftSerial"     , "shift_serial"      ] ,
+      ["workSite"        , "workSite"          ] ,
       ["payrollPeriod"   , "payroll_period"    ] ,
       ["technician"      , "technician"        ] ,
       ["timeStamp"       , "timestamp"         ] ,
@@ -464,6 +468,15 @@ export class Report {
         return false;
       }
     }
+  }
+
+  public setSite(site:Jobsite) {
+    this.client      = site.client.name;
+    this.location    = site.location.name;
+    this.location_id = site.locID.name;
+    this.workSite    = site.getSiteName();
+    this.site_number = site.site_number;
+    return this;
   }
 
   // public splitReportID(reportID?:string) {

@@ -34,8 +34,8 @@ import { Message                                      } from 'domain/message'   
 import { IonDigitKeyboardCmp, IonDigitKeyboardOptions } from 'components/ion-digit-keyboard'     ;
 import { TabsService                                  } from 'providers/tabs-service'            ;
 
-// export const homePage:string = "OnSiteHome";
-export const homePage:string = "Testing";
+export const homePage:string = "OnSiteHome";
+// export const homePage:string = "Testing";
 
 @Component({ templateUrl: 'app.html' })
 export class OnSiteApp implements OnInit {
@@ -253,6 +253,7 @@ export class OnSiteApp implements OnInit {
             this.checkForNewMessages();
             let phoneInfo = res;
             let pp = this.ud.createPayrollPeriods(this.data.employee[0], this.prefs.getPayrollPeriodCount());
+            this.ud.getReportList();
             if(phoneInfo) {
               Log.l("OnSite.bootApp(): Got phone data:\n", phoneInfo);
               this.server.savePhoneInfo(tech, phoneInfo).then(res => {
@@ -371,8 +372,7 @@ export class OnSiteApp implements OnInit {
       }).then((res) => {
         Log.l("checkLogin(): Successfully logged in! Now retrieving config...");
         let profile = this.ud.getTechProfile();
-        let tech = new Employee();
-        tech.readFromDoc(profile);
+        let tech:Employee = this.ud.getTechProfile();
         this.tech = tech;
         return this.db.getAllConfigData();
       }).then(res => {

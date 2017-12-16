@@ -125,4 +125,5 @@
         <variable name="CONTENT_AUTHORITY" value="$PACKAGE_NAME" />
     </plugin>
     <engine name="ios" spec="~4.4.0" />
+    <engine name="android" spec="~6.3.0" />
 </widget>

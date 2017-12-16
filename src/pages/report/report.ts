@@ -688,7 +688,7 @@ export class ReportPage implements OnInit,OnDestroy,AfterViewInit {
   public setupWorkOrderList() {
     let tmpWOL = new Array<Report>();
     if (this.ud.woArrayInitialized) {
-      tmpWOL = this.ud.getWorkOrderList();
+      tmpWOL = this.ud.getReportList();
     }
     this.workOrderList = tmpWOL;
     Log.l("setupWorkOrderList(): Got work order list:\n", tmpWOL);
@@ -1026,7 +1026,7 @@ export class ReportPage implements OnInit,OnDestroy,AfterViewInit {
     // let newReport = new ReportOther().readFromDoc(doc);
     let newReport = this.reportOther;
     Log.l("processAlternateWO(): Read new ReportOther:\n", newReport);
-    let newDoc = newReport.serialize(this.techProfile);
+    let newDoc = newReport.serialize();
     Log.l("processAlternateWO(): Serialized ReportOther to:\n", newDoc);
     this.db.saveReportOther(newDoc).then(res => {
       Log.l("processAlternateWO(): Done saving ReportOther!");
@@ -1205,7 +1205,7 @@ export class ReportPage implements OnInit,OnDestroy,AfterViewInit {
         Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
         // let wo = this.workOrder.clone();
         let wo = this.workOrder;
-        let reports = this.ud.getWorkOrderList();
+        let reports = this.ud.getReportList();
         let i = reports.indexOf(this.workOrder);
         this.db.deleteDoc(db.reports, wo).then((res) => {
           Log.l("deleteWorkOrder(): Success:\n", res);

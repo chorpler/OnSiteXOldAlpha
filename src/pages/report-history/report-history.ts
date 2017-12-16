@@ -378,7 +378,7 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
         let res = await this.db.deleteDoc(db.reports, wo);
         Log.l("deleteReport(): Success:\n", res);
         let tmpReport = wo;
-        let reports = this.ud.getWorkOrderList();
+        let reports = this.ud.getReportList();
         let i = reports.indexOf(wo);
         Log.l("Going to delete work order %d in the list.", i);
         if (i > -1) {

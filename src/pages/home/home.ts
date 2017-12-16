@@ -487,14 +487,14 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
           this.ud.addNewReport(report);
         }
         // this.ud.setWorkOrderList(res);
-        this.techWorkOrders    = this.ud.getWorkOrderList();
+        // this.techWorkOrders    = this.ud.getWorkOrderList();
+        this.techWorkOrders = this.ud.getReportList();
         return this.server.getReportsOtherForTech(techid);
       }).then((res:Array<ReportOther>) => {
         for(let other of res) {
           this.ud.addNewOtherReport(other);
         }
         this.otherReports      = this.ud.getReportOtherList();
-
         let profile            = this.ud.getTechProfile();
         let tech               = new Employee();
         tech.readFromDoc(profile);
@@ -524,7 +524,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
             let techClient   = tech.client.toUpperCase().trim()   ;
             let techLocation = tech.location.toUpperCase().trim() ;
             let techLocID    = tech.locID.toUpperCase().trim()    ;
-            let techLoc2nd   = typeof tech.loc2nd === 'string' ? tech.loc2nd.toUpperCase().trim() : "";
+            // let techLoc2nd   = typeof tech.loc2nd === 'string' ? tech.loc2nd.toUpperCase().trim() : "";
             let rotation     = tech.rotation && typeof tech.rotation === 'string' ? tech.rotation : "CONTN WEEK";
             tech.rotation    = rotation;
             innerloop:
@@ -535,9 +535,9 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
               let locationFull = site.location.fullName.toUpperCase() ;
               let locIDName    = site.locID.name.toUpperCase()        ;
               let locIDFull    = site.locID.fullName.toUpperCase()    ;
-              let loc2Name     = site.loc2nd && typeof site.loc2nd === 'object' ? site.loc2nd.name.toUpperCase() : "NA";
-              let loc2Full     = site.loc2nd && typeof site.loc2nd === 'object' ? site.loc2nd.fullName.toUpperCase() : "N/A";
-              if((techClient === clientName || techClient === clientFull) && (techLocation === locationName || techLocation === locationFull) && (techLocID === locIDName || techLocID === locIDFull) && (techLoc2nd === loc2Name || techLoc2nd === loc2Full)) {
+              // let loc2Name     = site.loc2nd && typeof site.loc2nd === 'object' ? site.loc2nd.name.toUpperCase() : "NA";
+              // let loc2Full     = site.loc2nd && typeof site.loc2nd === 'object' ? site.loc2nd.fullName.toUpperCase() : "N/A";
+              if((techClient === clientName || techClient === clientFull) && (techLocation === locationName || techLocation === locationFull) && (techLocID === locIDName || techLocID === locIDFull)) {
                 // Log.l("User is at site '%s', site object is:", site.getSiteName());
                 // Log.l(site);
                 let times             = site.getShiftStartTimes()                   ;
@@ -585,7 +585,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
           // }
         } else {
           Log.l("fetchTechWorkOrders(): HomePage payroll period will be:\n", this.payrollPeriods[0]);
-          this.period            = this.payrollPeriods[0];
+          this.period = this.payrollPeriods[0];
           this.ud.setHomePeriod(this.period);
         }
         Log.l("fetchTechWorkOrders(): Got payroll periods and all work orders:\n", this.payrollPeriods);
