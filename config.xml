@@ -96,7 +96,6 @@
     <allow-navigation href="http://192.168.0.20:8100" />
     <allow-navigation href="http://192.168.0.6:8100" />
     <icon src="resources\ios\icon\icon-small@3x.png" />
-    <engine name="android" spec="6.3.0" />
     <plugin name="cordova-plugin-sqlite-2" spec="^1.0.4" />
     <plugin name="cordova-plugin-secure-storage" spec="^2.6.8" />
     <plugin name="cordova-plugin-console" spec="^1.0.7" />
@@ -125,4 +124,5 @@
         <variable name="ACCOUNT_TYPE" value="$PACKAGE_NAME.account" />
         <variable name="CONTENT_AUTHORITY" value="$PACKAGE_NAME" />
     </plugin>
+    <engine name="ios" spec="~4.4.0" />
 </widget>
