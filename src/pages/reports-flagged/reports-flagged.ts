@@ -121,8 +121,9 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
 
   public runWhenReady() {
     this.pageReady   = false ;
-    this.reports     = []    ;
+    // this.allReports  = this.ud.getData('reports');
     this.allReports  = []    ;
+    this.reports     = []    ;
     // this.filterKeys  = []    ;
     // this.filtReports = {}    ;
 
@@ -141,10 +142,30 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
     ];
     this.lang = this.translate.instant(translations);
     let lang = this.lang;
-
+    this.generateShifts();
     this.generateFlaggedReportsList();
     // this.alert.showSpinner(lang['spinner_retrieving_reports']);
     this.pageReady = true;
+  }
+
+  public generateShifts() {
+    Log.l(`generateShifts(): Generating shifts for `)
+    this.periods = this.ud.getPayrollPeriods() || [];
+    this.period = this.periods[0];
+    this.shifts = [];
+    this.reports = [];
+    this.allReports = [];
+    Log.l("ReportHistory: Got payroll periods:\n", this.periods);
+    for(let period of this.periods) {
+      let periodShifts = period.getPayrollShifts();
+      for(let shift of periodShifts) {
+        this.shifts.push(shift);
+        let reports = shift.getShiftReports();
+        for(let report of reports) {
+          this.allReports.push(report);
+        }
+      }
+    }
   }
 
   public generateFlaggedReportsList() {
@@ -152,27 +173,39 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
     let reports:Report[] = [];
     for(let report of allReports) {
       let wo = report.work_order_number.trim();
+      let cli = report.client.trim().toUpperCase();
       if(report.flagged === true) {
         reports.push(report);
         continue;
-      }
-      if(report.client.toUpperCase() === 'HB' || report.client.toUpperCase() === "HALLIBURTON") {
+      } else if(cli === 'HB' || cli === "HALLIBURTON") {
         if(!wo) {
+          report.flagged = true;
           reports.push(report);
           continue;
-        }
-        let wonumber = Number(wo);
-        if(!isNaN(wonumber)) {
-          if(wonumber < 1000000 || wonumber > 9999999999) {
+        } else {
+          let wonumber = Number(wo);
+          if(!isNaN(wonumber)) {
+            if(wonumber < 1000000 || wonumber > 9999999999) {
+              report.flagged = true;
+              reports.push(report);
+              continue;
+            }
+          }
+          let unit = report.unit_number.trim();
+          if(!unit) {
+            report.flagged = true;
             reports.push(report);
             continue;
           }
         }
-        let unit = report.unit_number.trim();
-        if(!unit) {
+      } else if(cli === 'KN' || cli === 'KEANE') {
+        if(!wo) {
+          report.flagged = true;
           reports.push(report);
           continue;
         }
+      } else if(cli === 'SE' || cli === 'SESA') {
+
       }
     }
     Log.l("generateFlaggedReportsList(): Output is:\n", reports);
@@ -185,6 +218,33 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
     let lang = this.lang;
     Log.l("itemTapped(): Now looking for report:\n", item);
     let report = item;
+    let shift:Shift;
+    if(item instanceof Report) {
+      let report_date = item.report_date;
+      // for(let shift of this.shifts) {
+      shift = this.shifts.find((a:Shift) => {
+        return a.getShiftDate().format("YYYY-MM-DD") === report_date;
+      });
+      // });
+      if(shift) {
+        this.tabServ.goToPage('Report View', {mode: 'Edit', report: item, shift: shift, payroll_period: this.period});
+      } else {
+        Log.l(`itemTapped(): Could not find shift for report date '${report_date}'.`);
+      }
+
+    } else if(item instanceof ReportOther) {
+      let report_date = item.report_date.format("YYYY-MM-DD");
+      let shift = this.shifts.find((a:Shift) => {
+        return a.getShiftDate().format("YYYY-MM-DD") === report_date;
+      });
+      if(shift) {
+        this.tabServ.goToPage('Report View', {mode: 'Edit', other: item, shift: shift, payroll_period: this.period});
+      } else {
+        Log.l(`itemTapped(): Could not find shift for ReportOther date '${report_date}'.`);
+      }
+    } else {
+      Log.w(`itemTapped(): Can't view report, not a Report or ReportOther:\n`, item);
+    }
 
     // Log.l("itemTapped(): Got shift to send:\n", shift);
     //   if(item['type'] && item['type'] !== 'Work Report') {

@@ -57,6 +57,7 @@ export class OnSiteApp implements OnInit {
   public appLanguages            : Array<string> = ['en','es'] ;
   public keysetup                : any                         ;
   public messageCheckTimeout     : any                         ;
+  public timeoutHandle           : any                         ;
   public hiddenArray             : Array<boolean>              ;
 
   constructor(
@@ -92,6 +93,7 @@ export class OnSiteApp implements OnInit {
 
   ngOnInit() {
     Log.l(`OnSiteApp: ngOnInit() fired`);
+    this.ud.setAppLoaded(false);
     this.platform.ready().then(res => {
       if(homePage === 'OnSiteHome') {
         this.initializeApp(res);
@@ -105,7 +107,7 @@ export class OnSiteApp implements OnInit {
     });
   }
 
-  initializeApp(vagueParameter:any) {
+  public initializeApp(vagueParameter:any) {
     Log.l("AppComponent: Initializing app...");
     this.hiddenArray = this.tabServ.getHiddenArray();
     this.keysetup = {visible: false, width: '100%', swipeToHide: true};
@@ -122,11 +124,14 @@ export class OnSiteApp implements OnInit {
           let pageName = page.id;
           if(pageName === 'OnSiteHome') {
             if (this.backButtonPressedAlready) {
+              if(this.timeoutHandle) {
+                clearTimeout(this.timeoutHandle);
+              }
               this.platform.exitApp();
             } else {
               this.alert.showToast("Press back again to exit", 2000);
               this.backButtonPressedAlready = true;
-              setTimeout(() => { this.backButtonPressedAlready = false; }, 2000)
+              this.timeoutHandle = setTimeout(() => { this.backButtonPressedAlready = false; }, 2000)
             }
           } else {
             if(this.nav.canGoBack()) {
@@ -169,9 +174,9 @@ export class OnSiteApp implements OnInit {
           this.bootApp().then(res => {
             Log.l("OnSite.initializeApp(): bootApp() returned successfully!");
             this.alert.hideSpinner(0, true).then(res => {
-              this.ud.setAppLoaded(true);
               this.ud.showClock = false;
               Log.l("OnSiteApp: boot finished, setting home page to 'OnSiteHome'.")
+              this.ud.setAppLoaded(true);
               this.rootPage = 'OnSiteHome';
               // setTimeout(() => {
               //   Log.l("OnSite.bootApp(): Publishing startup event after timeout!");
@@ -187,16 +192,16 @@ export class OnSiteApp implements OnInit {
             // } else if(typeof err === 'string') {
             //   errorText = err;
             // }
-            this.ud.setAppLoaded(true);
             // this.alert.showAlert("STARTUP ERROR", "Error on load, please tell developers:<br>\n<br>\n" + errorText).then(res => {
             this.ud.showClock = false;
+            this.ud.setAppLoaded(true);
             this.rootPage = 'Login';
             // });
           });
         } else {
           Log.w("OnSite.initializeApp(): app boot error has been thrown.");
-          this.ud.setAppLoaded(true);
           // this.alert.showAlert("STARTUP ERROR", "Unknown error on loading app.").then(res => {
+          this.ud.setAppLoaded(true);
           this.ud.showClock = false;
           this.rootPage = 'Login';
           // });
@@ -218,7 +223,7 @@ export class OnSiteApp implements OnInit {
     });
   }
 
-  bootApp() {
+  public bootApp() {
     return new Promise((resolve,reject) => {
       let callingClass = this;
       Log.l("OnSite.bootApp(): Called.")
@@ -290,7 +295,7 @@ export class OnSiteApp implements OnInit {
     });
   }
 
-  finishStartup() {
+  public finishStartup() {
     return new Promise((resolve,reject) => {
       try {
         Log.l("finishStartup(): Now attempting to publish startup:finished event and set home page...");
@@ -318,7 +323,7 @@ export class OnSiteApp implements OnInit {
     }, 1000 * 60 * interval);
   }
 
-  showToast(text: string) {
+  public showToast(text: string) {
     let toast = this.toast.create({
       message: text,
       duration: 3000
@@ -326,7 +331,7 @@ export class OnSiteApp implements OnInit {
     toast.present();
   }
 
-  checkPreferences() {
+  public checkPreferences() {
     return new Promise((resolve,reject) => {
       this.storage.get('PREFS').then((storedPrefs) => {
         let updatePrefs = storedPrefs;
@@ -353,7 +358,7 @@ export class OnSiteApp implements OnInit {
     });
   }
 
-  checkLogin() {
+  public checkLogin() {
     return new Promise((resolve,reject) => {
       this.auth.areCredentialsSaved().then((res) => {
         Log.l("checkLogin(): Got saved credentials back:\n", res);
@@ -382,11 +387,11 @@ export class OnSiteApp implements OnInit {
     });
   }
 
-  checkMessages() {
+  public checkMessages() {
 
   }
 
-  preloadAudioFiles() {
+  public preloadAudioFiles() {
     this.audio.preload('overtime'         , 'assets/audio/nospoilers.mp3' )  ;
     this.audio.preload('deletereport'     , 'assets/audio/nospoilers2.mp3')  ;
     this.audio.preload('help'             , 'assets/audio/nospoilers3.mp3')  ;
@@ -397,7 +402,7 @@ export class OnSiteApp implements OnInit {
     this.audio.preload('laugh'            , 'assets/audio/nospoilers8.mp3')  ;
   }
 
-  getAppVersion() {
+  public getAppVersion() {
     return new Promise((resolve) => {
       if (this.platform.is('cordova')) {
         return this.version.getVersionNumber().then(res => {

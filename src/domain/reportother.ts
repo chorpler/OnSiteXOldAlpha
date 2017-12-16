@@ -1,6 +1,15 @@
+/**
+ * Name: ReportOther domain class
+ * Vers: 4.0.1
+ * Date: 2017-12-15
+ * Auth: David Sargeant
+ * Logs: 4.0.1 2017-12-15: Combined app and console class; added getHoursNumeric() and getHoursString() methods
+ * Logs: 3.1.2 2017-11-04: Added site_number property and setSite() method
+ */
+
 import { sprintf                       } from 'sprintf-js'                 ;
 import { Log, isMoment, moment, Moment } from 'config/config.functions' ;
-import { Employee                      } from './employee'                 ;
+import { Employee, Jobsite             } from './domain-classes'           ;
 
 export const fields = [
   "type",
@@ -21,94 +30,73 @@ export const fields = [
   "shift_serial",
   "payroll_period",
   "flagged",
+  "site_number",
   "_id",
   "_rev",
 ];
 
 export class ReportOther {
-  public type             : string;
-  public training_type    : string;
-  public travel_location  : string;
-  public time             : any;
-  public notes            : any;
-  public report_date      : any;
-  public last_name        : any;
-  public first_name       : any;
-  public client           : any;
-  public location         : any;
-  public location_id      : any;
-  public location_2       : any;
-  public timestamp        : any;
-  public timestampM       : any;
-  public username         : any;
-  public shift_serial     : any;
-  public payroll_period   : any;
+  public type             : string = "";
+  public training_type    : string = "";
+  public travel_location  : string = "";
+  public time             : number = 0 ;
+  public notes            : string = "";
+  public report_date      : Moment;
+  public last_name        : string = "";
+  public first_name       : string = "";
+  public client           : string = "";
+  public location         : string = "";
+  public location_id      : string = "";
+  public timestamp        : number = 0;
+  public timestampM       : Moment;
+  public username         : string = "";
+  public shift_serial     : string = "";
+  public payroll_period   : number = 0;
   public flagged          : boolean = false;
-  public _id              : any;
-  public _rev             : any;
+  public site_number      : number = -1001;
+  public _id              : string = "";
+  public _rev             : string = "";
 
   constructor() {
     this.type              = ""                    ;
     this.training_type     = ""                    ;
-    this.time              = ""                    ;
+    this.time              = 0                     ;
     this.notes             = ""                    ;
-    this.report_date       = ""                    ;
+    this.report_date       = null                  ;
     this.last_name         = ""                    ;
     this.first_name        = ""                    ;
     this.client            = ""                    ;
     this.location          = ""                    ;
     this.location_id       = ""                    ;
-    this.location_2        = ""                    ;
     this.shift_serial      = ""                    ;
-    this.timestamp         = ""                    ;
-    this.timestampM        = ""                    ;
     this.username          = ""                    ;
     this.shift_serial      = ""                    ;
-    this.payroll_period    = ""                    ;
-    this.flagged           = false                 ;
+    this.payroll_period    = 0                     ;
     this._id               = ""                    ;
     this._rev              = ""                    ;
+    this.timestampM        = moment();
+    this.timestamp         = this.timestampM.toExcel();
   }
 
   public readFromDoc(doc:any) {
     let len = fields.length;
     for(let i = 0; i < len; i++) {
       let key  = fields[i];
-      this[key] = doc[key];
+      this[key] = doc[key] ? doc[key] : this[key];
     }
-    this.report_date = moment(this.report_date)    ;
-    this.timestampM  = moment(this.timestampM)     ;
+    this.report_date = moment(this.report_date, "YYYY-MM-DD");
+    this.timestampM  = moment(this.timestampM);
     return this;
   }
 
-  public getReportID() {
-    return this._id ? this._id : "";
+  public deserialize(doc:any) {
+    return this.readFromDoc(doc);
   }
 
-  public genReportID(tech:Employee) {
-    let now = moment();
-    // let idDateTime = now.format("YYYYMMDDHHmmss_ddd");
-    let idDateTime = now.format("YYYY-MM-DD_HH-mm-ss_ZZ_ddd");
-    let docID = tech.avatarName + '_' + idDateTime;
-    Log.l("genReportID(): Generated ID:\n", docID);
-    return docID;
-  }
-
-  public getTotalHours() {
-    let hours:number|string = Number(this.time);
-    if(!isNaN(hours)) {
-      return hours;
-    } else {
-      if(this.time === "V" || this.time === "H") {
-        hours = 8;
-      } else if(this.time === "S" && this.location === "DUNCAN") {
-        hours = "S";
-      } else {
-        // Log.w("ReportOther.getTotalHours(): Total hours for this ReportOther was not a number or a recognized code: '%s'", this.time);
-        hours = 0;
-      }
-      return hours;
-    }
+  public static deserialize(doc:any) {
+    let other = new ReportOther();
+    other.deserialize(doc);
+    return other;
   }
 
   public serialize(tech:Employee) {
@@ -164,6 +152,70 @@ export class ReportOther {
       }
     }
     return newWO;
+  }
+
+  public getReportID() {
+    return this._id ? this._id : "";
+  }
+
+  public genReportID(tech:Employee) {
+    let now = moment();
+    // let idDateTime = now.format("YYYYMMDDHHmmss_ddd");
+    let idDateTime = now.format("YYYY-MM-DD_HH-mm-ss_ZZ_ddd");
+    let docID = tech.avatarName + '_' + idDateTime;
+    Log.l("genReportID(): Generated ID:\n", docID);
+    return docID;
+  }
+
+  public getTotalHours() {
+    let hours:number|string = Number(this.time);
+    if(!isNaN(hours)) {
+      return hours;
+    } else {
+      let strHours = String(this.time);
+      let loc = this.location.trim().toUpperCase();
+      if(strHours === "V" || strHours === "H") {
+        hours = 8;
+      } else if(strHours === "S" && (loc === "DUNCAN" || loc === "DCN")) {
+        hours = "S";
+      } else {
+        // Log.w("ReportOther.getTotalHours(): Total hours for this ReportOther was not a number or a recognized code: '%s'", this.time);
+        hours = 0;
+      }
+      return hours;
+    }
+  }
+
+  public getHoursNumeric():number {
+    let hours:number = Number(this.time);
+    if(!isNaN(hours)) {
+      return hours;
+    } else {
+      return 0;
+    }
+  }
+
+  public getHoursString():string {
+    let time = Number(this.time);
+    if(!isNaN(time)) {
+      let hrs = Math.trunc(this.time);
+      let min = 60*(time - hrs);
+      let strTime = sprintf("%02d:%02d", hrs, min);
+      return strTime;
+    } else {
+      return "00:00";
+    }
+  }
+
+  public setSite(site:Jobsite) {
+    let cli = site.client;
+    let loc = site.location;
+    let lid = site.locID;
+    let sno = site.site_number;
+    this.site_number = sno;
+    this.client = cli.fullName.toUpperCase();
+    this.location = loc.fullName.toUpperCase();
+    this.location_id = lid.name.toUpperCase();
   }
 
 }

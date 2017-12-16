@@ -22,22 +22,27 @@ page-reports-flagged {
   .invisibleIcon {
     visibility: hidden;
   }
-  .reportList {}
-  .report-history-list-item-sliding {
-    cursor: pointer;
+  .report-list {
+
+  }
+  .report-item-sliding {
+    // cursor: pointer;
     background-color: transparent;
     // &:hover {
     //   background-color: rgba(0, 0, 128, 0.3);
     // }
-    &:active {
-      background-color: rgba(0, 0, 255, 0.5);
-    }
+    // &:active {
+    //   background-color: rgba(0, 0, 255, 0.5);
+    // }
     .ion-item {
       background-color: transparent;
     }
+    .report-item {
+
+    }
 
   }
-  ion-item.report-history-list-item {
+  ion-item.report-item {
     -webkit-tap-highlight-color: unset !important;
     background-color: transparent;
     display: flex;
@@ -45,6 +50,11 @@ page-reports-flagged {
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
+    cursor: pointer;
+
+    &:active {
+      background-color: rgba(0, 0, 255, 0.5);
+    }
     .item-inner {
       background-color: transparent;
       .input-wrapper {
@@ -60,7 +70,7 @@ page-reports-flagged {
         }
       }
     }
-    div.report-history-report-item {
+    div.report-item {
       display: flex;
       flex-direction: row;
       flex-wrap: nowrap;
@@ -68,20 +78,20 @@ page-reports-flagged {
       align-items: center;
     }
   }
-  .report-history-list-item-icon {
+  .list-item-icon {
     cursor: pointer;
   }
-  .report-history-list-item-label {
+  .list-item-label {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
   }
-  .report-history-group-date {
+  .group-date {
     // max-height: 50px;
   }
-  .report-history-divider-date {
+  .divider-date {
     // height: 75px;
     max-height: 50px;
   }
@@ -118,34 +128,34 @@ page-reports-flagged {
   ion-icon.shft-num-icon {
     font-size: 25px;
   }
-  .report-history-report-item,
-  .report-history-report-notes-item {
+  .report-item,
+  .report-notes-item {
     flex: 1 0 auto;
     text-align: left;
   }
-  .report-history-report-item-header {
+  .report-item-header {
     display: inline-block;
     text-align: right;
     font-weight: bold;
   }
-  .report-history-report-item-data {
+  .report-item-data {
     overflow: hidden;
     text-align: left;
   }
-  .report-history-report-date {
+  .report-date {
     flex: 1 0 auto;
     text-align: center;
   }
-  .report-history-unit-number {
+  .unit-number {
     flex: 1 0 auto;
     text-align: center;
   }
-  .report-history-no-report {
+  .no-report {
     flex: 1 0 auto;
     text-align: center;
     font-style: italic;
   }
-  .report-history-notes-data {
+  .notes-data {
     text-overflow: ellipsis;
     p {
       max-width: 101px;

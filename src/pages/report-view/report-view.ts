@@ -41,11 +41,12 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
   public get prefs():any { return ReportViewPage.PREFS; };
   public SVGIcons                  : any              = SVGIcons                   ;
   public setDate                   : Date             = new Date()                 ;
+  public disableTime               : boolean          = false                      ;
   public year                      : number           = this.setDate.getFullYear() ;
   public mode                      : string           = 'Add'                      ;
-  public type                      : any                                           ;
+  public type                      : SelectString                                  ;
   public formValues                : any                                           ;
-  public workOrderForm             : FormGroup                                     ;
+  // public workOrderForm             : FormGroup                                     ;
   public report                    : Report                                        ;
   public workOrderReport           : any                                           ;
   public other                     : ReportOther                                   ;
@@ -72,6 +73,7 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
   public currentRepairHours        : number           = 0                          ;
   public currentRepairHoursString  : string           = "00:00"                    ;
   public currentOtherHours         : number           = 0                          ;
+  public currentOtherHoursString   : string           = "00:00"                    ;
   public shiftHoursColor           : string           = "black"                    ;
   public shiftToUse                : Shift            = null                       ;
   public shiftSavedHours           : number           = 0                          ;
@@ -84,20 +86,20 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
   public chooseHours               : any                                           ;
   public chooseMins                : any                                           ;
   public loading                   : any              = {}                         ;
-  public _startDate                : any                                           ;
-  public _startTime                : any                                           ;
-  public _endTime                  : any                                           ;
-  public _repairHours              : any                                           ;
-  public _shift                    : any                                           ;
-  public _selected_shift           : any                                           ;
-  public _notes                    : any                                           ;
-  public _type                     : any                                           ;
-  public _training_type            : any                                           ;
-  public _training_time            : any                                           ;
-  public _travel_location          : any                                           ;
-  public _time                     : any                                           ;
-  public _unit_number              : any                                           ;
-  public _work_order_number        : any                                           ;
+  // public _startDate                : any                                           ;
+  // public _startTime                : any                                           ;
+  // public _endTime                  : any                                           ;
+  // public _repairHours              : any                                           ;
+  // public _shift                    : any                                           ;
+  // public _selected_shift           : any                                           ;
+  // public _notes                    : any                                           ;
+  // public _type                     : any                                           ;
+  // public _training_type            : any                                           ;
+  // public _training_time            : any                                           ;
+  // public _travel_location          : any                                           ;
+  // public _time                     : any                                           ;
+  // public _unit_number              : any                                           ;
+  // public _work_order_number        : any                                           ;
   public userdata                  : any                                           ;
   public shiftDateOptions          : any                                           ;
   public dataReady                 : boolean          = false                      ;
@@ -168,12 +170,12 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
       this.report = this.navParams.get('report');
       this.oldHours = this.report.getRepairHoursString();
     } else {
-      this.report = new Report();
+      // this.report = new Report();
     }
     if (this.navParams.get('other') !== undefined) {
       this.other = this.navParams.get('other');
     } else {
-      this.other = new ReportOther();
+      // this.other = new ReportOther();
     }
     if(this.shiftToUse) {
       this.selectedShift = this.shiftToUse;
@@ -208,45 +210,57 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
 
     this.title = `${titleAdjective} ${titleNoun}`;
     this.initializeUIData();
-    this.type = this.type || this.selReportType[0] || this.other.type;
-    if (this.type && typeof this.type === 'string') {
-      let type = this.type;
-      for (let rptType of this.selReportType) {
-        if (type.toUpperCase() === rptType.value.toUpperCase()) {
-          this.type = rptType;
-          break;
-        }
+    if(this.report) {
+      this.type = this.selReportType[0];
+    } else if(this.other) {
+      let ro = this.other;
+      let typeName  = ro.type.trim().toUpperCase();
+      let entry = this.selReportType.find(a => {
+        let nameA = a.name.trim.toUpperCase();
+        let valA = a.value.trim.toUpperCase();
+        return typeName === nameA || valA === nameA;
+      });
+      if(entry) {
+        this.type = entry;
       }
+    } else {
+      this.type = this.selReportType[0];
     }
-    this.travel_location = "";
-    this.training_type = "";
+    this.travel_location = this.selTravelLocation[0];
+    this.training_type = this.selTrainingType[0];
     let ro = this.other;
-    if(this.type && this.type.name === 'training') {
-      if(ro.type === 'Training') {
-        for(let type of this.selTrainingType) {
-          if(type.name.toUpperCase() === ro.training_type.toUpperCase()) {
-            this.training_type = type;
-            break;
-          }
+    if(ro) {
+      if(ro.type && ro.type.trim().toLowerCase() === 'training') {
+        let roTrainingType = ro.training_type.trim().toUpperCase();
+        let entry = this.selTrainingType.find((a:any) => {
+          let aTT = a.training_type.name.trim().toUpperCase();
+          let vTT = a.training_type.value.trim().toUpperCase();
+          return roTrainingType === aTT || roTrainingType === vTT;
+        });
+        if(entry) {
+          this.training_type = entry;
         }
-      }
-    } else if (this.type && this.type.name === 'travel') {
-      if(ro.type === 'Travel') {
-        for(let site of this.selTravelLocation) {
-          if(site.name.toUpperCase() === ro.travel_location.toUpperCase()) {
-            this.travel_location = site;
-            break;
-          }
+      } else if(ro.type && ro.type.trim().toLowerCase() === 'travel') {
+        let roTravelLocation = ro.travel_location.trim().toUpperCase();
+        let entry = this.selTrainingType.find((a:any) => {
+          let aTT = a.travel_location.name.trim().toUpperCase();
+          let vTT = a.travel_location.value.trim().toUpperCase();
+          return roTravelLocation === aTT || roTravelLocation === vTT;
+        });
+        if(entry) {
+          this.travel_location = entry;
         }
       }
     }
-    if (this.type && this.type.name !== 'work_report') {
-      if(ro.type && ro.type !== 'Work Report') {
-        this.currentOtherHours = Number(ro.time);
-      }
+    if (this.type && this.type.name !== 'work_report' && this.other) {
+      let ro = this.other;
+      let hours = ro.getHoursNumeric();
+      let strHours = ro.getHoursString();
+      this.currentOtherHours = hours;
+      this.currentOtherHoursString = strHours;
     }
 
-    Log.l("Type is:\n", this.type);
+    Log.l("ReportView: Type is:\n", this.type);
 
     this.db.getTechProfile().then((res) => {
       Log.l(`ReportPage: Success getting tech profile! Result:\n`, res);
@@ -283,6 +297,7 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
 
       this.initializeForm();
       this.initializeFormListeners();
+      this.updateDisplay();
       this.dataReady = true;
     }).catch((err) => {
       Log.l(`ReportPage: Error getting tech profile!`);
@@ -309,10 +324,11 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
     this.selTrainingType = this.ud.getData('training_types');
     let siteSelect = [];
     this.sites = this.ud.getData('sites');
-    let sites = this.ud.getData('sites');
+    let sites = this.sites;
     for(let site of sites) {
       let name = site.getSiteSelectName();
-      let hours = site.travel_time;
+      let hrs = Number(site.travel_time);
+      let hours = !isNaN(hrs) ? hrs : 0;
       let oneSite = {name: name, value: name, hours: hours};
       siteSelect.push(oneSite);
       // sites.push(site);
@@ -322,225 +338,238 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
     // this.type = this.type || this.selReportType[0];
   }
 
+  public updateDisplay() {
+    let type:SelectString = this.type;
+    if(!type || type.name === 'work_report') {
+      let report:Report = this.report;
+      this.currentRepairHours = report.getRepairHours();
+      this.currentRepairHoursString = report.getRepairHoursString();
+    } else {
+      let other:ReportOther = this.other;
+      this.currentRepairHours = other.getHoursNumeric();
+      this.currentRepairHoursString = other.getHoursString();
+    }
+  }
+
   public initializeFormListeners() {
-    let lang                = this.lang                                  ;
-    this._type              = this.workOrderForm.get('type')             ;
-    this._training_type     = this.workOrderForm.get('training_type')    ;
-    this._travel_location   = this.workOrderForm.get('travel_location')  ;
-    this._time              = this.workOrderForm.get('time')             ;
-    this._endTime           = this.workOrderForm.get('endTime')          ;
-    this._repairHours       = this.workOrderForm.get('repair_time')      ;
-    this._selected_shift    = this.workOrderForm.get('selected_shift')   ;
-    this._notes             = this.workOrderForm.get('notes')            ;
-    this._unit_number       = this.workOrderForm.get('unit_number')      ;
-    this._work_order_number = this.workOrderForm.get('work_order_number');
-    this._allDay            = this.workOrderForm.get('allDay')           ;
+    // let lang                = this.lang                                  ;
+    // this._type              = this.workOrderForm.get('type')             ;
+    // this._training_type     = this.workOrderForm.get('training_type')    ;
+    // this._travel_location   = this.workOrderForm.get('travel_location')  ;
+    // this._time              = this.workOrderForm.get('time')             ;
+    // this._endTime           = this.workOrderForm.get('endTime')          ;
+    // this._repairHours       = this.workOrderForm.get('repair_time')      ;
+    // this._selected_shift    = this.workOrderForm.get('selected_shift')   ;
+    // this._notes             = this.workOrderForm.get('notes')            ;
+    // this._unit_number       = this.workOrderForm.get('unit_number')      ;
+    // this._work_order_number = this.workOrderForm.get('work_order_number');
+    // this._allDay            = this.workOrderForm.get('allDay')           ;
 
-    this._type.valueChanges.subscribe((value:any) => {
-      Log.l("Field 'type' fired valueChanges for:\n", value);
-      // setTimeout(() => {
-      // let oldType = this.selReportType[this.selReportType.indexOf(value)];
-      this.oldType = this.selReportType[0];
-      // this.type   = value;
-      // let oldVal  = oldType.value;
-      let ro      = this.other;
-      let error   = false;
-      // this._time.enable(true);
-      if (value.name === 'training') {
-        ro.training_type = "Safety";
-        ro.time = 2;
-        ro.type = value.value;
-        this._training_type.setValue(this.selTrainingType[0]);
-        this.training_type = this.selTrainingType[0];
-        this._time.setValue(2);
-        this.type = value;
-      } else if (value.name === 'travel') {
-        ro.travel_location = "BE MDL MNSHOP";
-        ro.time = 6;
-        ro.type = value.value;
-        this.travel_location = this.selTravelLocation[0];
-        this._travel_location.setValue(this.selTravelLocation[0]);
-        this._time.setValue(6);
-        this.type = value;
-      } else if (value.name === 'sick') {
-        ro.time = 8;
-        this._time.setValue(8);
-        ro.type = value.value;
-        if(this.allDay) {
-          this._time.disable(true);
-        } else {
-          this._time.enable(true);
-        }
-        this.type = value;
-      } else if (value.name === 'vacation') {
-        ro.time = 8;
-        this._time.setValue(8);
-        ro.type = value.value;
-        this.type = value;
-      } else if (value.name === 'holiday') {
-        ro.time = 8;
-        this._time.setValue(8);
-        ro.type = value.value;
-        this.type = value;
-      } else if (value.name === 'standby') {
-        let shift = this.selectedShift;
-        let status = shift.getShiftReportsStatus(true).code;
-        let hours  = shift.getNormalHours();
-        if(status.indexOf("B") > -1 || status.indexOf("S") > -1) {
-          Log.w("User attempted to create duplicate standby report.");
-          let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
-          let warningText = sprintf(lang['duplicate_standby_report'], warnIcon);
-          this._type.setValue(this.selReportType[0]);
-          setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
-        } else if(hours > 0) {
-          Log.w("User attempted to create a standby report in the same shift as an existing work report.");
-          let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
-          let warningText = sprintf(lang['standby_report_xor_work_report_existing_work_report'], warnIcon);
-          this._type.setValue(this.selReportType[0]);
-          setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
-        } else {
-          ro.time = 8;
-          this._time.setValue(8);
-          ro.type = value.value;
-          this.type = value;
-        }
-      } else if (value.name === 'standby_hb_duncan') {
-        let status = this.selectedShift.getShiftReportsStatus(true).code;
-        let i = status.indexOf("B");
-        let j = status.indexOf("S");
-        if(this.techProfile.location !== "DUNCAN" && this.techProfile.location !== "DCN") {
-          Log.w("User attempted to create Standby: HB Duncan report without being set to Duncan location.");
-          let strIcon = "<span class='alert-icon'>&#xf419;</span>";
-          let warnText = sprintf(lang['standby_hb_duncan_wrong_location'], strIcon)
-          let warnFont = sprintf("<span class='alert-with-icon'>%s</span>", warnText);
-          setTimeout(() => {
-            this.alert.showConfirmYesNo(lang['alert'], lang['standby_hb_duncan_wrong_location']).then(res => {
-              if(res) {
-                this.type = value;
-                this.other.type = value.value;
-                this.other.time = 8;
-                this._time.setValue(8);
-                this._type.setValue(this.selReportType[0], {emitEvent: false});
-              } else {
+    // this._type.valueChanges.subscribe((value:any) => {
+    //   Log.l("Field 'type' fired valueChanges for:\n", value);
+    //   // setTimeout(() => {
+    //   // let oldType = this.selReportType[this.selReportType.indexOf(value)];
+    //   this.oldType = this.selReportType[0];
+    //   // this.type   = value;
+    //   // let oldVal  = oldType.value;
+    //   let ro      = this.other;
+    //   let error   = false;
+    //   // this._time.enable(true);
+    //   if (value.name === 'training') {
+    //     ro.training_type = "Safety";
+    //     ro.time = 2;
+    //     ro.type = value.value;
+    //     this._training_type.setValue(this.selTrainingType[0]);
+    //     this.training_type = this.selTrainingType[0];
+    //     this._time.setValue(2);
+    //     this.type = value;
+    //   } else if (value.name === 'travel') {
+    //     ro.travel_location = "BE MDL MNSHOP";
+    //     ro.time = 6;
+    //     ro.type = value.value;
+    //     this.travel_location = this.selTravelLocation[0];
+    //     this._travel_location.setValue(this.selTravelLocation[0]);
+    //     this._time.setValue(6);
+    //     this.type = value;
+    //   } else if (value.name === 'sick') {
+    //     ro.time = 8;
+    //     this._time.setValue(8);
+    //     ro.type = value.value;
+    //     if(this.allDay) {
+    //       this._time.disable(true);
+    //     } else {
+    //       this._time.enable(true);
+    //     }
+    //     this.type = value;
+    //   } else if (value.name === 'vacation') {
+    //     ro.time = 8;
+    //     this._time.setValue(8);
+    //     ro.type = value.value;
+    //     this.type = value;
+    //   } else if (value.name === 'holiday') {
+    //     ro.time = 8;
+    //     this._time.setValue(8);
+    //     ro.type = value.value;
+    //     this.type = value;
+    //   } else if (value.name === 'standby') {
+    //     let shift = this.selectedShift;
+    //     let status = shift.getShiftReportsStatus(true).code;
+    //     let hours  = shift.getNormalHours();
+    //     if(status.indexOf("B") > -1 || status.indexOf("S") > -1) {
+    //       Log.w("User attempted to create duplicate standby report.");
+    //       let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
+    //       let warningText = sprintf(lang['duplicate_standby_report'], warnIcon);
+    //       this._type.setValue(this.selReportType[0]);
+    //       setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
+    //     } else if(hours > 0) {
+    //       Log.w("User attempted to create a standby report in the same shift as an existing work report.");
+    //       let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
+    //       let warningText = sprintf(lang['standby_report_xor_work_report_existing_work_report'], warnIcon);
+    //       this._type.setValue(this.selReportType[0]);
+    //       setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
+    //     } else {
+    //       ro.time = 8;
+    //       this._time.setValue(8);
+    //       ro.type = value.value;
+    //       this.type = value;
+    //     }
+    //   } else if (value.name === 'standby_hb_duncan') {
+    //     let status = this.selectedShift.getShiftReportsStatus(true).code;
+    //     let i = status.indexOf("B");
+    //     let j = status.indexOf("S");
+    //     if(this.techProfile.location !== "DUNCAN" && this.techProfile.location !== "DCN") {
+    //       Log.w("User attempted to create Standby: HB Duncan report without being set to Duncan location.");
+    //       let strIcon = "<span class='alert-icon'>&#xf419;</span>";
+    //       let warnText = sprintf(lang['standby_hb_duncan_wrong_location'], strIcon)
+    //       let warnFont = sprintf("<span class='alert-with-icon'>%s</span>", warnText);
+    //       setTimeout(() => {
+    //         this.alert.showConfirmYesNo(lang['alert'], lang['standby_hb_duncan_wrong_location']).then(res => {
+    //           if(res) {
+    //             this.type = value;
+    //             this.other.type = value.value;
+    //             this.other.time = 8;
+    //             this._time.setValue(8);
+    //             this._type.setValue(this.selReportType[0], {emitEvent: false});
+    //           } else {
 
-              }
-            });
-          });
+    //           }
+    //         });
+    //       });
 
-          // setTimeout(() => { this.alert.showAlert(lang['error'], warnFont); });
-        } else if(i > -1 || j > -1) {
-          Log.w("User attempted to create duplicate standby report.");
-          let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
-          let warningText = sprintf(lang['duplicate_standby_report'], warnIcon);
-          // this._type.setValue(oldType);
-          // this.alert.showAlert(lang['error'], warningText);
-          // this.type = oldType;
-          // this._type.setValue(this.oldType);
-          // this.alert.showAlert(lang['error'], warningText);
-          // this.alert.showAlert(lang['error'], warningText).then(res => {
-            // setTimeout(() => {
-              // this._type.setValue(this.oldType);
-            // }, 500);
-            // this.zone.run(() => { this._type.setValue(this.oldType); });
-          this._type.setValue(this.selReportType[0]);
-          setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
-          // });
-        } else if(this.selectedShift.getNormalHours() > 0) {
-          Log.w("User attempted to create a standby report in the same shift as an existing work report.");
-          let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
-          let warningText = sprintf(lang['standby_report_xor_work_report_existing_work_report'], warnIcon);
-          // this.type = oldType;
-          // this._type.setValue(oldType);
-          // this.alert.showAlert(lang['error'], warningText);
-          // this.alert.showAlert(lang['error'], warningText).then(res => {
-            // setTimeout(() => {
-              // this._type.setValue(oldType);
-            // }, 500);
-            // this.zone.run(() => { this._type.setValue(this.oldType); });
-          // });
-          this._type.setValue(this.selReportType[0]);
-          setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
-        } else {
-          ro.time = 8;
-          this._time.setValue(8);
-          ro.type = value.value;
-          this.type = value;
-        }
-      } else if(value.name === 'work_report') {
-        Log.l("type.valueChange(): This seems proper.");
-        this.type = value;
-        // ro.type = value.value;
-      } else {
-        Log.l("type.valueChange(): GETTING TO THIS BRANCH SHOULD NOT BE POSSIBLE! Type is:\n", value);
-      }
-    });
+    //       // setTimeout(() => { this.alert.showAlert(lang['error'], warnFont); });
+    //     } else if(i > -1 || j > -1) {
+    //       Log.w("User attempted to create duplicate standby report.");
+    //       let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
+    //       let warningText = sprintf(lang['duplicate_standby_report'], warnIcon);
+    //       // this._type.setValue(oldType);
+    //       // this.alert.showAlert(lang['error'], warningText);
+    //       // this.type = oldType;
+    //       // this._type.setValue(this.oldType);
+    //       // this.alert.showAlert(lang['error'], warningText);
+    //       // this.alert.showAlert(lang['error'], warningText).then(res => {
+    //         // setTimeout(() => {
+    //           // this._type.setValue(this.oldType);
+    //         // }, 500);
+    //         // this.zone.run(() => { this._type.setValue(this.oldType); });
+    //       this._type.setValue(this.selReportType[0]);
+    //       setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
+    //       // });
+    //     } else if(this.selectedShift.getNormalHours() > 0) {
+    //       Log.w("User attempted to create a standby report in the same shift as an existing work report.");
+    //       let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
+    //       let warningText = sprintf(lang['standby_report_xor_work_report_existing_work_report'], warnIcon);
+    //       // this.type = oldType;
+    //       // this._type.setValue(oldType);
+    //       // this.alert.showAlert(lang['error'], warningText);
+    //       // this.alert.showAlert(lang['error'], warningText).then(res => {
+    //         // setTimeout(() => {
+    //           // this._type.setValue(oldType);
+    //         // }, 500);
+    //         // this.zone.run(() => { this._type.setValue(this.oldType); });
+    //       // });
+    //       this._type.setValue(this.selReportType[0]);
+    //       setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
+    //     } else {
+    //       ro.time = 8;
+    //       this._time.setValue(8);
+    //       ro.type = value.value;
+    //       this.type = value;
+    //     }
+    //   } else if(value.name === 'work_report') {
+    //     Log.l("type.valueChange(): This seems proper.");
+    //     this.type = value;
+    //     // ro.type = value.value;
+    //   } else {
+    //     Log.l("type.valueChange(): GETTING TO THIS BRANCH SHOULD NOT BE POSSIBLE! Type is:\n", value);
+    //   }
+    // });
 
-    this._training_type.valueChanges.subscribe((value: any) => {
-      let ro = this.other;
-      this.training_type = value;
-      ro.training_type = value.value;
-      let time = value.hours;
-      ro.time = time;
-      this._time.setValue(time);
-    });
+    // this._training_type.valueChanges.subscribe((value: any) => {
+    //   let ro = this.other;
+    //   this.training_type = value;
+    //   ro.training_type = value.value;
+    //   let time = value.hours;
+    //   ro.time = time;
+    //   this._time.setValue(time);
+    // });
 
-    this._travel_location.valueChanges.subscribe((value: any) => {
-      let ro = this.other;
-      this.travel_location = value;
-      ro.travel_location = value.value;
-      let time = value.hours;
-      ro.time = time;
-      this._time.setValue(time);
-    });
+    // this._travel_location.valueChanges.subscribe((value: any) => {
+    //   let ro = this.other;
+    //   this.travel_location = value;
+    //   ro.travel_location = value.value;
+    //   let time = value.hours;
+    //   ro.time = time;
+    //   this._time.setValue(time);
+    // });
 
-    this._time.valueChanges.subscribe((value: any) => {
-      let ro = this.other;
-      let hours = !isNaN(Number(value)) ? Number(value) : 0
-      ro.time = hours;
-      this.currentOtherHours = hours;
-    });
+    // this._time.valueChanges.subscribe((value: any) => {
+    //   let ro = this.other;
+    //   let hours = !isNaN(Number(value)) ? Number(value) : 0
+    //   ro.time = hours;
+    //   this.currentOtherHours = hours;
+    // });
 
-    this._allDay.valueChanges.subscribe((value: any) => {
-      Log.l("_allDay value changed to:\n", value);
-      this.allDay = value;
-      if(this.allDay) {
-        this._time.disable(true);
-      } else {
-        this._time.enable(true);
-      }
-    });
+    // this._allDay.valueChanges.subscribe((value: any) => {
+    //   Log.l("_allDay value changed to:\n", value);
+    //   this.allDay = value;
+    //   if(this.allDay) {
+    //     this._time.disable(true);
+    //   } else {
+    //     this._time.enable(true);
+    //   }
+    // });
 
-    this._repairHours.valueChanges.subscribe((hours: any) => {
-      Log.l("workOrderForm: valueChanges fired for repair_hours: ", hours);
-      let wo = this.report;
-      let oldHours = this.oldHours;
-      let oldType = this.type;
-      let shift = this.selectedShift;
-      let status = shift.getShiftReportsStatus(true).code;
-      if (status.indexOf("B") > -1 || status.indexOf("S") > -1) {
-        Log.w("User attempted to add work order when standby report already exists for shift..");
-        let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
-        let warningText = sprintf(lang['standby_report_xor_work_report_existing_standby_report'], warnIcon);
-        this.alert.showAlert(lang['error'], warningText).then(res => {
-          this._repairHours.setValue(oldHours);
-        });
-      } else {
-        let dur1 = hours.split(":");
-        let hrs = Number(dur1[0]);
-        let min = Number(dur1[1]);
-        let iDur = hrs + (min / 60);
-        this.currentRepairHours = iDur;
-        let total = this.selectedShift.getNormalHours() + this.currentRepairHours - this.thisWorkOrderContribution;
-        Log.l("ReportForm: currentRepairHours changed to %s, value %f, so total is now %f", sprintf("%02d:%02d", hrs, min), iDur, total);
-        this.report.setRepairHours(iDur);
-        if (this.selectedShift !== undefined && this.selectedShift !== null) {
-          this.shiftHoursColor = this.getShiftHoursStatus(this.selectedShift);
-        } else {
-          this.shiftHoursColor = this.getShiftHoursStatus(this.shifts[0]);
-        }
-        this.oldHours = hours;
-      }
-    });
+    // this._repairHours.valueChanges.subscribe((hours: any) => {
+    //   Log.l("workOrderForm: valueChanges fired for repair_hours: ", hours);
+    //   let wo = this.report;
+    //   let oldHours = this.oldHours;
+    //   let oldType = this.type;
+    //   let shift = this.selectedShift;
+    //   let status = shift.getShiftReportsStatus(true).code;
+    //   if (status.indexOf("B") > -1 || status.indexOf("S") > -1) {
+    //     Log.w("User attempted to add work order when standby report already exists for shift..");
+    //     let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
+    //     let warningText = sprintf(lang['standby_report_xor_work_report_existing_standby_report'], warnIcon);
+    //     this.alert.showAlert(lang['error'], warningText).then(res => {
+    //       this._repairHours.setValue(oldHours);
+    //     });
+    //   } else {
+    //     let dur1 = hours.split(":");
+    //     let hrs = Number(dur1[0]);
+    //     let min = Number(dur1[1]);
+    //     let iDur = hrs + (min / 60);
+    //     this.currentRepairHours = iDur;
+    //     let total = this.selectedShift.getNormalHours() + this.currentRepairHours - this.thisWorkOrderContribution;
+    //     Log.l("ReportForm: currentRepairHours changed to %s, value %f, so total is now %f", sprintf("%02d:%02d", hrs, min), iDur, total);
+    //     this.report.setRepairHours(iDur);
+    //     if (this.selectedShift !== undefined && this.selectedShift !== null) {
+    //       this.shiftHoursColor = this.getShiftHoursStatus(this.selectedShift);
+    //     } else {
+    //       this.shiftHoursColor = this.getShiftHoursStatus(this.shifts[0]);
+    //     }
+    //     this.oldHours = hours;
+    //   }
+    // });
 
     // this._selected_shift.valueChanges.subscribe((shift: any) => {
     //   Log.l("workOrderForm: valueChanges fired for selected_shift:\n", shift);
@@ -569,24 +598,155 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
     //   }
     // });
 
-    this._notes.valueChanges.debounceTime(400).subscribe((value:any) => {
-      Log.l("workOrderForm: valueChanges fired for _notes:\n", value);
-      let wo    = this.report ;
-      wo.notes  = value          ;
-    });
+    // this._notes.valueChanges.debounceTime(400).subscribe((value:any) => {
+    //   Log.l("workOrderForm: valueChanges fired for _notes:\n", value);
+    //   let wo    = this.report ;
+    //   wo.notes  = value          ;
+    // });
 
-    this._unit_number.valueChanges.debounceTime(400).subscribe((value:any) => {
-      Log.l("workOrderForm: valueChanges fired for _unit_number:\n", value);
-      let wo          = this.report ;
-      wo.unit_number  = value          ;
-    });
+    // this._unit_number.valueChanges.debounceTime(400).subscribe((value:any) => {
+    //   Log.l("workOrderForm: valueChanges fired for _unit_number:\n", value);
+    //   let wo          = this.report ;
+    //   wo.unit_number  = value          ;
+    // });
 
-    this._work_order_number.valueChanges.debounceTime(400).subscribe((value:any) => {
-      Log.l("workOrderForm: valueChanges fired for _work_order_number:\n", value);
-      let wo                = this.report ;
-      wo.work_order_number  = value          ;
-    });
+    // this._work_order_number.valueChanges.debounceTime(400).subscribe((value:any) => {
+    //   Log.l("workOrderForm: valueChanges fired for _work_order_number:\n", value);
+    //   let wo                = this.report ;
+    //   wo.work_order_number  = value          ;
+    // });
+  }
 
+  public updateType(value:SelectString, event?:any) {
+    Log.l("Field 'type' updated for:\n", value);
+    let lang = this.lang;
+    this.oldType = this.selReportType[0];
+    let other   = this.other;
+    let error   = false;
+    // this._time.enable(true);
+    if (value.name === 'training') {
+      other.training_type = "Safety";
+      other.time = 2;
+      other.type = value.name;
+      this.training_type = this.selTrainingType[0];
+      this.type = value;
+    } else if (value.name === 'travel') {
+      other.travel_location = "BE MDL MNSHOP";
+      other.time = 6;
+      other.type = value.name;
+      this.travel_location = this.selTravelLocation[0];
+      this.type = value;
+    } else if (value.name === 'sick') {
+      other.time = 8;
+      other.type = value.name;
+      if(this.allDay) {
+        this.disableTime = true;
+      } else {
+        this.disableTime = false;
+      }
+      this.type = value;
+    } else if (value.name === 'vacation') {
+      other.time = 8;
+      other.type = value.name;
+      this.type = value;
+    } else if (value.name === 'holiday') {
+      other.time = 8;
+      other.type = value.name;
+      this.type = value;
+    } else if (value.name === 'standby') {
+      let shift = this.selectedShift;
+      let status = shift.getShiftReportsStatus(true).code;
+      let hours  = shift.getNormalHours();
+      if(status.indexOf("B") > -1 || status.indexOf("S") > -1) {
+        Log.w("User attempted to create duplicate standby report.");
+        let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
+        let warningText = sprintf(lang['duplicate_standby_report'], warnIcon);
+        this.type = this.selReportType[0];
+        setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
+      } else if(hours > 0) {
+        Log.w("User attempted to create a standby report in the same shift as an existing work report.");
+        let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
+        let warningText = sprintf(lang['standby_report_xor_work_report_existing_work_report'], warnIcon);
+        this.type = this.selReportType[0];
+        setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
+      } else {
+        other.time = 8;
+        other.type = value.name;
+        this.type = value;
+      }
+    } else if (value.name === 'standby_hb_duncan') {
+      let cli = other.client.trim().toUpperCase();
+      let loc = other.location.trim().toUpperCase();
+      let lid = other.location_id.trim().toUpperCase();
+      let status = this.selectedShift.getShiftReportsStatus(true).code;
+      let i = status.indexOf("B");
+      let j = status.indexOf("S");
+      if(loc !== "DUNCAN" && loc !== "DCN") {
+        Log.w("User attempted to create Standby: HB Duncan report without being set to Duncan location.");
+        let strIcon = "<span class='alert-icon'>&#xf419;</span>";
+        let warnText = sprintf(lang['standby_hb_duncan_wrong_location'], strIcon)
+        let warnFont = sprintf("<span class='alert-with-icon'>%s</span>", warnText);
+        setTimeout(() => {
+          this.alert.showConfirmYesNo(lang['alert'], lang['standby_hb_duncan_wrong_location']).then(res => {
+            if(res) {
+              this.type = value;
+              this.other.type = value.name;
+              this.other.time = 8;
+              // this._time.setValue(8);
+              // this._type.setValue(this.selReportType[0], {emitEvent: false});
+            } else {
+              this.type = this.selReportType[0];
+            }
+          });
+        });
+
+        // setTimeout(() => { this.alert.showAlert(lang['error'], warnFont); });
+      } else if(i > -1 || j > -1) {
+        Log.w("User attempted to create duplicate standby report.");
+        let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
+        let warningText = sprintf(lang['duplicate_standby_report'], warnIcon);
+        // this._type.setValue(oldType);
+        // this.alert.showAlert(lang['error'], warningText);
+        // this.type = oldType;
+        // this._type.setValue(this.oldType);
+        // this.alert.showAlert(lang['error'], warningText);
+        // this.alert.showAlert(lang['error'], warningText).then(res => {
+          // setTimeout(() => {
+            // this._type.setValue(this.oldType);
+          // }, 500);
+          // this.zone.run(() => { this._type.setValue(this.oldType); });
+        // this._type.setValue(this.selReportType[0]);
+        this.type = this.selReportType[0];
+        setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
+        // });
+      } else if(this.selectedShift.getNormalHours() > 0) {
+        Log.w("User attempted to create a standby report in the same shift as an existing work report.");
+        let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
+        let warningText = sprintf(lang['standby_report_xor_work_report_existing_work_report'], warnIcon);
+        // this.type = oldType;
+        // this._type.setValue(oldType);
+        // this.alert.showAlert(lang['error'], warningText);
+        // this.alert.showAlert(lang['error'], warningText).then(res => {
+          // setTimeout(() => {
+            // this._type.setValue(oldType);
+          // }, 500);
+          // this.zone.run(() => { this._type.setValue(this.oldType); });
+        // });
+        this.type = this.selReportType[0];
+        // this._type.setValue(this.selReportType[0]);
+        setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
+      } else {
+        other.time = 8;
+        // this._time.setValue(8);
+        other.type = value.name;
+        this.type = value;
+      }
+    } else if(value.name === 'work_report') {
+      Log.l("type.valueChange(): This seems proper.");
+      this.type = value;
+    } else {
+      Log.l("type.valueChange(): GETTING TO THIS BRANCH SHOULD NOT BE POSSIBLE! Type is:\n", value);
+    }
   }
 
   public updateShift(shift:Shift, event?:any) {
@@ -601,7 +761,7 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
     let reportDateString         = report_date.format("YYYY-MM-DD")                        ;
     this.selectedShift           = shift                                                   ;
 
-    let type = this.workOrderForm.value.type;
+    let type = this.type;
     if(!type || (type && type.name && type.name === 'work_report')) {
       Log.l("updatShift(): Setting work report start time to '%s' and date to '%s'", moment(woStart), reportDateString);
       this.report.setStartTime(moment(woStart));
@@ -616,7 +776,7 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
     }
   }
 
-  public updateRepairHours(hours:string) {
+  public updateRepairHours(hours:string, event?:any) {
     Log.l("updateRepairHours(): repair hours set to: ", hours);
     let lang = this.lang;
     let report = this.report;
@@ -646,6 +806,30 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
       this.oldHours = hours;
     }
   }
+
+  public updateTrainingType(value:{name:string,fullName:string,hours:number}) {
+    let other = this.other;
+    this.training_type = value;
+    other.training_type = value.name;
+    let time = value.hours;
+    other.time = time;
+  }
+
+  public updateTravelLocation(value:{name:string,fullName:string,hours:number|string}) {
+    let other = this.other;
+    let hrs = Number(value.hours);
+    this.travel_location = value;
+    other.travel_location = value.name;
+    let time = hrs;
+    other.time = time;
+  }
+
+  public updateTime(hrs:string|number) {
+    let other = this.other;
+    let hours = !isNaN(Number(hrs)) ? Number(hrs) : 0
+    other.time = hours;
+    this.currentOtherHours = hours;
+  };
 
   public hoursStringToNumber(hours:string) {
     let dur1 = hours.split(":");
@@ -689,6 +873,11 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
   public loadReport(report:Report) {
     this.currentRepairHoursString = this.report.getRepairHoursString();
     this.currentRepairHours = this.report.getRepairHours();
+  }
+
+  public loadReportOther(other:ReportOther) {
+    this.currentOtherHoursString = this.other.getHoursString();
+    this.currentOtherHours = this.other.getHoursNumeric();
   }
 
   // public updateActiveShiftWorkOrders(shift: Shift) {
@@ -845,15 +1034,17 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
 
   public async showPossibleError(type:string) {
     let lang         = this.lang                                                          ;
-    let form         = this.workOrderForm.getRawValue()                                   ;
-    let unitLen      = form.unit_number       ? String(form.unit_number).length       : 0 ;
-    let woLen        = form.work_order_number ? String(form.work_order_number).length : 0 ;
+    // let form         = this.workOrderForm.getRawValue()                                   ;
+    // let unitLen      = form.unit_number       ? String(form.unit_number).length       : 0 ;
+    // let woLen        = form.work_order_number ? String(form.work_order_number).length : 0 ;
+    let unitLen = String(this.report.unit_number).length;
+    let woLen   = String(this.report.work_order_number).length;
     let result       = null                                                               ;
     let warning_text = ""                                                                 ;
 
-    Log.l("showPossibleError(): Checking unit length and work order number length:");
-    Log.l(form.unit_number);
-    Log.l(form.work_order_number);
+    Log.l(`showPossibleError(): Checking unit length ${unitLen} and work order number length ${woLen}...`);
+    // Log.l(form.unit_number);
+    // Log.l(form.work_order_number);
 
     if(type === 'unit') {
       warning_text = sprintf(lang['hb_unit_number_length'], unitLen);
@@ -889,12 +1080,11 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
         let unitLen:number = String(report.unit_number).trim().length;
         let woLen:number = String(report.work_order_number).trim().length;
         Log.l(`checkForUserMistakes(): Checking length for unit '${report.unit_number}' and WO# '${report.work_order_number}'...`);
-        if(report.repair_hours === 0) {
+        if(report.repair_hours == 0) {
           this.audio.play('funny');
-          this.alert.showAlert(lang['report_submit_error_title'], lang['report_submit_error_message']);
+          let out = await this.alert.showAlert(lang['report_submit_error_title'], lang['report_submit_error_message']);
           return false;
-        }
-        if(cli === 'HB' || cli === 'HALLIBURTON') {
+        } else if(cli === 'HB' || cli === 'HALLIBURTON') {
           if(unitLen !== 8) {
             let response = await this.showPossibleError('unit');
             if(!response) {
@@ -904,9 +1094,10 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
                 this.unitNumberInput.nativeElement.setFocus();
               }, focusDelay);
               return false;
+            } else {
+              return true;
             }
-          }
-          if(woLen !== 9) {
+          } else if(woLen !== 9) {
             let response = await this.showPossibleError('wo');
             if(!response) {
               // this.workOrderNumberInput.setFocus();
@@ -915,8 +1106,12 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
                 this.reportNumberInput.nativeElement.setFocus();
               }, focusDelay);
               return false;
+            } else {
+              return true;
             }
           }
+        } else {
+          return true;
         }
       } else {
         let other:ReportOther = this.other;
@@ -929,6 +1124,8 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
           // this.alert.showAlert(lang['error'], lang['standby_hb_duncan_wrong_location']);
           if(response) {
             return false;
+          } else {
+            return true;
           }
         } else {
           return true;
@@ -973,7 +1170,8 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
     } catch(err) {
       Log.l(`onSubmit(): Error during submission.`);
       Log.e(err);
-      throw new Error(err);
+      // this.alert.
+      // throw new Error(err);
     }
   }
 
@@ -986,13 +1184,13 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
   //   return docID;
   // }
 
-  public convertFormToWorkOrder() {
-    let sWO = this.workOrderForm.getRawValue();
-    let wo = this.report;
-  }
+  // public convertFormToWorkOrder() {
+  //   let sWO = this.workOrderForm.getRawValue();
+  //   let wo = this.report;
+  // }
 
   public processReport() {
-    let data = this.workOrderForm.getRawValue();
+    // let data = this.workOrderForm.getRawValue();
     let lang = this.lang;
     // if(!data.repair_hours) {
     //   this.alert.showAlert(lang['report_submit_error_title'], lang['report_submit_error_message']);
@@ -1017,8 +1215,10 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
         this.currentRepairHoursString = "00:00";
         // this.ud.updateShifts();
         if(this.prefs.getStayInReports()) {
-          this.tabServ.goToPage('Report');
-          // this.createFreshReport();
+          this.tabServ.goToPage('Report View');
+          // let report = this.createFreshReport();
+          // this.report = report;
+          // this.loadReport(report);
           // this.initializeForm();
           // this.initializeFormListeners();
         } else {
@@ -1064,16 +1264,18 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
     // Log.l("processReportOther(): Serialized ReportOther to:\n", newDoc);
     this.db.saveReportOther(other).then(res => {
       Log.l("processReportOther(): Done saving ReportOther!");
-      this.selectedShift.addOtherReport(newReport);
+      this.selectedShift.addOtherReport(this.other);
       // this.ud.addNewOtherReport(newReport);
       // this.ud.updateShifts();
       this.currentOtherHours = 0;
       this.alert.hideSpinner();
       if(this.prefs.USER.stayInReports) {
-        this.type = this.selReportType[0];
-        this.createFreshReport();
-        this.initializeForm();
-        this.initializeFormListeners();
+        this.tabServ.goToPage('Report View');
+        // this.type = this.selReportType[0];
+        // let other = this.createFreshOtherReport();
+        // this.loadReportOther(other)
+        // this.initializeForm();
+        // this.initializeFormListeners();
       } else {
         this.tabServ.goToPage('ReportHistory');
       }
@@ -1099,7 +1301,7 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
   }
 
   public createFreshReport() {
-    let tech  = this.techProfile     ;
+    let tech:Employee  = this.techProfile     ;
     let now   = moment()             ;
     let shift = this.selectedShift   ;
     let date  = shift.getStartTime() ;
@@ -1108,21 +1310,22 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
     let hours = shift.getNormalHours();
     // let end = this.previousEndTime;
     let shiftLatest   = shift.getNextReportStartTime()                   ;
-    let wo            = new Report()                                  ;
-    wo._id            = wo.genReportID(tech)                             ;
-    wo.timestampM     = moment(now)                                      ;
-    wo.timestamp      = now.toExcel()                                    ;
-    wo.first_name     = tech.firstName                                   ;
-    wo.last_name      = tech.lastName                                    ;
-    wo.time_start     = shiftLatest                                      ;
-    wo.username       = tech.avatarName                                  ;
-    wo.client         = tech.client                                      ;
-    wo.location       = tech.location                                    ;
-    wo.location_id    = tech.locID                                       ;
-    wo.payroll_period = shift.getPayrollPeriod()                         ;
-    wo.shift_serial   = shift.getShiftSerial()                           ;
-    this.report    = wo                                               ;
-    // shift.addShiftReport(this.report);
+    let report        = new Report()                                  ;
+    report._id            = report.genReportID(tech)                             ;
+    report.timestampM     = moment(now)                                      ;
+    report.timestamp      = now.toExcel()                                    ;
+    report.first_name     = tech.firstName                                   ;
+    report.last_name      = tech.lastName                                    ;
+    report.time_start     = shiftLatest                                      ;
+    report.username       = tech.avatarName                                  ;
+    report.client         = tech.client                                      ;
+    report.location       = tech.location                                    ;
+    report.location_id    = tech.locID                                       ;
+    report.payroll_period = shift.getPayrollPeriod()                         ;
+    report.shift_serial   = shift.getShiftSerial()                           ;
+    report.report_date    = now.format("YYYY-MM-DD")                         ;
+    this.report    = report                                                  ;
+
     return this.report;
   }
 
@@ -1131,20 +1334,20 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
     let now           = moment()                    ;
     let shift         = this.selectedShift          ;
     let date          = shift.getStartTime()        ;
-    let ro            = new ReportOther()           ;
-    ro._id            = ro.genReportID(tech)        ;
-    ro.timestampM     = moment(now)                 ;
-    ro.timestamp      = now.toExcel()               ;
-    ro.first_name     = tech.firstName              ;
-    ro.last_name      = tech.lastName               ;
-    ro.username       = tech.avatarName             ;
-    ro.client         = tech.client                 ;
-    ro.location       = tech.location               ;
-    ro.location_id    = tech.locID                  ;
-    ro.payroll_period = shift.getPayrollPeriod()    ;
-    ro.shift_serial   = shift.getShiftSerial()      ;
-    ro.report_date    = moment(date).startOf('day') ;
-    this.other  = ro                          ;
+    let other         = new ReportOther()           ;
+    other._id            = other.genReportID(tech)        ;
+    other.timestampM     = moment(now)                 ;
+    other.timestamp      = now.toExcel()               ;
+    other.first_name     = tech.firstName              ;
+    other.last_name      = tech.lastName               ;
+    other.username       = tech.avatarName             ;
+    other.client         = tech.client                 ;
+    other.location       = tech.location               ;
+    other.location_id    = tech.locID                  ;
+    other.payroll_period = shift.getPayrollPeriod()    ;
+    other.shift_serial   = shift.getShiftSerial()      ;
+    other.report_date    = moment(date).startOf('day') ;
+    this.other  = other                          ;
     // shift.addOtherReport(this.other);
     return this.other;
   }
@@ -1153,47 +1356,47 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
     return this.report;
   }
 
-  public createReport() {
-    // Log.l("ReportPage: createReport(): Now creating report...");
-    let partialReport = this.workOrderForm.getRawValue();
-    Log.l("ReportPage: createReport(): Now creating report from form and report...\n", partialReport);
-    Log.l(this.report);
-    // let ts = moment(partialReport.timeStamp);
-    let ts;
-    if(this.report && this.report.timestamp) {
-      let ts2 = this.report.timestamp;
-      if(ts2 && isMoment(ts2)) {
-        ts = moment(ts2);
-      } else if(ts2 && typeof ts2 === 'number') {
-        ts = moment().fromExcel(ts2);
-      } else if(ts2 && typeof ts2 === 'string') {
-        ts = moment(ts2);
-      }
-    } else {
-      ts = moment();
-      this.report.timestampM = moment(ts);
-      this.report.timestamp  = moment(ts).toExcel();
-    }
-    let wo = this.report;
-    Log.l("createReport(): timestamp moment is now:\n", ts);
-    // let XLDate = moment([1900, 0, 1]);
-    // let xlStamp = ts.diff(XLDate, 'days', true) + 2;
-    let xlStamp = ts.toExcel();
-    partialReport.timeStamp = xlStamp;
+  // public createReport() {
+  //   // Log.l("ReportPage: createReport(): Now creating report...");
+  //   // let partialReport = this.workOrderForm.getRawValue();
+  //   Log.l("ReportPage: createReport(): Now creating report from form and report...\n", partialReport);
+  //   Log.l(this.report);
+  //   // let ts = moment(partialReport.timeStamp);
+  //   let ts;
+  //   if(this.report && this.report.timestamp) {
+  //     let ts2 = this.report.timestamp;
+  //     if(ts2 && isMoment(ts2)) {
+  //       ts = moment(ts2);
+  //     } else if(ts2 && typeof ts2 === 'number') {
+  //       ts = moment().fromExcel(ts2);
+  //     } else if(ts2 && typeof ts2 === 'string') {
+  //       ts = moment(ts2);
+  //     }
+  //   } else {
+  //     ts = moment();
+  //     this.report.timestampM = moment(ts);
+  //     this.report.timestamp  = moment(ts).toExcel();
+  //   }
+  //   let wo = this.report;
+  //   Log.l("createReport(): timestamp moment is now:\n", ts);
+  //   // let XLDate = moment([1900, 0, 1]);
+  //   // let xlStamp = ts.diff(XLDate, 'days', true) + 2;
+  //   let xlStamp = ts.toExcel();
+  //   partialReport.timeStamp = xlStamp;
 
-    Log.l("processReport() has initial partialReport:");
-    Log.l(partialReport);
-    let newReport: any = {};
-    let newID = this.report.genReportID(this.tech);
-    if (this.mode !== 'Add') {
-      newID = wo._id;
-    }
-    if (this.mode === 'Edit') {
-      newReport._rev = wo._rev;
-    }
-    // return this.report.serialize(this.techProfile);
-    return this.report.serialize();
-  }
+  //   Log.l("processReport() has initial partialReport:");
+  //   Log.l(partialReport);
+  //   let newReport: any = {};
+  //   let newID = this.report.genReportID(this.tech);
+  //   if (this.mode !== 'Add') {
+  //     newID = wo._id;
+  //   }
+  //   if (this.mode === 'Edit') {
+  //     newReport._rev = wo._rev;
+  //   }
+  //   // return this.report.serialize(this.techProfile);
+  //   return this.report.serialize();
+  // }
 
   public checkPageMode(event:any) {
     Log.l("checkPageMode(): Called with event:\n", event);

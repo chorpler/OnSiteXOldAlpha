@@ -111,7 +111,8 @@ export class TabsService {
         this.pageEvent.next(out);
       } else {
         let name = value;
-        let i = this.tabInfo.findIndex((a:any) => a.name === name);
+        // let i = this.tabInfo.findIndex((a:any) => a.name === name);
+        let i = Pages[name];
         if(i > -1) {
           this.setHidden(i, false);
           let out:any = {page: value};

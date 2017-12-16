@@ -914,7 +914,7 @@ export class UserData {
     // this.updateShifts();
   }
 
-  createPayrollPeriods(tech:Employee, count?:number):Array<PayrollPeriod> {
+  public createPayrollPeriods(tech:Employee, count?:number):Array<PayrollPeriod> {
     let now = moment().startOf('day');
     UserData.payrollPeriods = [];
     let payp = UserData.payrollPeriods;
@@ -929,12 +929,12 @@ export class UserData {
     let site = null;
     Log.l(`createPayrollPeriods(): About to test tech '${tech.getUsername()}' for ${cli}, ${loc}, ${lid}...`);
     for(let js of sites) {
-      let jscli1 = js.client.name.toUpperCase();
-      let jscli2 = js.client.fullName.toUpperCase();
-      let jsloc1 = js.location.name.toUpperCase();
-      let jsloc2 = js.location.fullName.toUpperCase();
-      let jslid1 = js.locID.name.toUpperCase();
-      let jslid2 = js.locID.fullName.toUpperCase();
+      let jscli1 = js.client.name.trim().toUpperCase();
+      let jscli2 = js.client.fullName.trim().toUpperCase();
+      let jsloc1 = js.location.name.trim().toUpperCase();
+      let jsloc2 = js.location.fullName.trim().toUpperCase();
+      let jslid1 = js.locID.name.trim().toUpperCase();
+      let jslid2 = js.locID.fullName.trim().toUpperCase();
       // let jslc21, jslc22;
       // if(js.loc2nd && typeof js.loc2nd['fullName'] === 'string') {
       //   jslc21 = js.loc2nd.name.toUpperCase();
@@ -971,7 +971,7 @@ export class UserData {
     }
   }
 
-  getPayrollPeriods() {
+  public getPayrollPeriods() {
     return UserData.payrollPeriods;
   }
 
