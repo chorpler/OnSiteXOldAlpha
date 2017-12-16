@@ -21,7 +21,7 @@
 <ion-content class="page-content report-page-content" (swipe)="tabServ.handleSwipe($event)">
   <div class="data-elements" *ngIf="dataReady && selectedShift">
     <div class="work-order-payroll-hours-header">
-      <span class="shift-hours-header" [ngClass]="getShiftHoursStatus(selectedShift)" *ngIf="workOrderForm && workOrderForm.value && workOrderForm.value.selected_shift">
+      <span class="shift-hours-header" [ngClass]="getShiftHoursStatus(selectedShift)">
         <span class="shift-label">{{'shift' | translate}}</span> #<span class="shift-number">{{selectedShift.updateShiftNumber()}}</span>
         <span class="shift-label">{{'hours' | translate}}</span>:
         <span class="shift-hours-wrapper" *ngIf="!type || !type.name || (type && type.name && type.name === 'work_report')">
@@ -48,7 +48,7 @@
       <ion-item (tap)="checkPageMode($event)">
         <ion-label>{{'report_type' | translate}}</ion-label>
         <!-- <ion-select [(ngModel)]="report.type" [disabled]="mode==='Edit'" (tap)="checkPageMode()"> -->
-        <ion-select [(ngModel)]="type">
+        <ion-select [(ngModel)]="type" (ionSelect)="updateType(type, $event)">
           <ion-option *ngFor="let type of selReportType" [value]="type">{{type.name | translate}}</ion-option>
         </ion-select>
       </ion-item>
@@ -89,7 +89,7 @@
           </span>
           <ion-item>
             <ion-label>{{'repair_time' | translate}}</ion-label>
-            <ion-multi-picker class="repair-hours-picker" item-content [separator]="':'" [multiPickerColumns]="chooseHours" [(ngModel)]="currentRepairHoursString"></ion-multi-picker>
+            <ion-multi-picker class="repair-hours-picker" item-content [separator]="':'" [multiPickerColumns]="chooseHours" [(ngModel)]="currentRepairHoursString" (ngModelChange)="updateRepairHours(currentRepairHoursString, $event)"></ion-multi-picker>
             <ion-icon item-right class="shift-repair-time-icon" name="md-arrow-dropdown"></ion-icon>
           </ion-item>
           <ion-item>
@@ -123,13 +123,13 @@
           </span>
           <ion-item>
             <ion-label>{{'travel' | translate}} </ion-label>
-            <ion-select [(ngModel)]="report.travel_location">
+            <ion-select [(ngModel)]="travel_location" (ionSelect)="updateTravelLocation(travel_location)">
               <ion-option *ngFor="let travel_location of selTravelLocation" [value]="travel_location">{{travel_location.name | translate}}</ion-option>
             </ion-select>
           </ion-item>
           <ion-item>
             <ion-label class="report-time-label">{{'travel_hours' | translate}} </ion-label>
-            <ion-input class="report-time-input" [(ngModel)]="report.time"></ion-input>
+            <ion-input class="report-time-input" [(ngModel)]="report.time" type="number" min="0" step="0.5" (ngModelChange)="updateTime(report.time)"></ion-input>
           </ion-item>
         </ion-list>
       </ng-container>
@@ -147,13 +147,13 @@
           </span>
           <ion-item>
             <ion-label>{{'training' | translate}}</ion-label>
-            <ion-select [(ngModel)]="report.training_type">
-                <ion-option *ngFor="let training_type of selTrainingType" [value]="training_type">{{training_type.name | translate}}</ion-option>
+            <ion-select [(ngModel)]="training_type" (ionSelect)="updateTrainingType(training_type)">
+              <ion-option *ngFor="let training_type of selTrainingType" [value]="training_type">{{training_type.name | translate}}</ion-option>
             </ion-select>
           </ion-item>
           <ion-item>
             <ion-label class="report-time-label">{{'training_hours' | translate}}</ion-label>
-            <ion-input class="report-time-input" [(ngModel)]="report.time" placeholder="2"></ion-input>
+            <ion-input class="report-time-input" [(ngModel)]="report.time" type="number" min="0" step="0.5" placeholder="2" (ngModelChange)="updateTime(report.time)"></ion-input>
           </ion-item>
         </ion-list>
       </ng-container>
@@ -171,7 +171,7 @@
           </span>
           <ion-item>
             <ion-label class="report-time-label">{{'standby' | translate}}</ion-label>
-            <ion-input class="report-time-input" [(ngModel)]="report.time" type="number" placeholder="8"></ion-input>
+            <ion-input class="report-time-input" [(ngModel)]="report.time" type="number" min="0" step="0.5" placeholder="8" (ngModelChange)="updateTime(report.time)"></ion-input>
           </ion-item>
         </ion-list>
       </ng-container>
@@ -189,7 +189,7 @@
           </span>
           <ion-item>
             <ion-label class="report-time-label">{{'standby_hb_duncan' | translate}}</ion-label>
-            <ion-input class="report-time-input" [(ngModel)]="report.time" placeholder="8"></ion-input>
+            <ion-input class="report-time-input" [(ngModel)]="report.time" type="number" min="0" step="0.5" placeholder="8" (ngModelChange)="updateTime(report.time)"></ion-input>
           </ion-item>
         </ion-list>
       </ng-container>
@@ -211,7 +211,7 @@
           </ion-item>
           <ion-item>
             <ion-label class="report-time-label">{{'sick_hours' | translate}}</ion-label>
-            <ion-input class="report-time-input" [(ngModel)]="report.time" value="8"></ion-input>
+            <ion-input class="report-time-input" [disabled]="disableTime" [(ngModel)]="report.time" type="number" min="0" step="0.5" placeholder="8" (ngModelChange)="updateTime(report.time)"></ion-input>
           </ion-item>
         </ion-list>
       </ng-container>
@@ -229,7 +229,7 @@
           </span>
           <ion-item>
             <ion-label class="report-time-label">{{'vacation_hours' | translate}}</ion-label>
-            <ion-input class="report-time-input" [(ngModel)]="report.time" value="8"></ion-input>
+            <ion-input class="report-time-input" [(ngModel)]="report.time" type="number" min="0" step="0.5" placeholder="8" (ngModelChange)="updateTime(report.time)"></ion-input>
           </ion-item>
         </ion-list>
       </ng-container>
@@ -247,7 +247,7 @@
           </span>
           <ion-item>
             <ion-label class="report-time-label">{{'holiday_hours' | translate}}</ion-label>
-            <ion-input class="report-time-input" [(ngModel)]="report.time" value="8"></ion-input>
+            <ion-input class="report-time-input" [(ngModel)]="report.time" type="number" min="0" step="0.5" placeholder="8" (ngModelChange)="updateTime(report.time)"></ion-input>
           </ion-item>
         </ion-list>
       </ng-container>

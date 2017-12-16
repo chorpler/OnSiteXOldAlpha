@@ -1,9 +1,9 @@
 import { Component, OnInit, ChangeDetectionStrategy, NgZone,                 } from '@angular/core'           ;
 import { OnDestroy, AfterViewInit,                                           } from '@angular/core'           ;
-import { IonicPage, NavController, NavParams, LoadingController, ItemSliding } from 'ionic-angular'           ;
-import { Log, isMoment, moment, Moment                                       } from 'config/config.functions' ;
-import { TabsService                                                         } from 'providers/tabs-service'  ;
-import { Pages                                                               } from 'config/config.types'     ;
+import { IonicPage, NavController, NavParams, } from 'ionic-angular'           ;
+import { Log, isMoment, moment, Moment        } from 'config/config.functions' ;
+import { TabsService                          } from 'providers/tabs-service'  ;
+import { Pages                                } from 'config/config.types'     ;
 
 @IonicPage({ name: 'Testing' })
 @Component({ selector: 'page-testing',
@@ -33,6 +33,6 @@ export class TestingPage implements OnInit,OnDestroy,AfterViewInit {
 
   ngAfterViewInit() {
     Log.l("ReportsFlaggedPage: ngAfterViewInit() fired");
-    this.tabServ.setPageLoaded(Pages.ReportsFlagged);
+    this.tabServ.setPageLoaded(Pages.Testing);
   }
 }

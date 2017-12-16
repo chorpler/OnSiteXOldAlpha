@@ -153,10 +153,12 @@ export class TabsComponent implements OnInit,OnDestroy {
   public initializeSubscriptions() {
     this.pageSub = this.tabServ.pageChanged().subscribe((data:{page:string, params?:any}) => {
       let page = data.page;
-      let params = data.params;
+      let params:any = data.params;
       if(params) {
+        Log.l(`pageChanged(): Changing to page '${page}' with params:\n`, data.params);
         this.goToPage(page, params);
       } else {
+        Log.l(`pageChanged(): Changing to page '${page}' without params.`);
         this.goToPage(page);
       }
     });

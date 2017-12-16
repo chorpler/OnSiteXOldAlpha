@@ -10,25 +10,11 @@ export interface Tab {
 
 export interface SelectString {
   name     : string;
-  fullName : string;
+  value   ?: string;
+  fullName?: string;
   code    ?: string;
+  hours   ?: number;
 }
-
-// export enum Pages {
-//   'OnSiteHome'      = 0,
-//   'Report'          = 1,
-//   'ReportHistory'   = 2,
-//   'Report History'  = 2,
-//   'Flagged Reports' = 2,
-//   'Reports Flagged' = 2,
-//   'ReportsFlagged'  = 2,
-//   'FlaggedReports'  = 2,
-//   'User'            = 3,
-//   'MessageList'     = 4,
-//   'Message List'    = 4,
-//   'Settings'        = 5,
-//   'DevPage'         = 6,
-// }
 
 export enum Pages {
   'OnSiteHome'      = 0,
