@@ -1,10 +1,75 @@
+.popover-ios {
+  .popover-content {
+    background-color: transparent;
+  }
+}
+.popover-md {
+  .popover-content {
+    background-color: transparent;
+    box-shadow: none;
+    .popover-contents {
+      margin: 8px;
+    }
+  }
+}
 .popover-content {
   // top: calc(50% - ())
   // left: calc(50% - (500px/2)) !important;
-  width: 95% !important;
+  width: 80% !important;
+  background-color: transparent;
 }
 .popover-contents {
   // width: 500px;
 }
+
+ion-app.ios [padding] {
+  // padding-top: 1px;
+  // padding-bottom: 1px;
+  page-popover-template {
+    // background-color: transparent;
+    ion-content {
+      .scroll-content {
+        // padding:
+      }
+    }
+  }
+}
 page-popover-template {
+  // background-color: transparent;
+  ion-content {
+    padding: 2px;
+    // background-color: transparent;
+    &.content-md {
+      background-color: transparent;
+    }
+    &.content-ios {
+      background-color: transparent;
+      // padding: 2px !important;
+    }
+    .fixed-content {
+      max-height: 90vh;
+      // background-color: transparent;
+    }
+    .scroll-content {
+      background-color: white;
+      border-radius: 16px;
+      // padding-left: 8px;
+      // padding-right: 8px;
+
+      // max-height: 90%;
+      // box-shadow: none;
+      .popover-contents {
+        max-height: 50vh;
+        overflow-y: auto;
+        margin-top: 2px;
+        margin-bottom: 2px;
+        margin: 8px;
+        p {
+          margin-top: 5px;
+          margin-bottom: 5px;
+        }
+        // padding-top: 2px;
+      }
+    }
+  }
 }

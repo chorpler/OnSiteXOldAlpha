@@ -119,8 +119,8 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
 
   public runWhenReady() {
     this.pageReady   = false ;
-    // this.allReports  = this.ud.getData('reports');
-    this.allReports  = []    ;
+    this.allReports  = this.ud.getData('reports');
+    // this.allReports  = []    ;
     this.reports     = []    ;
     this.tech        = this.ud.getTechProfile();
     // this.filterKeys  = []    ;
@@ -141,20 +141,22 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
     ];
     this.lang = this.translate.instant(translations);
     let lang = this.lang;
-    this.generateShifts();
-    this.generateFlaggedReportsList();
+    this.allReports = this.generateShifts();
+    Log.l("After generateShifts(), allReports array is:\n", this.allReports);
+    this.reports = this.generateFlaggedReportsList();
+    Log.l("After generateFlaggedReportsList(), reports array is:\n", this.reports);
     // this.alert.showSpinner(lang['spinner_retrieving_reports']);
     this.pageReady = true;
   }
 
   public generateShifts() {
     Log.l(`generateShifts(): Generating shifts for `)
-    // this.periods = this.ud.getPayrollPeriods() || [];
-    this.periods = this.ud.createPayrollPeriods(this.tech);
+    this.periods = this.ud.getPayrollPeriods() || [];
+    // this.periods = this.ud.createPayrollPeriods(this.tech);
     this.period = this.periods[0];
     this.shifts = [];
     this.reports = [];
-    this.allReports = [];
+    let rawReports:Report[] = [];
     Log.l("ReportHistory: Got payroll periods:\n", this.periods);
     for(let period of this.periods) {
       let periodShifts = period.getPayrollShifts();
@@ -162,17 +164,18 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
         this.shifts.push(shift);
         let reports = shift.getShiftReports();
         for(let report of reports) {
-          this.allReports.push(report);
+          rawReports.push(report);
         }
       }
     }
-    return this.allReports;
+    return rawReports;
   }
 
   public generateFlaggedReportsList() {
     let allReports:Report[] = this.allReports;
     let reports:Report[] = [];
     for(let report of allReports) {
+      Log.l("generateFlaggedReportsList(): Now checking report:\n", report);
       let wo = report.work_order_number.trim();
       let cli = report.client.trim().toUpperCase();
       if(report.flagged === true) {
@@ -210,8 +213,7 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
       }
     }
     Log.l("generateFlaggedReportsList(): Output is:\n", reports);
-    this.reports = reports;
-    return this.reports;
+    return reports;
   }
 
   public itemTapped(item:Report|ReportOther, event?:any) {

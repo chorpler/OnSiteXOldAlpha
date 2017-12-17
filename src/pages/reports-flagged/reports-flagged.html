@@ -12,56 +12,67 @@
     <ion-list class="report-list" *ngIf="reports && reports.length">
       <ion-item-sliding #reportItem class="report-item-sliding" *ngFor="let report of reports; let i=index">
         <ion-item class="report-item" (tap)="itemTapped(report, $event)">
-          <div class="group-dev group-id" *ngIf="prefs.getShowID()">
-            <span class="label">ID</span>
-            <span class="data">{{report._id}}</span>
-          </div>
-          <div class="group-dev group-rev" *ngIf="prefs.getShowRev()">
-            <span class="label">Rev</span>
-            <span class="data">{{report._rev}}</span>
-          </div>
-          <div class="group-dev group-date" *ngIf="prefs.getShowTimes()">
-            <span class="label">Date</span>
-            <span class="data">{{report.report_date}}</span>
-          </div>
-          <div class="group-dev group-start" *ngIf="prefs.getShowTimes()">
-            <span class="label">Start</span>
-            <span class="data">{{report.time_start}}</span>
-          </div>
-          <div class="group-dev group-end" *ngIf="prefs.getShowTimes()">
-            <span class="label">End</span>
-            <span class="data">{{report.time_end}}</span>
-          </div>
-          <div class="group-dev group-client" *ngIf="prefs.getShowSite()">
-            <span class="label">Client</span>
-            <span class="data">{{report.client}}</span>
-          </div>
-          <div class="group-dev group-location" *ngIf="prefs.getShowSite()">
-            <span class="label">Location</span>
-            <span class="data">{{report.location}}</span>
-          </div>
-          <div class="group-dev group-locid" *ngIf="prefs.getShowSite()">
-            <span class="label">LocID</span>
-            <span class="data">{{report.location_id}}</span>
-          </div>
-          <div class="group-user group-hours">
-            <span class="label">{{'hours_header' | translate}}</span>
-            <span class="data">{{report.repair_hours}}</span>
-          </div>
-          <div class="group-user group-wonumber">
-            <span class="label">{{'report_label_wo_number' | translate}}</span>
-            <span class="data">{{report.work_order_number}}</span>
-          </div>
-          <div class="group-user group-unit">
-            <span class="label">{{'report_label_unit_number' | translate}}</span>
-            <span class="data">{{report.unit_number}}</span>
-          </div>
-          <div class="group-user group-notes">
-            <span class="label-notes">{{'report_label_notes' | translate}}</span>
-            <div class="data-notes">
-              <p>{{report.notes}}</p>
-            </div>
-          </div>
+          <table class="report-table">
+            <tbody>
+              <tr *ngIf="prefs.getShowID()">
+                <td class="label">ID</td>
+                <td class="data" >{{report._id}}</td>
+              </tr>
+              <tr *ngIf="prefs.getShowRev()">
+                <td class="label">Rev</td>
+                <td class="data" >{{report._rev}}</td>
+              </tr>
+              <tr *ngIf="prefs.getShowTimes()">
+                <td class="label">Date</td>
+                <td class="data" >{{report.report_date}}</td>
+              </tr>
+              <tr *ngIf="prefs.getShowTimes()">
+                <td class="label">Start</td>
+                <td class="data" >{{report.time_start}}</td>
+              </tr>
+              <tr *ngIf="prefs.getShowTimes()">
+                <td class="label">End</td>
+                <td class="data" >{{report.time_end}}</td>
+              </tr>
+              <tr *ngIf="prefs.getShowSite()">
+                <td class="label">Client</td>
+                <td class="data" >{{report.client}}</td>
+              </tr>
+              <tr *ngIf="prefs.getShowSite()">
+                <td class="label">Location</td>
+                <td class="data" >{{report.location}}</td>
+              </tr>
+              <tr *ngIf="prefs.getShowSite()">
+                <td class="label">LocID</td>
+                <td class="data" >{{report.location_id}}</td>
+              </tr>
+              <tr>
+                <td class="label">Date</td>
+                <td class="data" >{{report.report_date}}</td>
+              </tr>
+              <tr>
+                <td class="label">{{'hours_header' | translate}}</td>
+                <td class="data" >{{report.repair_hours}}</td>
+              </tr>
+              <tr>
+                <td class="label">{{'report_label_wo_number' | translate}}</td>
+                <td class="data" >{{report.work_order_number}}</td>
+              </tr>
+              <tr>
+                <td class="label">{{'report_label_unit_number' | translate}}</td>
+                <td class="data" >{{report.unit_number}}</td>
+              </tr>
+              <tr class="notes">
+                <td class="label">{{'report_label_notes' | translate}}</td>
+                <td class="data"></td>
+              </tr>
+              <tr>
+                <td class="data-notes" colspan="2" >
+                  <span class="notes-wrapper">{{report.notes}}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </ion-item>
         <ion-item-options side="right">
           <button ion-button color="danger" (tap)="deleteReport(report, $event)">
@@ -78,3 +89,53 @@
     </div>
   </div>
 </ion-content>
+<!-- <div class="group-dev group-id" *ngIf="prefs.getShowID()">
+  <span class="label">ID</span>
+  <span class="data">{{report._id}}</span>
+</div>
+<div class="group-dev group-rev" *ngIf="prefs.getShowRev()">
+  <span class="label">Rev</span>
+  <span class="data">{{report._rev}}</span>
+</div>
+<div class="group-dev group-date" *ngIf="prefs.getShowTimes()">
+  <span class="label">Date</span>
+  <span class="data">{{report.report_date}}</span>
+</div>
+<div class="group-dev group-start" *ngIf="prefs.getShowTimes()">
+  <span class="label">Start</span>
+  <span class="data">{{report.time_start}}</span>
+</div>
+<div class="group-dev group-end" *ngIf="prefs.getShowTimes()">
+  <span class="label">End</span>
+  <span class="data">{{report.time_end}}</span>
+</div>
+<div class="group-dev group-client" *ngIf="prefs.getShowSite()">
+  <span class="label">Client</span>
+  <span class="data">{{report.client}}</span>
+</div>
+<div class="group-dev group-location" *ngIf="prefs.getShowSite()">
+  <span class="label">Location</span>
+  <span class="data">{{report.location}}</span>
+</div>
+<div class="group-dev group-locid" *ngIf="prefs.getShowSite()">
+  <span class="label">LocID</span>
+  <span class="data">{{report.location_id}}</span>
+</div>
+<div class="group-user group-hours">
+  <span class="label">{{'hours_header' | translate}}</span>
+  <span class="data">{{report.repair_hours}}</span>
+</div>
+<div class="group-user group-wonumber">
+  <span class="label">{{'report_label_wo_number' | translate}}</span>
+  <span class="data">{{report.work_order_number}}</span>
+</div>
+<div class="group-user group-unit">
+  <span class="label">{{'report_label_unit_number' | translate}}</span>
+  <span class="data">{{report.unit_number}}</span>
+</div>
+<div class="group-user group-notes">
+  <span class="label-notes">{{'report_label_notes' | translate}}</span>
+  <div class="data-notes">
+    <p>{{report.notes}}</p>
+  </div>
+</div> -->

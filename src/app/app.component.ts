@@ -33,6 +33,7 @@ import { PayrollPeriod                                } from 'domain/payroll-per
 import { Message                                      } from 'domain/message'                    ;
 import { IonDigitKeyboardCmp, IonDigitKeyboardOptions } from 'components/ion-digit-keyboard'     ;
 import { TabsService                                  } from 'providers/tabs-service'            ;
+// import { Sim                                          } from '@ionic-native/sim'                 ;
 
 export const homePage:string = "OnSiteHome";
 // export const homePage:string = "Testing";
@@ -43,7 +44,7 @@ export class OnSiteApp implements OnInit {
   @ViewChild('tabsTarget') tabsTarget;
 
   public title                   : string  = 'OnSiteHome'      ;
-  public rootPage                : any                         ;
+  public rootPage                : string                      ;
   public pouchOptions            : any     = { }               ;
   public backButtonPressedAlready: boolean = false             ;
   public static status           : any     = {bootError: false};
@@ -77,7 +78,6 @@ export class OnSiteApp implements OnInit {
     public server      : SrvrSrvcs         ,
     public events      : Events            ,
     public tabServ     : TabsService       ,
-    // public tabs        : TabsComponent     ,
     public app         : App               ,
     public translate   : TranslateService  ,
     public alert       : AlertService      ,
@@ -85,7 +85,7 @@ export class OnSiteApp implements OnInit {
     public msg         : MessageService    ,
     public appUpdate   : AppUpdate         ,
     public geoloc      : GeolocService     ,
-    // public homepage    : HomePage          ,
+    // public sim         : Sim               ,
   ) {
     window['onsiteapp'] = this;
     window['moment'] = moment;

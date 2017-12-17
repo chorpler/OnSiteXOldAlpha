@@ -994,11 +994,10 @@ export class UserData {
   public createPayrollPeriods(tech:Employee, count?:number):Array<PayrollPeriod> {
     let now = moment().startOf('day');
     let periods:Array<PayrollPeriod> = [];
-    UserData.payrollPeriods = periods.slice(0);
-    let payp = periods;
-    let len  = payp.length;
-    let tmp1 = payp;
-    UserData.payrollPeriods = payp.splice(0,len);
+    // let payp = periods;
+    // let len  = payp.length;
+    // let tmp1 = payp;
+    // UserData.payrollPeriods = payp.splice(0,len);
     let site = this.findEmployeeSite(tech);
     if(site) {
       let periodCount = count || 2;
@@ -1007,8 +1006,9 @@ export class UserData {
         let pp = new PayrollPeriod();
         pp.setStartDate(start);
         pp.createPayrollPeriodShiftsForTech(tech, site);
-        UserData.payrollPeriods.push(pp);
+        periods.push(pp);
       }
+      UserData.payrollPeriods = periods;
       this.getReportList();
       return UserData.payrollPeriods;
     } else {
