@@ -68,7 +68,7 @@ export class UserData {
   public static set otherReports(value:Array<ReportOther>) {UserData.data.otherReports = value;};
   public static set messages(value:Array<Message>) {UserData.data.messages = value;};
   public static user                  : Employee             = null                    ;
-  public static techProfile           : any                                            ;
+  public static techProfile           : Employee                                            ;
   public static userLoggedIn          : boolean              = false                   ;
   public static sesaConfig            : any                  = {}                      ;
   public static data                  : any                  = {
@@ -112,10 +112,10 @@ export class UserData {
   public get data()                         : any       { return UserData.data           ;};
   public get userLoggedIn()                 : boolean   { return UserData.userLoggedIn   ;};
   public get hands()                        : any       { return UserData.hands          ;};
-  public set user(value:Employee)  { UserData.user = value           ;};
-  public set techProfile(value:any)       { UserData.techProfile = value    ;};
-  public set sesaConfig(value:any)       { UserData.sesaConfig = value     ;};
-  public set data(value:any)       { UserData.data = value           ;};
+  public set user(value:Employee)   { UserData.user = value;};
+  public set techProfile(value:any) { UserData.techProfile = value    ;};
+  public set sesaConfig(value:any)  { UserData.sesaConfig = value     ;};
+  public set data(value:any)        { UserData.data = value           ;};
   public set userLoggedIn(value:boolean)   { UserData.userLoggedIn = value   ;};
   public set hands(value:any)       { UserData.hands = value          ;};
   public appReady:boolean = false;
@@ -403,13 +403,13 @@ export class UserData {
   }
 
   public setReportsForTech(reports:Array<Report>) {
-    let workReports = [];
-    for(let report of reports) {
-      workReports.push(report);
-    }
-    UserData.reports = workReports;
-    this.reports = workReports;
-    return workReports;
+    // let workReports = [];
+    // for(let report of reports) {
+    //   workReports.push(report);
+    // }
+    UserData.reports = reports;
+    // this.reports = workReports;
+    return UserData.reports;
   }
 
   public getReportsOtherForTech() {
@@ -417,13 +417,13 @@ export class UserData {
   }
 
   public setReportsOtherForTech(reportsOther:Array<ReportOther>) {
-    let otherReports = [];
-    for(let report of reportsOther) {
-      otherReports.push(report);
-    }
-    UserData.reports = otherReports;
-    this.reports = otherReports;
-    return otherReports;
+    // let otherReports = [];
+    // for(let report of reportsOther) {
+    //   otherReports.push(report);
+    // }
+    UserData.otherReports = reportsOther;
+    // this.reports = otherReports;
+    return UserData.otherReports;
   }
 
   // public getShifts() {
@@ -496,40 +496,80 @@ export class UserData {
     UserData.shift = shift;
   }
 
-  public getWorkOrderList():Array<Report> {
+  public getReportList():Array<Report> {
+    let reports:Array<Report> = this.getData('reports').slice(0);
+    let others:Array<ReportOther>  = this.getData('otherReports').slice(0);
     let periods = this.getPayrollPeriods();
-    let newReports = new Array<Report>();
+    let newReports:Array<Report> = [];
+    let newOthers:Array<ReportOther> = [];
     for(let period of periods) {
       let shifts = period.getPayrollShifts();
       for(let shift of shifts) {
-        let reports = shift.getShiftReports();
+        let shiftDate = shift.getShiftDate().format("YYYY-MM-DD");
         for(let report of reports) {
-          newReports.push(report);
+          let report_date = report.report_date;
+          let shiftReports = shift.getShiftReports();
+          if(shiftDate === report_date) {
+            if(shiftReports.indexOf(report) > -1) {
+              continue;
+            }
+            shift.addShiftReport(report);
+            newReports.push(report);
+          }
+        }
+        for(let other of others) {
+          let other_date = other.report_date.format("YYYY-MM-DD");
+          if(shiftDate === other_date) {
+            shift.addOtherReport(other);
+            newOthers.push(other);
+          }
         }
       }
     }
     UserData.reports = newReports;
+    UserData.otherReports = newOthers;
     return UserData.reports;
   }
 
-  public setWorkOrderList(list:Array<any>) {
+  public setReportList(list:Array<Report>) {
     UserData.reports = list;
+    return UserData.reports;
     // UserData.techWOArrayInitialized = true;
   }
 
   public getReportOtherList():Array<ReportOther> {
     let periods = this.getPayrollPeriods();
-    let newReports = new Array<ReportOther>();
-    for (let period of periods) {
+    let newOthers:ReportOther[] = [];
+    let others:Array<ReportOther>  = this.getData('otherReports').slice(0);
+    for(let period of periods) {
       let shifts = period.getPayrollShifts();
-      for (let shift of shifts) {
-        let reports = shift.getShiftOtherReports();
-        for (let report of reports) {
-          newReports.push(report);
+      for(let shift of shifts) {
+        let shiftDate = shift.getShiftDate().format("YYYY-MM-DD");
+        let shiftOthers = shift.getShiftOtherReports();
+        for(let other of others) {
+          if(shiftOthers.indexOf(other) > -1) {
+            continue;
+          }
+          let other_date = other.report_date.format("YYYY-MM-DD");
+          if(shiftDate === other_date) {
+            shift.addOtherReport(other);
+            newOthers.push(other);
+          }
         }
       }
     }
-    UserData.otherReports = newReports;
+
+    // let newReports = new Array<ReportOther>();
+    // for (let period of periods) {
+    //   let shifts = period.getPayrollShifts();
+    //   for (let shift of shifts) {
+    //     let reports = shift.getShiftOtherReports();
+    //     for (let report of reports) {
+    //       newReports.push(report);
+    //     }
+    //   }
+    // }
+    UserData.otherReports = newOthers;
     return UserData.otherReports;
   }
 
@@ -619,7 +659,16 @@ export class UserData {
   //   return payPeriodTotal;
   // }
 
-  public getUsername() {
+  public getUser():Employee {
+    return UserData.appdata.user;
+  }
+
+  public setUser(value:Employee) {
+    UserData.appdata.user = value;
+    return UserData.appdata.user;
+  }
+
+  public getUsername():string {
     if(UserData.loginData && UserData.loginData.user) {
       return UserData.loginData.user;
     } else {
@@ -715,39 +764,39 @@ export class UserData {
     }
   }
 
-  // updateShifts() {
-  //   let periods = UserData.payrollPeriods;
-  //   let others = UserData.otherReports;
-  //   let reports = this.getWorkOrderList();
-  //   for(let period of periods) {
-  //     let shifts = period.getPayrollShifts();
-  //     for(let shift of shifts) {
-  //       // let shiftReports = shift.getShiftReports();
-  //       let shiftDate = shift.getShiftDate().format("YYYY-MM-DD");
-  //       let shiftReports = new Array<Report>();
-  //       let shiftOtherReports = new Array<ReportOther>();
-  //       let exists = false;
-  //       for(let report of reports) {
-  //         let rid = report._id;
+  public updateShifts(period?:PayrollPeriod) {
+    let periods = UserData.payrollPeriods;
+    let others = UserData.otherReports;
+    let reports = this.getReportList();
+    for(let period of periods) {
+      let shifts = period.getPayrollShifts();
+      for(let shift of shifts) {
+        // let shiftReports = shift.getShiftReports();
+        let shiftDate = shift.getShiftDate().format("YYYY-MM-DD");
+        let shiftReports = new Array<Report>();
+        let shiftOtherReports = new Array<ReportOther>();
+        let exists = false;
+        for(let report of reports) {
+          let rid = report._id;
 
-  //       }
-  //       for(let report of reports) {
-  //         let reportDate = report.report_date;
-  //         if(shiftDate === reportDate) {
-  //           shiftReports.push(report);
-  //         }
-  //       }
-  //       for(let other of others) {
-  //         let otherDate = other.report_date;
-  //         if(shiftDate === otherDate) {
-  //           shiftOtherReports.push(other);
-  //         }
-  //       }
-  //       shift.setShiftReports(shiftReports);
-  //       shift.setOtherReports(shiftOtherReports);
-  //     }
-  //   }
-  // }
+        }
+        for(let report of reports) {
+          let reportDate = report.report_date;
+          if(shiftDate === reportDate) {
+            shiftReports.push(report);
+          }
+        }
+        for(let other of others) {
+          let otherDate = other.report_date.format("YYYY-MM-DD");
+          if(shiftDate === otherDate) {
+            shiftOtherReports.push(other);
+          }
+        }
+        shift.setShiftReports(shiftReports);
+        shift.setOtherReports(shiftOtherReports);
+      }
+    }
+  }
 
   public addNewReport(newReport:Report) {
     // Log.l("addNewReport(): Now adding report:\n", newReport);
@@ -914,45 +963,42 @@ export class UserData {
     // this.updateShifts();
   }
 
+  public findEmployeeSite(tech:Employee):Jobsite {
+    let sites = this.getData('sites');
+    let cli = tech.client.trim().toUpperCase();
+    let loc = tech.location.trim().toUpperCase();
+    let lid = tech.locID.trim().toUpperCase();
+    let unassigned = sites.find((a:Jobsite) => {
+      return a.site_number === 1;
+    })
+    let site = sites.find((a:Jobsite) => {
+      let jscli1 = a.client.name.trim().toUpperCase();
+      let jscli2 = a.client.fullName.trim().toUpperCase();
+      let jsloc1 = a.location.name.trim().toUpperCase();
+      let jsloc2 = a.location.fullName.trim().toUpperCase();
+      let jslid1 = a.locID.name.trim().toUpperCase();
+      let jslid2 = a.locID.fullName.trim().toUpperCase();
+      let clientMatch   = Boolean(cli === jscli1 || cli === jscli2);
+      let locationMatch = Boolean(loc === jsloc1 || loc === jsloc2);
+      let locIDMatch    = Boolean(lid === jslid1 || lid === jslid2);
+      Log.l(`findEmployeeSite(): Testing for tech '${tech.getUsername()}' at ${jscli1} ${jsloc1} ${jslid1}: ${clientMatch} ${locationMatch} ${locIDMatch}`);
+      return Boolean(clientMatch && locationMatch && locIDMatch);
+    });
+    if(site) {
+      return site;
+    } else {
+      return unassigned;
+    }
+  }
+
   public createPayrollPeriods(tech:Employee, count?:number):Array<PayrollPeriod> {
     let now = moment().startOf('day');
-    UserData.payrollPeriods = [];
-    let payp = UserData.payrollPeriods;
-    let len  = payp.length;
-    let tmp1 = payp;
-    UserData.payrollPeriods = payp.splice(0,len);
-    let sites = this.getData('sites');
-    let cli = tech.client.toUpperCase();
-    let loc = tech.location.toUpperCase();
-    let lid = tech.locID.toUpperCase();
-    // let lc2 = typeof tech.loc2nd === 'string' ? tech.loc2nd.toUpperCase() : "NA";
-    let site = null;
-    Log.l(`createPayrollPeriods(): About to test tech '${tech.getUsername()}' for ${cli}, ${loc}, ${lid}...`);
-    for(let js of sites) {
-      let jscli1 = js.client.name.trim().toUpperCase();
-      let jscli2 = js.client.fullName.trim().toUpperCase();
-      let jsloc1 = js.location.name.trim().toUpperCase();
-      let jsloc2 = js.location.fullName.trim().toUpperCase();
-      let jslid1 = js.locID.name.trim().toUpperCase();
-      let jslid2 = js.locID.fullName.trim().toUpperCase();
-      // let jslc21, jslc22;
-      // if(js.loc2nd && typeof js.loc2nd['fullName'] === 'string') {
-      //   jslc21 = js.loc2nd.name.toUpperCase();
-      //   jslc22 = js.loc2nd.fullName.toUpperCase();
-      // } else if(js.loc2nd && typeof js.loc2nd === 'string') {
-      //   jslc21 = js.loc2nd.toUpperCase();
-      //   jslc22 = js.loc2nd.toUpperCase();
-      // }
-      // let loc2ndBool = lc2 ? (lc2 === jslc21 || lc2 === jslc22) : true;
-      let clientMatch = cli === jscli1 || cli === jscli2;
-      let locationMatch = loc === jsloc1 || loc === jsloc2;
-      let locIDMatch = lid === jslid1 || lid === jslid2;
-      Log.l(`createPayrollPeriods(): Booleans for site '${js.getSiteID()}' and tech ${tech.getUsername()} are: %s, %s, %s`, clientMatch, locationMatch, locIDMatch);
-      if (clientMatch && locationMatch && locIDMatch) {
-        site = js;
-        break;
-      }
-    }
+    let periods:Array<PayrollPeriod> = [];
+    // let payp = periods;
+    // let len  = payp.length;
+    // let tmp1 = payp;
+    // UserData.payrollPeriods = payp.splice(0,len);
+    let site = this.findEmployeeSite(tech);
     if(site) {
       let periodCount = count || 2;
       for(let i = 0; i < periodCount; i++) {
@@ -960,13 +1006,14 @@ export class UserData {
         let pp = new PayrollPeriod();
         pp.setStartDate(start);
         pp.createPayrollPeriodShiftsForTech(tech, site);
-        UserData.payrollPeriods.push(pp);
+        periods.push(pp);
       }
+      UserData.payrollPeriods = periods;
+      this.getReportList();
       return UserData.payrollPeriods;
     } else {
       Log.e("createPayrollPeriods(): Could not find tech at any jobsites!");
       Log.l(tech);
-      Log.e(sites);
       return [];
     }
   }
@@ -1083,10 +1130,11 @@ export class UserData {
   }
 
   setTechProfile(profile:any) {
-    UserData.techProfile = profile;
+    let user:Employee = Employee.deserialize(profile);
+    UserData.techProfile = user;
   }
 
-  getTechProfile():any {
+  getTechProfile():Employee {
     return UserData.techProfile;
   }
 

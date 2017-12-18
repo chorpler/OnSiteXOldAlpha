@@ -21,6 +21,12 @@ ion-content {
 }
 
 page-report-view {
+  .flag-icon {
+    transform: rotate(45deg);
+    zoom: 0.8;
+    position: relative;
+    top: 10px;
+  }
   .flagged {
     color: red;
   }

@@ -265,14 +265,14 @@ export class TabsService {
     Log.l("handleSwipe(): Event is:\n", event);
     let swipe = event;
     let dX = event.deltaX, dY = event.deltaY;
-    if(dX > 0) {
-      /* Swipe right, move left */
-      Log.l("handleSwipe(): attempting to move left...");
-      this.moveLeft();
-    } else if(dX < 0) {
+    if(dX < 0) {
       /* Swipe left, move right */
       Log.l("handleSwipe(): attempting to move right...");
       this.moveRight();
+    } else if(dX > 0) {
+      /* Swipe right, move left */
+      Log.l("handleSwipe(): attempting to move left...");
+      this.moveLeft();
     }
     // if(swipe.direction === 2) {
     //   /* Swipe left, so move right */
@@ -280,6 +280,22 @@ export class TabsService {
     // } else if(swipe.direction === 4) {
     //   /* Swipe right, so move left */
     //   this.moveLeft();
+    // }
+  }
+
+  public handleSwipeOnTabs(event?:any) {
+    Log.l("handleSwipeOnTabs(): Event is:\n", event);
+    this.handleSwipe(event);
+    // let swipe = event;
+    // let dX = event.deltaX, dY = event.deltaY;
+    // if(dX < 0) {
+    //   /* Swipe right, move left */
+    //   Log.l("handleSwipeOnTabs(): Attempting to move left...");
+    //   this.moveLeft();
+    // } else if(dX > 0) {
+    //   /* Swipe left, move right */
+    //   Log.l("handleSwipeOnTabs(): Attempting to move right...");
+    //   this.moveRight();
     // }
   }
 

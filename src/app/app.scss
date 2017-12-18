@@ -22,14 +22,14 @@
   @media screen and (min-width:767px), screen and (min-device-width:767px) {
     &:hover {
       background-color: rgba(0, 0, 220, 0.2);
-      i {
+      i, .dual-icon {
         color: white;
       }
     }
   }
   &:active {
     background-color: rgba(0, 0, 220, 0.4);
-    i {
+    i, .dual-icon {
       color: white;
     }
   }
@@ -69,10 +69,17 @@ ion-content {
     margin-top: 56px;
     margin-bottom: 56px;
     height: calc(100% - 56px - 56px);
-  // margin-bottom: 55px;
+    // margin-bottom: 55px;
     &.content-ios {
       margin-top: 64px;
       height: calc(100% - 64px - 56px);
+    }
+  }
+  &.content-ios {
+    &:not([no-bounce]) {
+      &>.scroll-content::before {
+        bottom: 0px;
+      }
     }
   }
   .scroll-content {
@@ -103,11 +110,11 @@ ion-app.ios ion-content > .scroll-content {
 }
 
 
-::-webkit-scrollbar {
-  width: 1px;
-  // display: none;
-  opacity: 0;
-}
+// ::-webkit-scrollbar {
+//   width: 1px;
+//   // display: none;
+//   opacity: 0;
+// }
 
 // // ::-webkit-scrollbar-track {
 // //   background: rgba(255, 91, 71, 0.5);
@@ -122,15 +129,16 @@ ion-app.ios ion-content > .scroll-content {
 //   border-left: 3px solid white;
 //   border-right: 3px solid white;
 // }
-::-webkit-scrollbar-thumb {
+// ::-webkit-scrollbar-thumb {
   // background: rgba(255, 0, 0, 0.25);
   // border-left: 3px solid white;
   // border-right: 3px solid white;
-}
+// }
 
 ion-content {
   &.show-scrollbar {
     .scroll-content {
+      overflow-y: auto;
       // &::-webkit-scrollbar {
       //   width: 10px;
       //   // display: none;
@@ -143,13 +151,13 @@ ion-content {
       //   border-right: 4px solid white;
       // }
 
-      &::-webkit-scrollbar-thumb {
-        // width: 4px;
-        // opacity: 0.5;
-        background: rgba(255, 0, 0, 0.25);
-        border-left: 3px solid white;
-        border-right: 3px solid white;
-      }
+      // &::-webkit-scrollbar-thumb {
+      //   // width: 4px;
+      //   // opacity: 0.5;
+      //   background: rgba(255, 0, 0, 0.25);
+      //   border-left: 3px solid white;
+      //   border-right: 3px solid white;
+      // }
     }
   }
 }
@@ -303,10 +311,10 @@ ion-app.ios .waiting-clock {
 }
 
 ion-app.ios .scroll-content {
-  padding-bottom: 100px !important;
+  // padding-bottom: 100px !important;
   // margin-top: 10px !important;
 }
 
 ion-popover.popover-template.popover-ios .scroll-content {
-  padding-bottom: 150px;
+  // padding-bottom: 150px;
 }

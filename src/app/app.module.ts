@@ -24,6 +24,7 @@ import { Push, PushObject, PushOptions                           } from '@ionic-
 import { LocalNotifications                                      } from '@ionic-native/local-notifications'    ;
 import { UniqueDeviceID                                          } from '@ionic-native/unique-device-id'       ;
 import { Device                                                  } from '@ionic-native/device'                 ;
+// import { Sim                                                     } from '@ionic-native/Sim'                    ;
 import { AppVersion                                              } from '@ionic-native/app-version'            ;
 import { NativeAudio                                             } from '@ionic-native/native-audio'           ;
 import { AppUpdate                                               } from '@ionic-native/app-update'             ;
@@ -115,6 +116,7 @@ import { ClockComponent                                          } from 'compone
     LocalNotifications,
     UniqueDeviceID,
     Device,
+    // Sim,
     NativeAudio,
     AppUpdate,
     Camera,

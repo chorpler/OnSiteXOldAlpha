@@ -7,10 +7,7 @@ import { SrvrSrvcs                                                           } f
 import { UserData                                                            } from 'providers/user-data'     ;
 import { AlertService                                                        } from 'providers/alerts'        ;
 import { Log, isMoment, moment, Moment                                       } from 'config/config.functions' ;
-import { Report,                                                             } from 'domain/domain-classes'   ;
-import { ReportOther                                                         } from 'domain/reportother'      ;
-import { Shift                                                               } from 'domain/shift'            ;
-import { PayrollPeriod                                                       } from 'domain/payroll-period'   ;
+import { Report, ReportOther, Shift, PayrollPeriod, Employee, Jobsite        } from 'domain/domain-classes'   ;
 import { Preferences                                                         } from 'providers/preferences'   ;
 import { TranslateService                                                    } from '@ngx-translate/core'     ;
 import { SmartAudio                                                          } from 'providers/smart-audio'   ;
@@ -60,6 +57,7 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
   public shifts       : Array<Shift>         = []                                                       ;
   public periods      : Array<PayrollPeriod> = []                                                       ;
   public period       : PayrollPeriod = null                                                            ;
+  public tech         : Employee                                                                        ;
   public filtReports  : any                  = {}                                                       ;
   public filterKeys   : Array<string>                                                                   ;
   public data         : any                                                                             ;
@@ -121,9 +119,10 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
 
   public runWhenReady() {
     this.pageReady   = false ;
-    // this.allReports  = this.ud.getData('reports');
-    this.allReports  = []    ;
+    this.allReports  = this.ud.getData('reports');
+    // this.allReports  = []    ;
     this.reports     = []    ;
+    this.tech        = this.ud.getTechProfile();
     // this.filterKeys  = []    ;
     // this.filtReports = {}    ;
 
@@ -142,8 +141,10 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
     ];
     this.lang = this.translate.instant(translations);
     let lang = this.lang;
-    this.generateShifts();
-    this.generateFlaggedReportsList();
+    this.allReports = this.generateShifts();
+    Log.l("After generateShifts(), allReports array is:\n", this.allReports);
+    this.reports = this.generateFlaggedReportsList();
+    Log.l("After generateFlaggedReportsList(), reports array is:\n", this.reports);
     // this.alert.showSpinner(lang['spinner_retrieving_reports']);
     this.pageReady = true;
   }
@@ -151,10 +152,11 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
   public generateShifts() {
     Log.l(`generateShifts(): Generating shifts for `)
     this.periods = this.ud.getPayrollPeriods() || [];
+    // this.periods = this.ud.createPayrollPeriods(this.tech);
     this.period = this.periods[0];
     this.shifts = [];
     this.reports = [];
-    this.allReports = [];
+    let rawReports:Report[] = [];
     Log.l("ReportHistory: Got payroll periods:\n", this.periods);
     for(let period of this.periods) {
       let periodShifts = period.getPayrollShifts();
@@ -162,16 +164,18 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
         this.shifts.push(shift);
         let reports = shift.getShiftReports();
         for(let report of reports) {
-          this.allReports.push(report);
+          rawReports.push(report);
         }
       }
     }
+    return rawReports;
   }
 
   public generateFlaggedReportsList() {
-    let allReports:Report[] = this.allReports || [];
+    let allReports:Report[] = this.allReports;
     let reports:Report[] = [];
     for(let report of allReports) {
+      Log.l("generateFlaggedReportsList(): Now checking report:\n", report);
       let wo = report.work_order_number.trim();
       let cli = report.client.trim().toUpperCase();
       if(report.flagged === true) {
@@ -209,8 +213,7 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
       }
     }
     Log.l("generateFlaggedReportsList(): Output is:\n", reports);
-    this.reports = reports;
-    return this.reports;
+    return reports;
   }
 
   public itemTapped(item:Report|ReportOther, event?:any) {
@@ -336,7 +339,7 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
         let res = await this.db.deleteDoc(db.reports, wo);
         Log.l("deleteWorkOrder(): Success:\n", res);
         let tmpReport = wo;
-        let reports = this.ud.getWorkOrderList();
+        let reports = this.ud.getReportList();
         let i = reports.indexOf(wo);
         Log.l("Going to delete work order %d in the list.", i);
         if (i > -1) {

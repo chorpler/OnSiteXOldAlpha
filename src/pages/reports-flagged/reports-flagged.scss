@@ -22,60 +22,162 @@ page-reports-flagged {
   .invisibleIcon {
     visibility: hidden;
   }
-  .report-list {
+  .report-table {
+    table-layout: fixed;
+    width: 100%;
+    font-family: "Roboto Condensed", sans-serif;
+    font-size: 16px;
+    background-color: white;
+    tr {
+      td {
+        // border: 1px dotted lightgrey;
+        &.label {
+          font-weight: bold;
+          // text-align: right;
+          padding-right: 2px;
+          width: 62px;
+          min-width: 62px;
+          max-width: 62px;
+        }
+        &.data {
 
+        }
+        &.label-notes {
+          font-weight: bold;
+          text-align: right;
+          padding-right: 2px;
+        }
+        &.data-notes {
+          white-space: normal;
+          .notes-wrapper {
+            display: block;
+            background-color: white;
+            max-height: 100px;
+            overflow-y: auto;
+            white-space: normal;
+            border: 1px solid lightgrey;
+            // &::-webkit-scrollbar {
+            //   // width: 16px;
+            //   // display: none;
+            //   opacity: 1;
+            // }
+            // &::-webkit-scrollbar-thumb {
+            //   background: rgba(180, 180, 180, 1);
+            //   border-left: 3px solid white;
+            //   border-right: 3px solid white;
+            // }
+            // &:hover {
+            //   background-color: unset;
+            // }
+          }
+          // max-height:
+        }
+      }
+    }
   }
-  .report-item-sliding {
-    // cursor: pointer;
-    background-color: transparent;
-    // &:hover {
-    //   background-color: rgba(0, 0, 128, 0.3);
-    // }
-    // &:active {
-    //   background-color: rgba(0, 0, 255, 0.5);
-    // }
-    .ion-item {
-      background-color: transparent;
-    }
-    .report-item {
-
-    }
-
-  }
-  ion-item.report-item {
-    -webkit-tap-highlight-color: unset !important;
-    background-color: transparent;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-
-    &:active {
-      background-color: rgba(0, 0, 255, 0.5);
-    }
-    .item-inner {
-      background-color: transparent;
-      .input-wrapper {
+  .reports-container {
+    .report-list {
+      .report-item-sliding {
+        // cursor: pointer;
         background-color: transparent;
-        ion-label {
+        // &:hover {
+        //   background-color: rgba(0, 0, 128, 0.3);
+        // }
+        // &:active {
+        //   background-color: rgba(0, 0, 255, 0.5);
+        // }
+        .ion-item {
           background-color: transparent;
-          div {
+        }
+        .report-item {
+          -webkit-tap-highlight-color: unset !important;
+          background-color: transparent;
+          border: 1px dotted lightgrey;
+          display: flex;
+          flex-flow: row wrap;
+          justify-content: flex-start;
+          align-content: center;
+          align-items: center;
+          @include button-like-block;
+          // cursor: pointer;
+
+          // &:active {
+          //   background-color: rgba(0, 0, 255, 0.5);
+          // }
+          .item-inner {
             background-color: transparent;
-            span {
+            .input-wrapper {
               background-color: transparent;
+              ion-label {
+                background-color: transparent;
+                div {
+                  background-color: transparent;
+                  span {
+                    background-color: transparent;
+                  }
+                }
+              }
+            }
+          }
+          .group-dev {
+            display: flex;
+            flex-flow: row wrap;
+            justify-content: flex-start;
+            align-content: center;
+            align-items: center;
+            font-size: 12px;
+            .label {
+              display: inline-block;
+              flex: 0 1 auto;
+              max-width: 80px;
+              min-width: 80px;
+              width: 20%;
+              font-weight: bold;
+              text-align: right;
+              padding-right: 2px;
+            }
+            .data {
+              display: inline-block;
+              flex: 0 1 auto;
+              width: 80%;
+              padding-left: 2px;
+              text-align: left;
+            }
+          }
+          .group-user {
+            .label {
+              display: inline-block;
+              flex: 0 1 auto;
+              max-width: 80px;
+              min-width: 80px;
+              width: 20%;
+              font-weight: bold;
+              text-align: right;
+              padding-right: 2px;
+            }
+            .data {
+              display: inline-block;
+              flex: 0 1 auto;
+              width: 80%;
+              padding-left: 2px;
+              text-align: left;
+            }
+            .label-notes {
+              display: inline-block;
+              flex: 0 1 auto;
+              max-width: 80px;
+              min-width: 80px;
+              width: 20%;
+              font-weight: bold;
+              text-align: right;
+              padding-right: 2px;
+            }
+            .data-notes {
+              width: 100%;
             }
           }
         }
       }
-    }
-    div.report-item {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: nowrap;
-      justify-content: flex-start;
-      align-items: center;
     }
   }
   .list-item-icon {

@@ -401,8 +401,8 @@ export class SrvrSrvcs {
       let p = this.ud.getPassword();
       // let c = this.ud.getCredentials();
       // Log.l("getReportsForTech(): Got credentials:\n", c);
-      let query: any = { selector: { username: { $eq: tech } }, limit: 10000 };
-      Log.l("getReportsOtherForTech(): Using database: ", this.prefs.DB.reports);
+      let query:any = { selector: { username: { $eq: tech } }, limit: 10000 };
+      Log.l("getReportsOtherForTech(): Using database: ", this.prefs.DB.reports_other);
       if (dates) {
         if (dates['start'] !== undefined && dates['end'] === undefined) {
           query.selector = { $and: [{ username: { $eq: tech } }, { rprtDate: { $eq: dates['start'] } }] };
@@ -410,7 +410,7 @@ export class SrvrSrvcs {
           query.selector = { $and: [{ username: { $eq: tech } }, { rprtDate: { $geq: dates['start'] } }, { rprtDate: { $leq: dates['end'] } }] };
         }
       }
-      let woArray = new Array<ReportOther>();
+      let others = new Array<ReportOther>();
       Log.l("getReportsOtherForTech(): Using database: ", this.prefs.DB.reports_other);
       // this.loginToDatabase(u, p, this.prefs.DB.reports_other).then((res) => {
         // if (res) {
@@ -424,17 +424,19 @@ export class SrvrSrvcs {
           // })
           .then((res) => {
             Log.l(`getReportsOtherForTech(): Got reports for '${tech}':\n`, res);
-            let woArray = new Array<ReportOther>();
+            // let others = new Array<ReportOther>();
             for(let doc of res.docs) {
-              let report = new ReportOther();
-              report.readFromDoc(doc);
-              woArray.push(report);
+              if(doc && doc._rev) {
+                let report = new ReportOther();
+                report.readFromDoc(doc);
+                others.push(report);
+              }
             }
-            resolve(woArray);
+            resolve(others);
           }).catch((err) => {
             Log.l(`getReportsOtherForTech(): Error getting reports for '${tech}'.`);
             Log.l(err);
-            resolve(woArray);
+            resolve(others);
           });
         // } else {
           // resolve(woArray);

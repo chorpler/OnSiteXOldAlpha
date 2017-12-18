@@ -23,7 +23,7 @@ export const fields = [
   "client",
   "location",
   "location_id",
-  "location_2",
+  "workSite",
   "timestamp",
   "timestampM",
   "username",
@@ -47,6 +47,7 @@ export class ReportOther {
   public client           : string = "";
   public location         : string = "";
   public location_id      : string = "";
+  public workSite         : string = "";
   public timestamp        : number = 0;
   public timestampM       : Moment;
   public username         : string = "";
@@ -68,6 +69,7 @@ export class ReportOther {
     this.client            = ""                    ;
     this.location          = ""                    ;
     this.location_id       = ""                    ;
+    this.workSite          = ""                    ;
     this.shift_serial      = ""                    ;
     this.username          = ""                    ;
     this.shift_serial      = ""                    ;
@@ -99,15 +101,15 @@ export class ReportOther {
     return other;
   }
 
-  public serialize(tech:Employee) {
+  public serialize() {
     Log.l("ReportOther.serialize(): Now serializing report...");
     // let ts = moment(this.timestamp);
     // Log.l("Report.serialize(): timestamp moment is now:\n", ts);
     // let XLDate = moment([1900, 0, 1]);
     // let xlStamp = ts.diff(XLDate, 'days', true) + 2;
     // this.timestamp = xlStamp;
-    let newReport = {};
-    this._id = this._id || this.genReportID(tech);
+    let newReport:any = {};
+    // this._id = this._id || this.genReportID(tech);
     let len = fields.length;
     for(let i = 0; i < len; i++) {
       let key = fields[i];
@@ -121,16 +123,19 @@ export class ReportOther {
           Log.w("ReportOther.serialize() called with 'report_date' that isn't a Moment or a string:\n", this);
           newReport[key] = this[key];
         }
-      } else if(key === 'technician') {
-        newReport[key] = tech.getTechName();
+      } else if(key === 'timestampM') {
+        newReport[key] = this[key].format();
+      // } else if(key === 'technician') {
+      //   newReport[key] = tech.getTechName();
       } else {
         if(this[key] !== undefined && this[key] !== null) {
           newReport[key] = this[key];
-        } else if(tech[key] !== undefined && tech[key] !== null) {
-          newReport[key] = tech[key];
         }
+        //  else if(tech[key] !== undefined && tech[key] !== null) {
+        //   newReport[key] = tech[key];
+        // }
       }
-      newReport['username'] = tech['avatarName'];
+    //   newReport['username'] = tech['avatarName'];
     }
     let hrs = Number(newReport['time']);
     if(!isNaN(hrs)) {
@@ -140,7 +145,7 @@ export class ReportOther {
     return newReport;
   }
 
-  public clone() {
+  public clone():ReportOther {
     let newWO = new ReportOther();
     for(let key of fields) {
       if(isMoment(this[key])) {
@@ -154,13 +159,12 @@ export class ReportOther {
     return newWO;
   }
 
-  public getReportID() {
+  public getReportID():string {
     return this._id ? this._id : "";
   }
 
-  public genReportID(tech:Employee) {
+  public genReportID(tech:Employee):string {
     let now = moment();
-    // let idDateTime = now.format("YYYYMMDDHHmmss_ddd");
     let idDateTime = now.format("YYYY-MM-DD_HH-mm-ss_ZZ_ddd");
     let docID = tech.avatarName + '_' + idDateTime;
     Log.l("genReportID(): Generated ID:\n", docID);
@@ -207,15 +211,24 @@ export class ReportOther {
     }
   }
 
+  // public setSite(site:Jobsite) {
+  //   let cli = site.client;
+  //   let loc = site.location;
+  //   let lid = site.locID;
+  //   let sno = site.site_number;
+  //   this.site_number = sno;
+  //   this.client = cli.fullName.toUpperCase();
+  //   this.location = loc.fullName.toUpperCase();
+  //   this.location_id = lid.name.toUpperCase();
+  // }
+
   public setSite(site:Jobsite) {
-    let cli = site.client;
-    let loc = site.location;
-    let lid = site.locID;
-    let sno = site.site_number;
-    this.site_number = sno;
-    this.client = cli.fullName.toUpperCase();
-    this.location = loc.fullName.toUpperCase();
-    this.location_id = lid.name.toUpperCase();
+    this.client      = site.client.name;
+    this.location    = site.location.name;
+    this.location_id = site.locID.name;
+    this.workSite    = site.getSiteName();
+    this.site_number = site.site_number;
+    return this;
   }
 
 }
