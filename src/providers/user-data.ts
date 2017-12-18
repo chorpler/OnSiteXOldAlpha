@@ -7,12 +7,11 @@ import { Device                        } from '@ionic-native/device'           ;
 import { AppVersion                    } from '@ionic-native/app-version'      ;
 import { UniqueDeviceID                } from '@ionic-native/unique-device-id' ;
 import { Log, isMoment, moment, Moment } from 'config/config.functions'        ;
-// import { STRINGS                       } from 'config/config.strings'          ;
 import { DBSrvcs                       } from './db-srvcs'                     ;
 import { Preferences                   } from './preferences'                  ;
 import { Shift                         } from 'domain/shift'                   ;
 import { PayrollPeriod                 } from 'domain/payroll-period'          ;
-import { Report                     } from 'domain/report'               ;
+import { Report                        } from 'domain/report'                  ;
 import { ReportOther                   } from 'domain/reportother'             ;
 import { Employee                      } from 'domain/employee'                ;
 import { Message                       } from 'domain/message'                 ;
@@ -89,7 +88,7 @@ export class UserData {
     minutes: 0,
     seconds: 0,
   };
-  // public get clockZo om():number { Log.l("clockZoom called"); if(this.platform && this.platform.width() && this.platform.width() < 350) { return this.platform.width()/350; } else { return 1.0};};
+  // public get clockZoom():number { Log.l("clockZoom called"); if(this.platform && this.platform.width() && this.platform.width() < 350) { return this.platform.width()/350; } else { return 1.0};};
   // public set clockZoom(value:number) {};
   // public get clockZoom():number { return UserData.clockZoom;};
   // public set clockZoom(value:number) { UserData.clockZoom = value;};
@@ -124,6 +123,8 @@ export class UserData {
   private get loginData() {return UserData.loginData;};
   private set loginData(value:any) {UserData.loginData = value;};
   public showClock:boolean = true;
+  public isOnline:boolean = false;
+  public isWiFi:boolean = false;
 
   constructor(
     public events  : Events,
@@ -803,7 +804,11 @@ export class UserData {
     // let reports = this.getWorkOrderList();
     let id = newReport.getReportID();
     let exists = false, existingReport = null, rightShift = null;
-    let periods = this.getPayrollPeriods();
+    let periods = this.getPayrollPeriods() || [];
+
+    if(!(periods && periods.length)) {
+      periods = this.createPayrollPeriods(this.getUser()) || [];
+    }
     let date = moment(newReport.report_date).startOf('day');
     loop1:
     for(let period of periods) {
@@ -968,6 +973,7 @@ export class UserData {
     let cli = tech.client.trim().toUpperCase();
     let loc = tech.location.trim().toUpperCase();
     let lid = tech.locID.trim().toUpperCase();
+    Log.l(`findEmployeeSite(): Searching for tech site '${cli} ${loc} ${lid}' ...`);
     let unassigned = sites.find((a:Jobsite) => {
       return a.site_number === 1;
     })
@@ -1032,9 +1038,9 @@ export class UserData {
 
   // }
 
-  // public addSiteConfig(j:any, client:any, location:any, locID:any, loc2nd?:any) {
+  // public addSiteConfig(j:any, client:any, location:any, locID:any) {
   //   let sitec = j || new Map();
-  public addSiteConfig(client:any, location:any, locID:any, loc2nd?:any) {
+  public addSiteConfig(client:any, location:any, locID:any) {
     let sitec = this.data.site_info || new Map();
     // let sitec = j || HashMap.empty<any,any>();
     // let sitec = sites || new Map();
@@ -1062,19 +1068,8 @@ export class UserData {
     if(loc.has(locID)) {
       lid = loc.get(locID);
     } else {
-      if(loc2nd) {
-        loc.set(locID, new Map());
-        lid = loc.get(locID);
-        if(lid.has(loc2nd)) {
-          l2d = lid.get(loc2nd);
-        } else {
-          lid.set(loc2nd, true);
-          l2d = lid.get(loc2nd);
-        }
-      } else {
-        loc.set(locID, true);
-        lid = loc.get(locID);
-      }
+      loc.set(locID, true);
+      lid = loc.get(locID);
     }
     return sitec;
     // this.data.site_info = sitec;
@@ -1094,7 +1089,7 @@ export class UserData {
       let loc2nd = site.loc2nd;
       // this.data.site_info = this.addSiteConfig(client.fullName.toUpperCase(), location.fullName.toUpperCase(), locID.fullName.toUpperCase(), loc2nd);
       // this.addSiteConfig(client, location, locID, loc2nd);
-      this.addSiteConfig(JSON.stringify(client), JSON.stringify(location), JSON.stringify(locID), JSON.stringify(loc2nd));
+      this.addSiteConfig(JSON.stringify(client), JSON.stringify(location), JSON.stringify(locID));
     }
     return this.data.site_info;
   }

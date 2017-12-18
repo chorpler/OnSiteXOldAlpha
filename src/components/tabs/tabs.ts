@@ -9,7 +9,29 @@ import { AlertService                                           } from 'provider
 import { MessageService                                         } from 'providers/message-service' ;
 import { TabsService                                            } from 'providers/tabs-service'    ;
 import { Log, moment, Moment                                    } from 'config/config.functions'   ;
-import { Tab, Pages                                             } from 'config/config.types'       ;
+import { Tab                                                    } from 'config/config.types'       ;
+
+export enum Pages {
+  'OnSiteHome'      = 0,
+  'ReportHistory'   = 1,
+  'Report History'  = 1,
+  'Report'          = 2,
+  'ReportView'      = 2,
+  'Report View'     = 2,
+  'Flagged Reports' = 2,
+  'Reports Flagged' = 2,
+  'ReportsFlagged'  = 2,
+  'FlaggedReports'  = 2,
+  'User'            = 3,
+  'Message List'    = 4,
+  'MessageList'     = 4,
+  'Settings'        = 5,
+  'DevPage'         = 6,
+  'Message'         = 7,
+  'Comment'         = 8,
+  'Fancy Select'    = 9,
+  'Testing'         = 10,
+}
 
 @Component({
   selector: 'onsite-tabs',
@@ -19,6 +41,7 @@ export class TabsComponent implements OnInit,OnDestroy {
   @Input('hideArray') hideArray:Array<boolean> = [];
   @ViewChild('tabsContainer', {read: ViewContainerRef}) tabsContainer:ElementRef;
   public lang:any;
+  public get Pages():any { return Pages;};
   public pageSub:Subscription;
   public static nav:any;
   public nav:any = TabsComponent.nav;
@@ -26,38 +49,6 @@ export class TabsComponent implements OnInit,OnDestroy {
   public ready:boolean = false;
   public get tabInfo():Array<Tab> { return this.tabServ.tabInfo; };
   public tabArray:Array<any> = [];
-  // public tabInfo:Array<any> = [];
-  // public static unreadMessageCount:number = 0;
-  // public get unreadMessageCount():number { return TabsComponent.unreadMessageCount;};
-  // public set unreadMessageCount(value:number) { TabsComponent.unreadMessageCount = value;};
-  // public static tabClass: Array<boolean> = [ false, false, false, false, false, false, false ];
-  // public tabClass:Array<boolean> = TabsComponent.tabClass;
-  // public static allTabs:any = {'disabled': false};
-  // public allTabs:any = TabsComponent.allTabs;
-  // public static ready:boolean = false;
-  // public static get tabInfo() { return UserData.isDeveloper() ? TabsComponent.tabArrayDev : TabsComponent.tabArray; };
-  // public static tabArray:any = [
-  //   { name: 'OnSiteHome'    , fullName: 'OnSite Home'        , waiting: false, icon: 'ios-home-outline'     , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
-  //   { name: 'Report'        , fullName: 'Report'             , waiting: false, icon: 'ios-document-outline' , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
-  //   { name: 'ReportHistory' , fullName: 'Report History'     , waiting: false, icon: 'ios-folder-outline'   , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
-  //   { name: 'User'          , fullName: 'User'               , waiting: false, icon: 'ios-contact-outline'  , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
-  //   { name: 'Message List'  , fullName: 'Messages'           , waiting: false, icon: 'ios-text-outline'     , active: false, get badgeCount():number { return UserData.getUnreadMessageCount();}, set badgeCount(value:number) {}, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
-  //   { name: 'Settings'      , fullName: 'Settings'           , waiting: false, icon: 'ios-settings-outline' , active: false, badgeCount: 0, get hideBadge() {return this.badgeCount <= 0 || !(UserData && UserData.isAppLoaded()) ? true : false}, set hideBadge(val:boolean) {} } ,
-  // ];
-  // public static tabArrayDev:any = [
-  //   ...TabsComponent.tabArray,
-  //   { name: 'DevPage', fullName: 'Developer Settings', icon: 'options', active: false, badgeCount: 0, get hideBadge() { return this.badgeCount <= 0 ? true : false }, set hideBadge(val: boolean) { } }
-  // ];
-
-  // public get tabInfo():any {return TabsComponent.tabInfo; };
-
-  // public get ready():boolean {return TabsComponent.ready;};
-  // public set ready(value:boolean) { TabsComponent.ready = value;};
-
-  // public static tab:any = {
-  //   'OnSiteHome': {}
-  // };
-  // public get tabArray():any {return TabsComponent.tabArray;};
   public onSitePage     : any     ;
   public userLoggedIn   : boolean ;
   public userIsDeveloper: boolean =false ;
@@ -66,6 +57,7 @@ export class TabsComponent implements OnInit,OnDestroy {
 
   public hider = [ true, true, true, true, true, true, ];
   // public hider = TabsComponent.hider;
+  public tabsClasses:any = {};
   public tabsReady:boolean = false;
   // public get hider():Array<boolean> { return TabsComponent.hider; };
   // public set hider(value:Array<boolean>) { TabsComponent.hider = value; };
@@ -295,10 +287,6 @@ export class TabsComponent implements OnInit,OnDestroy {
       tabs[pageNum].active = true;
     }
   }
-
-  // public setTabDisable(val:boolean) {
-  //   TabsComponent.allTabs.disabled = val;
-  // }
 
   public goHome() {
     // Log.l('entering page: OnSite Home' );

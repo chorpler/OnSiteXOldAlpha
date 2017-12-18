@@ -18,10 +18,9 @@ export class SmartAudio {
     if (platform.is('cordova')) {
       this.audioType = 'native';
     }
-
   }
 
-  preload(key, asset) {
+  public preload(key, asset) {
     if (this.audioType === 'html5') {
       let audio = {
         key: key,
@@ -59,7 +58,7 @@ export class SmartAudio {
     }
   }
 
-  play(key) {
+  public play(key) {
     if(this.prefs.USER.audio) {
       let audio = this.sounds.find((sound) => {
         return sound.key === key;
@@ -78,7 +77,7 @@ export class SmartAudio {
     }
   }
 
-  playForcibly(key) {
+  public playForcibly(key) {
     let audio = this.sounds.find((sound) => {
       return sound.key === key;
     });

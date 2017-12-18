@@ -128,10 +128,14 @@ export class Employee implements IFEmployee {
   }
 
   public readFromForm(doc:any) {
-    for (let prop in doc) {
+    let keys = Object.keys(this);
+    for(let key of keys) {
+    // }
+    // for(let prop in doc) {
+      let prop = key;
       let docprop = doc[prop];
-      if (docprop && typeof docprop === 'object') {
-        if (prop === 'shiftStartTime') {
+      if(docprop && typeof docprop === 'object') {
+        if(prop === 'shiftStartTime') {
           let startHour = Number(doc[prop].name);
           this['shiftStartTimeMoment'] = moment().hour(startHour).startOf('hour');
           this[prop] = startHour;
@@ -208,7 +212,12 @@ export class Employee implements IFEmployee {
   }
 
   public readFromDoc(doc:any) {
-    for(let prop in doc) {
+    let keys = Object.keys(this);
+    for(let key of keys) {
+      // }
+      // for(let prop in doc) {
+      let prop = key;
+      // for(let prop in doc) {
       let docprop = doc[prop];
       if(docprop && typeof docprop === 'object') {
         if(prop === 'shiftStartTime') {
@@ -244,7 +253,9 @@ export class Employee implements IFEmployee {
           this[prop] = doc[prop];
         }
       } else {
-        if (prop === 'shiftStartTime') {
+        if(prop === 'shiftStartTimeMoment' || prop === 'shiftStartTimeHour') {
+
+        } else if (prop === 'shiftStartTime') {
           let startHour = Number(doc[prop]);
           this['shiftStartTimeMoment'] = moment().hour(startHour).startOf('hour');
           this[prop] = doc[prop];

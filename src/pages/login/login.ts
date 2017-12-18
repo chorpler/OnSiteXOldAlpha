@@ -1,4 +1,3 @@
-// import { TabsComponent                                                                     } from '../../components/tabs/tabs'     ;
 import { Component, OnInit                                                                 } from '@angular/core'            ;
 import { IonicPage, NavController, NavParams, Platform, LoadingController, AlertController } from 'ionic-angular'            ;
 import { PopoverController, ViewController, Events                                         } from 'ionic-angular'            ;
@@ -10,6 +9,7 @@ import { AlertService                                                           
 import { NetworkStatus                                                                     } from 'providers/network-status' ;
 import { UserData                                                                          } from 'providers/user-data'      ;
 import { Preferences                                                                       } from 'providers/preferences'    ;
+import { Employee                                                                          } from 'domain/domain-classes'    ;
 import { Log                                                                               } from 'config/config.functions'  ;
 import { TranslateService                                                                  } from '@ngx-translate/core'      ;
 import { TabsService                                                                       } from 'providers/tabs-service'   ;
@@ -36,9 +36,6 @@ export class Login implements OnInit {
   public mode           : string = "page"                ;
   public version        : string = ""                    ;
   public dataReady      : boolean = false                ;
-  // public static PREFS   : any = new Preferences()        ;
-  // public prefs          : any = Login.PREFS              ;
-
 
   constructor(
     public navCtrl  : NavController,
@@ -52,11 +49,10 @@ export class Login implements OnInit {
     public viewCtrl : ViewController,
     public ud       : UserData,
     public events   : Events,
-    // public tabs     : TabsComponent,
     public tabServ  : TabsService,
     public translate: TranslateService,
   ) {
-    window['loginscreen'] = this;
+    window['onsitelogin'] = this;
   }
 
   ionViewDidLoad() {
@@ -64,6 +60,7 @@ export class Login implements OnInit {
   }
 
   ngOnInit() {
+    this.tabServ.disableTabs();
     if (!(this.ud.isAppLoaded())) {
       this.tabServ.goToPage('OnSiteHome');
     } else {
@@ -87,21 +84,21 @@ export class Login implements OnInit {
   private initializeForm() {
     this.LoginForm = new FormGroup({
       'formUser': new FormControl(null, Validators.required),
-      'formPass': new FormControl(null, Validators.required)
+      'formPass': new FormControl(null, Validators.required),
     });
   }
 
-  onSubmit() {
+  public onSubmit() {
     this.submitAttempt = true;
     this.loginClicked();
   }
 
-  loginClicked() {
+  public loginClicked() {
     let tmpUserData = this.LoginForm.value;
     this.username = tmpUserData.formUser;
     this.password = tmpUserData.formPass;
     let lang = this.translate.instant('spinner_logging_in');
-    if(NetworkStatus.isConnected()) {
+    if(this.ud.isOnline) {
       this.alert.showSpinner(lang['spinner_logging_in']);
       Log.l("Login: Now attempting login:");
       this.auth.setUser(this.username);
@@ -113,6 +110,9 @@ export class Login implements OnInit {
       }).then((res) => {
         let udoc = res;
         udoc.updated = true;
+        let user:Employee = Employee.deserialize(udoc);
+        Log.l(`loginClicked(): Employee record being set to:\n`, user);
+        this.ud.setUser(user);
         udoc._id = this.localURL;
         return this.db.addLocalDoc(this.prefs.DB.reports, udoc);
       }).then((res) => {

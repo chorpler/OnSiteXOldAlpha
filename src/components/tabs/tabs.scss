@@ -33,6 +33,10 @@ onsite-tabs {
   overflow: visible;
   z-index: 48;
 
+  .tabsDisabled {
+    opacity: 0.4;
+  }
+
   .onsite-tab-bar {
     left: 0;
     bottom: 0;
@@ -98,6 +102,39 @@ onsite-tabs {
     }
     &:not(.clickDisabled) {
       @include button-like-block;
+      &.hlght {
+        background-color: rgba(240, 255, 240, 0.8);
+
+        /* this one looks pretty good for popping the tab up */
+        // box-shadow: 0px 0px 10px 4px rgba(120, 120, 120, 0.7);
+
+        /* this one looks pretty good for popping the tab down */
+        // box-shadow: 0px 8px 9px -3px rgba(120, 120, 120, 0.7) inset;
+
+        /* Slightly lower down */
+        box-shadow: 0px 8px 9px 2px rgba(105, 105, 105, 0.8) inset;
+
+        border-right: 0;
+        border-top: 0;
+        border-bottom-left-radius: 3px;
+        border-bottom-right-radius: 3px;
+        +.onsite-tab-button {
+          border-left: 0;
+        }
+        .icon-container {
+          i.tab-icon-ionic {
+            color: #488aff;
+            font-weight: bold;
+
+          }
+        }
+        // background-color: rgba(75, 170, 255, 0.5);
+        }
+        &.non-Hlght {
+          color:black;
+        }
+        // height: 50px;
+      }
     }
     &.clickDisabled {
       color: rgba(100, 100, 100, 0.5);
@@ -106,39 +143,6 @@ onsite-tabs {
         color: rgba(100, 100, 100, 0.5);
       }
     }
-    &.hlght {
-      background-color: rgba(240, 255, 240, 0.8);
-
-      /* this one looks pretty good for popping the tab up */
-      // box-shadow: 0px 0px 10px 4px rgba(120, 120, 120, 0.7);
-
-      /* this one looks pretty good for popping the tab down */
-      // box-shadow: 0px 8px 9px -3px rgba(120, 120, 120, 0.7) inset;
-
-      /* Slightly lower down */
-      box-shadow: 0px 8px 9px 2px rgba(105, 105, 105, 0.8) inset;
-
-      border-right: 0;
-      border-top: 0;
-      border-bottom-left-radius: 3px;
-      border-bottom-right-radius: 3px;
-      +.onsite-tab-button {
-        border-left: 0;
-      }
-      .icon-container {
-        i.tab-icon-ionic {
-          color: #488aff;
-          font-weight: bold;
-
-        }
-      }
-      // background-color: rgba(75, 170, 255, 0.5);
-    }
-    &.non-Hlght {
-      color:black;
-    }
-    // height: 50px;
-  }
 
   // .onsite-tab-button.hlght+.onsite-tab-button {
   //   border-right: 0;

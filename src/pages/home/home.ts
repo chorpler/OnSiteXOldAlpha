@@ -18,13 +18,13 @@ import { AuthSrvcs                                        } from 'providers/auth
 import { SrvrSrvcs                                        } from 'providers/srvr-srvcs'      ;
 import { AlertService                                     } from 'providers/alerts'          ;
 import { UserData                                         } from 'providers/user-data'       ;
-import { Report                                        } from 'domain/report'          ;
+import { Report                                           } from 'domain/report'             ;
 import { ReportOther                                      } from 'domain/reportother'        ;
 import { Shift                                            } from 'domain/shift'              ;
 import { PayrollPeriod                                    } from 'domain/payroll-period'     ;
 import { Employee                                         } from 'domain/employee'           ;
 import { TabsService                                      } from 'providers/tabs-service'    ;
-import { STRINGS                                          } from 'config/config.strings'     ;
+import { STRINGS                                          } from 'config/config.types'       ;
 import { Preferences                                      } from 'providers/preferences'     ;
 import { SafePipe                                         } from 'pipes/safe'                ;
 import { SmartAudio                                       } from 'providers/smart-audio'     ;
@@ -38,9 +38,7 @@ import { Icons, Pages                                     } from 'config/config.
 //   'unknown'        = 4,
 // }
 
-@IonicPage({
-  name: 'OnSiteHome'
-})
+@IonicPage({ name: 'OnSiteHome' })
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html',
@@ -68,9 +66,9 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
   static hrsSubmitted                : number                                   ;
   static dataReady                   : boolean       = false                    ;
   static techProfile                 : any                                      ;
-  static techWorkOrders              : Array<Report>   = []                  ;
-  static shiftWorkOrders             : Array<Report>   = []                  ;
-  static payrollWorkOrders           : Array<Report>   = []                  ;
+  static techWorkOrders              : Array<Report>   = []                     ;
+  static shiftWorkOrders             : Array<Report>   = []                     ;
+  static payrollWorkOrders           : Array<Report>   = []                     ;
   static otherReports                : Array<ReportOther> = []                  ;
   static hoursTotalList              : Array<any>    = []                       ;
   static shifts                      : Array<Shift>  = []                       ;
@@ -143,7 +141,6 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
               public ud          : UserData,
               public db          : DBSrvcs,
               public events      : Events,
-              // public tabs        : TabsComponent,
               public tabServ     : TabsService,
               public alert       : AlertService,
               public zone        : NgZone,
@@ -384,12 +381,9 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     let lang = this.lang;
     this.ud.setHomePageLoading(true);
     Log.l("HomePage.runEveryTime(): Fetching work orders.");
-    // this.fixedHeight = this.mapElement.nativeElement.offsetHeight;
-    // this.alert.showSpinner(lang['spinner_fetching_reports']);
-    this.fetchTechWorkorders().then((res) => {
+    this.fetchTechReports().then((res) => {
       this.techProfile = this.ud.getTechProfile();
       this.shifts = this.ud.getPeriodShifts();
-      // this.countHoursForShifts();
       HomePage.homePageStatus.startupFinished = true;
       this.ud.setHomePageReady(true);
       // this.watchScroll();
@@ -399,6 +393,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
       HomePage.homePageStatus.startupFinished = true;
       // this.watchScroll();
       this.dataReady = true;
+      this.tabServ.enableTabs();
       this.tabServ.setPageLoaded(Pages.OnSiteHome);
     }).catch(err => {
       Log.l("Error fetching tech work orders!");
@@ -449,7 +444,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
   //   Log.l("HomePage: app finished loading. Now, checking user login status.");
   //   if (this.ud.getLoginStatus()) {
   //     Log.l("HomePage: user logged in, fetching work orders.");
-  //     this.fetchTechWorkorders().then((res) => {
+  //     this.fetchTechReports().then((res) => {
   //       Log.l("HomePage: fetched work orders, maybe:\n", res);
   //       this.ud.createShifts();
   //       this.shifts = this.ud.getPeriodShifts();
@@ -478,7 +473,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     return HomePage.checkStartupStatus();
   }
 
-  public fetchTechWorkorders():Promise<Array<any>> {
+  public fetchTechReports():Promise<Array<any>> {
     let techid = this.ud.getCredentials().user;
     return new Promise((resolve,reject) => {
       this.server.getReportsForTech(techid).then((res:Array<Report>) => {
@@ -501,7 +496,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
         this.tech              = tech;
         let now                = moment();
         this.payrollPeriods    = this.ud.getPayrollPeriods();
-        Log.l("fetchTechWorkorders(): Payroll periods created as:\n", this.payrollPeriods);
+        Log.l("fetchTechReports(): Payroll periods created as:\n", this.payrollPeriods);
         for(let period of this.payrollPeriods) {
           for(let shift of period.shifts) {
             // let reports = new Array<Report>();
@@ -535,11 +530,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
               let locationFull = site.location.fullName.toUpperCase() ;
               let locIDName    = site.locID.name.toUpperCase()        ;
               let locIDFull    = site.locID.fullName.toUpperCase()    ;
-              // let loc2Name     = site.loc2nd && typeof site.loc2nd === 'object' ? site.loc2nd.name.toUpperCase() : "NA";
-              // let loc2Full     = site.loc2nd && typeof site.loc2nd === 'object' ? site.loc2nd.fullName.toUpperCase() : "N/A";
               if((techClient === clientName || techClient === clientFull) && (techLocation === locationName || techLocation === locationFull) && (techLocID === locIDName || techLocID === locIDFull)) {
-                // Log.l("User is at site '%s', site object is:", site.getSiteName());
-                // Log.l(site);
                 let times             = site.getShiftStartTimes()                   ;
                 let shiftType         = tech.shift                                  ;
                 let shiftRotation     = tech.rotation                               ;
@@ -569,26 +560,20 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
         if(prd) {
           let i = this.payrollPeriods.indexOf(prd);
           if(i > -1) {
-            Log.l("fetchTechWorkOrders(): Found payroll period at index %d.", i);
+            Log.l("fetchTechReports(): Found payroll period at index %d.", i);
             this.period = this.payrollPeriods[i];
             this.ud.setHomePeriod(this.period);
           } else {
-            Log.l("fetchTechWorkOrders(): Payroll periods not found.");
+            Log.l("fetchTechReports(): Payroll periods not found.");
             this.period = prd;
             this.ud.setHomePeriod(this.period);
           }
-          // for(let period of this.payrollPeriods) {
-          //   if(period.serial_number === prd.serial_number) {
-          //     this.period = period;
-          //     break;
-          //   }
-          // }
         } else {
-          Log.l("fetchTechWorkOrders(): HomePage payroll period will be:\n", this.payrollPeriods[0]);
+          Log.l("fetchTechReports(): HomePage payroll period will be:\n", this.payrollPeriods[0]);
           this.period = this.payrollPeriods[0];
           this.ud.setHomePeriod(this.period);
         }
-        Log.l("fetchTechWorkOrders(): Got payroll periods and all work orders:\n", this.payrollPeriods);
+        Log.l("fetchTechReports(): Got payroll periods and all work orders:\n", this.payrollPeriods);
         Log.l(this.techWorkOrders);
         Log.l(this.otherReports);
         resolve(this.techWorkOrders);
@@ -619,32 +604,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     return loggedin;
   }
 
-  // countHoursForShifts() {
-  //   if(this.shifts && this.shifts.length) {
-  //     this.hoursTotalList = [];
-  //     for(let shift of this.shifts) {
-  //       let hours = this.ud.getTotalHoursForShift(shift.getShiftSerial());
-  //       this.hoursTotalList.push(hours);
-  //     }
-  //   }
-  //   let thisPayPeriod = this.ud.getPayrollPeriodForDate(moment());
-  //   this.payrollPeriodHours = this.ud.getTotalHoursForPayrollPeriod(thisPayPeriod);
-  //   this.payrollPeriodBonusHours = this.ud.getPayrollHoursForPayrollPeriod(thisPayPeriod);
-  // }
-
   public presentLoginModal() {
-    // let loginPage = this.modalCtrl.create('Login', {user: '', pass: ''}, { enableBackdropDismiss: false, cssClass: 'login-modal'});
-    // loginPage.onDidDismiss(data => {
-    //   Log.l("Got back:\n", data);
-    //   this.userLoggedIn = this.ud.getLoginStatus();
-    //   if( this.userLoggedIn ) {
-    //     console.log("Login Modal succeeded, now opening user modal.");
-    //     // this.userLoggedIn = true;
-    //     this.presentUserModal(); }
-    //   else { console.log("Login Modal did not succeed."); }
-    // });
-    // loginPage.present();
-    // this.tabs.goToPage('Login');
     this.tabServ.goToPage('Login');
   }
 
@@ -652,23 +612,6 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     let checkBox = '?';
     let chks = this.checkboxSVG;
     let status = shift.getShiftStatus();
-    // if(status) {
-    //   let hours = shift.getNormalHours();
-    //   if(hours !== status) {
-    //     return chks[Icons['box-check-no']];
-    //   } else {
-    //     return chks[Icons["box-check-yes"]];
-    //   }
-    // } else {
-      // let hours = shift.getNormalHours();
-      // let total = shift.getShiftLength();
-      // if (hours > total) {
-      //   checkBox = chks[Icons["flag-checkered"]];
-      // } else if (hours < total) {
-      //   checkBox = chks[Icons["box-check-no"]];
-      // } else {
-      //   checkBox = chks[Icons["box-check-yes"]];
-      // }
     if(status === "hoursComplete") {
       checkBox = "box-check-yes";
     } else if(status === "hoursUnder") {
@@ -679,7 +622,6 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
       checkBox = "box-check-no";
     }
     return chks[Icons[checkBox]];
-    // }
   }
 
   public getCheckbox(idx:number) {
@@ -700,11 +642,11 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
   public showHelp(event:any) {
     this.audio.play('help');
     let params = { cssClass: 'popover-template', showBackdrop: true, enableBackdropDismiss: true, ev: event };
-    let pup = this.popoverCtrl.create('Popover', {contents: 'home_app_help_text'}, params);
-    pup.onDidDismiss(data => {
+    let popup = this.popoverCtrl.create('Popover', {contents: 'home_app_help_text'}, params);
+    popup.onDidDismiss(data => {
       Log.l("HomePage.showHelp(): Got back:\n", data);
     });
-    pup.present();
+    popup.present();
   }
 
   public presentUserModal() {
@@ -718,11 +660,6 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     } else {
       this.tabServ.goToPage('Report', {mode: 'Add', shift: shift, payroll_period: this.period});
     }
-    // if(this.ud.getWorkOrdersForShift(shift.getShiftSerial()).length > 0) {
-    //   this.tabs.goToPage('ReportHistory', {mode: 'Shift', shift: shift, payroll_period: this.period});
-    // } else {
-    //   this.tabs.goToPage('Report', {mode: 'Add', shift: shift, payroll_period: this.period});
-    // }
   }
 
   public possibleSound(shift:Shift) {
@@ -739,22 +676,11 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
 
   public toggleClock(event?:any) {
     Log.l("toggleClock(): Event is:\n", event);
-    // if(event && event.shiftKey) {
-    //   this.tabServ.hidden[2] = !this.tabServ.hidden[2];
-    //   return;
-    // }
     let now = moment();
-    // this.ud.updateClock(now);
     if(this.dataReady === true) {
-      // this.endWatchScroll();
     }
     this.dataReady = !this.dataReady;
     this.ud.showClock = !this.ud.showClock;
-    // if(this.dataReady) {
-      // this.watchScroll();
-    // }
-    // let hpr = this.ud.isHomePageReady();
-    // this.ud.setHomePageReady(!hpr);
   }
 
 }

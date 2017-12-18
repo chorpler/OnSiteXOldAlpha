@@ -1,9 +1,10 @@
-<div class="onsite-tab-bar" id="onsite-nav" [class.disabled]="tabServ.isDisabled()" (swipe)="tabServ.handleSwipeOnTabs($event)">
-  <div class="onsite-tab-button" [class.hide]="tab.show === false || tab.role==='dev' && !ud.isDeveloper()" [class.hlght]="tabServ.isActive(i)" (click)="tabServ.goToPage(tab.name)" *ngFor="let tab of tabServ.tabInfo; let i=index">
+<!-- <div class="onsite-tab-bar" id="onsite-nav" [class.hide]="tabServ.isDisabled()" (swipe)="tabServ.handleSwipeOnTabs($event)"> -->
+<div class="onsite-tab-bar" id="onsite-nav" [class.tabsDisabled]="tabServ.isDisabled()" (swipe)="tabServ.handleSwipeOnTabs($event)">
+  <div class="onsite-tab-button" [class.clickDisabled]="tabServ.isDisabled()" [class.hide]="tab.show === false || tab.role==='dev' && !ud.isDeveloper()" [class.hlght]="tabServ.isActive(i)" (click)="tabServ.goToPage(tab.name)" *ngFor="let tab of tabServ.tabInfo; let i=index">
     <!-- <div *ngIf="tab.show === true; then visibleTab; else invisibleTab"></div> -->
     <div class="icon-container">
-      <i class="tab-icon-ionic" [ngClass]="tabServ.getIcon(i)" *ngIf="i!==1"></i>
-      <span class="tab-dual-icon" *ngIf="i===1">
+      <i class="tab-icon-ionic" [ngClass]="tabServ.getIcon(i)" *ngIf="i!==Pages.FlaggedReports"></i>
+      <span class="tab-dual-icon" *ngIf="i===Pages.FlaggedReports">
         <i class="tab-icon-ionic dual-icon first" [ngClass]="tabServ.getIcon(i)"></i>
         <span class="fa fa-exclamation dual-icon second">!</span >
       </span>

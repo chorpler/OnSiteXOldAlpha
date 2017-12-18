@@ -18,7 +18,7 @@ import { TranslateService                                                    } f
 import { SmartAudio                                                          } from 'providers/smart-audio'   ;
 import { TabsService                                                         } from 'providers/tabs-service'  ;
 import { Pages                                                               } from 'config/config.types'     ;
-import { STRINGS                                                             } from 'config/config.strings'   ;
+import { STRINGS                                                             } from 'config/config.types'     ;
 
 export const _sortReports = (a:Report,b:Report):number => {
   let dateA  = a.report_date;

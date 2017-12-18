@@ -18,15 +18,15 @@ export interface SelectString {
 
 export enum Pages {
   'OnSiteHome'      = 0,
-  'Report'          = 1,
-  'ReportView'      = 1,
-  'Report View'     = 1,
-  'Flagged Reports' = 1,
-  'Reports Flagged' = 1,
-  'ReportsFlagged'  = 1,
-  'FlaggedReports'  = 1,
-  'ReportHistory'   = 2,
-  'Report History'  = 2,
+  'ReportHistory'   = 1,
+  'Report History'  = 1,
+  'Report'          = 2,
+  'ReportView'      = 2,
+  'Report View'     = 2,
+  'Flagged Reports' = 2,
+  'Reports Flagged' = 2,
+  'ReportsFlagged'  = 2,
+  'FlaggedReports'  = 2,
   'User'            = 3,
   'Message List'    = 4,
   'MessageList'     = 4,
@@ -53,3 +53,8 @@ export enum Icons {
    'flagcheckered' : `<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50" preserveAspectRatio="xMidYMid meet" id="flag-checkered">\n   <path d="m 35.200566,6.315625 c -6.533349,0 -6.681132,-4.5234375 -14.266395,-4.5234375 -4.098888,0 -7.923605,1.53125 -9.545282,2.646875 V 0 H 7.5 v 50 h 3.888889 V 23.323437 C 13.691106,22.04375 17.181394,20.696875 20.961394,20.696875 28.124717,20.696875 29.13,25 35.513606,25 39.639717,25 42.5,22.876562 42.5,22.876562 V 4.0828125 c 0,0 -3.151934,2.2328125 -7.299434,2.2328125 z m 3.41054,8.160938 C 33.911394,17.253125 28.8325,13.945313 26.263894,12.582812 v 5.732813 l 0.0061,0.0016 c -1.471946,-0.435935 -3.198612,-0.74531 -5.308336,-0.74531 -3.848051,0 -7.213888,1.060937 -9.572499,2.092188 V 13.742228 C 15.78331,10.660977 22.17081,10.253165 26.263875,12.582852 V 6.640625 c 1.878328,1.18125 4.448893,2.8 8.93666,2.8 1.219168,0 2.3625,-0.134375 3.410562,-0.3484375 z" />\n</svg>`,
    'unknown'       : `<span class="fake-svg">?</span>`,
  }
+
+ export var STRINGS = {
+  NUMCHARS: ["⓪", "①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨"],
+}
+
