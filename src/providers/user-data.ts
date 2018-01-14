@@ -7,7 +7,7 @@ import { Device                        } from '@ionic-native/device'           ;
 import { AppVersion                    } from '@ionic-native/app-version'      ;
 import { UniqueDeviceID                } from '@ionic-native/unique-device-id' ;
 import { Log, isMoment, moment, Moment } from 'config/config.functions'        ;
-import { DBSrvcs                       } from './db-srvcs'                     ;
+import { DBService                       } from './db-service'                     ;
 import { Preferences                   } from './preferences'                  ;
 import { Shift                         } from 'domain/shift'                   ;
 import { PayrollPeriod                 } from 'domain/payroll-period'          ;
@@ -702,12 +702,8 @@ export class UserData {
   }
 
   public getLoginStatus() {
-    Log.l("UD.getLoginStatus(): login status is:\n",
-    UserData.userLoggedIn);
-    Log.l("UD.getLoginStatus(): creds are: ",
-    UserData.userLoggedIn,
-    "\n",
-    UserData.loginData);
+    Log.l("UD.getLoginStatus(): login status is:\n", UserData.userLoggedIn);
+    Log.l("UD.getLoginStatus(): creds are: ", UserData.userLoggedIn, "\n", UserData.loginData);
     return UserData.userLoggedIn;
   }
 
@@ -987,12 +983,16 @@ export class UserData {
       let clientMatch   = Boolean(cli === jscli1 || cli === jscli2);
       let locationMatch = Boolean(loc === jsloc1 || loc === jsloc2);
       let locIDMatch    = Boolean(lid === jslid1 || lid === jslid2);
-      Log.l(`findEmployeeSite(): Testing for tech '${tech.getUsername()}' at ${jscli1} ${jsloc1} ${jslid1}: ${clientMatch} ${locationMatch} ${locIDMatch}`);
-      return Boolean(clientMatch && locationMatch && locIDMatch);
+      let isAtSite = Boolean(clientMatch && locationMatch && locIDMatch);
+      if(isAtSite) {
+        Log.l(`findEmployeeSite(): Testing for tech '${tech.getUsername()}' at ${jscli1} ${jsloc1} ${jslid1}: ${clientMatch} ${locationMatch} ${locIDMatch}`);
+      }
+      return isAtSite;
     });
     if(site) {
       return site;
     } else {
+      Log.l(`findEmployeeSite(): Could not find tech '${tech.getUsername()}' at any work site!`);
       return unassigned;
     }
   }

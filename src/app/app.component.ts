@@ -9,10 +9,11 @@ import { Push, PushObject, PushOptions                } from '@ionic-native/push
 import { LocalNotifications                           } from '@ionic-native/local-notifications' ;
 import { AppVersion                                   } from '@ionic-native/app-version'         ;
 import { AppUpdate                                    } from '@ionic-native/app-update'          ;
+import { OpenNativeSettings                           } from '@ionic-native/open-native-settings';
 import { UserData                                     } from 'providers/user-data'               ;
 import { PouchDBService                               } from 'providers/pouchdb-service'         ;
-import { DBSrvcs                                      } from 'providers/db-srvcs'                ;
-import { SrvrSrvcs                                    } from 'providers/srvr-srvcs'              ;
+import { DBService                                    } from 'providers/db-service'              ;
+import { ServerService                                } from 'providers/server-service'              ;
 import { AuthSrvcs                                    } from 'providers/auth-srvcs'              ;
 import { AlertService                                 } from 'providers/alerts'                  ;
 import { NetworkStatus                                } from 'providers/network-status'          ;
@@ -37,6 +38,7 @@ import { TabsService                                  } from 'providers/tabs-ser
 
 export const homePage:string = "OnSiteHome";
 // export const homePage:string = "Testing";
+// declare var resolve:Function;
 
 @Component({ templateUrl: 'app.html' })
 export class OnSiteApp implements OnInit {
@@ -74,10 +76,10 @@ export class OnSiteApp implements OnInit {
     public localNotify  : LocalNotifications       ,
     public storage      : Storage                  ,
     public version      : AppVersion               ,
-    public db           : DBSrvcs                  ,
+    public db           : DBService                ,
     public ud           : UserData                 ,
     public auth         : AuthSrvcs                ,
-    public server       : SrvrSrvcs                ,
+    public server       : ServerService            ,
     public events       : Events                   ,
     public tabServ      : TabsService              ,
     public app          : App                      ,
@@ -87,6 +89,7 @@ export class OnSiteApp implements OnInit {
     public msg          : MessageService           ,
     public appUpdate    : AppUpdate                ,
     public geoloc       : GeolocService            ,
+    public settings     : OpenNativeSettings       ,
     // public sim          : Sim                      ,
   ) {
     window['onsiteapp'] = this;
@@ -102,6 +105,10 @@ export class OnSiteApp implements OnInit {
           'spinner_app_loading',
           'offline_alert_title',
           'offline_alert_message',
+          'offline_login_title',
+          'offline_login_message',
+          'continue',
+          'open_phone_settings',
         ];
         this.initializeApp(res);
       } else {
@@ -114,41 +121,174 @@ export class OnSiteApp implements OnInit {
     });
   }
 
-  public initializeApp(vagueParameter:any) {
-    Log.l("AppComponent: Initializing app...");
-    this.hiddenArray = this.tabServ.getHiddenArray();
-    this.keysetup = {visible: false, width: '100%', swipeToHide: true};
-    // let componentFactory = this.cfResolver.resolveComponentFactory(TabsComponent);
-    // let vcRef = this.tabsTarget.viewContainer;
-    // let tabsComponentRef = vcRef.createComponent(componentFactory);
-    // let instance:TabsComponent = tabsComponentRef.instance as TabsComponent;
+  // public async initializeApp(vagueParameter:any) {
+  //   try {
+  //     Log.l("AppComponent: Initializing app...");
+  //     this.hiddenArray = this.tabServ.getHiddenArray();
+  //     this.keysetup = {visible: false, width: '100%', swipeToHide: true};
+  //     // let componentFactory = this.cfResolver.resolveComponentFactory(TabsComponent);
+  //     // let vcRef = this.tabsTarget.viewContainer;
+  //     // let tabsComponentRef = vcRef.createComponent(componentFactory);
+  //     // let instance:TabsComponent = tabsComponentRef.instance as TabsComponent;
 
-    Log.l("OnSite: platform ready returned:\n", vagueParameter);
-    this.getAppVersion().then((res) => {
-      this.platform.registerBackButtonAction(() => {
-        let page = this.nav && this.nav.getActive ? this.nav.getActive() : {name: "none", id: "none"};
-        if(page && page.id) {
-          let pageName = page.id;
-          if(pageName === 'OnSiteHome') {
-            if (this.backButtonPressedAlready) {
-              if(this.timeoutHandle) {
-                clearTimeout(this.timeoutHandle);
-              }
-              this.platform.exitApp();
-            } else {
-              this.alert.showToast("Press back again to exit", 2000);
-              this.backButtonPressedAlready = true;
-              this.timeoutHandle = setTimeout(() => { this.backButtonPressedAlready = false; }, 2000)
+  //     Log.l("OnSite: platform ready returned:\n", vagueParameter);
+  //     let res = await this.getAppVersion();
+  //     this.platform.registerBackButtonAction(() => {
+  //       let page = this.nav && this.nav.getActive ? this.nav.getActive() : {name: "none", id: "none"};
+  //       if(page && page.id) {
+  //         let pageName = page.id;
+  //         if(pageName === 'OnSiteHome') {
+  //           if (this.backButtonPressedAlready) {
+  //             if(this.timeoutHandle) {
+  //               clearTimeout(this.timeoutHandle);
+  //             }
+  //             this.exitApp();
+  //           } else {
+  //             this.alert.showToast("Press back again to exit", 2000);
+  //             this.backButtonPressedAlready = true;
+  //             this.timeoutHandle = setTimeout(() => { this.backButtonPressedAlready = false; }, 2000)
+  //           }
+  //         } else {
+  //           if(this.nav.canGoBack()) {
+  //             this.nav.pop();
+  //           } else {
+  //             this.nav.setRoot('OnSiteHome');
+  //           }
+  //         }
+  //       };
+  //     });
+  //     this.translate.setDefaultLang('en');
+  //     this.statusBar.styleDefault();
+  //     this.splashScreen.hide();
+  //     // NetworkStatus.watchForDisconnect();
+  //     // this.pouchOptions = { adapter: 'websql', auto_compaction: true };
+  //     this.pouchOptions = { auto_compaction: true };
+  //     window["PouchDB"] = PouchDBService.PouchInit();
+  //     window["Platform"] = this.platform;
+  //     window["PouchDB" ].defaults(this.pouchOptions);
+
+  //     // window[ "PouchDB"].debug.enable('*');
+  //     window[ "PouchDB"].debug.disable('*');
+  //     window[ 'moment' ] = moment;
+  //     window[ 'Log'    ] = Log;
+  //     window[ 't1'     ] = CONSOLE.t1;
+  //     window[ 'c1'     ] = CONSOLE.c1;
+  //     this.preloadAudioFiles();
+  //     // this.checkPreferences().then(() => {
+  //     //   Log.l("OnSite.initializeApp(): Done messing with preferences, now checking login...");
+  //     //   let language = this.prefs.getLanguage();
+  //     //   this.translate.addLangs(this.appLanguages);
+  //     //   if (language !== 'en') {
+  //     //     this.translate.use(language);
+  //     //   }
+  //     this.translate.get(this.langStrings).subscribe((result) => {
+  //       this.lang = result;
+  //       let lang = this.lang;
+  //       if(!this.ud.isBootError()) {
+  //         this.bootApp().then(res => {
+  //           Log.l("OnSite.initializeApp(): bootApp() returned successfully!");
+  //           this.alert.hideSpinner(0, true).then(res => {
+  //             this.ud.showClock = false;
+  //             Log.l("OnSiteApp: boot finished, setting home page to 'OnSiteHome'.")
+  //             this.ud.setAppLoaded(true);
+  //             this.rootPage = 'OnSiteHome';
+  //             // setTimeout(() => {
+  //             //   Log.l("OnSite.bootApp(): Publishing startup event after timeout!");
+  //             //   callingClass.events.publish('startup:finished', true);
+  //             // }, 50);
+  //           })
+  //         }).catch(err => {
+  //           Log.l("OnSite.initializeApp(): bootApp() returned error.");
+  //           Log.e(err);
+  //           // let errorText = "";
+  //           // if(err && err.message) {
+  //           //   errorText = err.message;
+  //           // } else if(typeof err === 'string') {
+  //           //   errorText = err;
+  //           // }
+  //           // this.alert.showAlert("STARTUP ERROR", "Error on load, please tell developers:<br>\n<br>\n" + errorText).then(res => {
+  //           this.ud.showClock = false;
+  //           this.ud.setAppLoaded(true);
+  //           this.rootPage = 'Login';
+  //           // });
+  //         });
+  //       } else {
+  //         Log.w("OnSite.initializeApp(): app boot error has been thrown.");
+  //         // this.alert.showAlert("STARTUP ERROR", "Unknown error on loading app.").then(res => {
+  //         this.ud.setAppLoaded(true);
+  //         this.ud.showClock = false;
+  //         this.rootPage = 'Login';
+  //         // });
+  //       }
+  //     });
+  //     // return res;
+  //   } catch(err) {
+  //     Log.l("initializeApp(): Error in getAppVersion() or platform.ready()! That's bad! Or in checkPreferences or translate.get or something!");
+  //     Log.e(err);
+  //     let errorText = "";
+  //     if (err && err.message) {
+  //       errorText = err.message;
+  //     } else if (typeof err === 'string') {
+  //       errorText = err;
+  //     }
+  //     this.ud.showClock = false;
+  //     this.rootPage = 'Login';
+  //   }
+  //   // }).catch(err => {
+  //   //   Log.l("initializeApp(): Error in getAppVersion() or platform.ready()! That's bad! Or in checkPreferences or translate.get or something!");
+  //   //   Log.e(err);
+  //   //   let errorText = "";
+  //   //   if (err && err.message) {
+  //   //     errorText = err.message;
+  //   //   } else if (typeof err === 'string') {
+  //   //     errorText = err;
+  //   //   }
+  //   //   // this.alert.showAlert("ERROR", "Error starting app, please tell developers:<br>\n<br>\n" + errorText).then(res => {
+  //   //   this.ud.showClock = false;
+  //   //   this.rootPage = 'Login';
+  //   //   // });
+  //   // });
+  // }
+
+  public registerListeners() {
+    this.platform.registerBackButtonAction(() => {
+      let page = this.nav && this.nav.getActive ? this.nav.getActive() : {name: "none", id: "none"};
+      if(page && page.id) {
+        let pageName = page.id;
+        if(pageName === 'OnSiteHome') {
+          if (this.backButtonPressedAlready) {
+            if(this.timeoutHandle) {
+              clearTimeout(this.timeoutHandle);
             }
+            this.exitApp();
           } else {
-            if(this.nav.canGoBack()) {
-              this.nav.pop();
-            } else {
-              this.nav.setRoot('OnSiteHome');
-            }
+            this.alert.showToast("Press back again to exit", 2000);
+            this.backButtonPressedAlready = true;
+            this.timeoutHandle = setTimeout(() => { this.backButtonPressedAlready = false; }, 2000)
           }
-        };
-      });
+        } else {
+          if(this.nav.canGoBack()) {
+            this.nav.pop();
+          } else {
+            this.nav.setRoot('OnSiteHome');
+          }
+        }
+      };
+    });
+  }
+
+  public async initializeApp(vagueParameter:any) {
+    try {
+      Log.l("AppComponent: Initializing app...");
+      this.hiddenArray = this.tabServ.getHiddenArray();
+      this.keysetup = {visible: false, width: '100%', swipeToHide: true};
+      // let componentFactory = this.cfResolver.resolveComponentFactory(TabsComponent);
+      // let vcRef = this.tabsTarget.viewContainer;
+      // let tabsComponentRef = vcRef.createComponent(componentFactory);
+      // let instance:TabsComponent = tabsComponentRef.instance as TabsComponent;
+
+      Log.l("OnSite: platform ready returned:\n", vagueParameter);
+      let res = await this.getAppVersion();
       this.translate.setDefaultLang('en');
       this.statusBar.styleDefault();
       this.splashScreen.hide();
@@ -165,121 +305,205 @@ export class OnSiteApp implements OnInit {
       window[ 'Log'    ] = Log;
       window[ 't1'     ] = CONSOLE.t1;
       window[ 'c1'     ] = CONSOLE.c1;
+      this.registerListeners();
       this.preloadAudioFiles();
-
-      let callingClass = this;
-      // this.checkPreferences().then(() => {
-      //   Log.l("OnSite.initializeApp(): Done messing with preferences, now checking login...");
-      //   let language = this.prefs.getLanguage();
-      //   this.translate.addLangs(this.appLanguages);
-      //   if (language !== 'en') {
-      //     this.translate.use(language);
-      //   }
-      this.translate.get(this.langStrings).subscribe((result) => {
-        this.lang = result;
-        let lang = this.lang;
-        if(!this.ud.isBootError()) {
-          this.bootApp().then(res => {
-            Log.l("OnSite.initializeApp(): bootApp() returned successfully!");
-            this.alert.hideSpinner(0, true).then(res => {
+      this.translate.get(this.langStrings).subscribe(async (result) => {
+        try {
+          this.lang = result;
+          let lang = this.lang;
+          if(!this.ud.isBootError()) {
+            let firstBoot = await this.isFirstLogin();
+            if(firstBoot) {
+              Log.l("OnSite.initializeApp(): bootApp() detected first boot, going to first boot page.");
+              this.ud.showClock = false;
+              this.rootPage = 'First Login';
+            } else {
+              let res = await this.bootApp();
+              Log.l("OnSite.initializeApp(): bootApp() returned successfully!");
+              let hide = await this.alert.hideSpinner(0, true);
               this.ud.showClock = false;
               Log.l("OnSiteApp: boot finished, setting home page to 'OnSiteHome'.")
               this.ud.setAppLoaded(true);
               this.rootPage = 'OnSiteHome';
-              // setTimeout(() => {
-              //   Log.l("OnSite.bootApp(): Publishing startup event after timeout!");
-              //   callingClass.events.publish('startup:finished', true);
-              // }, 50);
-            })
-          }).catch(err => {
-            Log.l("OnSite.initializeApp(): bootApp() returned error.");
-            Log.e(err);
-            // let errorText = "";
-            // if(err && err.message) {
-            //   errorText = err.message;
-            // } else if(typeof err === 'string') {
-            //   errorText = err;
-            // }
-            // this.alert.showAlert("STARTUP ERROR", "Error on load, please tell developers:<br>\n<br>\n" + errorText).then(res => {
-            this.ud.showClock = false;
-            this.ud.setAppLoaded(true);
-            this.rootPage = 'Login';
-            // });
-          });
-        } else {
-          Log.w("OnSite.initializeApp(): app boot error has been thrown.");
-          // this.alert.showAlert("STARTUP ERROR", "Unknown error on loading app.").then(res => {
-          this.ud.setAppLoaded(true);
+            }
+          } else {
+
+          }
+        } catch(err) {
+          Log.l("initializeApp(): Error in getAppVersion() or platform.ready()! That's bad! Or in checkPreferences or translate.get or something!");
+          Log.e(err);
+          let errorText = "";
+          if (err && err.message) {
+            errorText = err.message;
+          } else if (typeof err === 'string') {
+            errorText = err;
+          }
           this.ud.showClock = false;
           this.rootPage = 'Login';
-          // });
         }
+        // }).catch(err => {
+        //   Log.l("initializeApp(): Error in getAppVersion() or platform.ready()! That's bad! Or in checkPreferences or translate.get or something!");
+        //   Log.e(err);
+        //   let errorText = "";
+        //   if (err && err.message) {
+        //     errorText = err.message;
+        //   } else if (typeof err === 'string') {
+        //     errorText = err;
+        //   }
+        //   // this.alert.showAlert("ERROR", "Error starting app, please tell developers:<br>\n<br>\n" + errorText).then(res => {
+        //   this.ud.showClock = false;
+        //   this.rootPage = 'Login';
+        //   // });
+        // });
       });
-    }).catch(err => {
-      Log.l("initializeApp(): Error in getAppVersion() or platform.ready()! That's bad! Or in checkPreferences or translate.get or something!");
-      Log.e(err);
-      let errorText = "";
-      if (err && err.message) {
-        errorText = err.message;
-      } else if (typeof err === 'string') {
-        errorText = err;
+      // } catch(err) {}
+    } catch(err) {
+
+    }
+  }
+
+  public async onlineBoot() {
+    try {
+      let out = await this.checkPreferences();
+      Log.l("OnSite.onlineBoot(): Done messing with preferences, now checking login...");
+      let language = this.prefs.getLanguage();
+      if (language !== 'en') {
+        this.translate.use(language);
       }
-      // this.alert.showAlert("ERROR", "Error starting app, please tell developers:<br>\n<br>\n" + errorText).then(res => {
-      this.ud.showClock = false;
-      this.rootPage = 'Login';
-      // });
-    });
+      out = await this.checkLogin();
+      if(out === false) {
+        return false;
+      }
+      Log.l("OnSite.onlineBoot(): User passed login check. Should be fine. Checking for Android app update.");
+      // this.checkForAndroidUpdate().then(res => {
+      //   Log.l("OnSite.onlineBoot(): Done with Android update check. Now getting all data from server.");
+        // return
+      let res = await this.server.getAllData(this.tech);
+      this.data = res;
+      this.ud.setData(this.data);
+      let msgs = this.msg.getMessages();
+      Log.l("OnSite.onlineBoot(): Checked new messages.");
+      let phoneInfo = await this.ud.checkPhoneInfo();
+      let tech = this.ud.getData('employee')[0];
+      let newMsgs = await this.checkForNewMessages();
+      let pp = this.ud.createPayrollPeriods(this.data.employee[0], this.prefs.getPayrollPeriodCount());
+      this.ud.getReportList();
+      if(phoneInfo) {
+        Log.l("OnSite.onlineBoot(): Got phone data:\n", phoneInfo);
+        let savePhoneInfo = await this.server.savePhoneInfo(tech, phoneInfo);
+        return true;
+      } else {
+        return true;
+      }
+    // }).catch(err => {
+    //   Log.l("OnSite.onlineBoot(): Error with check preferences.");
+    //   Log.e(err);
+    //   this.alert.showConfirmYesNo("STARTUP ERROR", "Caught app loading error:<br>\n<br>\n" + err.message + "<br>\n<br>\nTry to restart app?").then(res => {
+    //     if (res) {
+    //       this.ud.reloadApp();
+    //     } else {
+    //       reject(err);
+    //     }
+    //   });
+    // });
+    } catch(err) {
+      Log.l(`onlineBoot(): Error while checking for online status!`);
+      Log.e(err);
+      // throw new Error(err);
+      return err;
+    }
+  }
+
+  public async offlineBoot() {
+    try {
+      let out = await this.checkPreferences();
+      Log.l("OnSite.offlineBoot(): Done messing with preferences, now checking login...");
+      let language = this.prefs.getLanguage();
+      if(language !== 'en') {
+        this.translate.use(language);
+      }
+      let credentials = await this.auth.areCredentialsSaved();
+      if(credentials) {
+        Log.l("offlineBoot(): Credentials found stored.");
+      } else {
+        Log.l("offlineBoot(): Credentials not found stored.");
+      }
+      // out = await this.checkLogin();
+      // if(out === false) {
+      //   return false;
+      // }
+      // Log.l("OnSite.offlineBoot(): User passed login check. Should be fine. Checking for Android app update.");
+      // this.checkForAndroidUpdate().then(res => {
+      //   Log.l("OnSite.offlineBoot(): Done with Android update check. Now getting all data from server.");
+        // return
+      // let res = await this.server.getAllData(this.tech);
+      // this.data = res;
+      // this.ud.setData(this.data);
+      // let msgs = this.msg.getMessages();
+      // Log.l("OnSite.offlineBoot(): Checked new messages.");
+      let phoneInfo = await this.ud.checkPhoneInfo();
+      let tech = this.ud.getData('employee')[0];
+      let newMsgs = await this.checkForNewMessages();
+      let pp = this.ud.createPayrollPeriods(this.data.employee[0], this.prefs.getPayrollPeriodCount());
+      this.ud.getReportList();
+      if(phoneInfo) {
+        Log.l("OnSite.offlineBoot(): Got phone data:\n", phoneInfo);
+        let savePhoneInfo = await this.server.savePhoneInfo(tech, phoneInfo);
+        return true;
+      } else {
+        return true;
+      }
+    // }).catch(err => {
+    //   Log.l("OnSite.offlineBoot(): Error with check preferences.");
+    //   Log.e(err);
+    //   this.alert.showConfirmYesNo("STARTUP ERROR", "Caught app loading error:<br>\n<br>\n" + err.message + "<br>\n<br>\nTry to restart app?").then(res => {
+    //     if (res) {
+    //       this.ud.reloadApp();
+    //     } else {
+    //       reject(err);
+    //     }
+    //   });
+    // });
+    } catch(err) {
+      Log.l(`offlineBoot(): Error while checking for online status!`);
+      Log.e(err);
+      throw new Error(err);
+    }
   }
 
   public async bootApp() {
-    let lang=this.lang;
+    let lang = this.lang;
     try {
       Log.l("OnSite.bootApp(): Called.");
       if(!this.ud.isOnline) {
-        let out = this.alert.showAlert(lang['offline_alert_title'], lang['offline_alert_message']);
-      } else {
-        let out = await this.checkPreferences();
-        Log.l("OnSite.bootApp(): Done messing with preferences, now checking login...");
-        let language = this.prefs.getLanguage();
-        if (language !== 'en') {
-          this.translate.use(language);
-        }
-        out = await this.checkLogin();
-        if(out === false) {
-          return false;
-        }
-        Log.l("OnSite.bootApp(): User passed login check. Should be fine. Checking for Android app update.");
-        // this.checkForAndroidUpdate().then(res => {
-        //   Log.l("OnSite.bootApp(): Done with Android update check. Now getting all data from server.");
-          // return
-        let res = await this.server.getAllData(this.tech);
-        this.data = res;
-        this.ud.setData(this.data);
-        let msgs = this.msg.getMessages();
-        Log.l("OnSite.bootApp(): Checked new messages.");
-        let phoneInfo = await this.ud.checkPhoneInfo();
-        let tech = this.ud.getData('employee')[0];
-        let newMsgs = await this.checkForNewMessages();
-        let pp = this.ud.createPayrollPeriods(this.data.employee[0], this.prefs.getPayrollPeriodCount());
-        this.ud.getReportList();
-        if(phoneInfo) {
-          Log.l("OnSite.bootApp(): Got phone data:\n", phoneInfo);
-          let savePhoneInfo = await this.server.savePhoneInfo(tech, phoneInfo);
-          return true;
+        let result = await this.alert.showCustomConfirm(lang['offline_login_title'], lang['offline_login_message'], [
+          { text: lang['open_phone_settings'], retVal: 2 },
+          { text: lang['continue']           , retVal: 1 },
+        ]);
+        if(result === 1) {
+          /* Continue opening app */
+          Log.l("bootApp(): User chose to continue.");
+          let res = await this.offlineBoot();
+          return res;
+        } else if(result === 2) {
+          /* Open phone settings */
+          Log.l("bootApp(): Opening phone settings...");
+          let out = this.settings.open('settings');
+          this.timeoutHandle = setTimeout(() => {
+            this.exitApp();
+          }, 500);
         } else {
-          return true;
+          // out = await this.settings.open('settings');
+          // Log.l("bootApp(): Back from phone settings, result:\n", out);
+          // if(!this.ud.isOnline) {
+          //   this.offlineBoot();
+          // } else {
+          //   this.onlineBoot();
+          // }
         }
-      // }).catch(err => {
-      //   Log.l("OnSite.bootApp(): Error with check preferences.");
-      //   Log.e(err);
-      //   this.alert.showConfirmYesNo("STARTUP ERROR", "Caught app loading error:<br>\n<br>\n" + err.message + "<br>\n<br>\nTry to restart app?").then(res => {
-      //     if (res) {
-      //       this.ud.reloadApp();
-      //     } else {
-      //       reject(err);
-      //     }
-      //   });
-      // });
+      } else {
+        let res = await this.onlineBoot();
+        return res;
       }
     } catch(err) {
       Log.l(`bootApp(): Error thrown during boot process!`);
@@ -296,87 +520,35 @@ export class OnSiteApp implements OnInit {
     }
   }
 
-  // public async bootApp() {
-  //   let lang=this.lang;
-  //   try {
-  //     Log.l("OnSite.bootApp(): Called.");
-  //     if(!this.ud.isOnline) {
-  //       this.alert.showAlert(lang['offline_alert_title'], lang['offline_alert_message']);
-  //     } else {
-
-  //     }
-  //     this.checkPreferences().then(() => {
-  //       Log.l("OnSite.bootApp(): Done messing with preferences, now checking login...");
-  //       let language = this.prefs.getLanguage();
-  //       if (language !== 'en') {
-  //         this.translate.use(language);
-  //       }
-  //       this.checkLogin().then(res => {
-  //         Log.l("OnSite.bootApp(): User passed login check. Should be fine. Checking for Android app update.");
-  //         // this.checkForAndroidUpdate().then(res => {
-  //         //   Log.l("OnSite.bootApp(): Done with Android update check. Now getting all data from server.");
-  //           // return
-  //           this.server.getAllData(this.tech)
-  //           // ;
-  //         // })
-  //         .then(res => {
-  //           this.data = res;
-  //           this.ud.setData(this.data);
-  //           return this.msg.getMessages();
-  //         }).then(res => {
-  //           Log.l("OnSite.bootApp(): Got new messages.");
-  //           return this.ud.checkPhoneInfo();
-  //         }).then(res => {
-  //           let tech = this.ud.getData('employee')[0];
-  //           this.checkForNewMessages();
-  //           let phoneInfo = res;
-  //           let pp = this.ud.createPayrollPeriods(this.data.employee[0], this.prefs.getPayrollPeriodCount());
-  //           this.ud.getReportList();
-  //           if(phoneInfo) {
-  //             Log.l("OnSite.bootApp(): Got phone data:\n", phoneInfo);
-  //             this.server.savePhoneInfo(tech, phoneInfo).then(res => {
-  //               resolve(true);
-  //             }).catch(err => {
-  //               Log.l("OnSite.bootApp(): Error saving phone info to server!");
-  //               Log.e(err);
-  //               resolve(false);
-  //             });
-  //           } else {
-  //             resolve(true);
-  //           }
-  //         }).catch(err => {
-  //           Log.l("OnSite.bootApp(): Error starting up. ")
-  //           Log.e(err);
-  //           this.alert.showConfirmYesNo("STARTUP ERROR", "Caught app loading error:<br>\n<br>\n" + err.message + "<br>\n<br>\nTry to restart app?").then(res => {
-  //             if(res) {
-  //               this.ud.reloadApp();
-  //             } else {
-  //               reject(err);
-  //             }
-  //           });
-  //         });
-  //       }).catch(err => {
-  //         Log.l("OnSite.bootApp(): Error with login");
-  //         Log.e(err);
-  //         reject(err);
-  //       });
-  //     }).catch(err => {
-  //       Log.l("OnSite.bootApp(): Error with check preferences.");
-  //       Log.e(err);
-  //       this.alert.showConfirmYesNo("STARTUP ERROR", "Caught app loading error:<br>\n<br>\n" + err.message + "<br>\n<br>\nTry to restart app?").then(res => {
-  //         if (res) {
-  //           this.ud.reloadApp();
-  //         } else {
-  //           reject(err);
-  //         }
-  //       });
-  //     });
-  //   } catch(err) {
-  //     Log.l(`bootApp(): Error thrown during boot process!`);
-  //     Log.e(err);
-  //     throw new Error(err);
-  //   }
-  // }
+  public async isFirstLogin() {
+    try {
+      let firstBoot:boolean = false;
+      // let PouchDB = this.db.PouchDB;
+      // let dblist:Array<string> = [];
+      // let reportsDB = this.prefs.DB.reports;
+      // dblist = await PouchDB.allDbs();
+      // if(dblist && dblist.length && dblist.indexOf(reportsDB) > -1) {
+      //   firstBoot = false;
+      // } else {
+      //   firstBoot = true;
+      // }
+      if(firstBoot) {
+        return true;
+      } else {
+        let reportsDB = this.prefs.DB.reports;
+        let res = await this.db.PouchDB.allDbs();
+        if(res && res.length && res.indexOf(reportsDB) > -1) {
+          return false;
+        } else {
+          return true;
+        }
+      }
+    } catch(err) {
+      Log.l(`isFirstLogin(): Error checking first login via PouchDB databases!`);
+      Log.e(err);
+      throw new Error(err);
+    }
+  }
 
   public finishStartup() {
     return new Promise((resolve,reject) => {
@@ -397,12 +569,14 @@ export class OnSiteApp implements OnInit {
     // Log.l("checkForNewMessages(): Interval is set to %d.", interval);
     this.messageCheckTimeout = setInterval(() => {
       Log.l("checkForNewMessages(): Fetching new messages...");
-      this.msg.getMessages().then(res => {
-        Log.l("checkForNewMessages(): Checked sucessfully.");
-      }).catch(err => {
-        Log.l("checkForNewMessages(): Caught error. Silently dying.");
-        Log.e(err);
-      });
+      if(this.ud.isOnline) {
+        this.msg.getMessages().then(res => {
+          Log.l("checkForNewMessages(): Checked sucessfully.");
+        }).catch(err => {
+          Log.l("checkForNewMessages(): Caught error. Silently dying.");
+          Log.e(err);
+        });
+      }
     }, 1000 * 60 * interval);
   }
 
@@ -456,6 +630,7 @@ export class OnSiteApp implements OnInit {
         let profile = this.ud.getTechProfile();
         let tech:Employee = this.ud.getTechProfile();
         this.tech = tech;
+        this.ud.setLoginStatus(true);
         return this.db.getAllConfigData();
       }).then(res => {
         Log.l("checkLogin(): Successfully retrieved config data...");
@@ -530,6 +705,10 @@ export class OnSiteApp implements OnInit {
       this.tabServ.setActive(idx);
       this.rootPage = name;
     }
+  }
+
+  public exitApp() {
+    this.platform.exitApp();
   }
 }
 

@@ -2,7 +2,7 @@ import { Injectable                         } from '@angular/core'              
 import { Platform                           } from 'ionic-angular'                ;
 import { Storage,                           } from '@ionic/storage'               ;
 import { SecureStorage, SecureStorageObject } from '@ionic-native/secure-storage' ;
-import { SrvrSrvcs                          } from './srvr-srvcs'                 ;
+import { ServerService                          } from './server-service'                 ;
 import { AlertService                       } from '../providers/alerts'          ;
 import { UserData                           } from '../providers/user-data'       ;
 import { Log                                } from '../config/config.functions'   ;

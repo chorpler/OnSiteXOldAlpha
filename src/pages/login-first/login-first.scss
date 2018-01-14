@@ -1,0 +1,17 @@
+page-login-first {
+	.loginerror {}
+  p.login-version {
+    text-align: center;
+    font-weight: bold !important;
+    color: black !important;
+  }
+	p {
+		font-size: 1.6rem !important;
+		color: #ffffff !important;
+		font-weight: bold !important;
+		font-style: italic !important;
+	}
+	.invalid {
+		border: 1px solid #ea6153;
+  }
+}

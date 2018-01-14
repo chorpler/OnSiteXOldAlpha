@@ -8,7 +8,7 @@ import { AlertService                               } from './alerts'           
 import { ServerService                                  } from './server-service'                 ;
 import { UserData                                   } from './user-data'                  ;
 import { Preferences                                } from './preferences'                ;
-import { Employee, Jobsite, Report, ReportOther, } from 'domain/domain-classes'        ;
+import { Employee, Jobsite, Report, ReportOther,    } from 'domain/domain-classes'        ;
 import { Message, Comment, Shift, PayrollPeriod     } from 'domain/domain-classes'        ;
 
 

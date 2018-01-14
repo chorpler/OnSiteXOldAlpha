@@ -6,12 +6,6 @@ import { ModalController, AlertController, ToastController } from 'ionic-angular
 import { Log                                               } from 'config/config.functions' ;
 import { TranslateService                                  } from '@ngx-translate/core'     ;
 
-/*
-  Generated class for the AlertService provider.
-
-  See https://angular.io/docs/ts/latest/guide/dependency-injection.html
-  for more info on providers and Angular 2 DI.
-*/
 @Injectable()
 export class AlertService {
   public lang           : any                                            ;
@@ -30,7 +24,14 @@ export class AlertService {
   public popoverData    : any                     =null                  ;
   public UUID           : any                     = UUID                 ;
 
-  constructor(public http: HttpClient, public loadingCtrl: LoadingController, public popoverCtrl:PopoverController, public modalCtrl:ModalController, public alertCtrl:AlertController, public toastCtrl:ToastController, public translate:TranslateService) {
+  constructor(
+    public loadingCtrl : LoadingController ,
+    public popoverCtrl : PopoverController ,
+    public modalCtrl   : ModalController   ,
+    public alertCtrl   : AlertController   ,
+    public toastCtrl   : ToastController   ,
+    public translate   : TranslateService  ,
+  ) {
     Log.l('Hello AlertService Provider');
     window['onsitealerts'] = this;
     window['UUID'] = UUID;
@@ -44,7 +45,7 @@ export class AlertService {
     });
   }
 
-  showSpinner(text: string, returnPromise?:boolean, milliseconds?:number) {
+  public showSpinner(text: string, returnPromise?:boolean, milliseconds?:number) {
     let options;
     if(milliseconds) {
       options = { content: text, duration: milliseconds, showBackdrop: false};
@@ -75,7 +76,7 @@ export class AlertService {
     }
   }
 
-  hideSpinner(milliseconds?:number, returnPromise?:boolean) {
+  public hideSpinner(milliseconds?:number, returnPromise?:boolean) {
     if(returnPromise) {
       return new Promise((resolve,reject) => {
         if(this.loadings && this.loadings.length) {
@@ -152,7 +153,32 @@ export class AlertService {
     }
   }
 
-  showAlert(title: string, text: string) {
+  public hideSpinnerPromise() {
+    return new Promise((resolve,reject) => {
+      if(this.loadings && this.loadings.length) {
+        let load = this.loadings.pop();
+        load.dismiss().then(res => {
+          Log.l("hideSpinner(): Finished showing spinner:\n", load);
+          resolve(res);
+        }).catch((reason: any) => {
+          Log.l('hideSpinner(): loading.dismiss() error:\n', reason);
+          let len = this.loadings.length;
+          for (let i = 0; i < len; i++) {
+            this.loadings[i].dismiss();
+          // for (let i in this.loadings) {
+            // this.loadings.pop().dismiss();
+            // oneload.dismissAll();
+          }
+          this.loadings = [];
+          resolve(reason);
+        });
+      } else {
+        resolve("No spinners found to hide.");
+      }
+    });
+  }
+
+  public showAlert(title: string, text: string) {
     let lang = this.lang;
     let uuid = UUID.v4();
     return new Promise((resolve,reject) => {
@@ -186,7 +212,47 @@ export class AlertService {
     });
   }
 
-  showConfirm(title: string, text: string) {
+  public async showAlertPromise(title: string, text: string) {
+    try {
+      return new Promise((resolve,reject) => {
+        let lang = this.lang;
+        let uuid = UUID.v4();
+        let alert = this.alertCtrl.create({
+          title: title,
+          message: text,
+          buttons: [
+            {
+              text: lang['ok'], handler: () => {
+                let thisAlert;
+                let i = 0;
+                for(let alert of this.alerts) {
+                  if(alert.id === uuid) {
+                    thisAlert = alert.alert;
+                    break;
+                  }
+                  i++;
+                }
+                let alert = this.alerts.splice(i, 1)[0];
+                Log.l("OK clicked from:\n", alert);
+                window['onsitealertdismissed'] = alert;
+                resolve(true);
+              }
+            }
+          ]
+        });
+        let oneAlert = {alert: alert, id: uuid};
+        this.alerts.push(oneAlert);
+        this.alert = alert;
+        alert.present();
+      });
+    } catch(err) {
+      Log.l(`showAlertPromise(): Error `);
+      Log.e(err);
+      throw new Error(err);
+    }
+  }
+
+  public showConfirm(title: string, text: string) {
     let lang = this.translate.instant(['cancel', 'ok']);
     return new Promise((resolve,reject) => {
       let alert = this.alertCtrl.create({
@@ -202,7 +268,7 @@ export class AlertService {
     });
   }
 
-  showConfirmYesNo(title: string, text: string) {
+  public showConfirmYesNo(title: string, text: string) {
     let lang = this.translate.instant(['yes', 'no']);
     return new Promise((resolve,reject) => {
       this.alert = this.alertCtrl.create({
@@ -217,18 +283,33 @@ export class AlertService {
     });
   }
 
-  showCustomConfirm(title: string, text: string, buttons:any) {
-    return new Promise((resolve,reject) => {
+  public showCustomConfirm(title:string, text:string, buttons:Array<any>) {
+    return new Promise((resolve) => {
+      let buttonArray = [];
+      let i = 1;
+      for(let button of buttons) {
+        let btn:any = {};
+        btn.text = button.text;
+        btn.handler = button && button.retVal ? () => { Log.l(`Button pressed: '${button.text}'`); resolve(button.retVal); } : () => { Log.l(`Button pressed: '${button.text}'`); resolve(i); };
+        if(button && button.cssClass) {
+          btn.cssClass = button.cssClass;
+        }
+        if(button && button.role) {
+          btn.role = button.role;
+        }
+        buttonArray.push(btn);
+        i++;
+      }
       this.alert = this.alertCtrl.create({
         title: title,
         message: text,
-        buttons: buttons
+        buttons: buttonArray
       });
       this.alert.present();
     });
   }
 
-  showPopover(contents:any, data:any, event?:any) {
+  public showPopover(contents:any, data:any, event?:any) {
     let _event = null;
     let params = {cssClass: 'popover-template', showBackdrop: true, enableBackdropDismiss: true};
     if(event) {
@@ -255,7 +336,7 @@ export class AlertService {
 
   }
 
-  hidePopover() {
+  public hidePopover() {
     setTimeout(() => {
       let popover = this.popovers.pop();
       popover.dismiss().catch((reason: any) => {
@@ -267,7 +348,7 @@ export class AlertService {
     });
   }
 
-  showToast(msg: string, ms?:number, position?: string, cssClass?:string) {
+  public showToast(msg: string, ms?:number, position?: string, cssClass?:string) {
     let duration = ms ? ms : 3000;
     let place = position ? position : 'bottom';
     let css = cssClass ? cssClass : 'onsite-alert-toast';
@@ -283,7 +364,7 @@ export class AlertService {
     toast.present().catch(() => { });;
   }
 
-  hideToast() {
+  public hideToast() {
     let toast = this.toasts.pop();
     toast.dismiss().catch((reason:any) => {
       Log.l("AlertService: toast.dismiss() error:\n", reason);

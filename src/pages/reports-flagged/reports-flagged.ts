@@ -1,9 +1,9 @@
 import { Component, OnInit, ChangeDetectionStrategy, NgZone,                 } from '@angular/core'           ;
 import { OnDestroy, AfterViewInit,                                           } from '@angular/core'           ;
 import { IonicPage, NavController, NavParams, LoadingController, ItemSliding } from 'ionic-angular'           ;
-import { DBSrvcs                                                             } from 'providers/db-srvcs'      ;
+import { DBService                                                             } from 'providers/db-service'      ;
 import { AuthSrvcs                                                           } from 'providers/auth-srvcs'    ;
-import { SrvrSrvcs                                                           } from 'providers/srvr-srvcs'    ;
+import { ServerService                                                           } from 'providers/server-service'    ;
 import { UserData                                                            } from 'providers/user-data'     ;
 import { AlertService                                                        } from 'providers/alerts'        ;
 import { Log, isMoment, moment, Moment                                       } from 'config/config.functions' ;
@@ -69,11 +69,11 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
   constructor(
     public navCtrl     : NavController     ,
     public navParams   : NavParams         ,
-    public db          : DBSrvcs           ,
+    public db          : DBService           ,
     public alert       : AlertService      ,
     private auth       : AuthSrvcs         ,
     public loadingCtrl : LoadingController ,
-    public server      : SrvrSrvcs         ,
+    public server      : ServerService         ,
     public ud          : UserData          ,
     public translate   : TranslateService  ,
     // public tabs        : TabsComponent     ,

@@ -54,7 +54,7 @@ export var geolocation    = 'sesa-geolocation'     ;
 export var reports_old01  = 'sesa-reports-2017-09' ;
 @Injectable()
 export class Preferences {
-  public static DB: any = {
+  public static DB:any = {
     'reports'      : reports,
     'reports_other': reportsOther,
     'employees'    : employees,

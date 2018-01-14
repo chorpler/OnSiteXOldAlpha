@@ -7,7 +7,7 @@ import { IonicPage, NavController, NavParams   } from 'ionic-angular'           
 import { ViewController                        } from 'ionic-angular'           ;
 import { TranslateService                      } from '@ngx-translate/core'     ;
 import { Log, sizeOf, isMoment, moment, Moment } from 'config/config.functions' ;
-import { DBSrvcs                               } from 'providers/db-srvcs'      ;
+import { DBService                               } from 'providers/db-service'      ;
 import { UserData                              } from 'providers/user-data'     ;
 import { AlertService                          } from 'providers/alerts'        ;
 import { Employee,Jobsite                      } from 'domain/domain-classes'   ;
@@ -91,7 +91,7 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
   constructor(
     public navCtrl   : NavController    ,
     public navParams : NavParams        ,
-    public db        : DBSrvcs          ,
+    public db        : DBService          ,
     public translate : TranslateService ,
     // public tabs      : TabsComponent    ,
     public tabServ   : TabsService      ,

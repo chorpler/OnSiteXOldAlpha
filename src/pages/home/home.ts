@@ -13,9 +13,9 @@ import { Platform, IonicPage, NavParams, Events           } from 'ionic-angular'
 import { NavController, ToastController, Content          } from 'ionic-angular'             ;
 import { ModalController,ViewController,PopoverController } from 'ionic-angular'             ;
 import { Log, moment, isMoment, Moment                    } from 'config/config.functions'   ;
-import { DBSrvcs                                          } from 'providers/db-srvcs'        ;
+import { DBService                                          } from 'providers/db-service'        ;
 import { AuthSrvcs                                        } from 'providers/auth-srvcs'      ;
-import { SrvrSrvcs                                        } from 'providers/srvr-srvcs'      ;
+import { ServerService                                        } from 'providers/server-service'      ;
 import { AlertService                                     } from 'providers/alerts'          ;
 import { UserData                                         } from 'providers/user-data'       ;
 import { Report                                           } from 'domain/report'             ;
@@ -137,9 +137,9 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
               public popoverCtrl : PopoverController,
               public authService : AuthSrvcs,
               public navParams   : NavParams,
-              public server      : SrvrSrvcs,
+              public server      : ServerService,
               public ud          : UserData,
-              public db          : DBSrvcs,
+              public db          : DBService,
               public events      : Events,
               public tabServ     : TabsService,
               public alert       : AlertService,
@@ -261,6 +261,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
       });
     }
     let lang = this.lang;
+    if(this.navParams.get('justLoggedIn') !== undefined) { this.justLoggedIn = this.navParams.get('justLoggedIn');}
     // if(HomePage.homePageStatus.startupFinished) {
     // Log.l("HomePage.ionViewDidEnter(): startup already finished, just continuing with runEveryTime()...");
     // this.tabs.highlightPageTab('OnSiteHome');

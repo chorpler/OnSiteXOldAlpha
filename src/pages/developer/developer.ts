@@ -6,7 +6,7 @@ import { AuthSrvcs                                     } from 'providers/auth-sr
 import { GeolocService                                 } from 'providers/geoloc-service'   ;
 import { AlertService                                  } from 'providers/alerts'           ;
 import { Log, moment, Moment                           } from 'config/config.functions'    ;
-import { DBSrvcs                                       } from 'providers/db-srvcs'         ;
+import { DBService                                       } from 'providers/db-service'         ;
 import { SmartAudio                                    } from 'providers/smart-audio'      ;
 import { TranslateModule, TranslateLoader              } from '@ngx-translate/core'        ;
 import { TranslateHttpLoader                           } from '@ngx-translate/http-loader' ;
@@ -43,7 +43,7 @@ export class DeveloperPage implements OnInit,OnDestroy,AfterViewInit {
     public platform  : Platform         ,
     public zone      : NgZone           ,
     public geoloc    : GeolocService    ,
-    public db        : DBSrvcs          ,
+    public db        : DBService          ,
     public audio     : SmartAudio       ,
     public alert     : AlertService     ,
     public translate : TranslateService ,

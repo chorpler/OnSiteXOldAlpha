@@ -1,8 +1,8 @@
 import { Injectable                    } from '@angular/core'           ;
 import { HttpClient                    } from '@angular/common/http'    ;
 import { Log, isMoment, moment, Moment } from 'config/config.functions' ;
-import { SrvrSrvcs                     } from './srvr-srvcs'            ;
-import { DBSrvcs                       } from './db-srvcs'              ;
+import { ServerService                     } from './server-service'            ;
+import { DBService                       } from './db-service'              ;
 import { AlertService                  } from './alerts'                ;
 import { Message                       } from 'domain/message'          ;
 import { UserData                      } from 'providers/user-data'     ;
@@ -23,7 +23,7 @@ export class MessageService {
   public set unread(value:number) {MessageService.unread = value;};
   public moment:any = moment;
 
-  constructor(public db: DBSrvcs, public server:SrvrSrvcs, public alert:AlertService, public ud:UserData) {
+  constructor(public db: DBService, public server:ServerService, public alert:AlertService, public ud:UserData) {
     Log.l('Hello MessageService Provider');
     window["onsitemessageservice"] = this;
   }

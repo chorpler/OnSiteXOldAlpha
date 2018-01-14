@@ -1,6 +1,6 @@
 import { Component, OnInit                                   } from '@angular/core'                   ;
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular'                   ;
-import { SrvrSrvcs                                           } from '../../providers/srvr-srvcs'      ;
+import { ServerService                                           } from '../../providers/server-service'      ;
 import { Log, moment, isMoment, Moment                       } from '../../config/config.functions'   ;
 import { CommentService                                      } from '../../providers/comment-service' ;
 import { Platform, App                                       } from 'ionic-angular'                   ;
@@ -50,7 +50,7 @@ export class CommentPage implements OnInit {
   public lang      : any               ;
   public dataReady : boolean  = false  ;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl:ViewController, public platform: Platform, public app: App, public device: Device, public unique: UniqueDeviceID, public version:AppVersion, public server:SrvrSrvcs, public translate:TranslateService, public alert: AlertService, public ud: UserData) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl:ViewController, public platform: Platform, public app: App, public device: Device, public unique: UniqueDeviceID, public version:AppVersion, public server:ServerService, public translate:TranslateService, public alert: AlertService, public ud: UserData) {
     window["onsitecomments"] = this;
   }
 

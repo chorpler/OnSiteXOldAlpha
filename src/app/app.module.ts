@@ -29,13 +29,14 @@ import { AppVersion                                              } from '@ionic-
 import { NativeAudio                                             } from '@ionic-native/native-audio'           ;
 import { AppUpdate                                               } from '@ionic-native/app-update'             ;
 import { Camera, CameraOptions                                   } from '@ionic-native/camera'                 ;
+import { OpenNativeSettings                                      } from '@ionic-native/open-native-settings';
 import { TranslateModule, TranslateLoader                        } from '@ngx-translate/core'                  ;
 import { TranslateHttpLoader                                     } from '@ngx-translate/http-loader'           ;
 import { OnSiteApp                                               } from './app.component'                      ;
 import { AuthSrvcs                                               } from 'providers/auth-srvcs'                 ;
-import { DBSrvcs                                                 } from 'providers/db-srvcs'                   ;
+import { DBService                                                 } from 'providers/db-service'                   ;
 import { UserData                                                } from 'providers/user-data'                  ;
-import { SrvrSrvcs                                               } from 'providers/srvr-srvcs'                 ;
+import { ServerService                                               } from 'providers/server-service'                 ;
 import { NetworkStatus                                           } from 'providers/network-status'             ;
 import { AlertService                                            } from 'providers/alerts'                     ;
 import { GeolocService                                           } from 'providers/geoloc-service'             ;
@@ -65,7 +66,7 @@ import { ClockComponent                                          } from 'compone
     ClockComponent,
   ],
   bootstrap: [
-    IonicApp
+    IonicApp,
   ],
   imports: [
     BrowserModule,
@@ -74,7 +75,7 @@ import { ClockComponent                                          } from 'compone
     IonicModule.forRoot(OnSiteApp),
     IonicStorageModule.forRoot({
       name: '__onsitestorage',
-      driverOrder: ['localstorage']
+      driverOrder: ['localstorage'],
     }),
     HttpClientModule,
     HttpModule,
@@ -83,7 +84,7 @@ import { ClockComponent                                          } from 'compone
         provide: TranslateLoader,
         useFactory: (createTranslateLoader),
         // useFactory: (createJSON5TranslateLoader),
-        deps: [HttpClient]
+        deps: [HttpClient],
       }
     }),
     IonDigitKeyboard,
@@ -102,12 +103,12 @@ import { ClockComponent                                          } from 'compone
     AlertService,
     {
       provide: ErrorHandler,
-      useClass: IonicErrorHandler
+      useClass: IonicErrorHandler,
     },
     AuthSrvcs,
-    DBSrvcs,
+    DBService,
     UserData,
-    SrvrSrvcs,
+    ServerService,
     NetworkStatus,
     Geofence,
     BackgroundGeolocation,
@@ -118,6 +119,7 @@ import { ClockComponent                                          } from 'compone
     Device,
     // Sim,
     NativeAudio,
+    OpenNativeSettings,
     AppUpdate,
     Camera,
     GeolocService,

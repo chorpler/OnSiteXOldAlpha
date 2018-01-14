@@ -3,11 +3,12 @@
   <div class="onsite-tab-button" [class.clickDisabled]="tabServ.isDisabled()" [class.hide]="tab.show === false || tab.role==='dev' && !ud.isDeveloper()" [class.hlght]="tabServ.isActive(i)" (click)="tabServ.goToPage(tab.name)" *ngFor="let tab of tabServ.tabInfo; let i=index">
     <!-- <div *ngIf="tab.show === true; then visibleTab; else invisibleTab"></div> -->
     <div class="icon-container">
-      <i class="tab-icon-ionic" [ngClass]="tabServ.getIcon(i)" *ngIf="i!==Pages.FlaggedReports"></i>
-      <span class="tab-dual-icon" *ngIf="i===Pages.FlaggedReports">
+      <i class="tab-icon-ionic" [ngClass]="tabServ.getIcon(i)"></i>
+      <!-- <i class="tab-icon-ionic" [ngClass]="tabServ.getIcon(i)" *ngIf="i!==Pages.FlaggedReports"></i> -->
+      <!-- <span class="tab-dual-icon" *ngIf="i===Pages.FlaggedReports">
         <i class="tab-icon-ionic dual-icon first" [ngClass]="tabServ.getIcon(i)"></i>
         <span class="fa fa-exclamation dual-icon second">!</span >
-      </span>
+      </span> -->
       <div class="badge-container">
         <div class="msg-badge" [class.hide]="tabServ.getBadgeCount(i) < 1">{{tabServ.getBadgeCount(i)}}</div>
         <!-- <div class="waiting-badge waiting-gif" *ngIf="!getHider(i)"></div> -->

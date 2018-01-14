@@ -9,7 +9,7 @@ import { BackgroundGeolocationResponse                      } from '@ionic-nativ
 import { Geolocation                                        } from '../domain/geolocation'                          ;
 import { DOMTimeStamp, Coordinates, Position                } from '../config/geoloc'                               ;
 import { Log                                                } from '../config/config.functions'                     ;
-import { SrvrSrvcs                                          } from '../providers/srvr-srvcs'                        ;
+import { ServerService                                          } from '../providers/server-service'                        ;
 import { AuthSrvcs                                          } from '../providers/auth-srvcs'                        ;
 import { UserData                                           } from '../providers/user-data'                         ;
 import { Preferences                                        } from '../providers/preferences'                       ;
@@ -49,7 +49,7 @@ export class GeolocService {
     public platform  : Platform              ,
     public geolocate : BackgroundGeolocation ,
     public auth      : AuthSrvcs             ,
-    public server    : SrvrSrvcs             ,
+    public server    : ServerService             ,
     public ud        : UserData              ,
     public toast     : ToastController       ,
   ) {

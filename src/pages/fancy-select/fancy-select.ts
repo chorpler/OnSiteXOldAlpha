@@ -4,7 +4,7 @@ import 'rxjs/add/operator/debounceTime';
 import { Component, OnInit, ViewChild                                                              } from '@angular/core'           ;
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators         } from "@angular/forms"          ;
 import { IonicPage, NavController, NavParams, LoadingController, PopoverController, ViewController } from 'ionic-angular'           ;
-import { DBSrvcs                                                                                   } from 'providers/db-srvcs'      ;
+import { DBService                                                                                   } from 'providers/db-service'      ;
 import { AuthSrvcs                                                                                 } from 'providers/auth-srvcs'    ;
 import { Log, moment, Moment, isMoment                                                             } from 'config/config.functions' ;
 import { PayrollPeriod                                                                             } from 'domain/payroll-period'   ;

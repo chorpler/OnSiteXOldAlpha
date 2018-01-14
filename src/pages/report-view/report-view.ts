@@ -6,8 +6,8 @@ import { FormsModule, ReactiveFormsModule                      } from "@angular/
 import { FormBuilder, FormGroup, FormControl, Validators       } from "@angular/forms"          ;
 import { IonicPage, NavController, NavParams                   } from 'ionic-angular'           ;
 import { LoadingController, PopoverController, ModalController } from 'ionic-angular'           ;
-import { DBSrvcs                                               } from 'providers/db-srvcs'      ;
-import { SrvrSrvcs                                             } from 'providers/srvr-srvcs'    ;
+import { DBService                                               } from 'providers/db-service'      ;
+import { ServerService                                             } from 'providers/server-service'    ;
 import { AuthSrvcs                                             } from 'providers/auth-srvcs'    ;
 import { AlertService                                          } from 'providers/alerts'        ;
 import { SmartAudio                                            } from 'providers/smart-audio'   ;
@@ -125,8 +125,8 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
   constructor(
     public navCtrl      : NavController,
     public navParams    : NavParams,
-    private db          : DBSrvcs,
-    public server       : SrvrSrvcs,
+    private db          : DBService,
+    public server       : ServerService,
     public loadingCtrl  : LoadingController,
     public alert        : AlertService,
     public audio        : SmartAudio,

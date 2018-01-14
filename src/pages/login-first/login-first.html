@@ -1,0 +1,33 @@
+<ion-header>
+	<ion-navbar>
+		<ion-title>{{"login_first_title" | translate}}</ion-title>
+	</ion-navbar>
+</ion-header>
+
+<ion-content padding class="page-content login-page-content" *ngIf="dataReady">
+	<form [formGroup]="LoginForm" (ngSubmit)="onSubmit()">
+		<ion-list>
+			<ion-item *ngIf="loginError" color="danger">
+				<span class="center error"> {{"username_or_password_error" | translate}} </span>
+			</ion-item>
+			<ion-item>
+				<ion-label floating> {{"username" | translate}} </ion-label>
+				<ion-input type="email" formControlName="formUser" [class.invalid]="!LoginForm.controls.formUser.valid && (LoginForm.controls.formUser.dirty || submitAttempt)"></ion-input>
+			</ion-item>
+			<ion-item *ngIf="(!LoginForm.controls.formUser.valid && (LoginForm.controls.formUser.dirty || submitAttempt))">
+				<p> {{"username_error" | translate }} </p>
+			</ion-item>
+			<ion-item>
+				<ion-label floating> {{"password" | translate}} </ion-label>
+				<ion-input type="password" formControlName="formPass" [class.invalid]="!LoginForm.controls.formPass.valid && (LoginForm.controls.formPass.dirty || submitAttempt)"></ion-input>
+			</ion-item>
+			<ion-item *ngIf="(!LoginForm.controls.formPass.valid && (LoginForm.controls.formPass.dirty || submitAttempt))">
+				<p> {{"password_error" | translate}} </p>
+			</ion-item>
+			<div padding></div>
+      <button ion-button color="primary" block color="favorite" [disabled]="(!LoginForm.controls.formUser.valid && (LoginForm.controls.formUser.dirty || submitAttempt)) || (!LoginForm.controls.formPass.valid && (LoginForm.controls.formPass.dirty || submitAttempt))">{{"sign_in" | translate}}</button>
+      <p class="login-version">OnSiteX v{{version}}</p>
+		</ion-list>
+	</form>
+</ion-content>
+

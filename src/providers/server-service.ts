@@ -17,14 +17,8 @@ export const noDD     = "_\uffff";
 export const noDesign = {include_docs: true, startkey: noDD };
 export const PouchDB  = PouchDBService.PouchInit();
 
-/*
-  Generated class for the SrvrSrvcs provider.
-
-  See https://angular.io/docs/ts/latest/guide/dependency-injection.html
-  for more info on providers and Angular 2 DI.
-*/
 @Injectable()
-export class SrvrSrvcs {
+export class ServerService {
 	public PouchDB              : any    = {                                                }     ;
 	public RemoteDB             : any    = {                                                }     ;
 	public static staticRDB     : any    = {                                                }     ;
@@ -33,16 +27,16 @@ export class SrvrSrvcs {
 	public static StaticPouchDB : any                                                             ;
   public static userInfo      : any    = {u: '', p: '' }                                        ;
   public static prefs         : any    = new Preferences()                                      ;
-  public prefs                : any    = SrvrSrvcs.prefs                                        ;
+  public prefs                : any    = ServerService.prefs                                        ;
 
   constructor(public http:HttpClient, public ud:UserData) {
-    Log.l("Hello SrvrSrvcs provider");
+    Log.l("Hello ServerService provider");
     window["ServerServices"] = this;
-    window["SrvrSrvcs"] = SrvrSrvcs;
-    SrvrSrvcs.StaticPouchDB = PouchDBService.PouchInit();
-    this.PouchDB = SrvrSrvcs.StaticPouchDB;
-    this.RemoteDB = SrvrSrvcs.StaticPouchDB;
-    // Log.l("SrvrSrvcs: StaticPouchDB is:\n",SrvrSrvcs.StaticPouchDB);
+    window["ServerService"] = ServerService;
+    ServerService.StaticPouchDB = PouchDBService.PouchInit();
+    this.PouchDB = ServerService.StaticPouchDB;
+    this.RemoteDB = ServerService.StaticPouchDB;
+    // Log.l("ServerService: StaticPouchDB is:\n",ServerService.StaticPouchDB);
   }
 
   public static getAuthHeaders(user: string, pass: string) {
@@ -70,50 +64,50 @@ export class SrvrSrvcs {
   }
 
   public static getRemoteDatabaseURL(dbname?: string) {
-    let url1 = SrvrSrvcs.getBaseURL();
+    let url1 = ServerService.getBaseURL();
     let name = dbname || "_session";
     url1 = `${url1}/${name}`;
     return url1;
   }
 
   public static getGeolocationHeaders(user:string, pass:string) {
-    let ajaxOpts = SrvrSrvcs.getAuthHeaders(user, pass);
+    let ajaxOpts = ServerService.getAuthHeaders(user, pass);
     ajaxOpts['headers']['Content-Type'] = "application/json";
     ajaxOpts['headers']['Accept'] = "application/json";
     return ajaxOpts['headers'];
   }
 
   public static getGeolocationURL(user:string, pass:string) {
-    // let ajaxOpts = SrvrSrvcs.getAuthHeaders(user, pass);
+    // let ajaxOpts = ServerService.getAuthHeaders(user, pass);
     // ajaxOpts['headers']['Content-Type'] = "application/json";
     // ajaxOpts['headers']['Accept'] = "application/json";
-    // let URL = `${SrvrSrvcs.getBaseURL()}/sesa_geolocation`;
-    let URL = `${SrvrSrvcs.getInsecureLoginBaseURL(user, pass)}/sesa-geolocation`;
+    // let URL = `${ServerService.getBaseURL()}/sesa_geolocation`;
+    let URL = `${ServerService.getInsecureLoginBaseURL(user, pass)}/sesa-geolocation`;
     return URL;
   }
 
   public getAuthHeaders(user:string, pass:string) {
-    return SrvrSrvcs.getAuthHeaders(user, pass);
+    return ServerService.getAuthHeaders(user, pass);
   }
 
   public getBaseURL() {
-    return SrvrSrvcs.getBaseURL();
+    return ServerService.getBaseURL();
   }
 
   public getInsecureLoginBaseURL(user:string, pass:string) {
-    return SrvrSrvcs.getInsecureLoginBaseURL(user, pass);
+    return ServerService.getInsecureLoginBaseURL(user, pass);
   }
 
   public getRemoteDatabaseURL(dbname?:string) {
-    return SrvrSrvcs.getRemoteDatabaseURL(dbname);
+    return ServerService.getRemoteDatabaseURL(dbname);
   }
 
   public getGeolocationHeaders(user:string, pass:string) {
-    return SrvrSrvcs.getGeolocationHeaders(user, pass);
+    return ServerService.getGeolocationHeaders(user, pass);
   }
 
   public getGeolocationURL(user:string, pass:string) {
-    return SrvrSrvcs.getGeolocationURL(user, pass);
+    return ServerService.getGeolocationURL(user, pass);
   }
 
   public loginToDatabase(user:string, pass:string, dbname:string) {
@@ -131,11 +125,11 @@ export class SrvrSrvcs {
       }).then((session) => {
         if (typeof session.info === 'undefined' || typeof session.info.authenticated !== 'string') {
           Log.l("loginToDatabase(): Authentication failed");
-          SrvrSrvcs.userInfo = { u: '', p: '' };
+          ServerService.userInfo = { u: '', p: '' };
           resolve(false);
         } else {
           Log.l("loginToDatabase(): Authentication successful.");
-          SrvrSrvcs.userInfo = { u: user, p: pass };
+          ServerService.userInfo = { u: user, p: pass };
           resolve(true);
         }
       }).catch(err => {
@@ -153,7 +147,7 @@ export class SrvrSrvcs {
   		if(dbname) {
   			dbURL = dbname;
   		}
-      let url = SrvrSrvcs.getBaseURL() + '/' + dbURL;
+      let url = ServerService.getBaseURL() + '/' + dbURL;
 			let authToken = 'Basic ' + window.btoa(user + ':' + pass);
       let authOpts = { headers: { Authorization: authToken } };
       let ajaxOpts = { ajax: authOpts };
@@ -167,11 +161,11 @@ export class SrvrSrvcs {
   		// }).then((session) => {
 				// if(typeof session.info === 'undefined' || typeof session.info.authenticated !== 'string') {
 				// 	Log.l("loginToServer(): Authentication failed");
-				// 	SrvrSrvcs.userInfo = {u: '', p: ''};
+				// 	ServerService.userInfo = {u: '', p: ''};
 				// 	resolve(false);
 				// } else {
 					Log.l("loginToServer(): Authentication successful.");
-					// SrvrSrvcs.userInfo = {u: user, p: pass};
+					// ServerService.userInfo = {u: user, p: pass};
           // this.ud.storeCredentials(user, pass);
           // this.ud.setLoginStatus(true);
           this.ud.storeCredentials(user, pass);
@@ -192,7 +186,7 @@ export class SrvrSrvcs {
             }).catch((err) => {
               Log.l("loginToServer(): Error getting user object from server!");
               Log.e(err);
-              SrvrSrvcs.userInfo = {u: '', p: ''};
+              ServerService.userInfo = {u: '', p: ''};
               resolve(false);
             });
           } else {
@@ -206,14 +200,14 @@ export class SrvrSrvcs {
 			}).catch((err) => {
 				Log.l("loginToServer(): Authentication successful.");
   			Log.e(err);
-				SrvrSrvcs.userInfo = {u: '', p: ''};
+				ServerService.userInfo = {u: '', p: ''};
   			resolve(false);
 			})
 		});
   }
 
   public getTechProfile() {
-    let db1 = SrvrSrvcs.addDB(this.prefs.DB.reports);
+    let db1 = ServerService.addDB(this.prefs.DB.reports);
     return new Promise((resolve,reject) => {
       db1.get('_local/techProfile').then((res) => {
         Log.l(`getTechProfile(): Success! Result:\n`, res);
@@ -227,17 +221,17 @@ export class SrvrSrvcs {
   }
 
   public getUserData(user) {
-    let rdb1 = SrvrSrvcs.addRDB(this.prefs.DB.reports);
+    let rdb1 = ServerService.addRDB(this.prefs.DB.reports);
 		return rdb1.getUser(user);
   }
 
   public addRDB(dbname:string) {
-    return SrvrSrvcs.addRDB(dbname);
+    return ServerService.addRDB(dbname);
   }
 
   public static addRDB(dbname: string) {
     let db1 = PouchDBService.rdb;
-    let url = SrvrSrvcs.getRemoteDatabaseURL(dbname);
+    let url = ServerService.getRemoteDatabaseURL(dbname);
     // Log.l(`addRDB(): Now fetching remote DB '${dbname}' at '${url}' ...`);
     let rdb1 = null;
     if (db1.has(dbname)) {
@@ -479,7 +473,7 @@ export class SrvrSrvcs {
   }
 
   public updateDoc(doc) {
-    // return SrvrSrvcs.staticRDB.put(doc);
+    // return ServerService.staticRDB.put(doc);
     Log.l("Server.updateDoc(): Nope.");
   }
 
@@ -540,7 +534,7 @@ export class SrvrSrvcs {
     });
   }
 
-  public syncFromServer(dbname: string) {
+  public syncFromServer(dbname:string) {
     Log.l(`syncFromServer(): About to attempt replication of remote->'${dbname}' with options:\n`, this.prefs.SERVER.repopts);
     // let ev2 = function(b) { Log.l(b.status); Log.l(b);};
     let db1 = this.addDB(dbname);
@@ -548,17 +542,16 @@ export class SrvrSrvcs {
     Log.l(db1);
     Log.l(db2);
     let rdbURL = this.getBaseURL() + "/" + dbname;
-    let opts = { live: false, retry: false };
+    let opts:any = { live: false, retry: false };
     let u = this.ud.getUsername(), p = this.ud.getPassword();
     return new Promise((resolve, reject) => {
       this.loginToDatabase(u, p, dbname).then(res => {
         Log.l(`syncFromServer(): Successfully logged in to remote->'${dbname}'`);
-        return db1.replicate.from(db2, opts);
-        // return db1.replicate.from(db2, {live: false, retry: true});
-        // return db1.replicate.from(db2, this.prefs.SERVER.repopts);
-        // return db1.replicate.from(db2, this.prefs.SERVER.repopts);
-        // return PouchDB.replicate(rdbURL, dbname, opts);
-
+        if(dbname === 'aaa001_reports_ver101100' || dbname === 'sesa-reports-other') {
+          opts.filter = 'ref/forTech';
+          opts.query_params = { username: u };
+        }
+        return db1.replicate.from(db2, opts).on('change', (info) => { Log.l(`Replication '${dbname}': Change event:\n`, info);}).on('complete', (info) => { Log.l(`Replication '${dbname}': Complete event:\n`, info);});
       }).then((res) => {
         Log.l(`syncFromServer(): Successfully replicated remote->'${dbname}'`);
         Log.l(res);

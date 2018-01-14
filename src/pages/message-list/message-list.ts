@@ -6,8 +6,8 @@ import { DomSanitizer                                         } from '@angular/p
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular'             ;
 import { TranslateService                                     } from '@ngx-translate/core'       ;
 import { Log, isMoment, moment, Moment                        } from 'config/config.functions'   ;
-import { DBSrvcs                                              } from 'providers/db-srvcs'        ;
-import { SrvrSrvcs                                            } from 'providers/srvr-srvcs'      ;
+import { DBService                                              } from 'providers/db-service'        ;
+import { ServerService                                            } from 'providers/server-service'      ;
 import { UserData                                             } from 'providers/user-data'       ;
 import { SafePipe                                             } from 'pipes/safe'                ;
 import { Message                                              } from 'domain/message'            ;
@@ -41,8 +41,8 @@ export class MessageListPage implements OnInit,OnDestroy,AfterViewInit {
     public navParams : NavParams        ,
     public zone      : NgZone           ,
     public translate : TranslateService ,
-    public db        : DBSrvcs          ,
-    public server    : SrvrSrvcs        ,
+    public db        : DBService          ,
+    public server    : ServerService        ,
     public msg       : MessageService   ,
     // public tabs      : TabsComponent    ,
     public tabServ   : TabsService      ,

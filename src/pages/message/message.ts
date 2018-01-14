@@ -5,8 +5,8 @@ import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angul
 import { Pipe, PipeTransform                                 } from '@angular/core'             ;
 import { DomSanitizer                                        } from '@angular/platform-browser' ;
 import { TranslateService                                    } from '@ngx-translate/core'       ;
-import { DBSrvcs                                             } from 'providers/db-srvcs'        ;
-import { SrvrSrvcs                                           } from 'providers/srvr-srvcs'      ;
+import { DBService                                             } from 'providers/db-service'        ;
+import { ServerService                                           } from 'providers/server-service'      ;
 import { SafePipe                                            } from 'pipes/safe'                ;
 import { Message                                             } from 'domain/message'            ;
 import { AlertService                                        } from 'providers/alerts'          ;
@@ -34,8 +34,8 @@ export class MessagePage implements OnInit {
     public navCtrl   : NavController    ,
     public navParams : NavParams        ,
     public translate : TranslateService ,
-    public db        : DBSrvcs          ,
-    public server    : SrvrSrvcs        ,
+    public db        : DBService          ,
+    public server    : ServerService        ,
     public msg       : MessageService   ,
     // public tabs      : TabsComponent    ,
     public tabServ   : TabsService      ,

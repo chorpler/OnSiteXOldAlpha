@@ -1,11 +1,11 @@
 // import { TabsComponent                                                       } from 'components/tabs/tabs'          ;
 import { Component, OnInit, NgZone, OnDestroy, AfterViewInit                 } from '@angular/core'                 ;
 import { IonicPage, NavController, Platform, ModalController, ViewController } from 'ionic-angular'                 ;
-import { DBSrvcs                                                             } from 'providers/db-srvcs'            ;
+import { DBService                                                             } from 'providers/db-service'            ;
 import { Login                                                               } from 'pages/login/login'             ;
 import { Log, moment, Moment                                                 } from 'config/config.functions'       ;
 import { AuthSrvcs                                                           } from 'providers/auth-srvcs'          ;
-import { SrvrSrvcs                                                           } from 'providers/srvr-srvcs'          ;
+import { ServerService                                                           } from 'providers/server-service'          ;
 import { AlertService                                                        } from 'providers/alerts'              ;
 import { TranslateService                                                    } from '@ngx-translate/core'           ;
 import { AppVersion                                                          } from '@ionic-native/app-version'     ;
@@ -47,7 +47,7 @@ export class Settings implements OnInit,OnDestroy,AfterViewInit {
     public navCtrl   : NavController    ,
     public platform  : Platform         ,
     public auth      : AuthSrvcs        ,
-    public server    : SrvrSrvcs        ,
+    public server    : ServerService        ,
     public alert     : AlertService     ,
     // public tabs      : TabsComponent    ,
     public tabServ   : TabsService      ,

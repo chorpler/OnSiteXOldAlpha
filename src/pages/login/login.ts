@@ -3,8 +3,8 @@ import { IonicPage, NavController, NavParams, Platform, LoadingController, Alert
 import { PopoverController, ViewController, Events                                         } from 'ionic-angular'            ;
 import { FormGroup, FormControl, Validators                                                } from "@angular/forms"           ;
 import { AuthSrvcs                                                                         } from 'providers/auth-srvcs'     ;
-import { SrvrSrvcs                                                                         } from 'providers/srvr-srvcs'     ;
-import { DBSrvcs                                                                           } from 'providers/db-srvcs'       ;
+import { ServerService                                                                         } from 'providers/server-service'     ;
+import { DBService                                                                           } from 'providers/db-service'       ;
 import { AlertService                                                                      } from 'providers/alerts'         ;
 import { NetworkStatus                                                                     } from 'providers/network-status' ;
 import { UserData                                                                          } from 'providers/user-data'      ;
@@ -42,8 +42,8 @@ export class Login implements OnInit {
     public navParams: NavParams,
     public platform : Platform,
     private auth    : AuthSrvcs,
-    private server  : SrvrSrvcs,
-    private db      : DBSrvcs,
+    private server  : ServerService,
+    private db      : DBService,
     private network : NetworkStatus,
     private alert   : AlertService,
     public viewCtrl : ViewController,

@@ -5,7 +5,7 @@ import { NativeStorage                              } from '@ionic-native/native
 import { PouchDBService                             } from './pouchdb-service'            ;
 import { AuthSrvcs                                  } from './auth-srvcs'                 ;
 import { AlertService                               } from './alerts'                     ;
-import { ServerService                                  } from './server-service'                 ;
+import { ServerService                                  } from './srvr-srvcs'                 ;
 import { UserData                                   } from './user-data'                  ;
 import { Preferences                                } from './preferences'                ;
 import { Employee, Jobsite, Report, ReportOther, } from 'domain/domain-classes'        ;
