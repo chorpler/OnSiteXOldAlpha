@@ -128,6 +128,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
   public showScrollbar               : boolean             = false                    ;
   public scrollStartSub              : Subscription                                   ;
   public scrollEndSub                : Subscription                                   ;
+  public legend                      : Array<Array<string>> = []                      ;
 
   constructor(public http        : HttpClient,
               public platform    : Platform,
@@ -253,6 +254,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
       'alert_retrieve_reports_error',
       'spinner_fetching_reports'
     ];
+    this.generateLegend();
     HomePage.translations = translations;
     this.translations = HomePage.translations;
     if(!this.lang) {
@@ -439,6 +441,20 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
   }
 
   public runAfterTranslation() {
+  }
+
+  public generateLegend() {
+    let legend:Array<Array<string>> = [];
+    legend = [
+      [ 'T', 'key_training'            ],
+      [ 'Q', 'key_travel'              ],
+      [ 'M', 'key_training_and_travel' ],
+      [ 'S', 'key_standby_duncan'      ],
+      [ 'E', 'key_sick_day_or_hours'   ],
+      [ 'H', 'key_holiday'             ],
+    ];
+    this.legend = legend;
+    return legend;
   }
 
   // runWhenReady() {
@@ -659,7 +675,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     if(shift.getAllShiftReports().length > 0) {
       this.tabServ.goToPage('ReportHistory', {mode: 'Shift', shift: shift, payroll_period: this.period});
     } else {
-      this.tabServ.goToPage('Report', {mode: 'Add', shift: shift, payroll_period: this.period});
+      this.tabServ.goToPage('Report View', {mode: 'Add', shift: shift, payroll_period: this.period});
     }
   }
 
@@ -673,6 +689,13 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
   public changedPayrollPeriod(period:PayrollPeriod) {
     Log.l("changedPayrollPeriod(): Payroll period changed to:\n", period);
     this.ud.setHomePeriod(this.period);
+  }
+
+  public legendClick(item:Array<string>, evt?:any) {
+    Log.l(`legendClick(): Clicked on item:\n`, item);
+    let code = item[0];
+    let text = item[1];
+    this.alert.showToast("Not implemented yet", 1500);
   }
 
   public toggleClock(event?:any) {

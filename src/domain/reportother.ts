@@ -1,8 +1,9 @@
 /**
  * Name: ReportOther domain class
- * Vers: 4.0.1
- * Date: 2017-12-15
+ * Vers: 4.0.2
+ * Date: 2018-01-20
  * Auth: David Sargeant
+ * Logs: 4.0.2 2018-01-20: Added flagged property
  * Logs: 4.0.1 2017-12-15: Combined app and console class; added getHoursNumeric() and getHoursString() methods
  * Logs: 3.1.2 2017-11-04: Added site_number property and setSite() method
  */

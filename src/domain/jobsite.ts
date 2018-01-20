@@ -1,8 +1,10 @@
 /**
  * Name: Jobsite domain class
- * Vers: 3.0.1
- * Date: 2017-12-15
+ * Vers: 3.0.3
+ * Date: 2018-01-20
  * Auth: David Sargeant
+ * Logs: 3.0.3 2018-01-20: Added siteClientAndLocation
+ * Logs: 3.0.2 2018-01-16: Added lunch_hour_time property
  * Logs: 3.0.1 2017-12-15: Merged app and console classes
  * Logs: 2.2.1 2017-08-30: Updated with site_number and new methods
  */
@@ -19,7 +21,7 @@ export class Jobsite {
   public locID                     : any     ;
   public loc2nd                    : any     ; /* deprecated in 2.0.1 */
   public address                   : Address ;
-  public billing_address           : Address =this.address ;
+  public billing_address           : Address = this.address ;
   public latitude                  : number  ;
   public longitude                 : number  ;
   public within                    : number  ;
@@ -42,7 +44,7 @@ export class Jobsite {
   public sort_number               : number  ;
   public site_number               : number = -1001;
   public shift_start_times         : any  = {"AM" :"06:00", "PM": "18:00"} ;
-
+  public lunch_hour_time           : number = 1;
 
   constructor(inClient?:any, inLoc?: any, inLocID?:any, inAddress?:Address, inLat?:number, inLon?:number, inWI?:number) {
     this._id                        = ""         ;
@@ -73,6 +75,7 @@ export class Jobsite {
     this.has_standby                = false      ;
     this.sort_number                = 0          ;
     this.site_number                = -1001      ;
+    this.lunch_hour_time            = 1          ;
 
     window['onsite'] = window['onsite'] || {};
     window['onsite']['Jobsite'] = Jobsite;
@@ -351,9 +354,25 @@ export class Jobsite {
     return this.site_number;
   }
 
+  public getLunchHour():number {
+    return this.lunch_hour_time;
+  }
+
+  public setLunchHour(hours:number) {
+    this.lunch_hour_time = hours;
+  }
+
   public setSiteNumber(value:number) {
     this.site_number = value;
     return this.site_number;
+  }
+
+  public getSiteClientAndLocation():string {
+    let out:string = "";
+    let cli = this.client.name;
+    let loc = this.location.fullName;
+    out = cli + " " + loc;
+    return out;
   }
 
   public toJSON() {

@@ -1,8 +1,9 @@
 /**
  * Name: Report domain class
- * Vers: 6.5.1
- * Date: 2017-12-15
+ * Vers: 6.5.2
+ * Date: 2018-01-18
  * Auth: David Sargeant
+ * Logs: 6.5.2 2018-01-18: Added crew_number field
  * Logs: 6.5.1 2017-12-15: Added flagged field, invoiced field, and invoices array
  * Logs: 6.4.2 2017-11-14: Fixed it so Excel dates in string format will also read in
  * Logs: 6.4.1 2017-11-12: Added ability to read report_date from rprtDate as an Excel date integer
@@ -21,6 +22,7 @@ export class Report {
   public repair_hours     : number = 0;
   public unit_number      : string = "";
   public work_order_number: string = "";
+  public crew_number      : string = "";
   public notes            : string = "";
   public report_date      : string = "";
   public last_name        : string = "";
@@ -92,6 +94,7 @@ export class Report {
       this.repair_hours      = hours || this.repair_hours              ;
       this.unit_number       = unit  || this.unit_number               ;
       this.work_order_number = wo    || this.work_order_number         ;
+      this.crew_number       = ""                                      ;
       this.notes             = nts   || this.notes                     ;
       this.report_date       = date  || this.report_date               ;
       this.last_name         = last  || this.last_name                 ;

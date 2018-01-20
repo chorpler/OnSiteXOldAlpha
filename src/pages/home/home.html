@@ -172,7 +172,13 @@
       </ion-list>
     </ion-card>
     <p class="home-grid-key-caption" *ngIf="dataReady && ud.isHomePageReady()">{{'letter_code' | translate}}</p>
-    <ion-grid center class="home-grid-key" *ngIf="dataReady && ud.isHomePageReady()">
+    <div class="home-letter-legend">
+      <div class="home-legend-button" *ngFor="let item of legend" (tap)="legendClick(item, $event)">
+        <span class="label">{{item[0]}}</span>
+        <span class="data" >{{item[1] | translate}}</span>
+      </div>
+    </div>
+    <!-- <ion-grid center class="home-grid-key" *ngIf="dataReady && ud.isHomePageReady()">
       <ion-row class="home-grid-row">
         <ion-col col-1 class="home-grid-col1">T</ion-col>         <ion-col col-4 class="home-grid-col2">{{'key_training' | translate}}</ion-col>
         <ion-col col-1 offset-1 class="home-grid-col1">Q</ion-col><ion-col col-4 class="home-grid-col4">{{'key_travel' | translate}}</ion-col>
@@ -185,7 +191,21 @@
         <ion-col col-1 class="home-grid-col1">E</ion-col>         <ion-col col-4 class="home-grid-col2">{{'key_sick_day_or_hours' | translate}}</ion-col>
         <ion-col col-1 offset-1 class="home-grid-col1">H</ion-col><ion-col col-4 class="home-grid-col4">{{'key_holiday' | translate}}</ion-col>
       </ion-row>
-    </ion-grid>
+    </ion-grid> -->
+    <!-- <ion-grid center class="home-grid-key" *ngIf="dataReady && ud.isHomePageReady()">
+      <ion-row class="home-grid-row">
+        <ion-col col-1 class="home-grid-col1">T</ion-col>         <ion-col col-4 class="home-grid-col2">{{'key_training' | translate}}</ion-col>
+        <ion-col col-1 offset-1 class="home-grid-col1">Q</ion-col><ion-col col-4 class="home-grid-col4">{{'key_travel' | translate}}</ion-col>
+      </ion-row>
+      <ion-row class="home-grid-row">
+        <ion-col col-1 class="home-grid-col1">M</ion-col>         <ion-col col-4 class="home-grid-col2">{{'key_training_and_travel' | translate}}</ion-col>
+        <ion-col col-1 offset-1 class="home-grid-col1">S</ion-col><ion-col col-4 class="home-grid-col4">{{'key_standby_duncan' | translate}}</ion-col>
+      </ion-row>
+      <ion-row class="home-grid-row">
+        <ion-col col-1 class="home-grid-col1">E</ion-col>         <ion-col col-4 class="home-grid-col2">{{'key_sick_day_or_hours' | translate}}</ion-col>
+        <ion-col col-1 offset-1 class="home-grid-col1">H</ion-col><ion-col col-4 class="home-grid-col4">{{'key_holiday' | translate}}</ion-col>
+      </ion-row>
+    </ion-grid> -->
   </ng-template>
 </ion-content>
 <!-- <div class="waiting-clock" *ngIf="ud.isAppLoaded() && !(dataReady && ud.isHomePageReady())" (tap)="toggleClock()">

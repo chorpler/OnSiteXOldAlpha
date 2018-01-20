@@ -194,6 +194,18 @@ export class UserData {
     }
   }
 
+  public getAllShifts() {
+    let shifts:Shift[] = [];
+    let periods = this.getPayrollPeriods();
+    for(let period of periods) {
+      let periodShifts = period.getPayrollShifts();
+      for(let shift of periodShifts) {
+        shifts.push(shift);
+      }
+    }
+    return shifts;
+  }
+
   public static getMessages() {
     return UserData.messages;
   }

@@ -1,11 +1,14 @@
 // import { CustomTranslateLoaderModule                             } from 'config/customTranslateLoader.module'  ;
 // import { createJSON5TranslateLoader                              } from 'config/customTranslateLoader'         ;
 // import { TabsComponentModule                                     } from 'components/tabs/tabs.module'          ;
+// import { Sim                                                     } from '@ionic-native/Sim'                    ;
+// import { ClockComponentModule                                    } from 'components/clock/clock.module'        ;
+// import { MultiPickerModule                                       } from 'ion-multi-picker'                     ;
 import 'intl'                                                                                                  ;
 import 'intl/locale-data/jsonp/en'                                                                             ;
 import { BrowserModule                                           } from '@angular/platform-browser'            ;
 import { BrowserAnimationsModule                                 } from '@angular/platform-browser/animations' ;
-import { MultiPickerModule                                       } from 'ion-multi-picker'                     ;
+import { MultiPickerModule                                       } from 'components/ion-multi-picker'          ;
 import { HttpModule, Http                                        } from '@angular/http'                        ;
 import { HttpClientModule, HttpClient                            } from '@angular/common/http'                 ;
 import { ErrorHandler, NgModule, ChangeDetectorRef,              } from '@angular/core'                        ;
@@ -24,7 +27,6 @@ import { Push, PushObject, PushOptions                           } from '@ionic-
 import { LocalNotifications                                      } from '@ionic-native/local-notifications'    ;
 import { UniqueDeviceID                                          } from '@ionic-native/unique-device-id'       ;
 import { Device                                                  } from '@ionic-native/device'                 ;
-// import { Sim                                                     } from '@ionic-native/Sim'                    ;
 import { AppVersion                                              } from '@ionic-native/app-version'            ;
 import { NativeAudio                                             } from '@ionic-native/native-audio'           ;
 import { AppUpdate                                               } from '@ionic-native/app-update'             ;
@@ -34,9 +36,9 @@ import { TranslateModule, TranslateLoader                        } from '@ngx-tr
 import { TranslateHttpLoader                                     } from '@ngx-translate/http-loader'           ;
 import { OnSiteApp                                               } from './app.component'                      ;
 import { AuthSrvcs                                               } from 'providers/auth-srvcs'                 ;
-import { DBService                                                 } from 'providers/db-service'                   ;
+import { DBService                                               } from 'providers/db-service'                 ;
 import { UserData                                                } from 'providers/user-data'                  ;
-import { ServerService                                               } from 'providers/server-service'                 ;
+import { ServerService                                           } from 'providers/server-service'             ;
 import { NetworkStatus                                           } from 'providers/network-status'             ;
 import { AlertService                                            } from 'providers/alerts'                     ;
 import { GeolocService                                           } from 'providers/geoloc-service'             ;
@@ -51,7 +53,6 @@ import { MessageService                                          } from 'provide
 import { CommentService                                          } from 'providers/comment-service'            ;
 import { TabsService                                             } from 'providers/tabs-service'               ;
 import { IonDigitKeyboard                                        } from 'components/ion-digit-keyboard'        ;
-// import { ClockComponentModule                                    } from 'components/clock/clock.module'        ;
 import { ClockComponent                                          } from 'components/clock/clock'               ;
 
 @NgModule({

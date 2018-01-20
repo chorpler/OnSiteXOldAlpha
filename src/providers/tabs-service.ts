@@ -11,14 +11,13 @@ import { UserData                      } from './user-data'             ;
 
 const tabArrayDev:Array<Tab> = [
   { name: 'OnSiteHome'      , fullName: 'OnSite Home'        , show: true  , role: 'user', icon: 'ion-ios-home-outline'     , waiting: false, active: false, } ,
-  // { name: 'ReportHistory'   , fullName: 'Report History'     , show: true  , role: 'user', icon: 'ion-ios-folder-outline'   , waiting: false, active: false, } ,
   { name: 'ReportHistory'   , fullName: 'Report History'     , show: true  , role: 'user', icon: 'icomoon-reports'          , waiting: false, active: false, } ,
   { name: 'Flagged Reports' , fullName: 'Flagged Reports'    , show: true  , role: 'user', icon: 'icomoon-reports-flagged'  , waiting: false, active: false, } ,
-  // { name: 'User'            , fullName: 'User'               , show: true  , role: 'user', icon: 'ion-ios-contact-outline'  , waiting: false, active: false, } ,
-  { name: 'User'            , fullName: 'User'               , show: true  , role: 'user', icon: 'icomoon-person-outline'   , waiting: false, active: false, } ,
+  { name: 'User'            , fullName: 'User'               , show: true  , role: 'user', icon: 'ion-ios-contact-outline'  , waiting: false, active: false, } ,
+  // { name: 'User'            , fullName: 'User'               , show: true  , role: 'user', icon: 'icomoon-person-outline'   , waiting: false, active: false, } ,
   { name: 'Message List'    , fullName: 'Messages'           , show: true  , role: 'user', icon: 'ion-ios-text-outline'     , waiting: false, active: false, } ,
   { name: 'Settings'        , fullName: 'Settings'           , show: true  , role: 'user', icon: 'ion-ios-settings-outline' , waiting: false, active: false, } ,
-  { name: 'DevPage'         , fullName: 'Developer Settings' , show: true  , role: 'dev' , icon: 'md-options'               , waiting: false, active: false, } ,
+  { name: 'DevPage'         , fullName: 'Developer Settings' , show: true  , role: 'dev' , icon: 'ion-md-options'           , waiting: false, active: false, } ,
   { name: 'Report View'     , fullName: 'Work Report'        , show: false , role: 'user', icon: 'ion-ios-document-outline' , waiting: false, active: false, } ,
   { name: 'Message'         , fullName: 'Message'            , show: false , role: 'user', icon: 'ion-ios-text-outline'     , waiting: false, active: false, } ,
   { name: 'Comment'         , fullName: 'Comment'            , show: false , role: 'user', icon: 'ion-ios-text-outline'     , waiting: false, active: false, } ,
@@ -29,32 +28,7 @@ const tabArrayDev:Array<Tab> = [
 
 @Injectable()
 export class TabsService {
-  // public tabArray:Array<Tab> = [
-  //   { name: 'OnSiteHome'    , fullName: 'OnSite Home'    , icon: 'ios-home-outline'     , waiting: false, active: false, } ,
-  //   { name: 'Report'        , fullName: 'Report'         , icon: 'ios-document-outline' , waiting: false, active: false, } ,
-  //   { name: 'ReportHistory' , fullName: 'Report History' , icon: 'ios-folder-outline'   , waiting: false, active: false, } ,
-  //   { name: 'User'          , fullName: 'User'           , icon: 'ios-contact-outline'  , waiting: false, active: false, } ,
-  //   { name: 'Message List'  , fullName: 'Messages'       , icon: 'ios-text-outline'     , waiting: false, active: false, } ,
-  //   { name: 'Settings'      , fullName: 'Settings'       , icon: 'ios-settings-outline' , waiting: false, active: false, } ,
-  // ];
-  // public tabArrayDev:Array<Tab> = [
-  //   { name: 'OnSiteHome'    , fullName: 'OnSite Home'        , icon: 'ios-home-outline'     , waiting: false, active: false, } ,
-  //   { name: 'Report'        , fullName: 'Report'             , icon: 'ios-document-outline' , waiting: false, active: false, } ,
-  //   { name: 'ReportHistory' , fullName: 'Report History'     , icon: 'ios-folder-outline'   , waiting: false, active: false, } ,
-  //   { name: 'User'          , fullName: 'User'               , icon: 'ios-contact-outline'  , waiting: false, active: false, } ,
-  //   { name: 'Message List'  , fullName: 'Messages'           , icon: 'ios-text-outline'     , waiting: false, active: false, } ,
-  //   { name: 'Settings'      , fullName: 'Settings'           , icon: 'ios-settings-outline' , waiting: false, active: false, } ,
-  //   { name: 'DevPage'       , fullName: 'Developer Settings' , icon: 'md-options'           , waiting: false, active: false, } ,
-  // ];
-    // let devTab:Tab = { name: 'DevPage', fullName: 'Developer Settings', icon: 'md-options', waiting: false, active: false };
-    // let output = this.tabArray.slice(0);
-    // output.push(devTab);
-    // return output;
-  // }
-
   public tabArrayDev:Array<Tab> = tabArrayDev.slice(0);
-
-  // public get tabArray():Array<Tab> { return this.tabArrayDev.slice(0, this.tabArrayDev.length - 1); };
   public tabArray:Array<Tab> = this.tabArrayDev.slice(0, this.tabArrayDev.length - 1);
 
   public get tabInfo():Array<Tab> { return UserData.isDeveloper() ? this.tabArrayDev : this.tabArray; };
@@ -68,6 +42,7 @@ export class TabsService {
   public pageSub:Subscription;
   public pageEvent:Subject<any> = new Subject<any>();
   public pageLoadedEvent:Subject<any> = new Subject<any>();
+
   constructor(public ud:UserData) {
     window['onsitetabsservice'] = this;
     Log.l("TabsService constructor called");

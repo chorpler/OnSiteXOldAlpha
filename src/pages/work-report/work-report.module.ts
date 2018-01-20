@@ -1,7 +1,7 @@
 import { NgModule            } from '@angular/core'               ;
 import { IonicPageModule     } from 'ionic-angular'               ;
 import { WorkReportPage      } from './work-report'               ;
-import { MultiPickerModule   } from 'ion-multi-picker'            ;
+import { MultiPickerModule   } from 'components/ion-multi-picker' ;
 import { TranslateModule     } from '@ngx-translate/core'         ;
 // import { TabsComponentModule } from 'components/tabs/tabs.module' ;
 

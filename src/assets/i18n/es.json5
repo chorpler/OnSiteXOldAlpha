@@ -123,6 +123,7 @@
   "forklift": "Máquina Elevadora",
   "overhead_crane": "Grúa Aérea",
   "spinner_retrieving_reports_other": "Obtener Reportes Varios...",
+  "site": "Site",
   "work_site": "Sitio de Trabajo",
   "report_submit_error_title": "Reporte Incompleto",
   "report_submit_error_message": "Por favor, seleccione cuántas horas y minutos este trabajo tomó.",
@@ -156,6 +157,7 @@
   "key_holiday": "Vacación Pagada",
   "twenty_rules": "Veinte Reglas",
   "warning": "Alerta",
+  "empty_notes": "No ha tipeado ningunas notas. ¿Continuar?",
   "hb_unit_number_length": "Los números de las unidades de Halliburton suelen ser 8 dígitos, pero tiene %d dígitos. ¿Continuar?",
   "hb_work_order_number_length": "Los números de orden de trabajo de Halliburton suelen ser de 9 dígitos, pero tiene %d dígitos. ¿Continuar?",
   "yes": "Sí",
@@ -202,4 +204,8 @@
   "spanish": "Español",
   "reports_flagged_title": "Reportes Marcados",
   "no_flagged_reports": "Sin reportes marcados.",
+  "crew": "Crew",
+  "crew_number": "Crew No.",
+  "crew_translate": "Equipo",
+  "crew_number_translate": "Número de Equipo"
 }

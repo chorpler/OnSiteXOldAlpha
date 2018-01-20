@@ -20,17 +20,20 @@
             <ion-icon class="shft-num-icon">{{numChars[shift.shift_number]}}&nbsp;&nbsp;</ion-icon>
             &nbsp;&nbsp;{{shift.getStartTime().format("ddd, MMM D")}}&nbsp;&nbsp;
             <ion-note>{{shift.getNormalHours()}} Hrs</ion-note>
-            <button class="ionic-button-icon-outline ion-button-like" ion-button icon-only item-end (tap)="addNewReportForShift(shift)">
+            <span class="icon-button-like document-add-button" (tap)="addNewReportForShift(shift, $event)">
+              <i class="icomoon-document-add"></i>
+            </span>
+            <!-- <button class="ionic-button-icon-outline ion-button-like" ion-button icon-only item-end (tap)="addNewReportForShift(shift)">
               <ion-icon class="ionic-icon-outline" name='ios-document-outline' color="primary"></ion-icon>
-            </button>
+            </button> -->
           </ion-item-divider>
           <!-- <div class="report-history-reports-subcontainer" *ngIf="filtReports[filterKeys[i]].length">
             <div class="report-and-reportother-container" *ngFor="let report of filtReports[filterKeys[i]]"> -->
           <div class="report-history-reports-subcontainer" *ngIf="shift.getAllShiftReports()">
             <div class="report-and-reportother-container" *ngFor="let report of shift.getAllShiftReports(); let j=index">
               <ion-item-sliding #item{{i}} class="report-history-list-item-sliding" *ngIf="report.type===undefined || report.type==='Work Report' || report.type==='work_report'">
-                <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
-                  <div class="report-history-report-item item-group-id" *ngIf="prefs.getShowID()">
+                <ion-item class="report-history-list-item" [class.flagged]="report && report.flagged" (tap)="itemTapped($event, report, shift)">
+                  <!-- <div class="report-history-report-item item-group-id" *ngIf="prefs.getShowID()">
                     <span class="report-history-report-item-header item-id-label">ID</span>
                     <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
                   </div>
@@ -79,8 +82,79 @@
                     <div class="report-history-notes-data">
                       <p>{{report.notes}}</p>
                     </div>
-                  </div>
-                </ion-item>
+                  </div> -->
+                  <div class="report-wrapper">
+                      <table class="report-table">
+                        <tbody>
+                          <tr *ngIf="prefs.getShowID()">
+                            <td class="label">ID</td>
+                            <td class="data" >{{report._id}}</td>
+                          </tr>
+                          <tr *ngIf="prefs.getShowRev()">
+                            <td class="label">Rev</td>
+                            <td class="data" >{{report._rev}}</td>
+                          </tr>
+                          <tr *ngIf="prefs.getShowTimes()">
+                            <td class="label">Date</td>
+                            <td class="data" >{{report.report_date}}</td>
+                          </tr>
+                          <tr *ngIf="prefs.getShowTimes()">
+                            <td class="label">Start</td>
+                            <td class="data" >{{report.time_start}}</td>
+                          </tr>
+                          <tr *ngIf="prefs.getShowTimes()">
+                            <td class="label">End</td>
+                            <td class="data" >{{report.time_end}}</td>
+                          </tr>
+                          <tr *ngIf="prefs.getShowSite()">
+                            <td class="label">Client</td>
+                            <td class="data" >{{report.client}}</td>
+                          </tr>
+                          <tr *ngIf="prefs.getShowSite()">
+                            <td class="label">Location</td>
+                            <td class="data" >{{report.location}}</td>
+                          </tr>
+                          <tr *ngIf="prefs.getShowSite()">
+                            <td class="label">LocID</td>
+                            <td class="data" >{{report.location_id}}</td>
+                          </tr>
+                          <tr>
+                            <td class="label">Date</td>
+                            <td class="data" >{{report.report_date}}</td>
+                          </tr>
+                          <tr>
+                            <td class="label">{{'hours_header' | translate}}</td>
+                            <td class="data" >{{report.repair_hours}}</td>
+                          </tr>
+                          <tr>
+                            <div *ngIf="report.crew_number && report.crew_number !== ''; then woNumberTemplate; else crewNumberTemplate">
+                              <ng-template #woNumberTemplate>
+                                <td class="label">{{'report_label_wo_number' | translate}}</td>
+                                <td class="data" >{{report.work_order_number}}</td>
+                              </ng-template>
+                              <ng-template #crewNumberTemplate>
+                                <td class="label">{{'crew_number' | translate}}</td>
+                                <td class="data" >{{report.crew_number}}</td>
+                              </ng-template>
+                            </div>
+                          </tr>
+                          <tr>
+                            <td class="label">{{'report_label_unit_number' | translate}}</td>
+                            <td class="data" >{{report.unit_number}}</td>
+                          </tr>
+                          <tr class="notes">
+                            <td class="label label-notes">{{'report_label_notes' | translate}}</td>
+                            <td class="data data-notes"><span class="notes-wrapper">{{report.notes}}</span></td>
+                          </tr>
+                          <!-- <tr>
+                            <td class="data-notes" colspan="2" >
+                              <span class="notes-wrapper">{{report.notes}}</span>
+                            </td>
+                          </tr> -->
+                        </tbody>
+                      </table>
+                    </div>
+                  </ion-item>
                 <ion-item-options side="right">
                   <button ion-button color="danger" (tap)="deleteReport(report, shift, $event)">
                     <ion-icon name="trash"></ion-icon>

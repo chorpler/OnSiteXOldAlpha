@@ -42,9 +42,9 @@ onsite-tabs {
     bottom: 0;
     position: absolute;
     display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
+    flex-flow: row nowrap;
     justify-content: space-between;
+    align-content: center;
     align-items: center;
     overflow: visible;
     z-index: 10;
@@ -69,9 +69,9 @@ onsite-tabs {
   }
   #onsite-nav {
     display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
+    flex-flow: row nowrap;
     justify-content: space-between;
+    align-content: center;
     align-items: center;
     overflow: visible;
   }
@@ -79,6 +79,7 @@ onsite-tabs {
     z-index: 49;
     flex: 1 1 auto;
     height: 100%;
+    // width: 20%;
     display: flex;
     flex-flow: column nowrap;
     justify-content: center;
@@ -88,6 +89,8 @@ onsite-tabs {
     background-color: transparent;
     box-shadow: none;
     color: rgba(100,100,100,1);
+    box-sizing: border-box;
+    border-right: 1px dotted #999;
     // border-left: 1px dotted rgba(240, 240, 240, 1.0);
     // border-right: 1px dotted rgba(240, 240, 240, 1.0);
     // border-top: 1px solid rgba(240, 240, 240, 1.0);
@@ -163,7 +166,7 @@ onsite-tabs {
   .icon-container {
     display: flex;
     // width: 100%;
-    flex: 0 1 auto;
+    flex: 1 1 auto;
     flex-flow: column nowrap;
     position: relative;
     justify-content: center;

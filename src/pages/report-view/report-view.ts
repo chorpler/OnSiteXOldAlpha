@@ -1,28 +1,29 @@
 import 'rxjs/add/operator/debounceTime'                                                         ;
-import { sprintf                                               } from 'sprintf-js'              ;
-import { Component, OnInit, ViewChild, NgZone, OnDestroy,      } from '@angular/core'           ;
-import { AfterViewInit, ElementRef,                            } from '@angular/core'           ;
-import { FormsModule, ReactiveFormsModule                      } from "@angular/forms"          ;
-import { FormBuilder, FormGroup, FormControl, Validators       } from "@angular/forms"          ;
-import { IonicPage, NavController, NavParams                   } from 'ionic-angular'           ;
-import { LoadingController, PopoverController, ModalController } from 'ionic-angular'           ;
-import { DBService                                               } from 'providers/db-service'      ;
-import { ServerService                                             } from 'providers/server-service'    ;
-import { AuthSrvcs                                             } from 'providers/auth-srvcs'    ;
-import { AlertService                                          } from 'providers/alerts'        ;
-import { SmartAudio                                            } from 'providers/smart-audio'   ;
-import { Log, moment, Moment, isMoment                         } from 'config/config.functions' ;
-import { PayrollPeriod                                         } from 'domain/payroll-period'   ;
-import { Shift                                                 } from 'domain/shift'            ;
-import { Report                                                } from 'domain/report'           ;
-import { Employee                                              } from 'domain/employee'         ;
-import { ReportOther                                           } from 'domain/reportother'      ;
-import { Jobsite                                               } from 'domain/jobsite'          ;
-import { UserData                                              } from 'providers/user-data'     ;
-import { Preferences                                           } from 'providers/preferences'   ;
-import { TranslateService                                      } from '@ngx-translate/core'     ;
-import { TabsService                                           } from 'providers/tabs-service'  ;
-import { Pages, SVGIcons, SelectString,                        } from 'config/config.types'     ;
+import { sprintf                                               } from 'sprintf-js'                  ;
+import { Component, OnInit, ViewChild, NgZone, OnDestroy,      } from '@angular/core'               ;
+import { AfterViewInit, ElementRef,                            } from '@angular/core'               ;
+import { FormsModule, ReactiveFormsModule                      } from "@angular/forms"              ;
+import { FormBuilder, FormGroup, FormControl, Validators       } from "@angular/forms"              ;
+import { IonicPage, NavController, NavParams                   } from 'ionic-angular'               ;
+import { LoadingController, PopoverController, ModalController } from 'ionic-angular'               ;
+import { DBService                                             } from 'providers/db-service'        ;
+import { ServerService                                         } from 'providers/server-service'    ;
+import { AuthSrvcs                                             } from 'providers/auth-srvcs'        ;
+import { AlertService                                          } from 'providers/alerts'            ;
+import { SmartAudio                                            } from 'providers/smart-audio'       ;
+import { Log, moment, Moment, isMoment                         } from 'config/config.functions'     ;
+import { PayrollPeriod                                         } from 'domain/payroll-period'       ;
+import { Shift                                                 } from 'domain/shift'                ;
+import { Report                                                } from 'domain/report'               ;
+import { Employee                                              } from 'domain/employee'             ;
+import { ReportOther                                           } from 'domain/reportother'          ;
+import { Jobsite                                               } from 'domain/jobsite'              ;
+import { UserData                                              } from 'providers/user-data'         ;
+import { Preferences                                           } from 'providers/preferences'       ;
+import { TranslateService                                      } from '@ngx-translate/core'         ;
+import { TabsService                                           } from 'providers/tabs-service'      ;
+import { Pages, SVGIcons, SelectString,                        } from 'config/config.types'         ;
+import { MultiPicker                                           } from 'components/ion-multi-picker' ;
 
 export const focusDelay = 500;
 
@@ -31,10 +32,14 @@ export const focusDelay = 500;
   selector: 'page-report-view',
   templateUrl: 'report-view.html'
 })
-
 export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
-  @ViewChild('unitNumberInput') unitNumberInput:ElementRef;
-  @ViewChild('reportNumberInput') reportNumberInput:ElementRef;
+  // @ViewChild('unitNumberInput') unitNumberInput:ElementRef;
+  // @ViewChild('woNumberInput') reportNumberInput:ElementRef;
+  // @ViewChild('reportNotes') reportNotes:ElementRef;
+  @ViewChild('unitNumberInput') unitNumberInput:any;
+  @ViewChild('woNumberInput') woNumberInput:any;
+  @ViewChild('reportNotes') reportNotes:any;
+  @ViewChild('durationPicker') durationPicker:MultiPicker;
   public title                     : string           = 'Work Report'              ;
   public lang                      : any                                           ;
   public static PREFS              : any              = new Preferences()          ;
@@ -59,7 +64,9 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
   public idDate                    : string                                        ;
   public idTime                    : string                                        ;
   public payrollPeriods            : Array<PayrollPeriod> = []                     ;
+  public shift                     : Shift                                         ;
   public shifts                    : Array<Shift>         = []                     ;
+  public allShifts                 : Array<Shift>         = []                     ;
   public period                    : PayrollPeriod                                 ;
   public selectedShift             : Shift                                         ;
   public sites                     : Array<Jobsite>      = []                      ;
@@ -87,30 +94,13 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
   public chooseHours               : any                                           ;
   public chooseMins                : any                                           ;
   public loading                   : any              = {}                         ;
-  // public _startDate                : any                                           ;
-  // public _startTime                : any                                           ;
-  // public _endTime                  : any                                           ;
-  // public _repairHours              : any                                           ;
-  // public _shift                    : any                                           ;
-  // public _selected_shift           : any                                           ;
-  // public _notes                    : any                                           ;
-  // public _type                     : any                                           ;
-  // public _training_type            : any                                           ;
-  // public _training_time            : any                                           ;
-  // public _travel_location          : any                                           ;
-  // public _time                     : any                                           ;
-  // public _unit_number              : any                                           ;
-  // public _work_order_number        : any                                           ;
   public userdata                  : any                                           ;
   public shiftDateOptions          : any                                           ;
   public dataReady                 : boolean          = false                      ;
-  public techWorkOrders            : Array<Report> = []                         ;
+  public techWorkOrders            : Array<Report> = []                            ;
   public selectedShiftText         : string           = ""                         ;
   public workOrderList             : any                                           ;
   public filteredWOList            : any                                           ;
-  // public selReportType             : Array<any>       = REPORTTYPEI18N             ;
-  // public selTrainingType           : Array<any>       = TRAININGTYPEI18N           ;
-  // public selTravelLocation         : Array<any>       = JOBSITESI18N               ;
   public selReportType             : Array<any>          = []                      ;
   public selTrainingType           : Array<any>          = []                      ;
   public selTravelLocation         : Array<any>          = []                      ;
@@ -121,6 +111,8 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
   public previousEndTime           : any                                           ;
   public oldType                   : any                                           ;
   public oldHours                  : string           = "00:00"                    ;
+  public crew_numbers              : Array<string>    = []                         ;
+  public show_crew_number          : boolean          = false                      ;
 
   constructor(
     public navCtrl      : NavController,
@@ -163,6 +155,7 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
 
   public runWhenReady() {
     this.dataReady = false;
+    this.allShifts = this.ud.getAllShifts();
     if (this.navParams.get('mode') !== undefined) { this.mode = this.navParams.get('mode'); }
     if (this.navParams.get('type') !== undefined) { this.type = this.navParams.get('type'); }
     if (this.navParams.get('shift') !== undefined) { this.selectedShift = this.navParams.get('shift'); this.shiftToUse = this.selectedShift; }
@@ -191,6 +184,7 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
       'warning',
       'delete_report',
       'spinner_saving_report',
+      'empty_notes',
       'hb_unit_number_length',
       'spinner_deleting_report',
       'report_submit_error_title',
@@ -300,6 +294,7 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
 
       this.initializeForm();
       this.initializeFormListeners();
+      this.getCrewNumbers();
       this.updateDisplay();
       this.dataReady = true;
     }).catch((err) => {
@@ -337,6 +332,7 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
       // sites.push(site);
     }
     this.selTravelLocation = siteSelect;
+
     // this.sites = sites;
     // this.type = this.type || this.selReportType[0];
   }
@@ -354,270 +350,22 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
     }
   }
 
+  public getCrewNumbers() {
+    let crew_numbers:Array<string> = [];
+    for(let i = 1; i < 30; i++) {
+      let crewnum = i + "";
+      crew_numbers.push(crewnum);
+    }
+    this.crew_numbers = crew_numbers;
+    return crew_numbers;
+  }
+
   public initializeFormListeners() {
-    // let lang                = this.lang                                  ;
-    // this._type              = this.workOrderForm.get('type')             ;
-    // this._training_type     = this.workOrderForm.get('training_type')    ;
-    // this._travel_location   = this.workOrderForm.get('travel_location')  ;
-    // this._time              = this.workOrderForm.get('time')             ;
-    // this._endTime           = this.workOrderForm.get('endTime')          ;
-    // this._repairHours       = this.workOrderForm.get('repair_time')      ;
-    // this._selected_shift    = this.workOrderForm.get('selected_shift')   ;
-    // this._notes             = this.workOrderForm.get('notes')            ;
-    // this._unit_number       = this.workOrderForm.get('unit_number')      ;
-    // this._work_order_number = this.workOrderForm.get('work_order_number');
-    // this._allDay            = this.workOrderForm.get('allDay')           ;
 
-    // this._type.valueChanges.subscribe((value:any) => {
-    //   Log.l("Field 'type' fired valueChanges for:\n", value);
-    //   // setTimeout(() => {
-    //   // let oldType = this.selReportType[this.selReportType.indexOf(value)];
-    //   this.oldType = this.selReportType[0];
-    //   // this.type   = value;
-    //   // let oldVal  = oldType.value;
-    //   let ro      = this.other;
-    //   let error   = false;
-    //   // this._time.enable(true);
-    //   if (value.name === 'training') {
-    //     ro.training_type = "Safety";
-    //     ro.time = 2;
-    //     ro.type = value.value;
-    //     this._training_type.setValue(this.selTrainingType[0]);
-    //     this.training_type = this.selTrainingType[0];
-    //     this._time.setValue(2);
-    //     this.type = value;
-    //   } else if (value.name === 'travel') {
-    //     ro.travel_location = "BE MDL MNSHOP";
-    //     ro.time = 6;
-    //     ro.type = value.value;
-    //     this.travel_location = this.selTravelLocation[0];
-    //     this._travel_location.setValue(this.selTravelLocation[0]);
-    //     this._time.setValue(6);
-    //     this.type = value;
-    //   } else if (value.name === 'sick') {
-    //     ro.time = 8;
-    //     this._time.setValue(8);
-    //     ro.type = value.value;
-    //     if(this.allDay) {
-    //       this._time.disable(true);
-    //     } else {
-    //       this._time.enable(true);
-    //     }
-    //     this.type = value;
-    //   } else if (value.name === 'vacation') {
-    //     ro.time = 8;
-    //     this._time.setValue(8);
-    //     ro.type = value.value;
-    //     this.type = value;
-    //   } else if (value.name === 'holiday') {
-    //     ro.time = 8;
-    //     this._time.setValue(8);
-    //     ro.type = value.value;
-    //     this.type = value;
-    //   } else if (value.name === 'standby') {
-    //     let shift = this.selectedShift;
-    //     let status = shift.getShiftReportsStatus(true).code;
-    //     let hours  = shift.getNormalHours();
-    //     if(status.indexOf("B") > -1 || status.indexOf("S") > -1) {
-    //       Log.w("User attempted to create duplicate standby report.");
-    //       let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
-    //       let warningText = sprintf(lang['duplicate_standby_report'], warnIcon);
-    //       this._type.setValue(this.selReportType[0]);
-    //       setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
-    //     } else if(hours > 0) {
-    //       Log.w("User attempted to create a standby report in the same shift as an existing work report.");
-    //       let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
-    //       let warningText = sprintf(lang['standby_report_xor_work_report_existing_work_report'], warnIcon);
-    //       this._type.setValue(this.selReportType[0]);
-    //       setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
-    //     } else {
-    //       ro.time = 8;
-    //       this._time.setValue(8);
-    //       ro.type = value.value;
-    //       this.type = value;
-    //     }
-    //   } else if (value.name === 'standby_hb_duncan') {
-    //     let status = this.selectedShift.getShiftReportsStatus(true).code;
-    //     let i = status.indexOf("B");
-    //     let j = status.indexOf("S");
-    //     if(this.techProfile.location !== "DUNCAN" && this.techProfile.location !== "DCN") {
-    //       Log.w("User attempted to create Standby: HB Duncan report without being set to Duncan location.");
-    //       let strIcon = "<span class='alert-icon'>&#xf419;</span>";
-    //       let warnText = sprintf(lang['standby_hb_duncan_wrong_location'], strIcon)
-    //       let warnFont = sprintf("<span class='alert-with-icon'>%s</span>", warnText);
-    //       setTimeout(() => {
-    //         this.alert.showConfirmYesNo(lang['alert'], lang['standby_hb_duncan_wrong_location']).then(res => {
-    //           if(res) {
-    //             this.type = value;
-    //             this.other.type = value.value;
-    //             this.other.time = 8;
-    //             this._time.setValue(8);
-    //             this._type.setValue(this.selReportType[0], {emitEvent: false});
-    //           } else {
+  }
 
-    //           }
-    //         });
-    //       });
-
-    //       // setTimeout(() => { this.alert.showAlert(lang['error'], warnFont); });
-    //     } else if(i > -1 || j > -1) {
-    //       Log.w("User attempted to create duplicate standby report.");
-    //       let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
-    //       let warningText = sprintf(lang['duplicate_standby_report'], warnIcon);
-    //       // this._type.setValue(oldType);
-    //       // this.alert.showAlert(lang['error'], warningText);
-    //       // this.type = oldType;
-    //       // this._type.setValue(this.oldType);
-    //       // this.alert.showAlert(lang['error'], warningText);
-    //       // this.alert.showAlert(lang['error'], warningText).then(res => {
-    //         // setTimeout(() => {
-    //           // this._type.setValue(this.oldType);
-    //         // }, 500);
-    //         // this.zone.run(() => { this._type.setValue(this.oldType); });
-    //       this._type.setValue(this.selReportType[0]);
-    //       setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
-    //       // });
-    //     } else if(this.selectedShift.getNormalHours() > 0) {
-    //       Log.w("User attempted to create a standby report in the same shift as an existing work report.");
-    //       let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
-    //       let warningText = sprintf(lang['standby_report_xor_work_report_existing_work_report'], warnIcon);
-    //       // this.type = oldType;
-    //       // this._type.setValue(oldType);
-    //       // this.alert.showAlert(lang['error'], warningText);
-    //       // this.alert.showAlert(lang['error'], warningText).then(res => {
-    //         // setTimeout(() => {
-    //           // this._type.setValue(oldType);
-    //         // }, 500);
-    //         // this.zone.run(() => { this._type.setValue(this.oldType); });
-    //       // });
-    //       this._type.setValue(this.selReportType[0]);
-    //       setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
-    //     } else {
-    //       ro.time = 8;
-    //       this._time.setValue(8);
-    //       ro.type = value.value;
-    //       this.type = value;
-    //     }
-    //   } else if(value.name === 'work_report') {
-    //     Log.l("type.valueChange(): This seems proper.");
-    //     this.type = value;
-    //     // ro.type = value.value;
-    //   } else {
-    //     Log.l("type.valueChange(): GETTING TO THIS BRANCH SHOULD NOT BE POSSIBLE! Type is:\n", value);
-    //   }
-    // });
-
-    // this._training_type.valueChanges.subscribe((value: any) => {
-    //   let ro = this.other;
-    //   this.training_type = value;
-    //   ro.training_type = value.value;
-    //   let time = value.hours;
-    //   ro.time = time;
-    //   this._time.setValue(time);
-    // });
-
-    // this._travel_location.valueChanges.subscribe((value: any) => {
-    //   let ro = this.other;
-    //   this.travel_location = value;
-    //   ro.travel_location = value.value;
-    //   let time = value.hours;
-    //   ro.time = time;
-    //   this._time.setValue(time);
-    // });
-
-    // this._time.valueChanges.subscribe((value: any) => {
-    //   let ro = this.other;
-    //   let hours = !isNaN(Number(value)) ? Number(value) : 0
-    //   ro.time = hours;
-    //   this.currentOtherHours = hours;
-    // });
-
-    // this._allDay.valueChanges.subscribe((value: any) => {
-    //   Log.l("_allDay value changed to:\n", value);
-    //   this.allDay = value;
-    //   if(this.allDay) {
-    //     this._time.disable(true);
-    //   } else {
-    //     this._time.enable(true);
-    //   }
-    // });
-
-    // this._repairHours.valueChanges.subscribe((hours: any) => {
-    //   Log.l("workOrderForm: valueChanges fired for repair_hours: ", hours);
-    //   let wo = this.report;
-    //   let oldHours = this.oldHours;
-    //   let oldType = this.type;
-    //   let shift = this.selectedShift;
-    //   let status = shift.getShiftReportsStatus(true).code;
-    //   if (status.indexOf("B") > -1 || status.indexOf("S") > -1) {
-    //     Log.w("User attempted to add work order when standby report already exists for shift..");
-    //     let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
-    //     let warningText = sprintf(lang['standby_report_xor_work_report_existing_standby_report'], warnIcon);
-    //     this.alert.showAlert(lang['error'], warningText).then(res => {
-    //       this._repairHours.setValue(oldHours);
-    //     });
-    //   } else {
-    //     let dur1 = hours.split(":");
-    //     let hrs = Number(dur1[0]);
-    //     let min = Number(dur1[1]);
-    //     let iDur = hrs + (min / 60);
-    //     this.currentRepairHours = iDur;
-    //     let total = this.selectedShift.getNormalHours() + this.currentRepairHours - this.thisWorkOrderContribution;
-    //     Log.l("ReportForm: currentRepairHours changed to %s, value %f, so total is now %f", sprintf("%02d:%02d", hrs, min), iDur, total);
-    //     this.report.setRepairHours(iDur);
-    //     if (this.selectedShift !== undefined && this.selectedShift !== null) {
-    //       this.shiftHoursColor = this.getShiftHoursStatus(this.selectedShift);
-    //     } else {
-    //       this.shiftHoursColor = this.getShiftHoursStatus(this.shifts[0]);
-    //     }
-    //     this.oldHours = hours;
-    //   }
-    // });
-
-    // this._selected_shift.valueChanges.subscribe((shift: any) => {
-    //   Log.l("workOrderForm: valueChanges fired for selected_shift:\n", shift);
-    //   let ss                       = shift                                                   ;
-    //   // this.updateActiveShiftWorkOrders(shift);
-    //   let report_date              = moment(shift.getStartTime())                            ;
-    //   // let woHoursSoFar             = shift.getShiftHours()                                   ;
-    //   // let woStart                  = moment(shift.getStartTime()).add(woHoursSoFar, 'hours') ;
-    //   let woStart                  = shift.getNextReportStartTime()                          ;
-
-    //   let reportDateString         = report_date.format("YYYY-MM-DD")                        ;
-    //   this.selectedShift           = shift                                                   ;
-
-    //   let type = this.workOrderForm.value.type;
-    //   if(!type || (type && type.name && type.name === 'work_report')) {
-    //     Log.l("workOrderForm: Setting work report start time to '%s' and date to '%s'", moment(woStart), reportDateString);
-    //     this.report.setStartTime(moment(woStart));
-    //     this.report.report_date    = reportDateString                                      ;
-    //     this.report.shift_serial   = shift.getShiftSerial();
-    //     this.report.payroll_period = shift.getPayrollPeriod();
-    //   } else {
-    //     Log.l("workOrderForm: Setting other report date to '%s'", reportDateString);
-    //     this.other.report_date  = moment(report_date);
-    //     this.other.shift_serial = shift.getShiftSerial();
-    //     this.other.payroll_period = shift.getPayrollPeriod();
-    //   }
-    // });
-
-    // this._notes.valueChanges.debounceTime(400).subscribe((value:any) => {
-    //   Log.l("workOrderForm: valueChanges fired for _notes:\n", value);
-    //   let wo    = this.report ;
-    //   wo.notes  = value          ;
-    // });
-
-    // this._unit_number.valueChanges.debounceTime(400).subscribe((value:any) => {
-    //   Log.l("workOrderForm: valueChanges fired for _unit_number:\n", value);
-    //   let wo          = this.report ;
-    //   wo.unit_number  = value          ;
-    // });
-
-    // this._work_order_number.valueChanges.debounceTime(400).subscribe((value:any) => {
-    //   Log.l("workOrderForm: valueChanges fired for _work_order_number:\n", value);
-    //   let wo                = this.report ;
-    //   wo.work_order_number  = value          ;
-    // });
+  public updateCrewNumber(evt?:any) {
+    Log.l("updateCrewNumber(): Event is:\n", evt);
   }
 
   public updateType(value:SelectString, event?:any) {
@@ -708,17 +456,6 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
         Log.w("User attempted to create duplicate standby report.");
         let warnIcon = "<span class='alert-with-icon'><span class='alert-icon'>&#xf434;</span></span>";
         let warningText = sprintf(lang['duplicate_standby_report'], warnIcon);
-        // this._type.setValue(oldType);
-        // this.alert.showAlert(lang['error'], warningText);
-        // this.type = oldType;
-        // this._type.setValue(this.oldType);
-        // this.alert.showAlert(lang['error'], warningText);
-        // this.alert.showAlert(lang['error'], warningText).then(res => {
-          // setTimeout(() => {
-            // this._type.setValue(this.oldType);
-          // }, 500);
-          // this.zone.run(() => { this._type.setValue(this.oldType); });
-        // this._type.setValue(this.selReportType[0]);
         this.type = this.selReportType[0];
         setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
         // });
@@ -843,34 +580,6 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
   }
 
   private initializeForm() {
-    // let report = this.report;
-    // let other  = this.other;
-    // let ts, rprtDate;
-    // if (this.mode === 'Add' || this.mode === 'Añadir' || this.mode === 'add') {
-    //   rprtDate = moment(this.selectedShift.getStartTime());
-    //   ts = moment().format();
-    // } else {
-    //   rprtDate = moment(report.report_date, "YYYY-MM-DD");
-    // }
-    // // ts = moment().format();
-    // this.currentRepairHours = report.getRepairHours();
-    // this.repair_time = this.currentRepairHours;
-    // let crh = Number(other.getTotalHours());
-    // this.currentOtherHours  = !isNaN(crh) ? crh : 0;
-    // let typeDisabled = this.mode === 'Edit' ? true : false;
-    // this.workOrderForm = new FormGroup({
-    //   'selected_shift'    : new FormControl(this.selectedShift                , Validators.required) ,
-    //   'repair_time'       : new FormControl(report.getRepairHoursString()         , Validators.required) ,
-    //   'unit_number'       : new FormControl(report.unit_number                    , Validators.required) ,
-    //   'work_order_number' : new FormControl(report.work_order_number              , Validators.required) ,
-    //   'notes'             : new FormControl(report.notes                          , Validators.required) ,
-    //   // 'report_date'       : new FormControl(rprtDate.format("YYYY-MM-DD")     , Validators.required) ,
-    //   'type'              : new FormControl(this.type                         , Validators.required) ,
-    //   'training_type'     : new FormControl(this.training_type                , Validators.required) ,
-    //   'travel_location'   : new FormControl(this.travel_location              , Validators.required) ,
-    //   'time'              : new FormControl(this.currentOtherHours) ,
-    //   'allDay'            : new FormControl(this.allDay) ,
-    // });
   }
 
   public loadReport(report:Report) {
@@ -882,40 +591,6 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
     this.currentOtherHoursString = this.other.getHoursString();
     this.currentOtherHours = this.other.getHoursNumeric();
   }
-
-  // public updateActiveShiftWorkOrders(shift: Shift) {
-  //   let ss = shift;
-  //   let oldShift = this.selectedShift;
-  //   let shift_time = moment(ss.start_time);
-  //   let shift_serial = ss.getShiftSerial();
-  //   let payroll_period = ss.getPayrollPeriod();
-  //   this.report.shift_serial = shift_serial;
-  //   this.report.payroll_period = payroll_period;
-  //   this.other.shift_serial = shift_serial;
-  //   this.other.payroll_period = payroll_period;
-  //   Log.l("workOrderForm: setting shift_serial to: ", shift_serial);
-  //   // let shiftHours = this.techProfile.shiftLength;
-
-  //   // let shiftStartsAt = this.techProfile.shiftStartTime;
-  //   this.shiftHoursColor = this.getShiftHoursStatus(ss);
-  //   this.selectedShift = shift;
-  //   if(this.type === 'work_report') {
-  //     oldShift.removeShiftReport(this.report);
-  //     shift.addShiftReport(this.report);
-  //   } else {
-  //     oldShift.removeOtherReport(this.other);
-  //     shift.addOtherReport(this.other);
-  //   }
-  // }
-
-  // public setupWorkOrderList() {
-  //   let tmpWOL = new Array<Report>();
-  //   if (this.ud.woArrayInitialized) {
-  //     tmpWOL = this.ud.getWorkOrderList();
-  //   }
-  //   this.workOrderList = tmpWOL;
-  //   Log.l("setupWorkOrderList(): Got work order list:\n", tmpWOL);
-  // }
 
   public setupShifts() {
     let endDay = 2;
@@ -942,28 +617,8 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
           this.selectedShift = this.shifts[0];
         }
       }
-      //  else {
-        // let woShiftSerial = this.report.shift_serial;
-        // for (let shift of this.shifts) {
-        //   if (shift.getShiftSerial() === woShiftSerial) {
-        //     this.selectedShift = shift;
-        //     Log.l("EditWorkOrder: setting active shift to:\n", shift);
-        //     break;
-        //   }
-        // }
-        // this.selectedShift =
-      // }
     }
   }
-
-  // public checkShiftChange(event:any, shift:Shift) {
-  //   let oldShift = this.selectedShift;
-  //   if(this.mode === 'Edit') {
-
-  //   } else {
-
-  //   }
-  // }
 
   public showFancySelect(event?:any) {
     Log.l("showFancySelect(): Called!");
@@ -1049,7 +704,11 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
     // Log.l(form.unit_number);
     // Log.l(form.work_order_number);
 
-    if(type === 'unit') {
+    if(type === 'notes') {
+      warning_text = sprintf(lang['empty_notes']);
+      result = await this.alert.showConfirmYesNo(lang['warning'], warning_text);
+      return result;
+    } else if(type === 'unit') {
       warning_text = sprintf(lang['hb_unit_number_length'], unitLen);
       result = await this.alert.showConfirmYesNo(lang['warning'], warning_text);
       return result;
@@ -1072,8 +731,8 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
   }
 
   public async checkForUserMistakes() {
-    let lang    = this.lang    ;                                                      ;
-    // let form    = this.workOrderForm.getRawValue()                                   ;
+    let lang = this.lang;
+    // let form = this.workOrderForm.getRawValue();
     try {
       if(this.type.name === 'work_report') {
         let report:Report = this.report;
@@ -1086,30 +745,47 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
         if(report.repair_hours == 0) {
           this.audio.play('funny');
           let out = await this.alert.showAlert(lang['report_submit_error_title'], lang['report_submit_error_message']);
+          setTimeout(() => {
+            this.durationPicker.open();
+          }, 50);
           return false;
+        } else if(!(typeof report.notes === 'string' && report.notes.length > 0)) {
+          let response = await this.showPossibleError('notes');
+          if(!response) {
+            setTimeout(() => {
+              // this.zone.run(() => { this.unitNumberInput.setFocus(); });
+              this.reportNotes.setFocus();
+            }, focusDelay);
+            return false;
+          } else {
+            report.flagged = true;
+            return true;
+          }
         } else if(cli === 'HB' || cli === 'HALLIBURTON') {
-          if(unitLen !== 8) {
+          if(unitLen < 8 || unitLen > 9) {
             let response = await this.showPossibleError('unit');
             if(!response) {
               // this.unitNumberInput.setFocus();
               setTimeout(() => {
                 // this.zone.run(() => { this.unitNumberInput.setFocus(); });
-                this.unitNumberInput.nativeElement.setFocus();
+                this.unitNumberInput.setFocus();
               }, focusDelay);
               return false;
             } else {
+              report.flagged = true;
               return true;
             }
-          } else if(woLen !== 9) {
+          } else if(woLen < 9 || woLen > 10) {
             let response = await this.showPossibleError('wo');
             if(!response) {
               // this.workOrderNumberInput.setFocus();
               setTimeout(() => {
                 // this.zone.run(() => { this.workOrderNumberInput.setFocus(); });
-                this.reportNumberInput.nativeElement.setFocus();
+                this.woNumberInput.setFocus();
               }, focusDelay);
               return false;
             } else {
+              report.flagged = true;
               return true;
             }
           }
@@ -1151,7 +827,9 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
         Log.l(`checkInput(): all user input is apparently valid!`);
         return validate;
       } else {
-        throw new Error("Input check did not complete successfully.");
+        // throw new Error("Input check did not complete successfully.");
+        Log.l(`checkInput(): Some user input is invalid!`);
+        return false;
       }
     } catch(err) {
       Log.l(`checkInput(): Input check not completed successfully.`);
@@ -1166,12 +844,14 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
       let type = this.type;
       let lang = this.lang;
       let isValid = await this.checkInput();
-      if (type.name === 'work_report') {
-        let res = await this.processReport();
-        return res;
-      } else {
-        let res = this.processReportOther();
-        return res;
+      if(isValid) {
+        if (type.name === 'work_report') {
+          let res = await this.processReport();
+          return res;
+        } else {
+          let res = this.processReportOther();
+          return res;
+        }
       }
     } catch(err) {
       Log.l(`onSubmit(): Error during submission.`);

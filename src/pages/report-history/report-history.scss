@@ -36,14 +36,62 @@ page-report-history {
     // &:hover {
     //   background-color: rgba(0, 0, 128, 0.3);
     // }
-    &:active {
-      background-color: rgba(0, 0, 255, 0.5);
-    }
+    // &:active {
+    //   background: rgba(0, 0, 255, 0.3);
+    // }
     .ion-item {
       // background-color: transparent;
     }
   }
+  .report-wrapper {
+    border: 1px dotted lightgrey;
+    padding: 2px;
+  }
+  .report-table {
+    table-layout: fixed;
+    width: 100%;
+    font-family: "Roboto Condensed", sans-serif;
+    font-size: 16px;
+    background-color: white;
+    border: 0;
+    tr {
+      td {
+        // border: 1px dotted lightgrey;
+        &.label {
+          font-weight: bold;
+          // text-align: right;
+          padding-right: 2px;
+          width: 62px;
+          min-width: 62px;
+          max-width: 62px;
+        }
+        &.data {
 
+        }
+        &.label-notes {
+          font-weight: bold;
+          text-align: left;
+          padding-right: 2px;
+          align-self: flex-start;
+          vertical-align: top;
+        }
+        &.data-notes {
+          // white-space: normal;
+          .notes-wrapper {
+            display: block;
+            background-color: white;
+            min-height: 21px;
+            max-height: 100px;
+            overflow-y: auto;
+            white-space: pre-line;
+            border: 1px solid lightgrey;
+          }
+        }
+      }
+    }
+  }
+  $stripe-color-1: rgba(255,128,128,0.15);
+  $stripe-color-2: rgba(255,255,255,1.0);
   ion-item.report-history-list-item {
     -webkit-tap-highlight-color: unset !important;
     // background-color: transparent;
@@ -52,6 +100,20 @@ page-report-history {
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
+    &.flagged {
+      // background-color: rgba(255, 128, 128, 0.5);
+      // rgba(255,128,128,0.5), rgba(255,128,128,0.5) 10px,   white 10px,   white 20px
+      background: repeating-linear-gradient(
+        -45deg,
+        $stripe-color-1,
+        $stripe-color-1 10px,
+        $stripe-color-2 10px,
+        $stripe-color-2 20px
+      );
+    }
+    &:active {
+      background: rgba(0, 0, 255, 0.3);
+    }
     .item-inner {
       background-color: transparent;
       border-bottom: 0 !important;

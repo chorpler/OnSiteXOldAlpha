@@ -301,7 +301,7 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
     // }
   }
 
-  public addNewReportForShift(shift: Shift) {
+  public addNewReportForShift(shift:Shift, event?:any) {
     Log.l("addNewReportForShift(): Got shift to send:\n", shift);
     this.tabServ.goToPage('Report View', { mode: 'Add', shift: shift, payroll_period: this.period });
   }

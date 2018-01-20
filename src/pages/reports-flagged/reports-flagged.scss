@@ -22,12 +22,17 @@ page-reports-flagged {
   .invisibleIcon {
     visibility: hidden;
   }
+  .report-wrapper {
+    border: 1px dotted lightgrey;
+    padding: 2px;
+  }
   .report-table {
     table-layout: fixed;
     width: 100%;
     font-family: "Roboto Condensed", sans-serif;
     font-size: 16px;
     background-color: white;
+    border: 0;
     tr {
       td {
         // border: 1px dotted lightgrey;
@@ -44,17 +49,19 @@ page-reports-flagged {
         }
         &.label-notes {
           font-weight: bold;
-          text-align: right;
-          padding-right: 2px;
+          text-align: left;
+          // padding-right: 2px;
+          align-self: flex-start;
+          vertical-align: top;
         }
         &.data-notes {
-          white-space: normal;
           .notes-wrapper {
             display: block;
             background-color: white;
+            min-height: 21px;
             max-height: 100px;
             overflow-y: auto;
-            white-space: normal;
+            white-space: pre-line;
             border: 1px solid lightgrey;
             // &::-webkit-scrollbar {
             //   // width: 16px;
@@ -75,200 +82,204 @@ page-reports-flagged {
       }
     }
   }
-  .reports-container {
-    .report-list {
-      .report-item-sliding {
-        // cursor: pointer;
-        background-color: transparent;
-        // &:hover {
-        //   background-color: rgba(0, 0, 128, 0.3);
-        // }
-        // &:active {
-        //   background-color: rgba(0, 0, 255, 0.5);
-        // }
-        .ion-item {
-          background-color: transparent;
-        }
-        .report-item {
-          -webkit-tap-highlight-color: unset !important;
-          background-color: transparent;
-          border: 1px dotted lightgrey;
-          display: flex;
-          flex-flow: row wrap;
-          justify-content: flex-start;
-          align-content: center;
-          align-items: center;
-          @include button-like-block;
-          // cursor: pointer;
+//   .reports-container {
+//     .report-list {
+//       .report-item-sliding {
+//         // cursor: pointer;
+//         background-color: transparent;
+//         // &:hover {
+//         //   background-color: rgba(0, 0, 128, 0.3);
+//         // }
+//         // &:active {
+//         //   background-color: rgba(0, 0, 255, 0.5);
+//         // }
+//         .ion-item {
+//           background-color: transparent;
+//         }
+//         .report-item {
+//           -webkit-tap-highlight-color: unset !important;
+//           background-color: transparent;
+//           border: 1px dotted lightgrey;
+//           display: flex;
+//           flex-flow: row wrap;
+//           justify-content: flex-start;
+//           align-content: center;
+//           align-items: center;
+//           @include button-like-block;
+//           // cursor: pointer;
 
-          // &:active {
-          //   background-color: rgba(0, 0, 255, 0.5);
-          // }
-          .item-inner {
-            background-color: transparent;
-            .input-wrapper {
-              background-color: transparent;
-              ion-label {
-                background-color: transparent;
-                div {
-                  background-color: transparent;
-                  span {
-                    background-color: transparent;
-                  }
-                }
-              }
-            }
-          }
-          .group-dev {
-            display: flex;
-            flex-flow: row wrap;
-            justify-content: flex-start;
-            align-content: center;
-            align-items: center;
-            font-size: 12px;
-            .label {
-              display: inline-block;
-              flex: 0 1 auto;
-              max-width: 80px;
-              min-width: 80px;
-              width: 20%;
-              font-weight: bold;
-              text-align: right;
-              padding-right: 2px;
-            }
-            .data {
-              display: inline-block;
-              flex: 0 1 auto;
-              width: 80%;
-              padding-left: 2px;
-              text-align: left;
-            }
-          }
-          .group-user {
-            .label {
-              display: inline-block;
-              flex: 0 1 auto;
-              max-width: 80px;
-              min-width: 80px;
-              width: 20%;
-              font-weight: bold;
-              text-align: right;
-              padding-right: 2px;
-            }
-            .data {
-              display: inline-block;
-              flex: 0 1 auto;
-              width: 80%;
-              padding-left: 2px;
-              text-align: left;
-            }
-            .label-notes {
-              display: inline-block;
-              flex: 0 1 auto;
-              max-width: 80px;
-              min-width: 80px;
-              width: 20%;
-              font-weight: bold;
-              text-align: right;
-              padding-right: 2px;
-            }
-            .data-notes {
-              width: 100%;
-            }
-          }
-        }
-      }
-    }
-  }
-  .list-item-icon {
-    cursor: pointer;
-  }
-  .list-item-label {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-  }
-  .group-date {
-    // max-height: 50px;
-  }
-  .divider-date {
-    // height: 75px;
-    max-height: 50px;
-  }
-  .ionic-button-icon-outline {
-    background-color: transparent !important;
-    background: none !important;
-    box-shadow: none;
-    height: 75px !important;
-    // max-height: 75px;
-    .button-inner {
-      padding-left: 15px;
-      padding-right: 15px;
-      // &:hover {
-      //   background-color: rgba(0, 0, 128, 0.3);
-      // }
-      &:active {
-        background-color: rgba(0, 0, 255, 0.5);
-        * {
-          color: white !important;
-        }
-      }
-    }
-    * {
-      cursor: pointer;
-    }
-  }
-  .ionic-icon-outline {
-    cursor: pointer;
-    font-size: 36px;
-    &:active {
-      color: white !important;
-    }
-  }
-  ion-icon.shft-num-icon {
-    font-size: 25px;
-  }
-  .report-item,
-  .report-notes-item {
-    flex: 1 0 auto;
-    text-align: left;
-  }
-  .report-item-header {
-    display: inline-block;
-    text-align: right;
-    font-weight: bold;
-  }
-  .report-item-data {
-    overflow: hidden;
-    text-align: left;
-  }
-  .report-date {
-    flex: 1 0 auto;
-    text-align: center;
-  }
-  .unit-number {
-    flex: 1 0 auto;
-    text-align: center;
-  }
-  .no-report {
-    flex: 1 0 auto;
-    text-align: center;
-    font-style: italic;
-  }
-  .notes-data {
-    text-overflow: ellipsis;
-    p {
-      max-width: 101px;
-      width: 100px;
-      text-overflow: ellipsis;
-    }
-  }
-  .item-group-id, .item-group-rev {
-    font-size: 12px;
-  }
-  .item-id-label, .item-rev-label {
-    margin-right: 5px;
-  }
+//           // &:active {
+//           //   background-color: rgba(0, 0, 255, 0.5);
+//           // }
+//           .item-inner {
+//             background-color: transparent;
+//             border: 0;
+//             .input-wrapper {
+//               background-color: transparent;
+//               ion-label {
+//                 background-color: transparent;
+//                 div {
+//                   background-color: transparent;
+//                   span {
+//                     background-color: transparent;
+//                   }
+//                 }
+//               }
+//             }
+//           }
+//           .group-dev {
+//             display: flex;
+//             flex-flow: row wrap;
+//             justify-content: flex-start;
+//             align-content: center;
+//             align-items: center;
+//             font-size: 12px;
+//             .label {
+//               display: inline-block;
+//               flex: 0 1 auto;
+//               max-width: 80px;
+//               min-width: 80px;
+//               width: 20%;
+//               font-weight: bold;
+//               text-align: right;
+//               padding-right: 2px;
+//             }
+//             .data {
+//               display: inline-block;
+//               flex: 0 1 auto;
+//               width: 80%;
+//               padding-left: 2px;
+//               text-align: left;
+//             }
+//           }
+//           .group-user {
+//             .label {
+//               display: inline-block;
+//               flex: 0 1 auto;
+//               max-width: 80px;
+//               min-width: 80px;
+//               width: 20%;
+//               font-weight: bold;
+//               text-align: right;
+//               padding-right: 2px;
+//             }
+//             .data {
+//               display: inline-block;
+//               flex: 0 1 auto;
+//               width: 80%;
+//               padding-left: 2px;
+//               text-align: left;
+//             }
+//             .label-notes {
+//               display: inline-block;
+//               flex: 0 1 auto;
+//               max-width: 80px;
+//               min-width: 80px;
+//               width: 20%;
+//               font-weight: bold;
+//               text-align: right;
+//               padding-right: 2px;
+//             }
+//             .data-notes {
+//               width: 100%;
+//               .notes-wrapper {
+//                 min-height: 21px;
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+//   .list-item-icon {
+//     cursor: pointer;
+//   }
+//   .list-item-label {
+//     display: flex;
+//     flex-direction: row;
+//     justify-content: space-between;
+//     align-items: center;
+//     cursor: pointer;
+//   }
+//   .group-date {
+//     // max-height: 50px;
+//   }
+//   .divider-date {
+//     // height: 75px;
+//     max-height: 50px;
+//   }
+//   .ionic-button-icon-outline {
+//     background-color: transparent !important;
+//     background: none !important;
+//     box-shadow: none;
+//     height: 75px !important;
+//     // max-height: 75px;
+//     .button-inner {
+//       padding-left: 15px;
+//       padding-right: 15px;
+//       // &:hover {
+//       //   background-color: rgba(0, 0, 128, 0.3);
+//       // }
+//       &:active {
+//         background-color: rgba(0, 0, 255, 0.5);
+//         * {
+//           color: white !important;
+//         }
+//       }
+//     }
+//     * {
+//       cursor: pointer;
+//     }
+//   }
+//   .ionic-icon-outline {
+//     cursor: pointer;
+//     font-size: 36px;
+//     &:active {
+//       color: white !important;
+//     }
+//   }
+//   ion-icon.shft-num-icon {
+//     font-size: 25px;
+//   }
+//   .report-item,
+//   .report-notes-item {
+//     flex: 1 0 auto;
+//     text-align: left;
+//   }
+//   .report-item-header {
+//     display: inline-block;
+//     text-align: right;
+//     font-weight: bold;
+//   }
+//   .report-item-data {
+//     overflow: hidden;
+//     text-align: left;
+//   }
+//   .report-date {
+//     flex: 1 0 auto;
+//     text-align: center;
+//   }
+//   .unit-number {
+//     flex: 1 0 auto;
+//     text-align: center;
+//   }
+//   .no-report {
+//     flex: 1 0 auto;
+//     text-align: center;
+//     font-style: italic;
+//   }
+//   .notes-data {
+//     text-overflow: ellipsis;
+//     p {
+//       max-width: 101px;
+//       width: 100px;
+//       text-overflow: ellipsis;
+//     }
+//   }
+//   .item-group-id, .item-group-rev {
+//     font-size: 12px;
+//   }
+//   .item-id-label, .item-rev-label {
+//     margin-right: 5px;
+//   }
 }

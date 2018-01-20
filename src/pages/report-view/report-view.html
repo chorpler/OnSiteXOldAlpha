@@ -29,39 +29,53 @@
           <span class="shift-hours" *ngIf="mode==='Edit'">{{selectedShift.getNormalHours()}}</span>
         </span>
         <span class="shift-hours-wrapper" *ngIf="type && type.name && type.name !== 'work_report'">
-          <span class="shift-hours" *ngIf="mode==='Add'">{{selectedShift.getNormalHours()+currentOtherHours}}</span>
-          <span class="shift-hours" *ngIf="mode==='Edit'">{{selectedShift.getNormalHours()}}</span>
+          <span class="shift-hours" *ngIf="mode==='Add'">{{selectedShift?.getNormalHours()+currentOtherHours}}</span>
+          <span class="shift-hours" *ngIf="mode==='Edit'">{{selectedShift?.getNormalHours()}}</span>
         </span>
         <span class="shift-label">{{'of' | translate}}</span>
         <span class="shift-length-wrapper" *ngIf="!type || !type.name || type.name === 'work_report'">
-          <span class="shift-hours" *ngIf="selectedShift.getShiftLength()==='S'">{{selectedShift.getShiftLength(currentRepairHours)}}</span>
-          <span class="shift-hours" *ngIf="selectedShift.getShiftLength()!=='S'">{{selectedShift.getShiftLength()}}</span>
+          <span class="shift-hours" *ngIf="selectedShift.getShiftLength()==='S'">{{selectedShift?.getShiftLength(currentRepairHours)}}</span>
+          <span class="shift-hours" *ngIf="selectedShift.getShiftLength()!=='S'">{{selectedShift?.getShiftLength()}}</span>
         </span>
         <span class="shift-length-wrapper" *ngIf="type && type.name && type.name !== 'work_report'">
-          <span class="shift-hours" *ngIf="selectedShift.getShiftLength()==='S'">{{selectedShift.getShiftLength(currentOtherHours)}}</span>
-          <span class="shift-hours" *ngIf="selectedShift.getShiftLength()!=='S'">{{selectedShift.getShiftLength()}}</span>
+          <span class="shift-hours" *ngIf="selectedShift.getShiftLength()==='S'">{{selectedShift?.getShiftLength(currentOtherHours)}}</span>
+          <span class="shift-hours" *ngIf="selectedShift.getShiftLength()!=='S'">{{selectedShift?.getShiftLength()}}</span>
         </span>
       </span>
     </div>
 
-    <ion-list>
+    <ion-list class="report-view-header">
+      <ion-item>
+        <div class="data-readonly">
+          <span class="label">{{'site' | translate}}</span>
+          <span class="data">{{site?.getSiteClientAndLocation()}}</span>
+        </div>
+        <!-- <ion-select class="report-view-select" [(ngModel)]="type" (ionSelect)="updateType(type, $event)">
+          <ion-option *ngFor="let type of selReportType" [value]="type">{{type?.name | translate}}</ion-option>
+        </ion-select> -->
+      </ion-item>
       <ion-item (tap)="checkPageMode($event)">
         <ion-label>{{'report_type' | translate}}</ion-label>
         <!-- <ion-select [(ngModel)]="report.type" [disabled]="mode==='Edit'" (tap)="checkPageMode()"> -->
-        <ion-select [(ngModel)]="type" (ionSelect)="updateType(type, $event)">
-          <ion-option *ngFor="let type of selReportType" [value]="type">{{type.name | translate}}</ion-option>
+        <ion-select class="report-view-select" [(ngModel)]="type" (ionSelect)="updateType(type, $event)">
+          <ion-option *ngFor="let type of selReportType" [value]="type">{{type?.name | translate}}</ion-option>
         </ion-select>
       </ion-item>
-      <ion-item (tap)="showFancySelect($select)" class="item item-button ion-item-button-like">
+      <ion-item>
+        <ion-label>{{'shift_date' | translate}}</ion-label>
+        <ion-select class="report-view-select" [(ngModel)]="selectedShift" (ionSelect)="updateShift(selectedShift, $event)">
+          <ion-option *ngFor="let shift of allShifts" [value]="shift">{{shift?.getShiftDate()?.format("MMM DD")}}</ion-option>
+        </ion-select>
+      </ion-item>
+      <!-- <ion-item (tap)="showFancySelect($select)" class="item item-button ion-item-button-like">
         <ion-label>{{'shift_date' | translate}}</ion-label>
         <ion-input #shiftDateResults class="shift-date-select-results" [(ngModel)]="selectedShift" (ngModelChange)="updateShift(selectedShift, $event)" readonly>{{selectedShift.toString(translate)}}</ion-input>
-        <!-- <ion-input #shiftDateResults [disabled]="shiftDateInputDisabled" class="shift-date-select-results" [value]="selectedShift.toString(translate)"></ion-input> -->
         <ion-icon item-right class="shift-date-select-icon" name="md-arrow-dropdown"></ion-icon>
-      </ion-item>
+      </ion-item> -->
     </ion-list>
 
 
-    <ion-list class="report-form-list" [ngSwitch]="type.name">
+    <ion-list class="report-form-list" [ngSwitch]="type?.name">
 
 <!-- ******************************************************************************************************************************  -->
 <!--WORK REPORT  -->
@@ -70,20 +84,26 @@
         <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && ud.isDeveloper()); then devInfoEditable"></span>
         <ion-item>
           <ion-label>{{'repair_time' | translate}}</ion-label>
-          <ion-multi-picker class="repair-hours-picker" item-content [separator]="':'" [multiPickerColumns]="chooseHours" [(ngModel)]="currentRepairHoursString" (ngModelChange)="updateRepairHours(currentRepairHoursString, $event)"></ion-multi-picker>
+          <ion-multi-picker #durationPicker class="repair-hours-picker" item-content [separator]="':'" [multiPickerColumns]="chooseHours" [(ngModel)]="currentRepairHoursString" (ngModelChange)="updateRepairHours(currentRepairHoursString, $event)"></ion-multi-picker>
           <ion-icon item-right class="shift-repair-time-icon" name="md-arrow-dropdown"></ion-icon>
         </ion-item>
         <ion-item>
           <ion-label floating>{{'unit_number' | translate}}</ion-label>
           <ion-input #unitNumberInput type="text" [(ngModel)]="report.unit_number"></ion-input>
         </ion-item>
+        <ion-item class="crew-number" *ngIf="site?.client?.name === 'KN' || this.show_crew_number">
+          <ion-label class="manual-float-label">{{'crew_number_translate' | translate}}</ion-label>
+          <ion-select class="full-select" [(ngModel)]="report.crew_number" (ionSelect)="updateCrewNumber($event)">
+            <ion-option *ngFor="let crew_number of crew_numbers" [value]="crew_number">{{crew_number}}</ion-option>
+          </ion-select>
+        </ion-item>
         <ion-item>
           <ion-label floating>{{'work_order_number' | translate}}</ion-label>
-          <ion-input #reportNumberInput type="text" [(ngModel)]="report.work_order_number"></ion-input>
+          <ion-input #woNumberInput type="text" [(ngModel)]="report.work_order_number"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label floating>{{'job_notes' | translate}}</ion-label>
-          <ion-textarea [(ngModel)]="report.notes"></ion-textarea>
+          <ion-textarea #reportNotes [(ngModel)]="report.notes"></ion-textarea>
         </ion-item>
         <ion-item *ngIf="syncError" class="alert danger">
           <div>{{'report_submit_error' | translate}}</div>

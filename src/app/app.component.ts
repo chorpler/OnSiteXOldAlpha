@@ -286,9 +286,9 @@ export class OnSiteApp implements OnInit {
       // let vcRef = this.tabsTarget.viewContainer;
       // let tabsComponentRef = vcRef.createComponent(componentFactory);
       // let instance:TabsComponent = tabsComponentRef.instance as TabsComponent;
-
       Log.l("OnSite: platform ready returned:\n", vagueParameter);
       let res = await this.getAppVersion();
+      Log.l(`OnSite: version is: '${res}'`);
       this.translate.setDefaultLang('en');
       this.statusBar.styleDefault();
       this.splashScreen.hide();
@@ -305,19 +305,25 @@ export class OnSiteApp implements OnInit {
       window[ 'Log'    ] = Log;
       window[ 't1'     ] = CONSOLE.t1;
       window[ 'c1'     ] = CONSOLE.c1;
+      Log.l(`OnSite: about to register listeners...`);
       this.registerListeners();
+      Log.l(`OnSite: about to preload audio...`);
       this.preloadAudioFiles();
       this.translate.get(this.langStrings).subscribe(async (result) => {
         try {
+          Log.l("Translate loader resulted in:\n", result);
           this.lang = result;
           let lang = this.lang;
+          Log.l("OnSite: now checking for boot error...");
           if(!this.ud.isBootError()) {
+            Log.l("OnSite: no boot error! Now checking first login...");
             let firstBoot = await this.isFirstLogin();
             if(firstBoot) {
               Log.l("OnSite.initializeApp(): bootApp() detected first boot, going to first boot page.");
               this.ud.showClock = false;
               this.rootPage = 'First Login';
             } else {
+              Log.l("OnSite.initializeApp(): Not first login! Booting app...");
               let res = await this.bootApp();
               Log.l("OnSite.initializeApp(): bootApp() returned successfully!");
               let hide = await this.alert.hideSpinner(0, true);
@@ -327,7 +333,7 @@ export class OnSiteApp implements OnInit {
               this.rootPage = 'OnSiteHome';
             }
           } else {
-
+            Log.l("OnSite: there was a boot error");
           }
         } catch(err) {
           Log.l("initializeApp(): Error in getAppVersion() or platform.ready()! That's bad! Or in checkPreferences or translate.get or something!");
@@ -535,9 +541,17 @@ export class OnSiteApp implements OnInit {
       if(firstBoot) {
         return true;
       } else {
-        let reportsDB = this.prefs.DB.reports;
-        let res = await this.db.PouchDB.allDbs();
-        if(res && res.length && res.indexOf(reportsDB) > -1) {
+        // let reportsDB = this.prefs.DB.reports;
+        // let res = await this.db.PouchDB.allDbs();
+        // if(res && res.length && res.indexOf(reportsDB) > -1) {
+        //   return false;
+        // } else {
+        //   return true;
+        // }
+        let sitesDB = this.prefs.DB.jobsites;
+        let db = this.db.addDB(sitesDB);
+        let docs = await db.allDocs({include_docs:false});
+        if(docs && docs.rows && docs.rows.length) {
           return false;
         } else {
           return true;
@@ -546,7 +560,8 @@ export class OnSiteApp implements OnInit {
     } catch(err) {
       Log.l(`isFirstLogin(): Error checking first login via PouchDB databases!`);
       Log.e(err);
-      throw new Error(err);
+      // throw new Error(err);
+      return true;
     }
   }
 

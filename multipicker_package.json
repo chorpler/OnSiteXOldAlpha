@@ -156,6 +156,7 @@
     "de.appplant.cordova.plugin.local-notification": "^0.8.5",
     "desktop": "^0.0.0",
     "intl": "^1.2.5",
+    "ion-multi-picker": "file:custom\\ion-multi-picker-2.0.4.tgz",
     "ionic-angular": "^3.9.2",
     "ionic-plugin-keyboard": "^2.2.1",
     "ionicons": "3.0.0",

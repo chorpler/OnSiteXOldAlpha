@@ -71,6 +71,63 @@ page-report-view {
   .shift-hours {
     font-weight: bold;
   }
+  .report-view-header {
+    border-bottom: 3px ridge lightgrey;
+  }
+  ion-select.report-view-select {
+    max-width: unset;
+  }
+  .data-readonly {
+    width: 100%;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+    .label {
+      flex: 0 1 auto;
+      // color: grey;
+      color: rgba(153, 153, 153, 1.0);
+      text-align: left;
+      // border: 1px dotted lightgrey;
+    }
+    .data {
+      flex: 0 1 auto;
+      color: rgba(153, 153, 153, 1.0);
+      text-align: right;
+      // border: 1px dotted lightgrey;
+    }
+  }
+  .report-form-list {
+    ion-item.crew-number {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-items: flex-start;
+    }
+  }
+  .manual-float-label {
+    flex: 0 0 100%;
+    transform: translate3d(0, 0, 0) scale(0.8);
+    margin-left: -6px;
+    margin-right: auto;
+    margin-top: 6px;
+    margin-bottom: 2px;
+    min-height: 20px;
+  }
+  .full-select {
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 100%;
+    // max-width: 80vw;
+    min-height: 35px;
+    align-self: center;
+    padding-left: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
   .shift-date-select-results {
     text-align: left;
     cursor: pointer;
@@ -153,9 +210,13 @@ page-report-view {
     }
   }
   .report-button {
+    margin-bottom: 30px;
     &.save {
-      height: 72px;
-      font-size: 24px;
+      font-family: "Roboto Condensed";
+      font-weight: normal;
+      min-height: 128px;
+      font-size: 42px;
+      margin-top: 10px;
     }
     &.cancel {
 

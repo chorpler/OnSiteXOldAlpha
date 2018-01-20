@@ -150,6 +150,7 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
       this.tech.readFromDoc(this.techProfile);
       this.ud.setTechProfile(this.techProfile);
       this.sites = this.ud.getData('sites');
+      // this.site = this.ud.get
       this.initFormData();
       this.initializeSites();
       Log.l("User: initFormData() done, now initializeForm()...");
@@ -181,6 +182,12 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
     let _location = this.techSettings.get('location');
     let _locID    = this.techSettings.get('locID');
 
+    let cli = this.tech.client;
+    let loc = this.tech.location;
+    let lid = this.tech.locID;
+    let site = this.getSiteFromInfo(cli, loc, lid);
+    this.site = site;
+
     _client.valueChanges.subscribe((value:any) => {
       Log.l("CLIENTCHANGE: Client changed to:\n", value);
       this.techSettingsReady = false;
@@ -199,8 +206,6 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
       Log.l(tmpLocIDs);
       this.locations = tmpLocations;
       this.locIDs    = tmpLocIDs;
-      this.location  = loc;
-      this.locID     = lid;
       this.location = loc;
       this.locID    = lid;
       _location.setValue(loc, {emitEvent: false});
@@ -253,7 +258,18 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
     });
   }
 
-  updateClient(client:any) {
+  public updateSite(site:Jobsite, event?:any) {
+    Log.l("updateSite(): Updated site to:\n", site);
+    this.tech.site_number = site.site_number;
+    let cli = site.client;
+    let loc = site.location;
+    let lid = site.locID;
+    this.updateClient(cli);
+    this.updateLocation(loc);
+    this.updateLocID(lid);
+  }
+
+  public updateClient(client:any, event?:any) {
     Log.l("updateClient(): Updated to:\n", client);
     let locid = this.locID;
     let locations = this.sites.filter((obj, pos, arr) => { return _cmp(client, obj['client']) });
@@ -277,7 +293,7 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
     Log.l(tmpLocIDs);
   }
 
-  updateLocation(location:any) {
+  public updateLocation(location:any, event?:any) {
     Log.l("updateLocation(): Updated to:\n", location);
     let client = this.client;
     // let client = this.techSettings.getRawValue().client;
@@ -316,10 +332,9 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
     //     }
     //   }
     // }
-
   }
 
-  updateLocID(locID:any) {
+  public updateLocID(locID:any, event?:any) {
     Log.l("updateLocID(): Updated to:\n", locID);
     let client = this.client;
     let location = this.location;
@@ -341,7 +356,7 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
     this.shiftStartTime = shiftStartTime;
   }
 
-  initFormData() {
+  public initFormData() {
     let sesaConfig = this.ud.getSesaConfig();
     if (sizeOf(sesaConfig) > 0) {
       let keys  = ['client', 'location', 'locid', 'shift', 'shiftlength', 'shiftstarttime'];
@@ -359,7 +374,7 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
     this.firstName      = this.techProfile.firstName      ;
   }
 
-  selectMatch(key:string, values:Array<any>) {
+  public selectMatch(key:string, values:Array<any>) {
     Log.l(values);
     let matchKey = String(key).toUpperCase();
     for(let value of values) {
@@ -414,7 +429,7 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
     }
   }
 
-  onSubmit() {
+  public onSubmit() {
     let lang = this.lang;
     let form            = this.techSettings.value               ;
     let tech            = this.tech                             ;

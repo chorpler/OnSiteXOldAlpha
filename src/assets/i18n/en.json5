@@ -123,6 +123,7 @@
   "forklift": "Forklift",
   "overhead_crane": "Overhead Crane",
   "spinner_retrieving_reports_other": "Fetching Miscellaneous Reports...",
+  "site": "Site",
   "work_site": "Work Site",
   "report_submit_error_title": "Incomplete Report",
   "report_submit_error_message": "Please select how many hours and minutes this job took.",
@@ -156,6 +157,7 @@
   "key_holiday": "Holiday",
   "twenty_rules": "Twenty Rules",
   "warning": "Warning",
+  "empty_notes": "You have not entered any notes. Continue?",
   "hb_unit_number_length": "Halliburton unit numbers are usually 8 digits, but you have %d digits. Continue?",
   "hb_work_order_number_length": "Halliburton work order numbers are usually 9 digits, but you have %d digits. Continue?",
   "yes": "Yes",
@@ -202,4 +204,8 @@
   "spanish": "Spanish",
   "reports_flagged_title": "Flagged Reports",
   "no_flagged_reports": "No flagged reports.",
+  "crew": "Crew",
+  "crew_number": "Crew No.",
+  "crew_translate": "Crew",
+  "crew_number_translate": "Crew No."
 }
