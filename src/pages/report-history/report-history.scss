@@ -22,6 +22,43 @@ page-report-history {
   .reportListHeader {
     font-weight: bold;
   }
+
+  .date-header {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+    background-color: lightgrey;
+    .shift-number {
+      flex: 0 1 auto;
+      font-size: 32px;
+      margin-top: -5px;
+    }
+    .shift-date {
+      flex: 0 1 auto;
+      font-size: 18px;
+    }
+    .shift-hours {
+      flex: 0 1 auto;
+      font-size: 18px;
+    }
+    .document-icon {
+      flex: 0 1 auto;
+      font-size: 32px;
+      margin-top: 2px;
+      font-weight: bold;
+      padding: 10px;
+    }
+  }
+
+  .document-add-button {
+    position: relative;
+    right: 0;
+    i {
+      font-size: 32px;
+    }
+  }
   .invisibleIcon {
     visibility: hidden;
   }
@@ -55,6 +92,7 @@ page-report-history {
     background-color: white;
     border: 0;
     tr {
+      border-bottom: 1px dotted lightgrey;
       td {
         // border: 1px dotted lightgrey;
         &.label {
@@ -64,6 +102,8 @@ page-report-history {
           width: 62px;
           min-width: 62px;
           max-width: 62px;
+          white-space: pre-wrap;
+          word-break: normal;
         }
         &.data {
 
@@ -77,6 +117,8 @@ page-report-history {
         }
         &.data-notes {
           // white-space: normal;
+          padding-top: 1px;
+          padding-bottom: 1px;
           .notes-wrapper {
             display: block;
             background-color: white;

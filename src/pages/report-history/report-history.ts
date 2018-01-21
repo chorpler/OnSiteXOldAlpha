@@ -92,6 +92,9 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
 
   ngOnInit() {
     Log.l("ReportHistory: ngOnInit() fired");
+    if(this.ud.isAppLoaded()) {
+      this.runOnPageLoad();
+    }
     // if (!(this.ud.isAppLoaded() && this.ud.isHomePageReady())) {
     //   this.tabs.goToPage('OnSiteHome');
     // } else {
@@ -110,11 +113,7 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
 
   ionViewDidEnter() {
     Log.l("ReportHistory: ionViewDidEnter called...");
-    window["onsitereporthistory"] = this;
-    this.pageReady = false;
-    if(this.ud.isAppLoaded()) {
-      this.runOnPageLoad();
-    }
+    // this.pageReady = false;
   }
 
   public runOnPageLoad() {
@@ -299,6 +298,28 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
     // } else {
     //   this.alert.showAlert(lang['error'], lang['error_report_not_found']);
     // }
+  }
+
+  public getReportType(report:Report|ReportOther):string {
+    if(report) {
+      if(report instanceof Report) {
+        return 'report';
+      } else if(report instanceof ReportOther) {
+        return 'other';
+      } else {
+        return 'none';
+      }
+    } else {
+      return 'none';
+    }
+  }
+
+  public getReportOtherType(report:ReportOther):string {
+    if(report && report instanceof ReportOther && report.type) {
+      return report.type;
+    } else {
+      return 'none';
+    }
   }
 
   public addNewReportForShift(shift:Shift, event?:any) {

@@ -550,8 +550,8 @@ export class OnSiteApp implements OnInit {
         // }
         let sitesDB = this.prefs.DB.jobsites;
         let db = this.db.addDB(sitesDB);
-        let docs = await db.allDocs({include_docs:false});
-        if(docs && docs.rows && docs.rows.length) {
+        let res = await db.allDocs({include_docs:false});
+        if(res && res.total_rows) {
           return false;
         } else {
           return true;

@@ -14,446 +14,221 @@
 <ion-content padding class="page-content report-history-page-content" *ngIf="pageReady">
   <!-- <ion-refresher (ionRefresh)="doRefresh($event)"> -->
     <div class="report-history-container">
-      <ion-list class="reportList">
-        <ion-item-group class="report-history-group-date" *ngFor="let shift of shifts; let i=index">
-          <ion-item-divider class="report-history-divider-date" color="light">
-            <ion-icon class="shft-num-icon">{{numChars[shift.shift_number]}}&nbsp;&nbsp;</ion-icon>
-            &nbsp;&nbsp;{{shift.getStartTime().format("ddd, MMM D")}}&nbsp;&nbsp;
-            <ion-note>{{shift.getNormalHours()}} Hrs</ion-note>
-            <span class="icon-button-like document-add-button" (tap)="addNewReportForShift(shift, $event)">
+      <div class="report-list">
+        <div class="single-date" *ngFor="let shift of shifts; let i=index">
+          <div class="date-header">
+            <span class="shift-number">{{numChars[shift?.shift_number]}}</span>
+            <span class="shift-date">{{shift?.getStartTime()?.format("ddd, MMM D")}}</span>
+            <span class="shift-hours">{{shift?.getShiftHours()}} hrs</span>
+            <span class="document-icon block-button-like" (tap)="addNewReportForShift(shift, $event)">
               <i class="icomoon-document-add"></i>
             </span>
-            <!-- <button class="ionic-button-icon-outline ion-button-like" ion-button icon-only item-end (tap)="addNewReportForShift(shift)">
-              <ion-icon class="ionic-icon-outline" name='ios-document-outline' color="primary"></ion-icon>
-            </button> -->
-          </ion-item-divider>
-          <!-- <div class="report-history-reports-subcontainer" *ngIf="filtReports[filterKeys[i]].length">
-            <div class="report-and-reportother-container" *ngFor="let report of filtReports[filterKeys[i]]"> -->
-          <div class="report-history-reports-subcontainer" *ngIf="shift.getAllShiftReports()">
-            <div class="report-and-reportother-container" *ngFor="let report of shift.getAllShiftReports(); let j=index">
-              <ion-item-sliding #item{{i}} class="report-history-list-item-sliding" *ngIf="report.type===undefined || report.type==='Work Report' || report.type==='work_report'">
-                <ion-item class="report-history-list-item" [class.flagged]="report && report.flagged" (tap)="itemTapped($event, report, shift)">
-                  <!-- <div class="report-history-report-item item-group-id" *ngIf="prefs.getShowID()">
-                    <span class="report-history-report-item-header item-id-label">ID</span>
-                    <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowRev()">
-                    <span class="report-history-report-item-header item-rev-label">Rev</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report._rev}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowTimes()">
-                    <span class="report-history-report-item-header item-rev-label">Date</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.report_date}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowTimes()">
-                    <span class="report-history-report-item-header item-rev-label">Start</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.time_start}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowTimes()">
-                    <span class="report-history-report-item-header item-rev-label">End</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.time_end}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">Client</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.client}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">Location</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.location}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">LocID</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.location_id}}</span>
-                  </div>
-                  <div class="report-history-report-item">
-                    <span class="report-history-report-item-header">{{'hours_header' | translate}}&nbsp;&nbsp;</span>
-                    <span class="report-history-report-item-data">{{report.repair_hours}}</span>
-                  </div>
-                  <div class="report-history-report-item">
-                    <span class="report-history-report-item-header">{{'report_label_wo_number' | translate}}&nbsp;&nbsp;</span>
-                    <span class="report-history-report-item-data">{{report.work_order_number}}</span>
-                  </div>
-                  <div class="report-history-report-item">
-                    <span class="report-history-report-item-header">{{'report_label_unit_number' | translate}}&nbsp;&nbsp;</span>
-                    <span class="report-history-report-item-data">{{report.unit_number}}</span>
-                  </div>
-                  <div class="report-history-report-notes-item">
-                    <span class="report-history-report-item-header">{{'report_label_notes' | translate}}&nbsp;&nbsp;</span>
-                    <div class="report-history-notes-data">
-                      <p>{{report.notes}}</p>
-                    </div>
-                  </div> -->
-                  <div class="report-wrapper">
+          </div>
+          <!-- <div class="reports-container">
+            <div class="no-reports" *ngIf="shift.getAllShiftReports()"></div>
+          </div> -->
+          <ion-list class="reportList">
+            <div class="report-history-reports-subcontainer" *ngIf="shift.getAllShiftReports()">
+              <div class="report-and-reportother-container" *ngFor="let report of shift.getAllShiftReports(); let j=index">
+                <ion-item-sliding class="report-history-list-item-sliding" *ngIf="getReportType(report) === 'report'">
+                  <ion-item class="report-history-list-item" [class.flagged]="report && report?.flagged" (tap)="itemTapped($event, report, shift)">
+                    <div class="report-wrapper">
                       <table class="report-table">
                         <tbody>
                           <tr *ngIf="prefs.getShowID()">
                             <td class="label">ID</td>
-                            <td class="data" >{{report._id}}</td>
+                            <td class="data" >{{report?._id}}</td>
                           </tr>
                           <tr *ngIf="prefs.getShowRev()">
                             <td class="label">Rev</td>
-                            <td class="data" >{{report._rev}}</td>
+                            <td class="data" >{{report?._rev}}</td>
                           </tr>
                           <tr *ngIf="prefs.getShowTimes()">
                             <td class="label">Date</td>
-                            <td class="data" >{{report.report_date}}</td>
+                            <td class="data" >{{report?.report_date}}</td>
                           </tr>
                           <tr *ngIf="prefs.getShowTimes()">
                             <td class="label">Start</td>
-                            <td class="data" >{{report.time_start}}</td>
+                            <td class="data" >{{report?.time_start}}</td>
                           </tr>
                           <tr *ngIf="prefs.getShowTimes()">
                             <td class="label">End</td>
-                            <td class="data" >{{report.time_end}}</td>
+                            <td class="data" >{{report?.time_end}}</td>
                           </tr>
                           <tr *ngIf="prefs.getShowSite()">
                             <td class="label">Client</td>
-                            <td class="data" >{{report.client}}</td>
+                            <td class="data" >{{report?.client}}</td>
                           </tr>
                           <tr *ngIf="prefs.getShowSite()">
                             <td class="label">Location</td>
-                            <td class="data" >{{report.location}}</td>
+                            <td class="data" >{{report?.location}}</td>
                           </tr>
                           <tr *ngIf="prefs.getShowSite()">
                             <td class="label">LocID</td>
-                            <td class="data" >{{report.location_id}}</td>
+                            <td class="data" >{{report?.location_id}}</td>
                           </tr>
                           <tr>
                             <td class="label">Date</td>
-                            <td class="data" >{{report.report_date}}</td>
+                            <td class="data" >{{report?.report_date}}</td>
                           </tr>
                           <tr>
                             <td class="label">{{'hours_header' | translate}}</td>
-                            <td class="data" >{{report.repair_hours}}</td>
+                            <td class="data" >{{report?.repair_hours}}</td>
+                          </tr>
+                          <tr *ngIf="report?.crew_number && report?.crew_number !== ''">
+                            <td class="label">{{'crew' | translate}}</td>
+                            <td class="data" >{{report?.crew_number}}</td>
                           </tr>
                           <tr>
-                            <div *ngIf="report.crew_number && report.crew_number !== ''; then woNumberTemplate; else crewNumberTemplate">
-                              <ng-template #woNumberTemplate>
-                                <td class="label">{{'report_label_wo_number' | translate}}</td>
-                                <td class="data" >{{report.work_order_number}}</td>
-                              </ng-template>
-                              <ng-template #crewNumberTemplate>
-                                <td class="label">{{'crew_number' | translate}}</td>
-                                <td class="data" >{{report.crew_number}}</td>
-                              </ng-template>
-                            </div>
+                            <td class="label">{{'report_label_wo_number' | translate}}</td>
+                            <td class="data" >{{report?.work_order_number}}</td>
                           </tr>
                           <tr>
                             <td class="label">{{'report_label_unit_number' | translate}}</td>
-                            <td class="data" >{{report.unit_number}}</td>
+                            <td class="data" >{{report?.unit_number}}</td>
                           </tr>
                           <tr class="notes">
                             <td class="label label-notes">{{'report_label_notes' | translate}}</td>
-                            <td class="data data-notes"><span class="notes-wrapper">{{report.notes}}</span></td>
+                            <td class="data data-notes"><span class="notes-wrapper">{{report?.notes}}</span></td>
                           </tr>
                           <!-- <tr>
                             <td class="data-notes" colspan="2" >
-                              <span class="notes-wrapper">{{report.notes}}</span>
+                              <span class="notes-wrapper">{{report?.notes}}</span>
                             </td>
                           </tr> -->
                         </tbody>
                       </table>
                     </div>
                   </ion-item>
-                <ion-item-options side="right">
-                  <button ion-button color="danger" (tap)="deleteReport(report, shift, $event)">
-                    <ion-icon name="trash"></ion-icon>
-                    {{"delete" | translate}}
-                  </button>
-                </ion-item-options>
-              </ion-item-sliding>
-              <ion-item-sliding #item{{i}} class="report-history-list-item-sliding" *ngIf="report.type==='Travel'">
-                <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
-                  <div class="report-history-report-item item-group-id" *ngIf="prefs.getShowID()">
-                    <span class="report-history-report-item-header item-id-label">ID</span>
-                    <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowRev()">
-                    <span class="report-history-report-item-header item-rev-label">Rev</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report._rev}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowTimes()">
-                    <span class="report-history-report-item-header item-rev-label">Date</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.report_date}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">Client</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.client}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">Location</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.location}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">LocID</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.location_id}}</span>
-                  </div>
-                  <div class="report-history-report-item">
-                    <span class="report-history-report-item-header">{{'travel' | translate}}&nbsp;&nbsp;</span>
-                    <span class="report-history-report-item-data">{{report.travel_location}}</span>
-                  </div>
-                  <div class="report-history-report-item">
-                    <span class="report-history-report-item-header">{{'travel_hours' | translate}}&nbsp;&nbsp;</span>
-                    <span class="report-history-report-item-data">{{report.time}}</span>
-                  </div>
-                </ion-item>
-                <ion-item-options side="right">
-                  <button ion-button color="danger" (tap)="deleteOtherReport(report, shift, $event)">
-                    <ion-icon name="trash"></ion-icon>
-                    {{"delete" | translate}}
-                  </button>
-                </ion-item-options>
-              </ion-item-sliding>
-              <ion-item-sliding #item{{i}} class="report-history-list-item-sliding" *ngIf="report.type==='Training'">
-                <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
-                  <div class="report-history-report-item item-group-id" *ngIf="prefs.getShowID()">
-                    <span class="report-history-report-item-header item-id-label">ID</span>
-                    <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowRev()">
-                    <span class="report-history-report-item-header item-rev-label">Rev</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report._rev}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowTimes()">
-                    <span class="report-history-report-item-header item-rev-label">Date</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.report_date}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">Client</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.client}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">Location</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.location}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">LocID</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.location_id}}</span>
-                  </div>
-                  <div class="report-history-report-item">
-                    <span class="report-history-report-item-header">{{'training' | translate}}&nbsp;&nbsp;</span>
-                    <span class="report-history-report-item-data">{{report.training_type}}</span>
-                  </div>
-                  <div class="report-history-report-item">
-                    <span class="report-history-report-item-header">{{'training_hours' | translate}}&nbsp;&nbsp;</span>
-                    <span class="report-history-report-item-data">{{report.time}}</span>
-                  </div>
-                </ion-item>
-                <ion-item-options side="right">
-                  <button ion-button color="danger" (tap)="deleteOtherReport(report, shift, $event)">
-                    <ion-icon name="trash"></ion-icon>
-                    {{"delete" | translate}}
-                  </button>
-                </ion-item-options>
-              </ion-item-sliding>
-              <!--
-                // M Training and Travel
-                // T Training
-                // Q Travel
-                // S Standby for Duncan
-                // E Sick Day or Sick Hrs
-                // H Holiday
-                // V Vacation
-              -->
-              <ion-item-sliding #item{{i}} class="report-history-list-item-sliding" *ngIf="report.type==='Standby'">
-                <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
-                  <div class="report-history-report-item item-group-id" *ngIf="prefs.getShowID()">
-                    <span class="report-history-report-item-header item-id-label">ID</span>
-                    <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowRev()">
-                    <span class="report-history-report-item-header item-rev-label">Rev</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report._rev}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowTimes()">
-                    <span class="report-history-report-item-header item-rev-label">Date</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.report_date}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">Client</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.client}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">Location</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.location}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">LocID</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.location_id}}</span>
-                  </div>
-                  <div class="report-history-report-item">
-                    <span class="report-history-report-item-header">{{'standby' | translate}}&nbsp;&nbsp;</span>
-                    <span class="report-history-report-item-data">{{report.time}}</span>
-                  </div>
-                </ion-item>
-                <ion-item-options side="right">
-                  <button ion-button color="danger" (tap)="deleteOtherReport(report, shift, $event)">
-                    <ion-icon name="trash"></ion-icon>
-                    {{"delete" | translate}}
-                  </button>
-                </ion-item-options>
-              </ion-item-sliding>
-              <ion-item-sliding #item{{i}} class="report-history-list-item-sliding" *ngIf="report.type==='Standby: HB Duncan'">
-                <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
-                  <div class="report-history-report-item item-group-id" *ngIf="prefs.getShowID()">
-                    <span class="report-history-report-item-header item-id-label">ID</span>
-                    <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowRev()">
-                    <span class="report-history-report-item-header item-rev-label">Rev</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report._rev}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowTimes()">
-                    <span class="report-history-report-item-header item-rev-label">Date</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.report_date}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">Client</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.client}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">Location</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.location}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">LocID</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.location_id}}</span>
-                  </div>
-                  <div class="report-history-report-item">
-                    <span class="report-history-report-item-header">{{'standby_hb_duncan' | translate}}&nbsp;&nbsp;</span>
-                    <span class="report-history-report-item-data">{{report.time}}</span>
-                  </div>
-                </ion-item>
-                <ion-item-options side="right">
-                  <button ion-button color="danger" (tap)="deleteOtherReport(report, shift, $event)">
-                    <ion-icon name="trash"></ion-icon>
-                    {{"delete" | translate}}
-                  </button>
-                </ion-item-options>
-              </ion-item-sliding>
-              <ion-item-sliding #item{{i}} class="report-history-list-item-sliding" *ngIf="report.type==='Sick'">
-                <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
-                  <div class="report-history-report-item item-group-id" *ngIf="prefs.getShowID()">
-                    <span class="report-history-report-item-header item-id-label">ID</span>
-                    <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowRev()">
-                    <span class="report-history-report-item-header item-rev-label">Rev</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report._rev}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowTimes()">
-                    <span class="report-history-report-item-header item-rev-label">Date</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.report_date}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">Client</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.client}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">Location</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.location}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">LocID</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.location_id}}</span>
-                  </div>
-                  <div class="report-history-report-item">
-                    <span class="report-history-report-item-header">{{'sick' | translate}}&nbsp;&nbsp;</span>
-                    <span class="report-history-report-item-data">{{report.time}}</span>
-                  </div>
-                </ion-item>
-                <ion-item-options side="right">
-                  <button ion-button color="danger" (tap)="deleteOtherReport(report, shift, $event)">
-                    <ion-icon name="trash"></ion-icon>
-                    {{"delete" | translate}}
-                  </button>
-                </ion-item-options>
-              </ion-item-sliding>
-              <ion-item-sliding #item{{i}} class="report-history-list-item-sliding" *ngIf="report.type==='Vacation'">
-                <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
-                  <div class="report-history-report-item item-group-id" *ngIf="prefs.getShowID()">
-                    <span class="report-history-report-item-header item-id-label">ID</span>
-                    <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowRev()">
-                    <span class="report-history-report-item-header item-rev-label">Rev</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report._rev}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowTimes()">
-                    <span class="report-history-report-item-header item-rev-label">Date</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.report_date}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">Client</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.client}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">Location</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.location}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">LocID</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.location_id}}</span>
-                  </div>
-                  <div class="report-history-report-item">
-                    <span class="report-history-report-item-header">{{'vacation' | translate}}&nbsp;&nbsp;</span>
-                    <span class="report-history-report-item-data">{{report.time}}</span>
-                  </div>
-                </ion-item>
-                <ion-item-options side="right">
-                  <button ion-button color="danger" (tap)="deleteOtherReport(report, shift, $event)">
-                    <ion-icon name="trash"></ion-icon>
-                    {{"delete" | translate}}
-                  </button>
-                </ion-item-options>
-              </ion-item-sliding>
-              <ion-item-sliding #item{{i}} class="report-history-list-item-sliding" *ngIf="report.type==='Holiday'">
-                <ion-item class="report-history-list-item" (tap)="itemTapped($event, report, shift)">
-                  <div class="report-history-report-item item-group-id" *ngIf="prefs.getShowID()">
-                    <span class="report-history-report-item-header item-id-label">ID</span>
-                    <span class="report-history-report-item-data item-id-data">{{report._id}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowRev()">
-                    <span class="report-history-report-item-header item-rev-label">Rev</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report._rev}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowTimes()">
-                    <span class="report-history-report-item-header item-rev-label">Date</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.report_date}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">Client</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.client}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">Location</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.location}}</span>
-                  </div>
-                  <div class="report-history-report-item item-group-rev" *ngIf="prefs.getShowSite()">
-                    <span class="report-history-report-item-header item-rev-label">LocID</span>
-                    <span class="report-history-report-item-data item-rev-data">{{report.location_id}}</span>
-                  </div>
-                  <div class="report-history-report-item">
-                    <span class="report-history-report-item-header">{{'holiday' | translate}}&nbsp;&nbsp;</span>
-                    <span class="report-history-report-item-data">{{report.time}}</span>
-                  </div>
-                </ion-item>
-                <ion-item-options side="right">
-                  <button ion-button color="danger" (tap)="deleteOtherReport(report, shift, $event)">
-                    <ion-icon name="trash"></ion-icon>
-                    {{"delete" | translate}}
-                  </button>
-                </ion-item-options>
-              </ion-item-sliding>
+                  <ion-item-options side="right">
+                    <button ion-button color="danger" (tap)="deleteReport(report, shift, $event)">
+                      <ion-icon name="trash"></ion-icon>
+                      {{"delete" | translate}}
+                    </button>
+                  </ion-item-options>
+                </ion-item-sliding>
+                <ion-item-sliding class="report-history-list-item-sliding" *ngIf="getReportType(report) === 'other'">
+                  <ion-item class="report-history-list-item" [class.flagged]="report && report?.flagged" (tap)="itemTapped($event, report, shift)">
+                    <div class="report-wrapper">
+                      <table class="report-table">
+                        <tbody>
+                          <tr *ngIf="prefs.getShowID()">
+                            <td class="label">ID</td>
+                            <td class="data" >{{report?._id}}</td>
+                          </tr>
+                          <tr *ngIf="prefs.getShowRev()">
+                            <td class="label">Rev</td>
+                            <td class="data" >{{report?._rev}}</td>
+                          </tr>
+                          <!-- <tr *ngIf="prefs.getShowTimes()">
+                            <td class="label">Date</td>
+                            <td class="data" >{{report?.report_date}}</td>
+                          </tr> -->
+                          <!-- <tr *ngIf="prefs.getShowSite()">
+                            <td class="label">Client</td>
+                            <td class="data" >{{report?.client}}</td>
+                          </tr>
+                          <tr *ngIf="prefs.getShowSite()">
+                            <td class="label">Location</td>
+                            <td class="data" >{{report?.location}}</td>
+                          </tr>
+                          <tr *ngIf="prefs.getShowSite()">
+                            <td class="label">LocID</td>
+                            <td class="data" >{{report?.location_id}}</td>
+                          </tr> -->
+                          <div [ngSwitch]="getReportOtherType(report)">
+                            <ng-container #reportTravelContainer *ngSwitchCase="'Travel'">
+                              <tr>
+                                <td class="label">{{'travel' | translate}}</td>
+                                <td class="data" >{{report?.travel_location}}</td>
+                              </tr>
+                              <tr>
+                                <td class="label">{{'travel_hours' | translate}}</td>
+                                <td class="data" >{{report?.time}}</td>
+                              </tr>
+                            </ng-container>
+                            <ng-container #reportTrainingContainer *ngSwitchCase="'Training'">
+                              <tr>
+                                <td class="label">{{'training' | translate}}</td>
+                                <td class="data" >{{report?.training_type}}</td>
+                              </tr>
+                              <tr>
+                                <td class="label">{{'training_hours' | translate}}</td>
+                                <td class="data" >{{report?.time}}</td>
+                              </tr>
+                            </ng-container>
+
+                            <ng-container #reportStandbyContainer *ngSwitchCase="'Standby' || 'Standby: HB Duncan'">
+                              <tr *ngIf="prefs.getShowSite()">
+                                <td class="label">Client</td>
+                                <td class="data" >{{report?.client}}</td>
+                              </tr>
+                              <tr *ngIf="prefs.getShowSite()">
+                                <td class="label">Location</td>
+                                <td class="data" >{{report?.location}}</td>
+                              </tr>
+                              <tr *ngIf="prefs.getShowSite()">
+                                <td class="label">LocID</td>
+                                <td class="data" >{{report?.location_id}}</td>
+                              </tr>
+                              <tr>
+                                <td class="label">{{'standby' | translate}}</td>
+                                <td class="data" >{{report?.time}}</td>
+                              </tr>
+                            </ng-container>
+
+                            <ng-container #reportSickContainer *ngSwitchCase="'Sick'">
+                              <tr>
+                                <td class="label">{{'sick' | translate}}</td>
+                                <td class="data" >{{report?.time}}</td>
+                              </tr>
+                            </ng-container>
+
+                            <ng-container #reportVacationContainer *ngSwitchCase="'Vacation'">
+                              <tr>
+                                <td class="label">{{'vacation' | translate}}</td>
+                                <td class="data" >{{report?.time}}</td>
+                              </tr>
+                            </ng-container>
+
+                            <ng-container #reportHolidayContainer *ngSwitchCase="'Holiday'">
+                              <tr>
+                                <td class="label">{{'holiday' | translate}}</td>
+                                <td class="data" >{{report?.time}}</td>
+                              </tr>
+                            </ng-container>
+
+                          </div>
+                          <tr class="notes">
+                            <td class="label label-notes">{{'report_label_notes' | translate}}</td>
+                            <td class="data data-notes"><span class="notes-wrapper">{{report?.notes}}</span></td>
+                          </tr>
+                          <!-- <tr>
+                            <td class="data-notes" colspan="2" >
+                              <span class="notes-wrapper">{{report?.notes}}</span>
+                            </td>
+                          </tr> -->
+                        </tbody>
+                      </table>
+                    </div>
+                  </ion-item>
+                  <ion-item-options side="right">
+                    <button ion-button color="danger" (tap)="deleteOtherReport(report, shift, $event)">
+                      <ion-icon name="trash"></ion-icon>
+                      {{"delete" | translate}}
+                    </button>
+                  </ion-item-options>
+                </ion-item-sliding>
+              </div>
             </div>
-          </div>
-          <div class="report-history-reports-subcontainer" *ngIf="shift.getAllShiftReports().length === 0">
-            <ion-item class="report-history-list-item">
-              <div class="report-history-no-report">{{'no_reports_for_date' | translate}} </div>
-            </ion-item>
-          </div>
-        </ion-item-group>
-      </ion-list>
+            <div class="report-history-reports-subcontainer" *ngIf="shift?.getAllShiftReports()?.length === 0">
+              <ion-item class="report-history-list-item">
+                <div class="report-history-no-report">{{'no_reports_for_date' | translate}} </div>
+              </ion-item>
+            </div>
+          </ion-list>
+        </div>
+      </div>
     </div>
   <!-- </ion-refresher> -->
 </ion-content>

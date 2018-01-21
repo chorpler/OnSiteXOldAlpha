@@ -10,10 +10,38 @@ export interface Tab {
 
 export interface SelectString {
   name     : string;
-  value   ?: string;
   fullName?: string;
+  value   ?: string;
   code    ?: string;
   hours   ?: number;
+}
+
+export interface SESAClient {
+  name     : string;
+  fullName : string;
+  value   ?: string;
+  code    ?: string;
+}
+
+export interface SESALocation {
+  name     : string;
+  fullName : string;
+  value   ?: string;
+  code    ?: string;
+}
+
+export interface SESALocID {
+  name     : string;
+  fullName : string;
+  value   ?: string;
+  code    ?: string;
+}
+
+export type CLL = SESAClient | SESALocation | SESALocID;
+
+export interface ReportFlag {
+  field  : string;
+  reason : string;
 }
 
 export enum Pages {

@@ -227,11 +227,9 @@
 
 @font-face {
   font-family: 'icomoon';
-  src:  url('../assets/fonts/icomoon.eot');
   src:  url('../assets/fonts/icomoon.eot') format('embedded-opentype'),
     url('../assets/fonts/icomoon.ttf') format('truetype'),
-    url('../assets/fonts/icomoon.woff') format('woff'),
-    url('../assets/fonts/icomoon.svg#icomoon') format('svg');
+    url('../assets/fonts/icomoon.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }
@@ -252,6 +250,48 @@
 }
 /* IcoMoon custom OnSiteX font */
 
+.icomoon-circled-0:before {
+  content: "\e96f";
+}
+.icomoon-circled-1:before {
+  content: "\e970";
+}
+.icomoon-circled-2:before {
+  content: "\e971";
+}
+.icomoon-circled-3:before {
+  content: "\e972";
+}
+.icomoon-circled-4:before {
+  content: "\e973";
+}
+.icomoon-circled-5:before {
+  content: "\e974";
+}
+.icomoon-circled-6:before {
+  content: "\e975";
+}
+.icomoon-circled-7:before {
+  content: "\e976";
+}
+.icomoon-circled-8:before {
+  content: "\e977";
+}
+.icomoon-circled-9:before {
+  content: "\e994";
+}
+.icomoon-flag-blank:before {
+  content: "\e995";
+}
+.icomoon-flag-checkered:before {
+  content: "\e996";
+}
+.icomoon-box-check-yes:before {
+  content: "\e997";
+}
+.icomoon-box-check-no:before {
+  content: "\e998";
+}
 .icomoon-globe:before {
   content: "\e992";
 }
@@ -620,60 +660,6 @@
 .icomoon-reports:before {
   content: "\e962";
 }
-// .icomoon-reports .path1:before {
-//   content: "\e962";
-//   color: rgb(0, 0, 0);
-// }
-// .icomoon-reports .path2:before {
-//   content: "\e963";
-//   margin-left: -1em;
-//   color: rgb(0, 0, 0);
-// }
-// .icomoon-reports .path3:before {
-//   content: "\e964";
-//   margin-left: -1em;
-//   color: rgb(0, 0, 0);
-// }
-// .icomoon-reports .path4:before {
-//   content: "\e965";
-//   margin-left: -1em;
-//   color: rgb(0, 0, 0);
-// }
-// .icomoon-reports .path5:before {
-//   content: "\e966";
-//   margin-left: -1em;
-//   color: rgb(0, 0, 0);
-// }
-// .icomoon-reports .path6:before {
-//   content: "\e967";
-//   margin-left: -1em;
-//   color: rgb(255, 255, 255);
-// }
-// .icomoon-reports .path7:before {
-//   content: "\e968";
-//   margin-left: -1em;
-//   color: rgb(0, 0, 0);
-// }
-// .icomoon-reports .path8:before {
-//   content: "\e969";
-//   margin-left: -1em;
-//   color: rgb(0, 0, 0);
-// }
-// .icomoon-reports .path9:before {
-//   content: "\e96a";
-//   margin-left: -1em;
-//   color: rgb(0, 0, 0);
-// }
-// .icomoon-reports .path10:before {
-//   content: "\e96b";
-//   margin-left: -1em;
-//   color: rgb(0, 0, 0);
-// }
-// .icomoon-reports .path11:before {
-//   content: "\e96c";
-//   margin-left: -1em;
-//   color: rgb(0, 0, 0);
-// }
 .icomoon-reports-flagged:before {
   content: "\e96d";
 }

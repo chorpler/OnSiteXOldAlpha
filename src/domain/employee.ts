@@ -373,10 +373,10 @@ export class Employee implements IFEmployee {
   }
 
   public setJobsite(site:Jobsite) {
-    let site_number = site.site_number;
-    let site_id     = site.getSiteSelectName();
+    let site_number  = site.site_number;
+    let site_id      = site.getSiteSelectName();
     this.site_number = site_number;
-    this.workSite = site_id;
+    this.workSite    = site_id;
   }
 
   public isOfficeEmployee() {

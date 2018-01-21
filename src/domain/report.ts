@@ -1,8 +1,9 @@
 /**
  * Name: Report domain class
- * Vers: 6.5.2
- * Date: 2018-01-18
+ * Vers: 6.5.3
+ * Date: 2018-01-20
  * Auth: David Sargeant
+ * Logs: 6.5.3 2018-01-20: Added flagged_field and flagged_reason fields, and setFlag method
  * Logs: 6.5.2 2018-01-18: Added crew_number field
  * Logs: 6.5.1 2017-12-15: Added flagged field, invoiced field, and invoices array
  * Logs: 6.4.2 2017-11-14: Fixed it so Excel dates in string format will also read in
@@ -12,6 +13,7 @@
 
 import { sprintf                                 } from 'sprintf-js'              ;
 import { Log, isMoment, Moment, moment, oo       } from 'config/config.functions' ;
+import { ReportFlag                              } from 'config/config.types'     ;
 import { Employee, Shift, PayrollPeriod, Jobsite } from 'domain/domain-classes'   ;
 
 export class Report {
@@ -46,6 +48,7 @@ export class Report {
   public split_count      : number = 0;
   public split_from       : string = "";
   public flagged          : boolean = false;
+  public flagged_fields   : Array<ReportFlag> = [];
   public preauthed        : boolean = false;
   public preauth_dates    : Array<any> = [];
   public invoiced         : boolean = false;;
@@ -120,6 +123,7 @@ export class Report {
       this.split_count       = 0                                       ;
       this.split_from        = ""                                      ;
       this.flagged           = false                                   ;
+      this.flagged_fields    = []                                      ;
       this.preauthed         = false                                   ;
       this.preauth_dates     = []                                      ;
       this.invoiced          = false                                   ;
@@ -157,6 +161,7 @@ export class Report {
       ["invoiced_dates"  , "invoiced_dates"    ] ,
       ["change_log"      , "change_log"        ] ,
       ["flagged"         , "flagged"           ] ,
+      ["flagged_fields"  , "flagged_fields"    ] ,
       ["preauthed"       , "preauthed"         ] ,
       ["preauth_dates"   , "preauth_dates"     ] ,
       ["invoiced"        , "invoiced"          ] ,
@@ -276,6 +281,7 @@ export class Report {
       ["invoiced"        , "invoiced"          ] ,
       ["invoiced_dates"  , "invoiced_dates"    ] ,
       ["flagged"         , "flagged"           ] ,
+      ["flagged_fields"  , "flagged_fields"    ] ,
       ["preauthed"       , "preauthed"         ] ,
       ["preauth_dates"   , "preauth_dates"     ] ,
       ["invoiced"        , "invoiced"          ] ,
@@ -406,8 +412,8 @@ export class Report {
     if (isMoment(start) && isMoment(end) && start !== null && end !== null && typeof time === 'number') {
       let check = moment(start).add(time, 'hours');
       if (!check.isSame(end)) {
-        Log.e("WO.checkTimeCalculations(): Start time plus repair hours does not equal end time!");
-        Log.e("Start: %s\nEnd: %s\nHours: %s", start.format(), end.format(), time);
+        Log.w("WO.checkTimeCalculations(): Start time plus repair hours does not equal end time!");
+        Log.w("Start: %s\nEnd: %s\nHours: %s", start.format(), end.format(), time);
         this.adjustEndTime();
       }
     } else if (isMoment(start) && typeof time === 'number') {
@@ -477,9 +483,81 @@ export class Report {
     this.client      = site.client.name;
     this.location    = site.location.name;
     this.location_id = site.locID.name;
-    this.workSite    = site.getSiteName();
+    this.workSite    = site.getSiteSelectName();
     this.site_number = site.site_number;
     return this;
+  }
+
+  public get flags():number {
+    return this.flagged_fields && this.flagged_fields.length ? this.flagged_fields.length : 0;
+  }
+
+  public getFlagNumber(value:number) {
+    if(this.flagged_fields && this.flagged_fields.length > value) {
+      return this.flagged_fields[value];
+    } else {
+      Log.w(`Report.getFlagNumber(): Attempted to access flag '${value}' but flagged_fields has only ${this.flagged_fields.length} elements!`);
+      return null;
+    }
+  }
+
+  public isFlagged():boolean {
+    return Boolean(this.flags);
+  }
+
+  public isFieldFlagged(field:string) {
+    if(this.flagged_fields && this.flagged_fields.length) {
+      let flag = this.flagged_fields.find((a:ReportFlag) => {
+        return a.field === field;
+      });
+      if(flag) {
+        return true;
+      }
+    }
+    let keys = Object.keys(this);
+    if(keys.indexOf(field) === -1 && field !== 'manual') {
+      Log.w(`Report.isFieldFlagged(): no such field '${field}'!`);
+    }
+    return false;
+  }
+
+  public setFlag(field:string, reason:string) {
+    let flag:ReportFlag = {
+      field: field,
+      reason: reason
+    };
+    this.flagged_fields = this.flagged_fields || [];
+    if(field === 'manual') {
+      this.flagged_fields.push(flag);
+    } else {
+      let existingFlag = this.flagged_fields.find((a:ReportFlag) => {
+        return a.field === field;
+      });
+      if(existingFlag) {
+        existingFlag.field  = field;
+        existingFlag.reason = reason;
+      } else {
+        this.flagged_fields.push(flag);
+      }
+    }
+  }
+
+  public unsetFlag(field:string) {
+    this.flagged_fields = this.flagged_fields || [];
+    let index = this.flagged_fields.findIndex((a:ReportFlag) => {
+      return a.field === field;
+    });
+    if(index > -1) {
+      let flag:ReportFlag = this.flagged_fields.splice(index, 1)[0];
+      return flag;
+    } else {
+      return undefined;
+    }
+  }
+
+  public clearFlags() {
+    this.flagged_fields = [];
+    this.flagged = false;
   }
 
   // public splitReportID(reportID?:string) {

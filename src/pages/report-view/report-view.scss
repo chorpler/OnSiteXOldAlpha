@@ -22,13 +22,45 @@ ion-content {
 
 page-report-view {
   .flag-icon {
+    font-size: 48px;
     transform: rotate(45deg);
-    zoom: 0.8;
+    // zoom: 0.8;
     position: relative;
     top: 10px;
   }
   .flagged {
-    color: red;
+    color: rgba(175, 0, 0, 1.0);
+  }
+  .flag-badge {
+    position: relative;
+    left: -18px;
+    top: -5px;
+    color: black;
+    background-color: white;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-content: center;
+    text-align: center;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 2px;
+    padding-right: 2px;
+    // padding-left: 6px;
+    // padding-right: 6px;
+    width: 22px;
+    border-radius: 15px;
+    visibility: hidden;
+    &.is-flagged {
+      visibility: visible;
+      color: white;
+      background-color: rgba(255, 0, 0, 0.9);
+    }
+    .flag-badge-text {
+      flex: 0 1 auto;
+      font-size: 18px;
+      text-align: center;
+    }
   }
   .date {
     color: blue;
@@ -89,6 +121,7 @@ page-report-view {
       // color: grey;
       color: rgba(153, 153, 153, 1.0);
       text-align: left;
+
       // border: 1px dotted lightgrey;
     }
     .data {
@@ -99,7 +132,7 @@ page-report-view {
     }
   }
   .report-form-list {
-    ion-item.crew-number {
+    ion-item.item-with-full-select {
       display: flex;
       flex-direction: column;
       flex-wrap: wrap;
@@ -126,6 +159,10 @@ page-report-view {
     padding-left: 8px;
     padding-top: 8px;
     padding-bottom: 8px;
+  }
+
+  .input-error {
+    background-color: rgba(255, 0, 0, 0.5);
   }
 
   .shift-date-select-results {

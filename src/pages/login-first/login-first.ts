@@ -152,6 +152,7 @@ export class LoginFirst implements OnInit {
           'reports_other',
           'config',
           'scheduling',
+          'jobsites',
         ];
         let syncText = lang['synchronizing_db'];
         for(let key of dbs) {

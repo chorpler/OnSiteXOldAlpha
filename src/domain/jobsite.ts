@@ -1,8 +1,10 @@
 /**
  * Name: Jobsite domain class
- * Vers: 3.0.3
+ * Vers: 3.1.2
  * Date: 2018-01-20
  * Auth: David Sargeant
+ * Logs: 3.1.2 2018-01-20: Changed getSiteSelectName() to add optional keepCase parameter
+ * Logs: 3.1.1 2018-01-20: Changed getSiteSelectName() to return different value for UNASSIGNED site
  * Logs: 3.0.3 2018-01-20: Added siteClientAndLocation
  * Logs: 3.0.2 2018-01-16: Added lunch_hour_time property
  * Logs: 3.0.1 2017-12-15: Merged app and console classes
@@ -128,7 +130,7 @@ export class Jobsite {
 
   public serialize() {
     var keys = Object.keys(this);
-    let doc = {};
+    let doc:any = {};
     for(let key of keys) {
       doc[key] = JSON.stringify(this[key]);
     }
@@ -166,27 +168,36 @@ export class Jobsite {
     return siteName;
   }
 
-  public getSiteSelectName() {
+  public getSiteSelectName(keepCase?:boolean) {
     // let cli = this.client.fullName.toUpperCase();
-    let cli = this.client.name.toUpperCase();
-    let loc = this.location.fullName.toUpperCase();
-    let lid = this.locID.name.toUpperCase();
-    // let l2d = '';
-    // let laux = "NA";
-    // if (this.loc2nd && this.loc2nd.name) { laux = this.loc2nd.name; }
-    // if (laux !== "NA" && laux !== "N/A") {
-      // l2d = this.loc2nd.fullName.toUpperCase();
-    // }
+    let cli = this.client.name;
+    let loc = this.location.fullName;
+    let lid = this.locID.name;
+    if(!keepCase) {
+      cli = cli.toUpperCase();
+      loc = loc.toUpperCase();
+      lid = lid.toUpperCase();
+    }
+    if(cli === 'XX') {
+      return keepCase ? 'Unassigned' : 'UNASSIGNED';
+    } else {
+      // let l2d = '';
+      // let laux = "NA";
+      // if (this.loc2nd && this.loc2nd.name) { laux = this.loc2nd.name; }
+      // if (laux !== "NA" && laux !== "N/A") {
+        // l2d = this.loc2nd.fullName.toUpperCase();
+      // }
 
-    let siteName = `${cli}`;
-    siteName    += ` ${loc}`;
+      let siteName = `${cli}`;
+      siteName    += ` ${loc}`;
 
-    // if (laux !== "NA" && laux !== "N/A") {
-      // siteName += ` ${l2d}`;
-    // }
+      // if (laux !== "NA" && laux !== "N/A") {
+        // siteName += ` ${l2d}`;
+      // }
 
-    siteName += ` ${lid}`;
-    return siteName;
+      siteName += ` ${lid}`;
+      return siteName;
+    }
   }
 
   public getScheduleName() {

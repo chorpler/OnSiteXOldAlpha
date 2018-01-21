@@ -1,24 +1,52 @@
 // import { TabsComponent                         } from 'components/tabs/tabs'    ;
-import { sprintf                               } from 'sprintf-js'              ;
-import { Component, OnInit, OnDestroy, NgZone  } from '@angular/core'           ;
-import { AfterViewInit,                        } from '@angular/core'           ;
-import { FormGroup, FormControl, Validators    } from "@angular/forms"          ;
-import { IonicPage, NavController, NavParams   } from 'ionic-angular'           ;
-import { ViewController                        } from 'ionic-angular'           ;
-import { TranslateService                      } from '@ngx-translate/core'     ;
-import { Log, sizeOf, isMoment, moment, Moment } from 'config/config.functions' ;
-import { DBService                               } from 'providers/db-service'      ;
-import { UserData                              } from 'providers/user-data'     ;
-import { AlertService                          } from 'providers/alerts'        ;
-import { Employee,Jobsite                      } from 'domain/domain-classes'   ;
-import { TabsService                           } from 'providers/tabs-service'  ;
-import { Pages                                 } from 'config/config.types'     ;
+import { sprintf                                  } from 'sprintf-js'              ;
+import { Component, OnInit, OnDestroy, NgZone     } from '@angular/core'           ;
+import { AfterViewInit,                           } from '@angular/core'           ;
+import { FormGroup, FormControl, Validators       } from "@angular/forms"          ;
+import { IonicPage, NavController, NavParams      } from 'ionic-angular'           ;
+import { ViewController                           } from 'ionic-angular'           ;
+import { TranslateService                         } from '@ngx-translate/core'     ;
+import { Log, sizeOf, isMoment, moment, Moment    } from 'config/config.functions' ;
+import { SESAClient, SESALocation, SESALocID, CLL } from 'config/config.types'     ;
+import { DBService                                } from 'providers/db-service'    ;
+import { UserData                                 } from 'providers/user-data'     ;
+import { AlertService                             } from 'providers/alerts'        ;
+import { Employee,Jobsite                         } from 'domain/domain-classes'   ;
+import { TabsService                              } from 'providers/tabs-service'  ;
+import { Pages                                    } from 'config/config.types'     ;
 
-export const _cmp = (a,b) => {
-  if(a === undefined || b === undefined || a['fullName'] === undefined || b['fullName'] === undefined) {
-    return false;
+
+export const _matchCLL = (a:CLL, b:string):boolean => {
+  let cA1 = a.name.toUpperCase();
+  let cA2 = a.fullName.toUpperCase();
+  let cB = b.toUpperCase();
+  return cA1 === cB || cA2 === cB;
+}
+export const _cmp = (a:CLL|string, b:CLL|string):boolean => {
+  // if(a === undefined || b === undefined || a['fullName'] === undefined || b['fullName'] === undefined) {
+  //   return false;
+  // } else {
+  //   return a['fullName'].toUpperCase() === b['fullName'].toUpperCase();
+  // }
+  if(typeof a === 'object') {
+    if(typeof b === 'object') {
+      /* Both objects */
+      return _matchCLL(a, b.name);
+    } else {
+      /* a is object, b is string */
+      return _matchCLL(a, b);
+    }
   } else {
-    return a['fullName'].toUpperCase() === b['fullName'].toUpperCase();
+    if(typeof b === 'object') {
+      /* b is object, a is string */
+      return _matchCLL(b, a);
+    }
+  }
+  /* a and b are both strings */
+  if(a.toUpperCase() === b.toUpperCase()) {
+    return true;
+  } else {
+    return false;
   }
 };
 
@@ -38,6 +66,18 @@ export const _sort = (a,b,sortField?) => {
   return a[field] < b[field] ? -1 : a[field] > b[field] ? 1 : 0;
 }
 
+export const _sortSites = (a:Jobsite, b:Jobsite):number => {
+  let dA = a.getSiteSelectName();
+  let dB = b.getSiteSelectName();
+  return dA > dB ? 1 : dA < dB ? -1 : 0;
+}
+
+export const _sortCLL = (a:CLL, b:CLL):number => {
+  let dA = a.fullName;
+  let dB = b.fullName;
+  return dA > dB ? 1 : dA < dB ? -1 : 0;
+}
+
 @IonicPage({
   name: 'User'
 })
@@ -55,26 +95,25 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
   site              : Jobsite                       ;
   static sites      : Array<Jobsite> = []           ;
   sites             : Array<Jobsite> = TechSettingsPage.sites;
-  clients           : Array<any>                    ;
-  locations         : Array<any>                    ;
-  locIDs            : Array<any>                    ;
+  clients           : Array<SESAClient>             ;
+  locations         : Array<SESALocation>           ;
+  locIDs            : Array<SESALocID>              ;
   shiftTimes        : Array<any>                    ;
   shiftLengths      : Array<number>                 ;
   shiftStartTimes   : Array<number>                 ;
   shiftRotations    : Array<string>                 ;
   loc2nds           : Array<string>                 ;
   sesaConfig        : any        = {}               ;
-  techSettings      : FormGroup                     ;
+  // techSettings      : FormGroup                     ;
   firstName         : string                        ;
   lastName          : string                        ;
   technician        : string                        ;
-  client            : any                           ;
-  location          : any                           ;
-  locID             : any                           ;
-  allclient         : Array<any>                    ;
-  alllocation       : Array<any>                    ;
-  alllocID          : Array<any>                    ;
-  allloc2nd         : Array<any>                    ;
+  client            : SESAClient                    ;
+  location          : SESALocation                  ;
+  locID             : SESALocID                     ;
+  allclient         : Array<SESAClient>             ;
+  alllocation       : Array<SESALocation>           ;
+  alllocID          : Array<SESALocID>              ;
   shift             : any                           ;
   shiftLength       : any                           ;
   shiftStartTime    : any                           ;
@@ -107,6 +146,8 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
     window["techsettings"] = this;
     window["_cmp"] = _cmp;
     window["_dedupe"] = _dedupe;
+    window["_sortSites"] = _sortSites;
+    window["_sortCLL"] = _sortCLL;
     window["_sort"] = _sort;
   }
 
@@ -149,7 +190,9 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
       this.tech = new Employee();
       this.tech.readFromDoc(this.techProfile);
       this.ud.setTechProfile(this.techProfile);
-      this.sites = this.ud.getData('sites');
+      this.sites = this.ud.getData('sites').filter((a:Jobsite) => {
+        return a.site_active && a.site_number !== 10000006;
+      }).sort(_sortSites);
       // this.site = this.ud.get
       this.initFormData();
       this.initializeSites();
@@ -165,153 +208,171 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
   }
 
   private initializeForm() {
-    this.techSettings = new FormGroup({
-      'lastName'      : new FormControl(this.lastName       , Validators.required) ,
-      'firstName'     : new FormControl(this.firstName      , Validators.required) ,
-      'client'        : new FormControl(this.client         , Validators.required) ,
-      'location'      : new FormControl(this.location       , Validators.required) ,
-      'locID'         : new FormControl(this.locID          , Validators.required) ,
-      'shift'         : new FormControl(this.shift          , Validators.required) ,
-      'shiftLength'   : new FormControl(this.shiftLength    , Validators.required) ,
-      'shiftStartTime': new FormControl(this.shiftStartTime , Validators.required)
-    });
-  }
-
-  public initializeFormListeners() {
-    let _client   = this.techSettings.get('client');
-    let _location = this.techSettings.get('location');
-    let _locID    = this.techSettings.get('locID');
-
+    // this.techSettings = new FormGroup({
+    //   'lastName'      : new FormControl(this.lastName       , Validators.required) ,
+    //   'firstName'     : new FormControl(this.firstName      , Validators.required) ,
+    //   'client'        : new FormControl(this.client         , Validators.required) ,
+    //   'location'      : new FormControl(this.location       , Validators.required) ,
+    //   'locID'         : new FormControl(this.locID          , Validators.required) ,
+    //   'shift'         : new FormControl(this.shift          , Validators.required) ,
+    //   'shiftLength'   : new FormControl(this.shiftLength    , Validators.required) ,
+    //   'shiftStartTime': new FormControl(this.shiftStartTime , Validators.required)
+    // });
     let cli = this.tech.client;
     let loc = this.tech.location;
     let lid = this.tech.locID;
-    let site = this.getSiteFromInfo(cli, loc, lid);
-    this.site = site;
-
-    _client.valueChanges.subscribe((value:any) => {
-      Log.l("CLIENTCHANGE: Client changed to:\n", value);
-      this.techSettingsReady = false;
-      // this.initializeSites();
-      let form = this.techSettings.getRawValue();
-      let location = form.location;
-      let locid    = form.locID;
-      let locations = this.sites.filter((obj,pos,arr) => {return _cmp(value,obj['client'])});
-      let tmpLocations = _dedupe(locations.map(obj => obj['location'])).sort(_sort);
-      let loc = tmpLocations.find(a=>{return a['name']===location['name'];}) || tmpLocations[0];
-      let locIDs = locations.filter((obj,pos,arr) => { return _cmp(loc,obj['location'])})
-      let tmpLocIDs = _dedupe(locIDs.map(obj => obj['locID'])).sort(_sort);
-      let lid       = tmpLocIDs.find(a=>{return a['name']===locid['name']}) || tmpLocIDs[0];
-
-      Log.l(`CLIENTCHANGE: location is ${location.fullName}, got locations and locIDs:\n`, tmpLocations);
-      Log.l(tmpLocIDs);
-      this.locations = tmpLocations;
-      this.locIDs    = tmpLocIDs;
-      this.location = loc;
-      this.locID    = lid;
-      _location.setValue(loc, {emitEvent: false});
-      _locID.setValue(lid, {emitEvent: false});
-      // if(tmpLocations.length) {
-      //   if(loc) {
-      //     setTimeout(() => {
-      //       _location.setValue({name: loc, emitEvent: false});
-      //     },100);
-      //   } else {
-      //     setTimeout(() => {
-      //       _location.setValue({name: this.locations[0], emitEvent: false});
-      //     }, 100);
-      //   }
-      // }
-      this.techSettingsReady = true;
+    let unassigned:Jobsite = this.sites.find((a:Jobsite) => {
+      return a.site_number == 1;
+    });
+    let site:Jobsite = this.sites.find((a:Jobsite) => {
+      return _matchCLL(a.client, cli) && _matchCLL(a.location, loc) && _matchCLL(a.locID, lid);
     });
 
-    _location.valueChanges.subscribe((value:any) => {
-      let client    = this.techSettings.getRawValue().client;
-      Log.l(`LOCATIONCHANGE: Client is '${client.fullName}', location changed to '${value.fullName}' out of these:\n`, this.locations);
-      // Log.l(this.locations);
+    // let site = this.getSiteFromInfo(cli, loc, lid);
+    this.site = site || unassigned;
+  }
 
-      let locations = this.sites.filter((obj,pos,arr) => {return _cmp(client,obj['client'])});
-      let locIDs    = locations.filter((obj, pos, arr) => {return _cmp(value,obj['location'])});
-      Log.l("LOCATIONCHANGE: ended up with locations and locIDs:\n", locations);
-      Log.l(locIDs);
-      if(locIDs.length) {
-        this.locIDs = _dedupe(locIDs.map(obj => obj['locID'])).sort(_sort);
-        Log.l("LOCATIONCHANGE: Got locIDs:\n", this.locIDs);
-        if(this.locIDs.length) {
-          let lid = this.locIDs.find(a=>{return a['name']==='MNSHOP';});
-          if(lid) {
-            this.locID = lid;
-            setTimeout(() => {
-              _locID.setValue(lid, {emitEvent: false });
-            }, 100);
-          } else {
-            this.locID = this.locIDs[0];
-            setTimeout(() => {
-              _locID.setValue(this.locIDs[0], {emitEvent: false});
-            }, 100);
-          }
-        }
-      }
-    });
+  public initializeFormListeners() {
+    // let _client   = this.techSettings.get('client');
+    // let _location = this.techSettings.get('location');
+    // let _locID    = this.techSettings.get('locID');
 
-    _locID.valueChanges.subscribe((value:any) => {
-      Log.l("LOCIDCHANGE: LocID changed to:\n", value);
-    });
+    // let cli = this.tech.client;
+    // let loc = this.tech.location;
+    // let lid = this.tech.locID;
+    // let site = this.getSiteFromInfo(cli, loc, lid);
+    // this.site = site;
+
+    // _client.valueChanges.subscribe((value:CLL) => {
+    //   Log.l("CLIENTCHANGE: Client changed to:\n", value);
+    //   this.techSettingsReady = false;
+    //   // this.initializeSites();
+    //   let form = this.techSettings.getRawValue();
+    //   let location = form.location;
+    //   let locid    = form.locID;
+    //   let locations:Array<Jobsite> = this.sites.filter((a:Jobsite) => {return _cmp(value,a['client'])});
+    //   let tmpLocations:Array<CLL> = _dedupe(locations.map((a:Jobsite) => a.location)).sort(_sort);
+    //   let loc:CLL = tmpLocations.find((a:CLL) => {return a.name === location.name;}) || tmpLocations[0];
+    //   let locIDs:Array<Jobsite> = locations.filter((a:Jobsite) => { return _cmp(loc,a.location)})
+    //   let tmpLocIDs:Array<CLL> = _dedupe(locIDs.map((a:Jobsite) => a.locID)).sort(_sort);
+    //   let lid:CLL       = tmpLocIDs.find((a:CLL)=>{return a.name === locid.name}) || tmpLocIDs[0];
+
+    //   Log.l(`CLIENTCHANGE: location is ${location.fullName}, got locations and locIDs:\n`, tmpLocations);
+    //   Log.l(tmpLocIDs);
+    //   this.locations = tmpLocations;
+    //   this.locIDs    = tmpLocIDs;
+    //   this.location = loc;
+    //   this.locID    = lid;
+    //   _location.setValue(loc, {emitEvent: false});
+    //   _locID.setValue(lid, {emitEvent: false});
+    //   // if(tmpLocations.length) {
+    //   //   if(loc) {
+    //   //     setTimeout(() => {
+    //   //       _location.setValue({name: loc, emitEvent: false});
+    //   //     },100);
+    //   //   } else {
+    //   //     setTimeout(() => {
+    //   //       _location.setValue({name: this.locations[0], emitEvent: false});
+    //   //     }, 100);
+    //   //   }
+    //   // }
+    //   this.techSettingsReady = true;
+    // });
+
+    // _location.valueChanges.subscribe((value:any) => {
+    //   let client    = this.techSettings.getRawValue().client;
+    //   Log.l(`LOCATIONCHANGE: Client is '${client.fullName}', location changed to '${value.fullName}' out of these:\n`, this.locations);
+    //   // Log.l(this.locations);
+
+    //   let locations = this.sites.filter((obj,pos,arr) => {return _cmp(client,obj['client'])});
+    //   let locIDs    = locations.filter((obj, pos, arr) => {return _cmp(value,obj['location'])});
+    //   Log.l("LOCATIONCHANGE: ended up with locations and locIDs:\n", locations);
+    //   Log.l(locIDs);
+    //   if(locIDs.length) {
+    //     this.locIDs = _dedupe(locIDs.map(obj => obj['locID'])).sort(_sort);
+    //     Log.l("LOCATIONCHANGE: Got locIDs:\n", this.locIDs);
+    //     if(this.locIDs.length) {
+    //       let lid = this.locIDs.find(a=>{return a['name']==='MNSHOP';});
+    //       if(lid) {
+    //         this.locID = lid;
+    //         setTimeout(() => {
+    //           _locID.setValue(lid, {emitEvent: false });
+    //         }, 100);
+    //       } else {
+    //         this.locID = this.locIDs[0];
+    //         setTimeout(() => {
+    //           _locID.setValue(this.locIDs[0], {emitEvent: false});
+    //         }, 100);
+    //       }
+    //     }
+    //   }
+    // });
+
+    // _locID.valueChanges.subscribe((value:any) => {
+    //   Log.l("LOCIDCHANGE: LocID changed to:\n", value);
+    // });
   }
 
   public updateSite(site:Jobsite, event?:any) {
     Log.l("updateSite(): Updated site to:\n", site);
+    this.site = site;
     this.tech.site_number = site.site_number;
     let cli = site.client;
     let loc = site.location;
     let lid = site.locID;
+
+    // this.updateLocID(lid);
+    // this.updateLocation(loc);
     this.updateClient(cli);
-    this.updateLocation(loc);
-    this.updateLocID(lid);
   }
 
-  public updateClient(client:any, event?:any) {
+  public updateClient(client:SESAClient, event?:any) {
     Log.l("updateClient(): Updated to:\n", client);
-    let locid = this.locID;
-    let locations = this.sites.filter((obj, pos, arr) => { return _cmp(client, obj['client']) });
-    let tmpLocations = _dedupe(locations.map(obj => obj['location'])).sort(_sort);
-    let loc1 = tmpLocations.find(a => { return a['name'] === location['name']; });
-    let loc = loc1 ? loc1 : tmpLocations[0];
+    this.client = client;
+    let locid:SESALocID = this.locID;
+    let location:SESALocation = this.location;
+    let locations:Array<Jobsite> = this.sites.filter((a:Jobsite) => { return _cmp(client, a.client) });
+    let tmpLocations:Array<SESALocation> = _dedupe(locations.map((a:Jobsite) => a.location)).sort(_sortCLL);
+    let loc:SESALocation = tmpLocations.find((a:SESALocation) => { return _cmp(a, location); }) || tmpLocations[0];
+    // let loc = loc1 ? loc1 : tmpLocations[0];
     this.locations = tmpLocations;
     this.location = loc;
-    let locIDs = locations.filter((obj, pos, arr) => { return _cmp(loc, obj['location']) })
-    let tmpLocIDs = _dedupe(locIDs.map(obj => obj['locID'])).sort(_sort);
-    let lid1 = tmpLocIDs.find(a => { return a['name'].toUpperCase() === locid['name'].toUpperCase(); });
-    let lid2 = tmpLocIDs.find(a => { return a['name'].toUpperCase() === 'MNSHOP'; });
-    let lid = lid1 ? lid1 : lid2 ? lid2 : tmpLocIDs[0];
+    let locIDs:Array<Jobsite> = locations.filter((a:Jobsite) => { return _cmp(loc, a.location) })
+    let tmpLocIDs:Array<SESALocID> = _dedupe(locIDs.map((a:Jobsite) => a.locID)).sort(_sortCLL);
+    // let lid1:CLL = tmpLocIDs.find(a => { return a['name'].toUpperCase() === locid['name'].toUpperCase(); });
+    let lid1:SESALocID = tmpLocIDs.find((a:SESALocID) => { return _cmp(a, locid)})
+    let lid2:SESALocID = tmpLocIDs.find((a:SESALocID) => { return a.name.toUpperCase() === 'MNSHOP'; });
+    let lid:SESALocID = lid1 ? lid1 : lid2 ? lid2 : tmpLocIDs[0];
     this.locIDs = tmpLocIDs;
     this.locID = lid;
 
-    let site = this.getSiteFromInfo(client, loc, lid);
+    let site:Jobsite = this.getSiteFromInfo(client, loc, lid);
+
     this.setTechTimes();
 
     Log.l(`CLIENTCHANGE: Client ${client.fullName}, location ${loc.fullName}, locID ${lid.fullName}.\ngot locations and locIDs:\n`, tmpLocations);
     Log.l(tmpLocIDs);
   }
 
-  public updateLocation(location:any, event?:any) {
+  public updateLocation(location:SESALocation, event?:any) {
     Log.l("updateLocation(): Updated to:\n", location);
-    let client = this.client;
+    let client:SESAClient = this.client;
     // let client = this.techSettings.getRawValue().client;
     // Log.l(`LOCATIONCHANGE: Client is '${client.fullName}', location changed to '${value.fullName}' out of these:\n`, this.locations);
     // Log.l(this.locations);
-    let locid = this.locID;
-    let locations = this.sites.filter((obj, pos, arr) => { return _cmp(client, obj['client']) });
-    let locIDs = locations.filter((obj, pos, arr) => { return _cmp(location, obj['location']) });
-    let tmpLocIDs = _dedupe(locIDs.map(obj => obj['locID'])).sort(_sort);
-    let lid1  = tmpLocIDs.find(a => { return a['name'].toUpperCase() === locid['name'].toUpperCase(); });
-    let lid2  = tmpLocIDs.find(a => { return a['name'].toUpperCase() === 'MNSHOP'; });
-    let lid = lid1 ? lid1 : lid2 ? lid2 : tmpLocIDs[0];
+    let locid:SESALocID = this.locID;
+    let locations:Array<Jobsite> = this.sites.filter((a:Jobsite) => { return _cmp(client, a.client); });
+    let locIDs:Array<Jobsite> = locations.filter((a:Jobsite) => { return _cmp(location, a.location) });
+    let tmpLocIDs:Array<SESALocID> = _dedupe(locIDs.map((a:Jobsite) => a.locID)).sort(_sortCLL);
+    let lid1:SESALocID  = tmpLocIDs.find((a:SESALocID) => { return _cmp(a, locid); });
+    let lid2:SESALocID  = tmpLocIDs.find((a:SESALocID) => { return a.name.toUpperCase() === 'MNSHOP'; });
+    let lid:SESALocID = lid1 ? lid1 : lid2 ? lid2 : tmpLocIDs[0];
     this.locIDs = tmpLocIDs;
     this.locID = lid;
 
     Log.l("LOCATIONCHANGE: ended up with locations and locIDs:\n", locations);
     Log.l(locIDs);
-    let site = this.getSiteFromInfo(client, location, lid);
+    let site:Jobsite = this.getSiteFromInfo(client, location, lid);
     this.setTechTimes();
 
     // if (locIDs.length) {
@@ -334,16 +395,17 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
     // }
   }
 
-  public updateLocID(locID:any, event?:any) {
+  public updateLocID(locID:SESALocID, event?:any) {
     Log.l("updateLocID(): Updated to:\n", locID);
-    let client = this.client;
-    let location = this.location;
-    let lid = this.locID;
-    let site = this.getSiteFromInfo(client, location, lid);
+    let client:SESAClient = this.client;
+    let location:SESALocation = this.location;
+    let lid:SESALocID = this.locID;
+    let site:Jobsite = this.getSiteFromInfo(client, location, lid);
     this.setTechTimes();
   }
 
   public setTechTimes() {
+    Log.l("setTechTimes(): Now running...");
     let site = this.site;
     let rot = this.tech.rotation;
     let shift = this.tech.shift;
@@ -389,39 +451,39 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
 
   public initializeSites() {
     this.techSettingsReady = false;
-    let sites = this.ud.getData('sites');
-    let clients   = new Array() ;
-    let locations = new Array() ;
-    let locIDs    = new Array() ;
-
-    clients   = _dedupe(sites.map(obj => obj['client']));
-    locations = _dedupe(sites.map(obj => obj['location']));
-    locIDs    = _dedupe(sites.map(obj => obj['locID']));
+    let sites:Array<Jobsite>          = this.sites && this.sites.length ? this.sites : this.ud.getData('sites');
+    let clients:Array<SESAClient>     = _dedupe(sites.map((a:Jobsite) => a.client));
+    let locations:Array<SESALocation> = _dedupe(sites.map((a:Jobsite) => a.location));
+    let locIDs:Array<SESALocID>       = _dedupe(sites.map((a:Jobsite) => a.locID));
 
     this.allclient   = clients.slice(0);
     this.alllocation = locations.slice(0);
     this.alllocID    = locIDs.slice(0);
-    this.clients     = this.allclient.sort(_sort);
-    this.locations   = this.alllocation.sort(_sort);
-    this.locIDs      = this.alllocID.sort(_sort);
-    let cli          = this.tech.client;
-    let loc          = this.tech.location;
-    let lid          = this.tech.locID;
-    this.client      = this.clients.find(a=>{return a['fullName'].toUpperCase() === cli.toUpperCase() || a['name'] === cli.toUpperCase();});
-    this.location    = this.locations.find(a=>{return a['fullName'].toUpperCase() === loc.toUpperCase() || a['name'] === loc.toUpperCase();});
-    this.locID       = this.locIDs.find(a=>{return a['fullName'].toUpperCase() === lid.toUpperCase() || a['name'] === lid.toUpperCase();});
+    this.clients     = this.allclient.sort(_sortCLL);
+    this.locations   = this.alllocation.sort(_sortCLL);
+    this.locIDs      = this.alllocID.sort(_sortCLL);
+    let cli:string   = this.tech.client;
+    let loc:string   = this.tech.location;
+    let lid:string   = this.tech.locID;
+    this.client      = this.clients.find((a:SESAClient)=>_cmp(a, cli));
+    this.location    = this.locations.find((a:SESALocation)=>_cmp(a,loc));
+    this.locID       = this.locIDs.find((a:SESALocID)=>_cmp(a,lid));
+    this.updateClient(this.client);
   }
 
-  public getSiteFromInfo(client:any, location:any, locID:any, loc2nd?:any) {
+  public getSiteFromInfo(client:SESAClient, location:SESALocation, locID:SESALocID) {
     let lang = this.lang;
     let sites = this.sites;
-    let site = sites.filter((obj, pos, arr) => { return _cmp(this.client, obj['client']) })
-                    .filter((obj, pos, arr) => { return _cmp(this.location, obj['location']) })
-                    .filter((obj, pos, arr) => { return _cmp(this.locID, obj['locID']) });
+    let site:Jobsite = sites.find((a:Jobsite) => {
+      return _cmp(a.client, client) && _cmp(a.location, location) && _cmp(a.locID, locID);
+    });
+    // let site = sites.filter((obj, pos, arr) => { return _cmp(this.client, obj['client']) })
+    //                 .filter((obj, pos, arr) => { return _cmp(this.location, obj['location']) })
+    //                 .filter((obj, pos, arr) => { return _cmp(this.locID, obj['locID']) });
     Log.l("getSiteFromInfo(): Site narrowed down to:\n", site);
     if(site && !window['onsitedevflag']) {
-      this.site = site[0];
-      return site[0];
+      this.site = site;
+      return site;
     } else {
       let msg = sprintf(lang['error_no_site_message'], this.client.fullName, this.location.fullName, this.locID.fullName);
       this.alert.showAlert(lang['error_no_site_title'], lang['error_no_site_message']);
@@ -431,13 +493,15 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
 
   public onSubmit() {
     let lang = this.lang;
-    let form            = this.techSettings.value               ;
+    // let form            = this.techSettings.value               ;
     let tech            = this.tech                             ;
     let keys = ['firstName', 'lastName', 'client', 'location', 'locID', 'shift', 'shiftLength', 'shiftStartTime'];
     let error = false;
     let errorKey = "";
     for(let key of keys) {
-      if(error) {break};
+      if(error) {
+        break
+      };
       let value = this[key];
       if(!value) {
         error = true;
@@ -457,7 +521,7 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
       tech.firstName      = this.firstName                        ;
       tech.lastName       = this.lastName                         ;
       this.reportMeta     = tech                                  ;
-      let site = this.getSiteFromInfo(this.client, this.location, this.locID);
+      let site:Jobsite = this.getSiteFromInfo(this.client, this.location, this.locID);
       if(site) {
         this.site = site;
       }

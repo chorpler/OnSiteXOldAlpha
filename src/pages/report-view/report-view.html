@@ -1,9 +1,12 @@
 <ion-header>
   <ion-navbar>
     <ion-buttons left>
-      <button ion-button icon-only (tap)="toggleFlag($event)" [disabled]="!report">
-        <ion-icon item-end class="flag-icon" [class.flagged]="false" [innerHTML]="SVGIcons.flagcheckered | safe: 'html'" *ngIf="!report"></ion-icon>
-        <ion-icon item-end class="flag-icon" [class.flagged]="report.flagged" [innerHTML]="SVGIcons.flagcheckered | safe: 'html'" *ngIf="report"></ion-icon>
+      <button ion-button icon-only (tap)="addFlag($event)" (press)="removeFlag($event)" [disabled]="!report">
+        <i class="icomoon-flag-checkered flag-icon" [class.flagged]="currentReport?.isFlagged()"></i>
+        <!-- <ion-icon item-end class="flag-icon" [class.flagged]="currentReport?.isFlagged()" [innerHTML]="SVGIcons.flagcheckered | safe: 'html'"></ion-icon> -->
+        <!-- <ion-icon item-end class="flag-icon" [class.flagged]="false" [innerHTML]="SVGIcons.flagcheckered | safe: 'html'" *ngIf="!report"></ion-icon> -->
+        <!-- <span class="flag-badge" *ngIf="currentReport?.flags"></span> -->
+        <span class="flag-badge" [class.is-flagged]="currentReport?.isFlagged()"><span class="flag-badge-text">{{currentReport?.flags}}</span></span>
       </button>
     </ion-buttons>
     <ion-title class="app-title">
@@ -50,20 +53,20 @@
           <span class="label">{{'site' | translate}}</span>
           <span class="data">{{site?.getSiteClientAndLocation()}}</span>
         </div>
-        <!-- <ion-select class="report-view-select" [(ngModel)]="type" (ionSelect)="updateType(type, $event)">
+        <!-- <ion-select class="report-view-select" [(ngModel)]="type" (ngModelChange)="updateType(type, $event)">
           <ion-option *ngFor="let type of selReportType" [value]="type">{{type?.name | translate}}</ion-option>
         </ion-select> -->
       </ion-item>
       <ion-item (tap)="checkPageMode($event)">
         <ion-label>{{'report_type' | translate}}</ion-label>
         <!-- <ion-select [(ngModel)]="report.type" [disabled]="mode==='Edit'" (tap)="checkPageMode()"> -->
-        <ion-select class="report-view-select" [(ngModel)]="type" (ionSelect)="updateType(type, $event)">
+        <ion-select class="report-view-select" [(ngModel)]="type" (ngModelChange)="updateType(type, $event)">
           <ion-option *ngFor="let type of selReportType" [value]="type">{{type?.name | translate}}</ion-option>
         </ion-select>
       </ion-item>
       <ion-item>
         <ion-label>{{'shift_date' | translate}}</ion-label>
-        <ion-select class="report-view-select" [(ngModel)]="selectedShift" (ionSelect)="updateShift(selectedShift, $event)">
+        <ion-select class="report-view-select" [(ngModel)]="selectedShift" (ngModelChange)="updateShift(selectedShift, $event)">
           <ion-option *ngFor="let shift of allShifts" [value]="shift">{{shift?.getShiftDate()?.format("MMM DD")}}</ion-option>
         </ion-select>
       </ion-item>
@@ -91,9 +94,9 @@
           <ion-label floating>{{'unit_number' | translate}}</ion-label>
           <ion-input #unitNumberInput type="text" [(ngModel)]="report.unit_number"></ion-input>
         </ion-item>
-        <ion-item class="crew-number" *ngIf="site?.client?.name === 'KN' || this.show_crew_number">
+        <ion-item class="item-with-full-select" *ngIf="site?.client?.name === 'KN' || this.show_crew_number">
           <ion-label class="manual-float-label">{{'crew_number_translate' | translate}}</ion-label>
-          <ion-select class="full-select" [(ngModel)]="report.crew_number" (ionSelect)="updateCrewNumber($event)">
+          <ion-select class="full-select" [(ngModel)]="report.crew_number" (ngModelChange)="updateCrewNumber($event)">
             <ion-option *ngFor="let crew_number of crew_numbers" [value]="crew_number">{{crew_number}}</ion-option>
           </ion-select>
         </ion-item>
@@ -112,87 +115,87 @@
 
 <!-- TRAVEL  -->
       <ng-container *ngSwitchCase="'travel'">
-        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && !ud.isDeveloper()); then devInfoReadOnly"></span>
-        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && ud.isDeveloper()); then devInfoEditable"></span>
-        <ion-item>
-          <ion-label>{{'travel' | translate}} </ion-label>
-          <ion-select [(ngModel)]="travel_location" (ionSelect)="updateTravelLocation(travel_location)">
+        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && !ud.isDeveloper()); then devInfoReadOnlyOther"></span>
+        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && ud.isDeveloper()); then devInfoEditableOther"></span>
+        <ion-item class="item-with-full-select">
+          <ion-label class="manual-float-label">{{'travel' | translate}} </ion-label>
+          <ion-select class="full-select" [(ngModel)]="travel_location" (ngModelChange)="updateTravelLocation(travel_location)">
             <ion-option *ngFor="let travel_location of selTravelLocation" [value]="travel_location">{{travel_location.name | translate}}</ion-option>
           </ion-select>
         </ion-item>
         <ion-item>
-          <ion-label class="report-time-label">{{'travel_hours' | translate}} </ion-label>
-          <ion-input class="report-time-input" [(ngModel)]="report.time" type="number" min="0" step="0.5" (ngModelChange)="updateTime(report.time)"></ion-input>
+          <ion-label floating class="report-time-label">{{'travel_hours' | translate}} </ion-label>
+          <ion-input class="report-time-input" [(ngModel)]="other.time" type="number" min="0" step="0.5" (ngModelChange)="updateTime(other.time)"></ion-input>
         </ion-item>
       </ng-container>
 
 <!-- TRAINING  -->
       <ng-container *ngSwitchCase="'training'">
-        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && !ud.isDeveloper()); then devInfoReadOnly"></span>
-        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && ud.isDeveloper()); then devInfoEditable"></span>
-        <ion-item>
-          <ion-label>{{'training' | translate}}</ion-label>
-          <ion-select [(ngModel)]="training_type" (ionSelect)="updateTrainingType(training_type)">
+        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && !ud.isDeveloper()); then devInfoReadOnlyOther"></span>
+        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && ud.isDeveloper()); then devInfoEditableOther"></span>
+        <ion-item class="item-with-full-select">
+          <ion-label class="manual-float-label">{{'training' | translate}}</ion-label>
+          <ion-select class="full-select" [(ngModel)]="training_type" (ngModelChange)="updateTrainingType(training_type)">
             <ion-option *ngFor="let training_type of selTrainingType" [value]="training_type">{{training_type.name | translate}}</ion-option>
           </ion-select>
         </ion-item>
         <ion-item>
-          <ion-label class="report-time-label">{{'training_hours' | translate}}</ion-label>
-          <ion-input class="report-time-input" [(ngModel)]="report.time" type="number" min="0" step="0.5" placeholder="2" (ngModelChange)="updateTime(report.time)"></ion-input>
+          <ion-label floating class="report-time-label">{{'training_hours' | translate}}</ion-label>
+          <ion-input class="report-time-input" [(ngModel)]="other.time" type="number" min="0" step="0.5" (ngModelChange)="updateTime(other.time)"></ion-input>
         </ion-item>
       </ng-container>
 
 <!-- STANDBY (BILLABLE)  -->
       <ng-container *ngSwitchCase="'standby'">
-        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && !ud.isDeveloper()); then devInfoReadOnly"></span>
-        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && ud.isDeveloper()); then devInfoEditable"></span>
+        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && !ud.isDeveloper()); then devInfoReadOnlyOther"></span>
+        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && ud.isDeveloper()); then devInfoEditableOther"></span>
         <ion-item>
           <ion-label class="report-time-label">{{'standby' | translate}}</ion-label>
-          <ion-input class="report-time-input" [(ngModel)]="report.time" type="number" min="0" step="0.5" placeholder="8" (ngModelChange)="updateTime(report.time)"></ion-input>
+          <ion-input class="report-time-input" [(ngModel)]="other.time" type="number" min="0" step="0.5" placeholder="8" (ngModelChange)="updateTime(other.time)"></ion-input>
         </ion-item>
       </ng-container>
 
 <!-- DUNCAN STANDBY  -->
       <ng-container *ngSwitchCase="'standby_hb_duncan'">
-        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && !ud.isDeveloper()); then devInfoReadOnly"></span>
-        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && ud.isDeveloper()); then devInfoEditable"></span>
+        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && !ud.isDeveloper()); then devInfoReadOnlyOther"></span>
+        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && ud.isDeveloper()); then devInfoEditableOther"></span>
         <ion-item>
           <ion-label class="report-time-label">{{'standby_hb_duncan' | translate}}</ion-label>
-          <ion-input class="report-time-input" [(ngModel)]="report.time" type="number" min="0" step="0.5" placeholder="8" (ngModelChange)="updateTime(report.time)"></ion-input>
+          <ion-input class="report-time-input" [(ngModel)]="other.time" type="number" min="0" step="0.5" placeholder="8" (ngModelChange)="updateTime(other.time)"></ion-input>
         </ion-item>
       </ng-container>
 
 <!-- SICK TIME  -->
       <ng-container *ngSwitchCase="'sick'">
-        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && !ud.isDeveloper()); then devInfoReadOnly"></span>
-        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && ud.isDeveloper()); then devInfoEditable"></span>
+        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && !ud.isDeveloper()); then devInfoReadOnlyOther"></span>
+        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && ud.isDeveloper()); then devInfoEditableOther"></span>
         <ion-item>
           <ion-label>{{'all_day' | translate}}</ion-label>
-          <ion-toggle [(ngModel)]="report.allDay"></ion-toggle>
+          <ion-toggle [(ngModel)]="other.allDay"></ion-toggle>
         </ion-item>
         <ion-item>
           <ion-label class="report-time-label">{{'sick_hours' | translate}}</ion-label>
-          <ion-input class="report-time-input" [disabled]="disableTime" [(ngModel)]="report.time" type="number" min="0" step="0.5" placeholder="8" (ngModelChange)="updateTime(report.time)"></ion-input>
+          <ion-input class="report-time-input" [disabled]="disableTime" [(ngModel)]="other.time" type="number" min="0" step="0.5" placeholder="8" (ngModelChange)="updateTime(other.time)"></ion-input>
         </ion-item>
       </ng-container>
 
 <!-- VACATION  -->
       <ng-container *ngSwitchCase="'vacation'">
-        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && !ud.isDeveloper()); then devInfoReadOnly"></span>
-        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && ud.isDeveloper()); then devInfoEditable"></span>
+        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && !ud.isDeveloper()); then devInfoReadOnlyOther"></span>
+        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && ud.isDeveloper()); then devInfoEditableOther"></span>
         <ion-item>
           <ion-label class="report-time-label">{{'vacation_hours' | translate}}</ion-label>
-          <ion-input class="report-time-input" [(ngModel)]="report.time" type="number" min="0" step="0.5" placeholder="8" (ngModelChange)="updateTime(report.time)"></ion-input>
+          <ion-input class="report-time-input" [(ngModel)]="other.time" type="number" min="0" step="0.5" placeholder="8" (ngModelChange)="updateTime(other.time)"></ion-input>
         </ion-item>
       </ng-container>
 
 <!-- HOLIDAY  -->
       <ng-container *ngSwitchCase="'holiday'">
-        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && !ud.isDeveloper()); then devInfoReadOnly"></span>
-        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && ud.isDeveloper()); then devInfoEditable"></span>
+        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && !ud.isDeveloper()); then devInfoReadOnlyOther"></span>
+        <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && ud.isDeveloper()); then devInfoEditableOther"></span>
         <ion-item>
           <ion-label class="report-time-label">{{'holiday_hours' | translate}}</ion-label>
-          <ion-input class="report-time-input" [(ngModel)]="report.time" type="number" min="0" step="0.5" placeholder="8" (ngModelChange)="updateTime(report.time)"></ion-input>
+          <ion-input class="report-time-input" [(ngModel)]="other.time" type="number" min="0" step="0.5" placeholder="8" (ngModelChange)="updateTime(other.time)"></ion-input>
         </ion-item>
       </ng-container>
 
@@ -207,14 +210,14 @@
 
 <ng-template #devInfoReadOnly>
   <span class="report-dev-info" *ngIf="(prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && !ud.isDeveloper()">
-    <span class="report-dev-group" *ngIf="prefs.getShowID()"   ><span class="label">ID:</span>      <span class="data">{{report.getReportID()}}</span></span>
-    <span class="report-dev-group" *ngIf="prefs.getShowRev()"  ><span class="label">Rev:</span>     <span class="data">{{report._rev}}</span></span>
-    <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><span class="label">Date:</span>    <span class="data">{{report.report_date}}</span></span>
-    <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><span class="label">Start:</span>   <span class="data">{{report.time_start}}</span></span>
-    <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><span class="label">End:</span>     <span class="data">{{report.time_end}}</span></span>
-    <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><span class="label">Client:</span>  <span class="data">{{report.client}}</span></span>
-    <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><span class="label">Location:</span><span class="data">{{report.location}}</span></span>
-    <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><span class="label">LocID:</span>   <span class="data">{{report.location_id}}</span></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowID()"   ><span class="label">ID:</span>      <span class="data">{{report?.getReportID()}}</span></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowRev()"  ><span class="label">Rev:</span>     <span class="data">{{report?._rev}}</span></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><span class="label">Date:</span>    <span class="data">{{report?.report_date}}</span></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><span class="label">Start:</span>   <span class="data">{{report?.time_start}}</span></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><span class="label">End:</span>     <span class="data">{{report?.time_end}}</span></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><span class="label">Client:</span>  <span class="data">{{report?.client}}</span></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><span class="label">Location:</span><span class="data">{{report?.location}}</span></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><span class="label">LocID:</span>   <span class="data">{{report?.location_id}}</span></span>
   </span>
 </ng-template>
 
@@ -228,5 +231,31 @@
     <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><span class="label">Client:</span>  <ion-input class="data report-ion-input" [(ngModel)]="report.client"></ion-input></span>
     <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><span class="label">Location:</span><ion-input class="data report-ion-input" [(ngModel)]="report.location"></ion-input></span>
     <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><span class="label">LocID:</span>   <ion-input class="data report-ion-input" [(ngModel)]="report.location_id"></ion-input></span>
+  </span>
+</ng-template>
+
+<ng-template #devInfoReadOnlyOther>
+  <span class="report-dev-info" *ngIf="(prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && !ud.isDeveloper()">
+    <span class="report-dev-group" *ngIf="prefs.getShowID()"   ><span class="label">ID:</span>      <span class="data">{{other?.getReportID()}}</span></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowRev()"  ><span class="label">Rev:</span>     <span class="data">{{other?._rev}}</span></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><span class="label">Date:</span>    <span class="data">{{other?.report_date?.format("YYYY-MM-DD")}}</span></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><span class="label">Start:</span>   <span class="data">{{other?.time_start}}</span></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><span class="label">End:</span>     <span class="data">{{other?.time_end}}</span></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><span class="label">Client:</span>  <span class="data">{{other?.client}}</span></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><span class="label">Location:</span><span class="data">{{other?.location}}</span></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><span class="label">LocID:</span>   <span class="data">{{other?.location_id}}</span></span>
+  </span>
+</ng-template>
+
+<ng-template #devInfoEditableOther>
+  <span class="report-dev-info" *ngIf="(prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && ud.isDeveloper()">
+    <span class="report-dev-group" *ngIf="prefs.getShowID()"   ><span class="label">ID:</span>      <ion-input class="data report-ion-input" [(ngModel)]="other._id"></ion-input></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowRev()"  ><span class="label">Rev:</span>     <ion-input class="data report-ion-input" [(ngModel)]="other._rev"></ion-input></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><span class="label">Date:</span>    <ion-input class="data report-ion-input" [class.input-error]="report_date_error" [(ngModel)]="report_date_other" (blur)="updateOtherDate(report_date_other, $event)" (keyup)="otherDateKeyup(report_date_other, $event)"></ion-input></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><span class="label">Start:</span>   <ion-input class="data report-ion-input" [(ngModel)]="other.time_start"></ion-input></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowTimes()"><span class="label">End:</span>     <ion-input class="data report-ion-input" [(ngModel)]="other.time_end"></ion-input></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><span class="label">Client:</span>  <ion-input class="data report-ion-input" [(ngModel)]="other.client"></ion-input></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><span class="label">Location:</span><ion-input class="data report-ion-input" [(ngModel)]="other.location"></ion-input></span>
+    <span class="report-dev-group" *ngIf="prefs.getShowSite()" ><span class="label">LocID:</span>   <ion-input class="data report-ion-input" [(ngModel)]="other.location_id"></ion-input></span>
   </span>
 </ng-template>

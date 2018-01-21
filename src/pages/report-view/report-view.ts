@@ -113,6 +113,10 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
   public oldHours                  : string           = "00:00"                    ;
   public crew_numbers              : Array<string>    = []                         ;
   public show_crew_number          : boolean          = false                      ;
+  public appropriate_other_time    : number           = 0                          ;
+  public currentReport             : Report|ReportOther                            ;
+  public report_date_error         : boolean          = false                      ;
+  public report_date_other         : string           = ""                         ;
 
   constructor(
     public navCtrl      : NavController,
@@ -269,14 +273,19 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
       // }
       this.setupShifts();
       let tech:Employee = this.tech;
-      let site:Jobsite = this.ud.findEmployeeSite(tech);
-      this.site = site;
+      if(this.mode === 'Add') {
+        let site:Jobsite = this.ud.findEmployeeSite(tech);
+        this.site = site;
+      } else {
+        // if(this.other )
+      }
       if(this.mode === 'Add' || !this.report || !this.report.first_name) {
         this.report = this.createFreshReport();
       }
       if(this.mode === 'Add' || !this.other || !this.other.first_name) {
         this.other = this.createFreshOtherReport();
       }
+
       // this.updateActiveShiftWorkOrders(this.selectedShift);
       if(this.mode === 'Add' || this.mode === 'Añadir') {
         // let startTime = moment(this.selectedShift.start_time);
@@ -321,14 +330,18 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
     this.selReportType = this.ud.getData('report_types');
     this.selTrainingType = this.ud.getData('training_types');
     let siteSelect = [];
-    this.sites = this.ud.getData('sites');
+    this.sites = this.ud.getData('sites').filter((a:Jobsite) => {
+      return a.client && a.client.name && a.client.name !== 'AA' && a.client.name !== 'XX';
+    });
     let sites = this.sites;
     for(let site of sites) {
-      let name = site.getSiteSelectName();
-      let hrs = Number(site.travel_time);
-      let hours = !isNaN(hrs) ? hrs : 0;
-      let oneSite = {name: name, value: name, hours: hours};
-      siteSelect.push(oneSite);
+      // if(site && site.client && site.client.name && site.client.name !== 'AA' && site.client.name !== 'XX') {
+        let name = site.getSiteSelectName();
+        let hrs = Number(site.travel_time);
+        let hours = !isNaN(hrs) ? hrs : 0;
+        let oneSite = {name: name, value: name, hours: hours};
+        siteSelect.push(oneSite);
+      // }
       // sites.push(site);
     }
     this.selTravelLocation = siteSelect;
@@ -347,6 +360,7 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
       let other:ReportOther = this.other;
       this.currentRepairHours = other.getHoursNumeric();
       this.currentRepairHoursString = other.getHoursString();
+      this.report_date_other = this.other.report_date.format("YYYY-MM-DD");
     }
   }
 
@@ -376,20 +390,25 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
     let error   = false;
     // this._time.enable(true);
     if (value.name === 'training') {
+      this.currentReport = other;
       other.training_type = "Safety";
       other.time = 2;
-      other.type = value.name;
+      other.type = value.value;
       this.training_type = this.selTrainingType[0];
       this.type = value;
+      this.updateTrainingType(this.training_type);
     } else if (value.name === 'travel') {
+      this.currentReport = other;
       other.travel_location = "BE MDL MNSHOP";
       other.time = 6;
-      other.type = value.name;
+      other.type = value.value;
       this.travel_location = this.selTravelLocation[0];
       this.type = value;
+      this.updateTravelLocation(this.travel_location);
     } else if (value.name === 'sick') {
+      this.currentReport = other;
       other.time = 8;
-      other.type = value.name;
+      other.type = value.value;
       if(this.allDay) {
         this.disableTime = true;
       } else {
@@ -397,14 +416,17 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
       }
       this.type = value;
     } else if (value.name === 'vacation') {
+      this.currentReport = other;
       other.time = 8;
-      other.type = value.name;
+      other.type = value.value;
       this.type = value;
     } else if (value.name === 'holiday') {
+      this.currentReport = other;
       other.time = 8;
-      other.type = value.name;
+      other.type = value.value;
       this.type = value;
     } else if (value.name === 'standby') {
+      this.currentReport = other;
       let shift = this.selectedShift;
       let status = shift.getShiftReportsStatus(true).code;
       let hours  = shift.getNormalHours();
@@ -422,10 +444,11 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
         setTimeout(() => { this.alert.showAlert(lang['error'], warningText); });
       } else {
         other.time = 8;
-        other.type = value.name;
+        other.type = value.value;
         this.type = value;
       }
     } else if (value.name === 'standby_hb_duncan') {
+      this.currentReport = other;
       let cli = other.client.trim().toUpperCase();
       let loc = other.location.trim().toUpperCase();
       let lid = other.location_id.trim().toUpperCase();
@@ -441,7 +464,7 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
           this.alert.showConfirmYesNo(lang['alert'], lang['standby_hb_duncan_wrong_location']).then(res => {
             if(res) {
               this.type = value;
-              this.other.type = value.name;
+              this.other.type = value.value;
               this.other.time = 8;
               // this._time.setValue(8);
               // this._type.setValue(this.selReportType[0], {emitEvent: false});
@@ -478,10 +501,11 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
       } else {
         other.time = 8;
         // this._time.setValue(8);
-        other.type = value.name;
+        other.type = value.value;
         this.type = value;
       }
     } else if(value.name === 'work_report') {
+      this.currentReport = this.report;
       Log.l("type.valueChange(): This seems proper.");
       this.type = value;
     } else {
@@ -548,28 +572,61 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
   }
 
   public updateTrainingType(value:{name:string,fullName:string,hours:number}) {
+    Log.l("updateTrainingType(): Updating training type to:\n", value);
     let other = this.other;
     this.training_type = value;
     other.training_type = value.name;
     let time = value.hours;
     other.time = time;
+    this.appropriate_other_time = time;
   }
 
   public updateTravelLocation(value:{name:string,fullName:string,hours:number|string}) {
+    Log.l("updateTravelLocation(): Updating travel location to:\n", value);
     let other = this.other;
     let hrs = Number(value.hours);
     this.travel_location = value;
     other.travel_location = value.name;
     let time = hrs;
     other.time = time;
+    this.appropriate_other_time = time;
   }
 
   public updateTime(hrs:string|number) {
+    Log.l(`updatTime(): Updating time to ${hrs}`);
     let other = this.other;
     let hours = !isNaN(Number(hrs)) ? Number(hrs) : 0
     other.time = hours;
+    if(this.appropriate_other_time !== other.time) {
+      other.setFlag('time', 'nonstandard_time');
+    } else {
+      other.unsetFlag('time');
+    }
     this.currentOtherHours = hours;
   };
+
+  public updateOtherDate(report_date:string, event?:any) {
+    Log.l("updateOtherDate(): Event is:\n", event);
+    let date:Moment = moment(report_date, "YYYY-MM-DD");
+    let other:ReportOther = this.other;
+    if(isMoment(date)) {
+      other.report_date = date;
+    } else {
+      this.report_date_error = true;
+    }
+  }
+
+  public updateOtherDateKeyup(report_date:string, event:KeyboardEvent) {
+    Log.l("updateOtherDateKeyup(): KeyboardEvent is:\n", event);
+    if(event.key === 'Enter') {
+      event.preventDefault();
+      this.updateOtherDate(report_date, event);
+    } else if(event.key === 'Tab') {
+
+    } else {
+
+    }
+  }
 
   public hoursStringToNumber(hours:string) {
     let dur1 = hours.split(":");
@@ -580,6 +637,11 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
   }
 
   private initializeForm() {
+    if(this.type && this.type.name && this.type.name !== 'work_report') {
+      this.currentReport = this.other;
+    } else {
+      this.currentReport = this.report;
+    }
   }
 
   public loadReport(report:Report) {
@@ -732,6 +794,7 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
 
   public async checkForUserMistakes() {
     let lang = this.lang;
+    let shouldContinue:boolean = true;
     // let form = this.workOrderForm.getRawValue();
     try {
       if(this.type.name === 'work_report') {
@@ -749,7 +812,8 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
             this.durationPicker.open();
           }, 50);
           return false;
-        } else if(!(typeof report.notes === 'string' && report.notes.length > 0)) {
+        }
+        if(!(typeof report.notes === 'string' && report.notes.length > 0)) {
           let response = await this.showPossibleError('notes');
           if(!response) {
             setTimeout(() => {
@@ -758,10 +822,10 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
             }, focusDelay);
             return false;
           } else {
-            report.flagged = true;
-            return true;
+            report.setFlag('notes', 'zero_length_notes');
           }
-        } else if(cli === 'HB' || cli === 'HALLIBURTON') {
+        }
+        if(cli === 'HB' || cli === 'HALLIBURTON') {
           if(unitLen < 8 || unitLen > 9) {
             let response = await this.showPossibleError('unit');
             if(!response) {
@@ -772,10 +836,10 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
               }, focusDelay);
               return false;
             } else {
-              report.flagged = true;
-              return true;
+              report.setFlag('unit_number', 'nonstandard_length');
             }
-          } else if(woLen < 9 || woLen > 10) {
+          }
+          if(woLen < 9 || woLen > 10) {
             let response = await this.showPossibleError('wo');
             if(!response) {
               // this.workOrderNumberInput.setFocus();
@@ -785,13 +849,12 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
               }, focusDelay);
               return false;
             } else {
-              report.flagged = true;
-              return true;
+              report.setFlag('work_order_number', 'nonstandard_length');
             }
           }
-        } else {
-          return true;
+        // } else {
         }
+        return true;
       } else {
         let other:ReportOther = this.other;
         let cli:string = other.client.toUpperCase().trim();
@@ -801,15 +864,11 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
           Log.l("checkForUserMistakes(): User tried to set standby_hb_duncan type but is not set to HB Duncan location.");
           let response = await this.showPossibleError('standby_hb_duncan');
           // this.alert.showAlert(lang['error'], lang['standby_hb_duncan_wrong_location']);
-          if(response) {
+          if(!response) {
             return false;
-          } else {
-            return true;
           }
-        } else {
-          return true;
         }
-
+        return true;
       }
     } catch(err) {
       Log.l(`checkForUserMistakes(): Error found during check, not submitting report.`);
@@ -1040,10 +1099,22 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
 
   public toggleFlag(event?:any) {
     Log.l("toggleFlag(): Event is:\n", event);
-    if(this.report.flagged === undefined) {
-      this.report.flagged = false;
+    Log.l("toggleFlag(): Current Report is:\n", this.currentReport);
+    if(!this.currentReport.flagged) {
+      this.currentReport.setFlag('manual', 'manually_flagged');
+    } else {
+      this.currentReport.unsetFlag('manual');
     }
-    this.report.flagged = !this.report.flagged;
+  }
+
+  public addFlag(event?:any) {
+    Log.l("addFlag(): Adding a manual flag");
+    this.currentReport.setFlag('manual', 'manually_flagged');
+  }
+
+  public removeFlag(event?:any) {
+    Log.l("removeFlag(): Removing a manual flag");
+    this.currentReport.unsetFlag('manual');
   }
 
   public syncData() {
