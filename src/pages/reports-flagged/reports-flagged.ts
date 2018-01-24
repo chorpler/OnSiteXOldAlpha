@@ -6,13 +6,13 @@ import { AuthSrvcs                                                           } f
 import { ServerService                                                           } from 'providers/server-service'    ;
 import { UserData                                                            } from 'providers/user-data'     ;
 import { AlertService                                                        } from 'providers/alerts'        ;
-import { Log, isMoment, moment, Moment                                       } from 'config/config.functions' ;
-import { Report, ReportOther, Shift, PayrollPeriod, Employee, Jobsite        } from 'domain/domain-classes'   ;
+import { Log, isMoment, moment, Moment                                       } from 'onsitex-domain' ;
+import { Report, ReportOther, Shift, PayrollPeriod, Employee, Jobsite        } from 'onsitex-domain'   ;
 import { Preferences                                                         } from 'providers/preferences'   ;
 import { TranslateService                                                    } from '@ngx-translate/core'     ;
 import { SmartAudio                                                          } from 'providers/smart-audio'   ;
 import { TabsService                                                         } from 'providers/tabs-service'  ;
-import { Pages                                                               } from 'config/config.types'     ;
+import { Pages                                                               } from 'onsitex-domain'     ;
 
 export const _sortReports = (a:Report,b:Report):number => {
   let dateA  = a.report_date;

@@ -3,7 +3,7 @@ import { Observable      } from 'rxjs/Observable'         ;
 import { Injectable      } from '@angular/core'           ;
 import { HttpClient      } from '@angular/common/http'    ;
 import { TranslateLoader } from '@ngx-translate/core'     ;
-import { Log, JSON5      } from 'config/config.functions' ;
+import { Log, JSON5      } from 'onsitex-domain' ;
 
 @Injectable()
 export class JSON5TranslateLoader implements TranslateLoader {

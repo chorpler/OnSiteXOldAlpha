@@ -170,6 +170,7 @@
     "moment-round": "^1.0.1",
     "moment-timer": "^1.1.5",
     "object-keys": "^1.0.11",
+    "onsitex-domain": "git+https://github.com/starmobiledevelopers/onsitex-domain.git",
     "pouchdb": "6.2.0",
     "pouchdb-adapter-cordova-sqlite": "^2.0.2",
     "pouchdb-all-dbs": "^1.0.2",

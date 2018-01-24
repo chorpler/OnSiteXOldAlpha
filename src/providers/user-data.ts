@@ -6,16 +6,16 @@ import { NativeStorage                 } from '@ionic-native/native-storage'   ;
 import { Device                        } from '@ionic-native/device'           ;
 import { AppVersion                    } from '@ionic-native/app-version'      ;
 import { UniqueDeviceID                } from '@ionic-native/unique-device-id' ;
-import { Log, isMoment, moment, Moment } from 'config/config.functions'        ;
-import { DBService                       } from './db-service'                     ;
+import { Log, isMoment, moment, Moment } from 'onsitex-domain'                 ;
+import { DBService                     } from './db-service'                   ;
 import { Preferences                   } from './preferences'                  ;
-import { Shift                         } from 'domain/shift'                   ;
-import { PayrollPeriod                 } from 'domain/payroll-period'          ;
-import { Report                        } from 'domain/report'                  ;
-import { ReportOther                   } from 'domain/reportother'             ;
-import { Employee                      } from 'domain/employee'                ;
-import { Message                       } from 'domain/message'                 ;
-import { Jobsite                       } from 'domain/jobsite'                 ;
+import { Shift                         } from 'onsitex-domain'                 ;
+import { PayrollPeriod                 } from 'onsitex-domain'                 ;
+import { Report                        } from 'onsitex-domain'                 ;
+import { ReportOther                   } from 'onsitex-domain'                 ;
+import { Employee                      } from 'onsitex-domain'                 ;
+import { Message                       } from 'onsitex-domain'                 ;
+import { Jobsite                       } from 'onsitex-domain'                 ;
 
 @Injectable()
 export class UserData {

@@ -1,7 +1,7 @@
-import { Component, Input, OnInit, OnDestroy,       } from '@angular/core'                ;
-import { trigger, state, style, animate, transition } from '@angular/animations'          ;
-import { UserData                                   } from '../../providers/user-data'    ;
-import { Log, moment, Moment, isMoment              } from '../../config/config.functions';
+import { Component, Input, OnInit, OnDestroy,       } from '@angular/core'       ;
+import { trigger, state, style, animate, transition } from '@angular/animations' ;
+import { UserData                                   } from 'providers/user-data' ;
+import { Log, moment, Moment, isMoment              } from 'onsitex-domain'      ;
 @Component({
   selector: 'clock',
   templateUrl: 'clock.html',

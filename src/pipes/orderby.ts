@@ -1,6 +1,6 @@
-import { Pipe, PipeTransform } from '@angular/core';
-import { Log, isMoment } from '../config/config.functions';
-import * as moment from 'moment';
+import { Pipe, PipeTransform           } from '@angular/core'  ;
+import { Log, moment, Moment, isMoment } from 'onsitex-domain' ;
+
 /*
  * Example use
  *		Basic Array of single type: *ngFor="#todo of todoService.todos | orderBy : '-'"

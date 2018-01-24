@@ -8,8 +8,8 @@ import { UserData                                               } from 'provider
 import { AlertService                                           } from 'providers/alerts'          ;
 import { MessageService                                         } from 'providers/message-service' ;
 import { TabsService                                            } from 'providers/tabs-service'    ;
-import { Log, moment, Moment                                    } from 'config/config.functions'   ;
-import { Tab                                                    } from 'config/config.types'       ;
+import { Log, moment, Moment                                    } from 'onsitex-domain'            ;
+import { Tab                                                    } from 'onsitex-domain'            ;
 
 export enum Pages {
   'OnSiteHome'      = 0,

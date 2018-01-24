@@ -1,14 +1,13 @@
-import 'rxjs/add/operator/map';
-import * as PouchDB from 'pouchdb'                ;
-import * as PDBAuth from 'pouchdb-authentication' ;
-// import * as PouchDBAuth from 'pouchdb-auth'    ;
-import * as pdbFind from 'pouchdb-find'           ;
-import * as pdbUpsert from 'pouchdb-upsert'       ;
-import * as pdbAllDBs from 'pouchdb-all-dbs'      ;
-import { Injectable  } from '@angular/core'              ;
-import { Platform    } from 'ionic-angular'              ;
-import { Log         } from '../config/config.functions' ;
-import { Preferences } from './preferences'              ;
+import * as PouchDBAuth from 'pouchdb-auth'           ;
+import * as PouchDB     from 'pouchdb'                ;
+import * as PDBAuth     from 'pouchdb-authentication' ;
+import * as pdbFind     from 'pouchdb-find'           ;
+import * as pdbUpsert   from 'pouchdb-upsert'         ;
+import * as pdbAllDBs   from 'pouchdb-all-dbs'        ;
+import { Injectable   } from '@angular/core'          ;
+import { Platform     } from 'ionic-angular'          ;
+import { Log          } from 'onsitex-domain'         ;
+import { Preferences  } from './preferences'          ;
 
 @Injectable()
 export class PouchDBService {

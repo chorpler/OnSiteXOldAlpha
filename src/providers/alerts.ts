@@ -3,7 +3,7 @@ import { Injectable                                        } from '@angular/core
 import { HttpClient                                        } from '@angular/common/http'    ;
 import { NavParams, LoadingController, PopoverController,  } from 'ionic-angular'           ;
 import { ModalController, AlertController, ToastController } from 'ionic-angular'           ;
-import { Log                                               } from 'config/config.functions' ;
+import { Log                                               } from 'onsitex-domain' ;
 import { TranslateService                                  } from '@ngx-translate/core'     ;
 
 @Injectable()

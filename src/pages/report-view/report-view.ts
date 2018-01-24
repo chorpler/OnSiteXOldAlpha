@@ -1,4 +1,4 @@
-import 'rxjs/add/operator/debounceTime'                                                         ;
+import 'rxjs/add/operator/debounceTime'                                                             ;
 import { sprintf                                               } from 'sprintf-js'                  ;
 import { Component, OnInit, ViewChild, NgZone, OnDestroy,      } from '@angular/core'               ;
 import { AfterViewInit, ElementRef,                            } from '@angular/core'               ;
@@ -11,21 +11,55 @@ import { ServerService                                         } from 'providers
 import { AuthSrvcs                                             } from 'providers/auth-srvcs'        ;
 import { AlertService                                          } from 'providers/alerts'            ;
 import { SmartAudio                                            } from 'providers/smart-audio'       ;
-import { Log, moment, Moment, isMoment                         } from 'config/config.functions'     ;
-import { PayrollPeriod                                         } from 'domain/payroll-period'       ;
-import { Shift                                                 } from 'domain/shift'                ;
-import { Report                                                } from 'domain/report'               ;
-import { Employee                                              } from 'domain/employee'             ;
-import { ReportOther                                           } from 'domain/reportother'          ;
-import { Jobsite                                               } from 'domain/jobsite'              ;
+import { Log, moment, Moment, isMoment                         } from 'onsitex-domain'              ;
+import { SESAClient, SESALocation, SESALocID, CLL              } from 'onsitex-domain'              ;
+import { PayrollPeriod                                         } from 'onsitex-domain'              ;
+import { Shift                                                 } from 'onsitex-domain'              ;
+import { Report                                                } from 'onsitex-domain'              ;
+import { Employee                                              } from 'onsitex-domain'              ;
+import { ReportOther                                           } from 'onsitex-domain'              ;
+import { Jobsite                                               } from 'onsitex-domain'              ;
 import { UserData                                              } from 'providers/user-data'         ;
 import { Preferences                                           } from 'providers/preferences'       ;
 import { TranslateService                                      } from '@ngx-translate/core'         ;
 import { TabsService                                           } from 'providers/tabs-service'      ;
-import { Pages, SVGIcons, SelectString,                        } from 'config/config.types'         ;
+import { Pages, SVGIcons, SelectString,                        } from 'onsitex-domain'              ;
 import { MultiPicker                                           } from 'components/ion-multi-picker' ;
 
 export const focusDelay = 500;
+export const _matchCLL = (a:CLL, b:string):boolean => {
+  let cA1 = a.name.toUpperCase();
+  let cA2 = a.fullName.toUpperCase();
+  let cB = b.toUpperCase();
+  return cA1 === cB || cA2 === cB;
+}
+export const _cmp = (a:CLL|string, b:CLL|string):boolean => {
+  // if(a === undefined || b === undefined || a['fullName'] === undefined || b['fullName'] === undefined) {
+  //   return false;
+  // } else {
+  //   return a['fullName'].toUpperCase() === b['fullName'].toUpperCase();
+  // }
+  if(typeof a === 'object') {
+    if(typeof b === 'object') {
+      /* Both objects */
+      return _matchCLL(a, b.name);
+    } else {
+      /* a is object, b is string */
+      return _matchCLL(a, b);
+    }
+  } else {
+    if(typeof b === 'object') {
+      /* b is object, a is string */
+      return _matchCLL(b, a);
+    }
+  }
+  /* a and b are both strings */
+  if(a.toUpperCase() === b.toUpperCase()) {
+    return true;
+  } else {
+    return false;
+  }
+};
 
 @IonicPage({ name: 'Report View' })
 @Component({
@@ -273,12 +307,8 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
       // }
       this.setupShifts();
       let tech:Employee = this.tech;
-      if(this.mode === 'Add') {
-        let site:Jobsite = this.ud.findEmployeeSite(tech);
-        this.site = site;
-      } else {
-        // if(this.other )
-      }
+      let site:Jobsite = this.ud.findEmployeeSite(tech);
+      this.site = site;
       if(this.mode === 'Add' || !this.report || !this.report.first_name) {
         this.report = this.createFreshReport();
       }
@@ -304,6 +334,40 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
       this.initializeForm();
       this.initializeFormListeners();
       this.getCrewNumbers();
+      if(this.mode === 'Add') {
+        this.site = site;
+      } else {
+        // if(this.currentReport instanceof Report) {
+        if(this.type && this.type.name && this.type.name === 'work_report') {
+          this.currentReport = this.report;
+          let cli:string = this.report.client;
+          let loc:string = this.report.location;
+          let lid:string = this.report.location_id;
+          let site:Jobsite = this.sites.find((a:Jobsite) => {
+            return _matchCLL(a.client, cli) && _matchCLL(a.location, loc) && _matchCLL(a.locID, lid);
+          });
+          if(site) {
+            this.site = site;
+          } else {
+            Log.w(`ReportPage: could not find work report's matching site for '${cli}', '${loc}', '${lid}'`);
+          }
+        } else if(this.type && this.type.name) {
+          this.currentReport = this.other;
+          let cli:string = this.other.client;
+          let loc:string = this.other.location;
+          let lid:string = this.other.location_id;
+          let site:Jobsite = this.sites.find((a:Jobsite) => {
+            return _matchCLL(a.client, cli) && _matchCLL(a.location, loc) && _matchCLL(a.locID, lid);
+          });
+          if(site) {
+            this.site = site;
+          } else {
+            Log.w(`ReportPage: could not find ReportOther's matching site for '${cli}', '${loc}', '${lid}'`);
+          }
+        } else {
+          Log.w(`ReportPage: active display is neither a Report or ReportOther!`);
+        }
+      }
       this.updateDisplay();
       this.dataReady = true;
     }).catch((err) => {
@@ -634,6 +698,28 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
     let min = Number(dur1[1]);
     let iDur = hrs + (min / 60);
     return iDur;
+  }
+
+  public getSiteFromInfo(client:SESAClient, location:SESALocation, locID:SESALocID) {
+    let lang = this.lang;
+    let sites = this.sites;
+    let unassigned:Jobsite = sites.find((a:Jobsite) => {
+      return a.site_number === 1;
+    });
+    let site:Jobsite = sites.find((a:Jobsite) => {
+      return _cmp(a.client, client) && _cmp(a.location, location) && _cmp(a.locID, locID);
+    });
+    // let site = sites.filter((obj, pos, arr) => { return _cmp(this.client, obj['client']) })
+    //                 .filter((obj, pos, arr) => { return _cmp(this.location, obj['location']) })
+    //                 .filter((obj, pos, arr) => { return _cmp(this.locID, obj['locID']) });
+    Log.l("getSiteFromInfo(): Site narrowed down to:\n", site);
+    if(site) {
+      this.site = site;
+      return site;
+    } else {
+      this.site = unassigned;
+      return unassigned;
+    }
   }
 
   private initializeForm() {

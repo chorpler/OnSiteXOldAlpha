@@ -1,20 +1,18 @@
-// import { TabsComponent                         } from 'components/tabs/tabs'    ;
-import { sprintf                                  } from 'sprintf-js'              ;
-import { Component, OnInit, OnDestroy, NgZone     } from '@angular/core'           ;
-import { AfterViewInit,                           } from '@angular/core'           ;
-import { FormGroup, FormControl, Validators       } from "@angular/forms"          ;
-import { IonicPage, NavController, NavParams      } from 'ionic-angular'           ;
-import { ViewController                           } from 'ionic-angular'           ;
-import { TranslateService                         } from '@ngx-translate/core'     ;
-import { Log, sizeOf, isMoment, moment, Moment    } from 'config/config.functions' ;
-import { SESAClient, SESALocation, SESALocID, CLL } from 'config/config.types'     ;
-import { DBService                                } from 'providers/db-service'    ;
-import { UserData                                 } from 'providers/user-data'     ;
-import { AlertService                             } from 'providers/alerts'        ;
-import { Employee,Jobsite                         } from 'domain/domain-classes'   ;
-import { TabsService                              } from 'providers/tabs-service'  ;
-import { Pages                                    } from 'config/config.types'     ;
-
+import { sprintf                                  } from 'sprintf-js'             ;
+import { Component, OnInit, OnDestroy, NgZone     } from '@angular/core'          ;
+import { AfterViewInit,                           } from '@angular/core'          ;
+import { FormGroup, FormControl, Validators       } from "@angular/forms"         ;
+import { IonicPage, NavController, NavParams      } from 'ionic-angular'          ;
+import { ViewController                           } from 'ionic-angular'          ;
+import { TranslateService                         } from '@ngx-translate/core'    ;
+import { Log, sizeOf, isMoment, moment, Moment    } from 'onsitex-domain'         ;
+import { SESAClient, SESALocation, SESALocID, CLL } from 'onsitex-domain'         ;
+import { DBService                                } from 'providers/db-service'   ;
+import { UserData                                 } from 'providers/user-data'    ;
+import { AlertService                             } from 'providers/alerts'       ;
+import { Employee,Jobsite                         } from 'onsitex-domain'         ;
+import { TabsService                              } from 'providers/tabs-service' ;
+import { Pages                                    } from 'onsitex-domain'         ;
 
 export const _matchCLL = (a:CLL, b:string):boolean => {
   let cA1 = a.name.toUpperCase();

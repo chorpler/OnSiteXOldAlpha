@@ -12,23 +12,23 @@ import { Pipe, PipeTransform                              } from '@angular/core'
 import { Platform, IonicPage, NavParams, Events           } from 'ionic-angular'             ;
 import { NavController, ToastController, Content          } from 'ionic-angular'             ;
 import { ModalController,ViewController,PopoverController } from 'ionic-angular'             ;
-import { Log, moment, isMoment, Moment                    } from 'config/config.functions'   ;
-import { DBService                                          } from 'providers/db-service'        ;
+import { Log, moment, isMoment, Moment                    } from 'onsitex-domain'            ;
+import { DBService                                        } from 'providers/db-service'      ;
 import { AuthSrvcs                                        } from 'providers/auth-srvcs'      ;
-import { ServerService                                        } from 'providers/server-service'      ;
+import { ServerService                                    } from 'providers/server-service'  ;
 import { AlertService                                     } from 'providers/alerts'          ;
 import { UserData                                         } from 'providers/user-data'       ;
-import { Report                                           } from 'domain/report'             ;
-import { ReportOther                                      } from 'domain/reportother'        ;
-import { Shift                                            } from 'domain/shift'              ;
-import { PayrollPeriod                                    } from 'domain/payroll-period'     ;
-import { Employee                                         } from 'domain/employee'           ;
+import { Report                                           } from 'onsitex-domain'            ;
+import { ReportOther                                      } from 'onsitex-domain'            ;
+import { Shift                                            } from 'onsitex-domain'            ;
+import { PayrollPeriod                                    } from 'onsitex-domain'            ;
+import { Employee                                         } from 'onsitex-domain'            ;
 import { TabsService                                      } from 'providers/tabs-service'    ;
-import { STRINGS                                          } from 'config/config.types'       ;
 import { Preferences                                      } from 'providers/preferences'     ;
 import { SafePipe                                         } from 'pipes/safe'                ;
 import { SmartAudio                                       } from 'providers/smart-audio'     ;
-import { Icons, Pages                                     } from 'config/config.types'       ;
+import { STRINGS                                          } from 'onsitex-domain'            ;
+import { Icons, Pages                                     } from 'onsitex-domain'            ;
 
 // enum Icons {
 //   'box-check-no'   = 0,

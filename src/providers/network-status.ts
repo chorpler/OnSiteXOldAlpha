@@ -5,7 +5,7 @@ import { Subject            } from 'rxjs/Subject'                 ;
 import { Subscription       } from 'rxjs/Subscription'            ;
 import { Observable         } from 'rxjs/Observable'              ;
 import { Injectable, NgZone } from '@angular/core'                ;
-import { Log, CONSOLE       } from 'config/config.functions'      ;
+import { Log, CONSOLE       } from 'onsitex-domain'      ;
 import { Network            } from '@ionic-native/network'        ;
 import { AlertService       } from './alerts'                     ;
 import { UserData           } from './user-data'                  ;

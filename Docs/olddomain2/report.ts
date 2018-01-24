@@ -1,8 +1,9 @@
 /**
  * Name: Report domain class
- * Vers: 6.5.3
- * Date: 2018-01-20
+ * Vers: 6.5.4
+ * Date: 2018-01-21
  * Auth: David Sargeant
+ * Logs: 6.5.4 2018-01-21: Changed flagging to flagged and flagged_fields fields, plus flags(), getFlagNumber(), isFlagged(), isFieldFlagged(), setFlag(), unsetFlag(), clearFlags() methods
  * Logs: 6.5.3 2018-01-20: Added flagged_field and flagged_reason fields, and setFlag method
  * Logs: 6.5.2 2018-01-18: Added crew_number field
  * Logs: 6.5.1 2017-12-15: Added flagged field, invoiced field, and invoices array

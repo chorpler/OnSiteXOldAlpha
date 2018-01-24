@@ -5,7 +5,7 @@ import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular'   
 import { AuthSrvcs                                     } from 'providers/auth-srvcs'       ;
 import { GeolocService                                 } from 'providers/geoloc-service'   ;
 import { AlertService                                  } from 'providers/alerts'           ;
-import { Log, moment, Moment                           } from 'config/config.functions'    ;
+import { Log, moment, Moment                           } from 'onsitex-domain'    ;
 import { DBService                                       } from 'providers/db-service'         ;
 import { SmartAudio                                    } from 'providers/smart-audio'      ;
 import { TranslateModule, TranslateLoader              } from '@ngx-translate/core'        ;
@@ -13,7 +13,7 @@ import { TranslateHttpLoader                           } from '@ngx-translate/ht
 import { TranslateService                              } from '@ngx-translate/core'        ;
 import { Preferences                                   } from 'providers/preferences'      ;
 import { TabsService                                   } from 'providers/tabs-service'     ;
-import { Pages                                         } from 'config/config.types'        ;
+import { Pages                                         } from 'onsitex-domain'        ;
 
 @IonicPage({name: 'DevPage'})
 @Component({

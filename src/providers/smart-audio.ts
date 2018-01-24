@@ -2,7 +2,7 @@ import { Injectable  } from '@angular/core'              ;
 import { Platform    } from 'ionic-angular'              ;
 import { NativeAudio } from '@ionic-native/native-audio' ;
 import { Preferences } from './preferences'              ;
-import { Log         } from '../config/config.functions' ;
+import { Log         } from 'onsitex-domain'             ;
 
 @Injectable()
 export class SmartAudio {

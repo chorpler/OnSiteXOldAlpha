@@ -2,10 +2,10 @@ import { Injectable                         } from '@angular/core'              
 import { Platform                           } from 'ionic-angular'                ;
 import { Storage,                           } from '@ionic/storage'               ;
 import { SecureStorage, SecureStorageObject } from '@ionic-native/secure-storage' ;
-import { ServerService                          } from './server-service'                 ;
-import { AlertService                       } from '../providers/alerts'          ;
-import { UserData                           } from '../providers/user-data'       ;
-import { Log                                } from '../config/config.functions'   ;
+import { ServerService                      } from './server-service'             ;
+import { AlertService                       } from './alerts'                     ;
+import { UserData                           } from './user-data'                  ;
+import { Log                                } from 'onsitex-domain'               ;
 
 @Injectable()
 export class StorageService {

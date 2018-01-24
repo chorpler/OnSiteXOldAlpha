@@ -1,10 +1,9 @@
-import { Injectable, NgZone    } from '@angular/core'                ;
-import { AlertService          } from './alerts'                     ;
-import 'rxjs/add/operator/map'                                       ;
-import { ServerService             } from './server-service'                 ;
-import { UserData              } from './user-data'                  ;
-import { StorageService        } from './storage-service'            ;
-import { Log                   } from '../config/config.functions'   ;
+import { Injectable, NgZone } from '@angular/core'     ;
+import { AlertService       } from './alerts'          ;
+import { ServerService      } from './server-service'  ;
+import { UserData           } from './user-data'       ;
+import { StorageService     } from './storage-service' ;
+import { Log                } from 'onsitex-domain'    ;
 
 @Injectable()
 export class AuthSrvcs {

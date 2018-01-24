@@ -1,10 +1,10 @@
-import { Subject         } from 'rxjs/Subject'            ;
-import { Subscription    } from 'rxjs/Subscription'       ;
-import { Observable      } from 'rxjs/Observable'         ;
-import { Injectable      } from '@angular/core'           ;
-import { HttpClient      } from '@angular/common/http'    ;
-import { TranslateLoader } from '@ngx-translate/core'     ;
-import { Log, JSON5      } from 'config/config.functions' ;
+import { Subject         } from 'rxjs/Subject'         ;
+import { Subscription    } from 'rxjs/Subscription'    ;
+import { Observable      } from 'rxjs/Observable'      ;
+import { Injectable      } from '@angular/core'        ;
+import { HttpClient      } from '@angular/common/http' ;
+import { TranslateLoader } from '@ngx-translate/core'  ;
+import { Log, JSON5      } from 'onsitex-domain'       ;
 
 export function createTranslateLoader(http:HttpClient) {
   return new JSON5TranslateLoader(http);

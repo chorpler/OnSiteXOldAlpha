@@ -1,20 +1,18 @@
-// import { Status                                                                                    } from 'providers/status'                     ;
-// import { FancySelectComponent                                                                      } from 'components/fancy-select/fancy-select' ;
 import 'rxjs/add/operator/debounceTime';
 import { Component, OnInit, ViewChild                                                              } from '@angular/core'           ;
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators         } from "@angular/forms"          ;
 import { IonicPage, NavController, NavParams, LoadingController, PopoverController, ViewController } from 'ionic-angular'           ;
-import { DBService                                                                                   } from 'providers/db-service'      ;
+import { DBService                                                                                 } from 'providers/db-service'    ;
 import { AuthSrvcs                                                                                 } from 'providers/auth-srvcs'    ;
-import { Log, moment, Moment, isMoment                                                             } from 'config/config.functions' ;
-import { PayrollPeriod                                                                             } from 'domain/payroll-period'   ;
-import { Shift                                                                                     } from 'domain/shift'            ;
-import { Report                                                                                    } from 'domain/report'           ;
+import { Log, moment, Moment, isMoment                                                             } from 'onsitex-domain' ;
+import { PayrollPeriod,                                                                            } from 'onsitex-domain' ;
+import { Shift                                                                                     } from 'onsitex-domain'          ;
+import { Report                                                                                    } from 'onsitex-domain'          ;
 import { UserData                                                                                  } from 'providers/user-data'     ;
 import { sprintf                                                                                   } from 'sprintf-js'              ;
 import { TranslateService                                                                          } from '@ngx-translate/core'     ;
 import { Preferences                                                                               } from 'providers/preferences'   ;
-import { STRINGS                                                                                   } from 'config/config.types'     ;
+import { STRINGS                                                                                   } from 'onsitex-domain'     ;
 
 @IonicPage({ name: 'Fancy Select' })
 @Component({

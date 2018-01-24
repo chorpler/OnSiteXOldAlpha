@@ -4,14 +4,8 @@ import { TranslateService                                                       
 import { Pipe, PipeTransform                                                    } from '@angular/core'             ;
 import { DomSanitizer                                                           } from '@angular/platform-browser' ;
 import { SafePipe                                                               } from 'pipes/safe'                ;
-import { Log                                                                    } from 'config/config.functions'   ;
+import { Log                                                                    } from 'onsitex-domain'            ;
 
-/**
- * Generated class for the PopoverTemplatePage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
 @IonicPage({name: 'Popover'})
 @Component({
   selector: 'page-popover-template',

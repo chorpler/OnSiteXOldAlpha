@@ -3,18 +3,13 @@ import { Platform, App       } from 'ionic-angular'                  ;
 import { Device              } from '@ionic-native/device'           ;
 import { UniqueDeviceID      } from '@ionic-native/unique-device-id' ;
 import { HttpClient          } from '@angular/common/http'           ;
-import { Log, moment, Moment } from 'config/config.functions'        ;
+import { Log, moment, Moment } from 'onsitex-domain'                 ;
 import { AlertService        } from 'providers/alerts'               ;
-import { Employee            } from 'domain/employee'                ;
-import { Comment             } from 'domain/comment'                 ;
+import { Employee            } from 'onsitex-domain'                 ;
+import { Comment             } from 'onsitex-domain'                 ;
 import { UserData            } from 'providers/user-data'            ;
 
-/*
-  Generated class for the CommentProvider provider.
 
-  See https://angular.io/docs/ts/latest/guide/dependency-injection.html
-  for more info on providers and Angular DI.
-*/
 @Injectable()
 export class CommentService {
   public comment:Comment = null;

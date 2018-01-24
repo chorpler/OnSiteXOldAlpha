@@ -1,8 +1,9 @@
 /**
  * Name: ReportOther domain class
- * Vers: 4.0.3
- * Date: 2018-01-20
+ * Vers: 4.0.4
+ * Date: 2018-01-21
  * Auth: David Sargeant
+ * Logs: 4.0.4 2018-01-21: Changed flagging to flagged and flagged_fields fields, plus flags(), getFlagNumber(), isFlagged(), isFieldFlagged(), setFlag(), unsetFlag(), clearFlags() methods
  * Logs: 4.0.3 2018-01-20: Added flagged_field and flagged_reason fields, and setFlag() method
  * Logs: 4.0.2 2018-01-20: Added flagged property
  * Logs: 4.0.1 2017-12-15: Combined app and console class; added getHoursNumeric() and getHoursString() methods

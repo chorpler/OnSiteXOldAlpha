@@ -121,7 +121,7 @@ hachero@gmail.com S3m9KBxAYOD
 
 #####The hacker stories: awesome adventures from the birth of the modern geek era
 - [**Exploding the Phone:** The Untold Story of the Teenagers and Outlaws who Hacked Ma Bell](https://itunes.apple.com/ca/book/exploding-the-phone/id570545460?mt=11)
-- [**Gohst in the Wires:** My Adventures as the World's Most Wanted Hacker](https://itunes.apple.com/us/book/ghost-in-the-wires/id395522097?mt=11)
+- [**Ghost in the Wires:** My Adventures as the World's Most Wanted Hacker](https://itunes.apple.com/us/book/ghost-in-the-wires/id395522097?mt=11)
 
 
 ###Great Place to Shop for Computer Parts!

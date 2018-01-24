@@ -1,19 +1,19 @@
-import { Injectable                                         } from '@angular/core'                                  ;
-import { HttpClient                                         } from '@angular/common/http'                           ;
-import { Subscription                                       } from 'rxjs/Subscription'
-import { Platform, ToastController,                         } from 'ionic-angular'                                  ;
-import { Storage                                            } from '@ionic/storage'                                 ;
 // import { Geofence                                           } from '@ionic-native/geofence'                         ;
-import { BackgroundGeolocation, BackgroundGeolocationConfig } from '@ionic-native/background-geolocation'           ;
-import { BackgroundGeolocationResponse                      } from '@ionic-native/background-geolocation'           ;
-import { Geolocation                                        } from '../domain/geolocation'                          ;
-import { DOMTimeStamp, Coordinates, Position                } from '../config/geoloc'                               ;
-import { Log                                                } from '../config/config.functions'                     ;
-import { ServerService                                          } from '../providers/server-service'                        ;
-import { AuthSrvcs                                          } from '../providers/auth-srvcs'                        ;
-import { UserData                                           } from '../providers/user-data'                         ;
-import { Preferences                                        } from '../providers/preferences'                       ;
 // import { BackgroundGeolocation as BGGeolocation,            } from 'cordova-plugin-mauron85-background-geolocation' ;
+import { Injectable                                         } from '@angular/core'                        ;
+import { HttpClient                                         } from '@angular/common/http'                 ;
+import { Subscription                                       } from 'rxjs/Subscription'                    ;
+import { Platform, ToastController,                         } from 'ionic-angular'                        ;
+import { Storage                                            } from '@ionic/storage'                       ;
+import { BackgroundGeolocation, BackgroundGeolocationConfig } from '@ionic-native/background-geolocation' ;
+import { BackgroundGeolocationResponse                      } from '@ionic-native/background-geolocation' ;
+import { Geolocation                                        } from 'onsitex-domain'                       ;
+import { DOMTimeStamp, Coordinates, Position                } from 'onsitex-domain'                       ;
+import { Log                                                } from 'onsitex-domain'                       ;
+import { ServerService                                      } from './server-service'                     ;
+import { AuthSrvcs                                          } from './auth-srvcs'                         ;
+import { UserData                                           } from './user-data'                          ;
+import { Preferences                                        } from './preferences'                        ;
 
 @Injectable()
 export class GeolocService {

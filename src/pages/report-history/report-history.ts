@@ -3,22 +3,22 @@
 import { Component, OnInit, ChangeDetectionStrategy, NgZone,                 } from '@angular/core'           ;
 import { OnDestroy, AfterViewInit,                                           } from '@angular/core'           ;
 import { IonicPage, NavController, NavParams, LoadingController, ItemSliding } from 'ionic-angular'           ;
-import { DBService                                                             } from 'providers/db-service'      ;
+import { DBService                                                           } from 'providers/db-service'    ;
 import { AuthSrvcs                                                           } from 'providers/auth-srvcs'    ;
-import { ServerService                                                           } from 'providers/server-service'    ;
+import { ServerService                                                       } from 'providers/server-service';
 import { UserData                                                            } from 'providers/user-data'     ;
 import { AlertService                                                        } from 'providers/alerts'        ;
-import { Log, isMoment, moment, Moment                                       } from 'config/config.functions' ;
-import { Report                                                              } from 'domain/report'           ;
-import { ReportOther                                                         } from 'domain/reportother'      ;
-import { Shift                                                               } from 'domain/shift'            ;
-import { PayrollPeriod                                                       } from 'domain/payroll-period'   ;
+import { Log, isMoment, moment, Moment                                       } from 'onsitex-domain'          ;
+import { Report                                                              } from 'onsitex-domain'          ;
+import { ReportOther                                                         } from 'onsitex-domain'          ;
+import { Shift                                                               } from 'onsitex-domain'          ;
+import { PayrollPeriod                                                       } from 'onsitex-domain'          ;
 import { Preferences                                                         } from 'providers/preferences'   ;
 import { TranslateService                                                    } from '@ngx-translate/core'     ;
 import { SmartAudio                                                          } from 'providers/smart-audio'   ;
 import { TabsService                                                         } from 'providers/tabs-service'  ;
-import { Pages                                                               } from 'config/config.types'     ;
-import { STRINGS                                                             } from 'config/config.types'     ;
+import { Pages                                                               } from 'onsitex-domain'          ;
+import { STRINGS                                                             } from 'onsitex-domain'          ;
 
 export const _sortReports = (a:Report,b:Report):number => {
   let dateA  = a.report_date;

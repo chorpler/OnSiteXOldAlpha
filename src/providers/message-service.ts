@@ -1,11 +1,11 @@
-import { Injectable                    } from '@angular/core'           ;
-import { HttpClient                    } from '@angular/common/http'    ;
-import { Log, isMoment, moment, Moment } from 'config/config.functions' ;
-import { ServerService                     } from './server-service'            ;
-import { DBService                       } from './db-service'              ;
-import { AlertService                  } from './alerts'                ;
-import { Message                       } from 'domain/message'          ;
-import { UserData                      } from 'providers/user-data'     ;
+import { Injectable                    } from '@angular/core'        ;
+import { HttpClient                    } from '@angular/common/http' ;
+import { Log, isMoment, moment, Moment } from 'onsitex-domain'       ;
+import { ServerService                 } from './server-service'     ;
+import { DBService                     } from './db-service'         ;
+import { AlertService                  } from './alerts'             ;
+import { Message                       } from 'onsitex-domain'       ;
+import { UserData                      } from 'providers/user-data'  ;
 
 @Injectable()
 export class MessageService {

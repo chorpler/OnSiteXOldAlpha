@@ -3,7 +3,7 @@ import { Component, OnInit, NgZone, OnDestroy, AfterViewInit                 } f
 import { IonicPage, NavController, Platform, ModalController, ViewController } from 'ionic-angular'                 ;
 import { DBService                                                             } from 'providers/db-service'            ;
 import { Login                                                               } from 'pages/login/login'             ;
-import { Log, moment, Moment                                                 } from 'config/config.functions'       ;
+import { Log, moment, Moment                                                 } from 'onsitex-domain'       ;
 import { AuthSrvcs                                                           } from 'providers/auth-srvcs'          ;
 import { ServerService                                                           } from 'providers/server-service'          ;
 import { AlertService                                                        } from 'providers/alerts'              ;
@@ -14,7 +14,7 @@ import { Preferences                                                         } f
 import { UserData                                                            } from 'providers/user-data'           ;
 import { IonDigitKeyboardCmp, IonDigitKeyboardOptions                        } from 'components/ion-digit-keyboard' ;
 import { TabsService                                                         } from 'providers/tabs-service'        ;
-import { Pages                                                               } from 'config/config.types'           ;
+import { Pages                                                               } from 'onsitex-domain'           ;
 
 
 @IonicPage({ name: 'Settings' })

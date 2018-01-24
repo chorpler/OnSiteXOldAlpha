@@ -1,25 +1,18 @@
-import { Component, OnInit                                   } from '@angular/core'                   ;
-import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular'                   ;
-import { ServerService                                           } from '../../providers/server-service'      ;
-import { Log, moment, isMoment, Moment                       } from '../../config/config.functions'   ;
-import { CommentService                                      } from '../../providers/comment-service' ;
-import { Platform, App                                       } from 'ionic-angular'                   ;
-import { Device                                              } from '@ionic-native/device'            ;
-import { AppVersion                                          } from '@ionic-native/app-version'       ;
-import { UniqueDeviceID                                      } from '@ionic-native/unique-device-id'  ;
-import { TranslateService                                    } from '@ngx-translate/core'             ;
-import { AlertService                                        } from '../../providers/alerts'          ;
-import { Comment                                             } from '../../domain/comment'            ;
-import { Employee                                            } from '../../domain/employee'           ;
-import { UserData                                            } from '../../providers/user-data'       ;
+import { Component, OnInit                                   } from '@angular/core'                  ;
+import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular'                  ;
+import { Platform, App                                       } from 'ionic-angular'                  ;
+import { Device                                              } from '@ionic-native/device'           ;
+import { AppVersion                                          } from '@ionic-native/app-version'      ;
+import { UniqueDeviceID                                      } from '@ionic-native/unique-device-id' ;
+import { TranslateService                                    } from '@ngx-translate/core'            ;
+import { Log, moment, isMoment, Moment                       } from 'onsitex-domain'                 ;
+import { Comment                                             } from 'onsitex-domain'                 ;
+import { Employee                                            } from 'onsitex-domain'                 ;
+import { ServerService                                       } from 'providers/server-service'       ;
+import { CommentService                                      } from 'providers/comment-service'      ;
+import { AlertService                                        } from 'providers/alerts'               ;
+import { UserData                                            } from 'providers/user-data'            ;
 
-
-/**
- * Generated class for the CommentPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
 @IonicPage({name: 'Comment'})
 @Component({
   selector: 'page-comment',

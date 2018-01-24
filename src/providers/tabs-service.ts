@@ -4,8 +4,8 @@ import { Subscription                  } from 'rxjs/Subscription'       ;
 import { Observable                    } from 'rxjs/Observable'         ;
 import { Injectable                    } from '@angular/core'           ;
 import { Events, Platform, App         } from 'ionic-angular'           ;
-import { Log, isMoment, moment, Moment } from 'config/config.functions' ;
-import { Tab, Pages                    } from 'config/config.types'     ;
+import { Log, isMoment, moment, Moment } from 'onsitex-domain' ;
+import { Tab, Pages                    } from 'onsitex-domain'     ;
 import { Preferences                   } from './preferences'           ;
 import { UserData                      } from './user-data'             ;
 

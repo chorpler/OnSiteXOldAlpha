@@ -1,19 +1,18 @@
-// import { TabsComponent                                        } from 'components/tabs/tabs'      ;
 import { Component, OnInit, OnDestroy, NgZone,                } from '@angular/core'             ;
 import { AfterViewInit,                                       } from '@angular/core'             ;
 import { Pipe, PipeTransform                                  } from '@angular/core'             ;
 import { DomSanitizer                                         } from '@angular/platform-browser' ;
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular'             ;
 import { TranslateService                                     } from '@ngx-translate/core'       ;
-import { Log, isMoment, moment, Moment                        } from 'config/config.functions'   ;
-import { DBService                                              } from 'providers/db-service'        ;
-import { ServerService                                            } from 'providers/server-service'      ;
+import { Log, isMoment, moment, Moment                        } from 'onsitex-domain'            ;
+import { DBService                                            } from 'providers/db-service'      ;
+import { ServerService                                        } from 'providers/server-service'  ;
 import { UserData                                             } from 'providers/user-data'       ;
 import { SafePipe                                             } from 'pipes/safe'                ;
-import { Message                                              } from 'domain/message'            ;
+import { Message                                              } from 'onsitex-domain'            ;
 import { MessageService                                       } from 'providers/message-service' ;
 import { TabsService                                          } from 'providers/tabs-service'    ;
-import { Pages                                                } from 'config/config.types'       ;
+import { Pages                                                } from 'onsitex-domain'            ;
 
 export const _msgSort = (a, b) => {
   let timeA = moment(a.date);

@@ -15,12 +15,8 @@
  * Logs: I forget
  */
 
-import 'rxjs/add/operator/map';
-import { Injectable } from '@angular/core';
-import { Log } from '../config/config.functions';
-
-// import { Http } from '@angular/http';
-// import { StorageService } from './storage-service';
+import { Injectable } from '@angular/core'  ;
+import { Log        } from 'onsitex-domain' ;
 
 export const version      = 55                  ;
 export var adapter    = 'idb'            ;

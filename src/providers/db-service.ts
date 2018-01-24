@@ -1,5 +1,5 @@
 import { Injectable, NgZone                         } from '@angular/core'                ;
-import { Log, CONSOLE, moment, Moment, isMoment     } from 'config/config.functions'      ;
+import { Log, CONSOLE, moment, Moment, isMoment     } from 'onsitex-domain'      ;
 import { Storage                                    } from '@ionic/storage'               ;
 import { NativeStorage                              } from '@ionic-native/native-storage' ;
 import { PouchDBService                             } from './pouchdb-service'            ;
@@ -8,8 +8,8 @@ import { AlertService                               } from './alerts'           
 import { ServerService                                  } from './server-service'                 ;
 import { UserData                                   } from './user-data'                  ;
 import { Preferences                                } from './preferences'                ;
-import { Employee, Jobsite, Report, ReportOther,    } from 'domain/domain-classes'        ;
-import { Message, Comment, Shift, PayrollPeriod     } from 'domain/domain-classes'        ;
+import { Employee, Jobsite, Report, ReportOther,    } from 'onsitex-domain'        ;
+import { Message, Comment, Shift, PayrollPeriod     } from 'onsitex-domain'        ;
 
 
 export const noDD = "_\uffff";

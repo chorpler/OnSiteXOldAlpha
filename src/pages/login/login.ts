@@ -9,8 +9,8 @@ import { AlertService                                                           
 import { NetworkStatus                                                                     } from 'providers/network-status' ;
 import { UserData                                                                          } from 'providers/user-data'      ;
 import { Preferences                                                                       } from 'providers/preferences'    ;
-import { Employee                                                                          } from 'domain/domain-classes'    ;
-import { Log                                                                               } from 'config/config.functions'  ;
+import { Employee                                                                          } from 'onsitex-domain'    ;
+import { Log                                                                               } from 'onsitex-domain'  ;
 import { TranslateService                                                                  } from '@ngx-translate/core'      ;
 import { TabsService                                                                       } from 'providers/tabs-service'   ;
 
