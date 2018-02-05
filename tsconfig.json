@@ -33,5 +33,11 @@
     "node_modules",
     "Docs/**"
   ],
-  "compileOnSave": false
+  "compileOnSave": false,
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true,
+    "preserveWhiteSpaces": false,
+    "preserveSymlinks": true
+  }
+
 }

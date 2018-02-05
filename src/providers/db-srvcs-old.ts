@@ -1,41 +1,37 @@
 import { Injectable, NgZone                         } from '@angular/core'                ;
-import { Log, CONSOLE, moment, Moment, isMoment     } from 'onsitex-domain'      ;
+import { Log, CONSOLE, moment, Moment, isMoment     } from 'domain/onsitexdomain'               ;
 import { Storage                                    } from '@ionic/storage'               ;
 import { NativeStorage                              } from '@ionic-native/native-storage' ;
 import { PouchDBService                             } from './pouchdb-service'            ;
 import { AuthSrvcs                                  } from './auth-srvcs'                 ;
 import { AlertService                               } from './alerts'                     ;
-import { ServerService                                  } from './server-service'                 ;
+import { ServerService                              } from './server-service'             ;
 import { UserData                                   } from './user-data'                  ;
 import { Preferences                                } from './preferences'                ;
-import { Employee, Jobsite, Report, ReportOther, } from 'onsitex-domain'        ;
-import { Message, Comment, Shift, PayrollPeriod     } from 'onsitex-domain'        ;
-
+import { Employee, Jobsite, Report, ReportOther,    } from 'domain/onsitexdomain'               ;
+import { Message, Comment, Shift, PayrollPeriod     } from 'domain/onsitexdomain'               ;
 
 export const noDD = "_\uffff";
 export const noDesign = { include_docs: true, startkey: noDD };
 export const liveNoDesign = { live: true, since: 'now', include_docs: true, startkey: noDD };
 @Injectable()
 export class DBService {
-
-  data                        : any                                                ;
+  public data                 : any                                                ;
   public static db            : any                                                ;
   public static serverdb      : any                                                ;
-  username                    : any                                                ;
-  password                    : any                                                ;
-  remote                      : any                                                ;
-  PouchDB                     : any                                                ;
-  remoteDB                    : any                                                ;
-  pdbOpts                     : any                                                ;
+  public username             : any                                                ;
+  public password             : any                                                ;
+  public remote               : any                                                ;
+  public PouchDB              : any                                                ;
+  public remoteDB             : any                                                ;
+  public pdbOpts              : any                                                ;
   public static StaticPouchDB : any                                                ;
   public static pdb           : any = new Map()                                    ;
   public static rdb           : any = new Map()                                    ;
   public static ldbs          : any                                                ;
   public static rdbs          : any                                                ;
   public static PREFS         : any = new Preferences()                            ;
-  public prefs                : any = DBService.PREFS                                ;
-  // public static PREFS         : any = new Preferences()                            ;
-  // public prefs                : any = DBService.PREFS                                ;
+  public prefs                : any = DBService.PREFS                              ;
 
   constructor(public zone: NgZone, private storage: Storage, private auth: AuthSrvcs, private server: ServerService, public ud:UserData) {
     DBService.StaticPouchDB = PouchDBService.PouchInit();
@@ -44,15 +40,7 @@ export class DBService {
     window["dbserv"] = this;
     window["sdb"] = DBService;
 
-    // this.pdbOpts = {adapter: 'websql', auto_compaction: true};
-
     DBService.addDB(this.prefs.DB.reports);
-
-    // let options = {
-    //   live: true,
-    //   retry: true,
-    //   continuous: false
-    // };
   }
 
   /**

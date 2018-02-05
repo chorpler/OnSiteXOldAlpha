@@ -54,10 +54,8 @@
     </ion-item-group>
   </ion-item-group>
   <ion-item-group>
-    <button ion-button (tap)="getSomeCharacters()">Unicode Characters</button>
-    <ion-item>
-      {{unicodeChars}}
-    </ion-item>
+    <ion-item-divider color="light">Developer Utilities</ion-item-divider>
+    <button ion-button (tap)="resetAppData($event)">Reset App (DANGEROUS)</button>
   </ion-item-group>
   <button ion-button block color="primary" (tap)="updatePreferences()">Save</button>
   <button ion-button block color="light" type="button" (tap)="cancel()">Cancel</button>

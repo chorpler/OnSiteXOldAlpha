@@ -16,9 +16,9 @@
  */
 
 import { Injectable } from '@angular/core'  ;
-import { Log        } from 'onsitex-domain' ;
+import { Log        } from 'domain/onsitexdomain' ;
 
-export const version      = 55                  ;
+export const version      = 56                  ;
 export var adapter    = 'idb'            ;
 // export var adapter        = 'worker'            ;
 // export var adapter      = 'websql'            ;
@@ -30,7 +30,8 @@ export var server         = "securedb.sesaonsite.com";
 // export var server         = "pico.sesa.us"         ;
 export var port           = 443                    ;
 export var protocol       = "https"                ;
-export var reports        = 'aaa001_reports_ver101100'    ;
+// export var reports        = 'aaa001_reports_ver101100'    ;
+export var reports        = 'reports_ver101100'    ;
 export var reportsOther   = 'sesa-reports-other'   ;
 export var employees      = 'sesa-employees'       ;
 export var config         = 'sesa-config'          ;

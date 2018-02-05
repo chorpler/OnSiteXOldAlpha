@@ -3,10 +3,10 @@ import { Platform, App       } from 'ionic-angular'                  ;
 import { Device              } from '@ionic-native/device'           ;
 import { UniqueDeviceID      } from '@ionic-native/unique-device-id' ;
 import { HttpClient          } from '@angular/common/http'           ;
-import { Log, moment, Moment } from 'onsitex-domain'                 ;
+import { Log, moment, Moment } from 'domain/onsitexdomain'                 ;
 import { AlertService        } from 'providers/alerts'               ;
-import { Employee            } from 'onsitex-domain'                 ;
-import { Comment             } from 'onsitex-domain'                 ;
+import { Employee            } from 'domain/onsitexdomain'                 ;
+import { Comment             } from 'domain/onsitexdomain'                 ;
 import { UserData            } from 'providers/user-data'            ;
 
 

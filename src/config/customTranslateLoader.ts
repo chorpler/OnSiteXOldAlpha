@@ -4,7 +4,7 @@ import { Observable      } from 'rxjs/Observable'      ;
 import { Injectable      } from '@angular/core'        ;
 import { HttpClient      } from '@angular/common/http' ;
 import { TranslateLoader } from '@ngx-translate/core'  ;
-import { Log, JSON5      } from 'onsitex-domain'       ;
+import { Log, JSON5      } from 'domain/onsitexdomain'       ;
 
 export function createTranslateLoader(http:HttpClient) {
   return new JSON5TranslateLoader(http);

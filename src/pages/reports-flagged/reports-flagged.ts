@@ -6,13 +6,13 @@ import { AuthSrvcs                                                           } f
 import { ServerService                                                           } from 'providers/server-service'    ;
 import { UserData                                                            } from 'providers/user-data'     ;
 import { AlertService                                                        } from 'providers/alerts'        ;
-import { Log, isMoment, moment, Moment                                       } from 'onsitex-domain' ;
-import { Report, ReportOther, Shift, PayrollPeriod, Employee, Jobsite        } from 'onsitex-domain'   ;
+import { Log, isMoment, moment, Moment                                       } from 'domain/onsitexdomain' ;
+import { Report, ReportOther, Shift, PayrollPeriod, Employee, Jobsite        } from 'domain/onsitexdomain'   ;
 import { Preferences                                                         } from 'providers/preferences'   ;
 import { TranslateService                                                    } from '@ngx-translate/core'     ;
 import { SmartAudio                                                          } from 'providers/smart-audio'   ;
 import { TabsService                                                         } from 'providers/tabs-service'  ;
-import { Pages                                                               } from 'onsitex-domain'     ;
+import { Pages                                                               } from 'domain/onsitexdomain'     ;
 
 export const _sortReports = (a:Report,b:Report):number => {
   let dateA  = a.report_date;
@@ -150,14 +150,15 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
   }
 
   public generateShifts() {
-    Log.l(`generateShifts(): Generating shifts for `)
+    Log.l(`generateShifts(): Generating shifts for periods:`)
     this.periods = this.ud.getPayrollPeriods() || [];
+    Log.l(this.periods)
     // this.periods = this.ud.createPayrollPeriods(this.tech);
     this.period = this.periods[0];
     this.shifts = [];
     this.reports = [];
     let rawReports:Report[] = [];
-    Log.l("ReportHistory: Got payroll periods:\n", this.periods);
+    Log.l("ReportsFlaggedPage: Got payroll periods:\n", this.periods);
     for(let period of this.periods) {
       let periodShifts = period.getPayrollShifts();
       for(let shift of periodShifts) {
@@ -178,33 +179,42 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
       Log.l("generateFlaggedReportsList(): Now checking report:\n", report);
       let wo = report.work_order_number.trim();
       let cli = report.client.trim().toUpperCase();
-      if(report.flagged === true) {
+      let crew = report && typeof report.crew_number === 'string' ? report.crew_number.trim().toUpperCase() : "";
+      if(report.isFlagged()) {
         reports.push(report);
         continue;
       } else if(cli === 'HB' || cli === "HALLIBURTON") {
         if(!wo) {
-          report.flagged = true;
+          // report.flagged = true;
+          report.setFlag('work_order_number', 'blank')
           reports.push(report);
           continue;
         } else {
           let wonumber = Number(wo);
           if(!isNaN(wonumber)) {
             if(wonumber < 1000000 || wonumber > 9999999999) {
-              report.flagged = true;
+              // report.flagged = true;
+              report.setFlag('work_order_number', 'wrong_length')
               reports.push(report);
               continue;
             }
           }
           let unit = report.unit_number.trim();
           if(!unit) {
-            report.flagged = true;
+            // report.flagged = true;
+            report.setFlag('unit_number', 'blank')
             reports.push(report);
             continue;
           }
         }
       } else if(cli === 'KN' || cli === 'KEANE') {
         if(!wo) {
-          report.flagged = true;
+          // report.flagged = true;
+          report.setFlag('work_order_number', 'blank')
+          reports.push(report);
+          continue;
+        } else if(!crew) {
+          report.setFlag('crew_number', 'blank');
           reports.push(report);
           continue;
         }
@@ -267,73 +277,17 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
     this.tabServ.goToPage('Report', { mode: 'Add', shift: shift, payroll_period: this.period });
   }
 
-  // public deleteWorkOrder(event:Event, report:Report, shift:Shift) {
-  //   Log.l("deleteWorkOrder() clicked ... with event:\n", event);
-  //   let lang = this.lang;
-  //   let db = this.prefs.getDB();
-  //   this.audio.play('deletereport');
-  //   this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
-  //     if (res) {
-  //       this.alert.showSpinner(lang['spinner_deleting_report']);
-  //       Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
-  //       let wo:Report = report;
-  //       this.db.deleteDoc(db.reports, wo).then((res) => {
-  //         Log.l("deleteWorkOrder(): Success:\n", res);
-  //         let tmpReport = wo;
-  //         let reports = this.ud.getWorkOrderList();
-  //         let i = reports.indexOf(wo);
-  //         Log.l("Going to delete work order %d in the list.", i);
-  //         if (i > -1) {
-  //           tmpReport = reports.splice(i, 1)[0];
-  //         }
-  //         shift.removeShiftReport(tmpReport);
-  //         this.ud.removeReport(tmpReport);
-  //         return this.server.syncToServer(db.reports, db.reports);
-  //       }).then(res => {
-  //         Log.l(`deleteWorkOrder(): Synchronized local '${db.reports}' to remote.`)
-  //         // return this.server.deleteDoc(db.reports, wo);
-  //         // .then((res) => {
-  //       // }).then(res => {
-  //         Log.l("deleteWorkOrder(): Success:\n", res);
-  //         // this.items.splice(i, 1);
-  //         // let i = this.reports.indexOf(report);
-  //         let tmpReport = report;
-  //         // if(i > -1) {
-  //           // tmpReport = this.reports.splice(i, 1)[0];
-  //         // }
-  //         // i = this.filtReports[reportDate].indexOf(item);
-  //         // let tmpReport = this.filtReports[reportDate].splice(i, 1)[0];
-  //         Log.l(`deleteWorkOrder(): Successfully deleted report '${report._id}' from server.`);
-  //         Log.l(`deleteWorkOrder(): About to delete report '${report._id}' from shift '${shift.getShiftSerial()}'...\n`, report);
-  //         shift.removeShiftReport(tmpReport);
-  //         // this.ud.removeReport(tmpReport);
-  //         this.alert.hideSpinner();
-  //       }).catch((err) => {
-  //         this.alert.hideSpinner();
-  //         Log.l("deleteWorkOrder(): Error!");
-  //         Log.e(err);
-  //         this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
-  //       });
-  //     } else {
-  //       Log.l("User canceled deletion.");
-  //     }
-  //   }).catch((err) => {
-  //     this.alert.hideSpinner();
-  //     Log.l("deleteWorkOrder(): Error!");
-  //     Log.e(err);
-  //     this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
-  //   });
-  // }
 
   public async deleteWorkOrder(event:Event, report:Report, shift:Shift) {
     let lang = this.lang;
+    let spinnerID;
     try {
       Log.l("deleteWorkOrder() clicked ... with event:\n", event);
       let db = this.prefs.getDB();
       this.audio.play('deletereport');
       let confirm = await this.alert.showConfirm(lang['confirm'], lang['delete_report']);
       if(confirm) {
-        this.alert.showSpinner(lang['spinner_deleting_report']);
+        spinnerID = await this.alert.showSpinnerPromise(lang['spinner_deleting_report']);
         Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
         let wo:Report = report;
         let res = await this.db.deleteDoc(db.reports, wo);
@@ -348,84 +302,67 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
         shift.removeShiftReport(tmpReport);
         this.ud.removeReport(tmpReport);
         let syncRes = await this.server.syncToServer(db.reports, db.reports);
-
         Log.l(`deleteWorkOrder(): Synchronized local '${db.reports}' to remote.`)
         Log.l("deleteWorkOrder(): Success:\n", res);
         let tmpReport2 = report;
         Log.l(`deleteWorkOrder(): Successfully deleted report '${report._id}' from server.`);
         Log.l(`deleteWorkOrder(): About to delete report '${report._id}' from shift '${shift.getShiftSerial()}'...\n`, report);
         shift.removeShiftReport(tmpReport2);
-        this.alert.hideSpinner();
+        let out = await this.alert.hideSpinnerPromise(spinnerID);
       } else {
         Log.l("User canceled deletion.");
       }
     } catch(err) {
-      this.alert.hideSpinner();
+      let out = await this.alert.hideSpinnerPromise(spinnerID);
       Log.l("deleteWorkOrder(): Error!");
       Log.e(err);
-      this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
+      out = await this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
     }
   }
 
-  public deleteOtherReport(event:Event, other:ReportOther, shift:Shift) {
+  public async deleteOtherReport(event:Event, other:ReportOther, shift:Shift) {
     Log.l("deleteOtherReport() clicked ... with event:\n", event);
     let lang = this.lang;
-    let db = this.prefs.getDB();
-    this.audio.play('deleteotherreport');
-    this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
-      if (res) {
-        this.alert.showSpinner(lang['spinner_deleting_report']);
+    let spinnerID;
+    try {
+      let db = this.prefs.getDB();
+      this.audio.play('deleteotherreport');
+      let confirm = await this.alert.showConfirm(lang['confirm'], lang['delete_report']);
+      if(confirm) {
+        spinnerID = await this.alert.showSpinnerPromise(lang['spinner_deleting_report']);
         Log.l("deleteOtherReport(): User confirmed deletion, deleting...");
         // let ro: ReportOther = other.clone();
         let ro:ReportOther = other;
-        let tmpOther = other;
-        this.db.deleteDoc(db.reports_other, ro).then((res) => {
-          Log.l("deleteWorkOrder(): Success:\n", res);
-          let tmpOther = ro;
-          let reports = this.ud.getReportOtherList();
-          let i = reports.indexOf(ro);
-          Log.l("Going to delete work order %d in the list.", i);
-          if (i > -1) {
-            tmpOther = reports.splice(i, 1)[0];
-          }
-          shift.removeOtherReport(tmpOther)
-          this.ud.removeOtherReport(tmpOther);
-          return this.server.syncToServer(db.reports_other, db.reports_other);
-        }).then(res => {
-          // let ro:ReportOther = other;
-          Log.l(`deleteWorkOrder(): Synchronized local '${db.reports_other}' to remote.`)
-          // return this.server.deleteDoc(db.reports, ro);
-        // }).then(res => {
-        // let reportDate = ro.report_date.format("YYYY-MM-DD");
-        // this.server.deleteDoc(db.reports_other, ro).then((res) => {
-          Log.l("deleteOtherReport(): Successfully deleted from server:\n", res);
-        //   // this.items.splice(i, 1);
-        //   // let i = this.otherReports.indexOf(other);
-        //   // if(i > -1) {
-        //   //   tmpOther = this.otherReports.splice(i, 1)[0];
-        //   // }
-        //   // i = this.filtReports[reportDate].indexOf(other);
-        //   // this.filtReports[reportDate].splice(i, 1);
-        //   // let tmpReport = this.filtReports[reportDate].splice(i, 1)[0];
-          Log.l(`deleteOtherReport(): About to delete report '${other._id}' from shift '${shift.getShiftSerial()}'...\n`, other);
-          shift.removeOtherReport(tmpOther);
-          // this.ud.removeOtherReport(tmpOther);
-          this.alert.hideSpinner();
-        }).catch((err) => {
-          this.alert.hideSpinner();
-          Log.l("deleteOtherReport(): Error!");
-          Log.e(err);
-          this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
-        });
+        let tmpOther:ReportOther = other;
+        let res:any = await this.db.deleteDoc(db.reports_other, ro);
+        Log.l("deleteWorkOrder(): Success:\n", res);
+        tmpOther = ro;
+        let reports = this.ud.getReportOtherList();
+        let i = reports.indexOf(ro);
+        Log.l("Going to delete work order %d in the list.", i);
+        if (i > -1) {
+          tmpOther = reports.splice(i, 1)[0];
+        }
+        shift.removeOtherReport(tmpOther)
+        this.ud.removeOtherReport(tmpOther);
+        res = await this.server.syncToServer(db.reports_other, db.reports_other);
+        // let ro:ReportOther = other;
+        Log.l(`deleteWorkOrder(): Synchronized local '${db.reports_other}' to remote.`)
+        // return this.server.deleteDoc(db.reports, ro);
+        Log.l("deleteOtherReport(): Successfully deleted from server:\n", res);
+        Log.l(`deleteOtherReport(): About to delete report '${other._id}' from shift '${shift.getShiftSerial()}'...\n`, other);
+        shift.removeOtherReport(tmpOther);
+        // this.ud.removeOtherReport(tmpOther);
+        let out = await this.alert.hideSpinnerPromise(spinnerID);
       } else {
         Log.l("User canceled deletion.");
       }
-    }).catch((err) => {
-      this.alert.hideSpinner();
+    } catch(err) {
+      let out = await this.alert.hideSpinnerPromise(spinnerID);
       Log.l("deleteOtherReport(): Error!");
       Log.e(err);
-      this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
-    });
+      out = await this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
+    }
   }
 
   public doRefresh(event?:any) {

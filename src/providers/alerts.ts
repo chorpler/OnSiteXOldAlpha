@@ -1,9 +1,9 @@
-import * as UUID from 'uuid';
+// import * as UUID from 'uuid';
 import { Injectable                                        } from '@angular/core'           ;
 import { HttpClient                                        } from '@angular/common/http'    ;
 import { NavParams, LoadingController, PopoverController,  } from 'ionic-angular'           ;
 import { ModalController, AlertController, ToastController } from 'ionic-angular'           ;
-import { Log                                               } from 'onsitex-domain' ;
+import { Log, UUID, SpinnerRecord, Spinners,               } from 'domain/onsitexdomain' ;
 import { TranslateService                                  } from '@ngx-translate/core'     ;
 
 @Injectable()
@@ -13,14 +13,19 @@ export class AlertService {
   public alert          : any                                            ;
   public popover        : any                                            ;
   public toast          : any                                            ;
-  public static ALERTS  : Array<any>              =[]                    ;
-  public static LOADINGS: Array<any>              =[]                    ;
-  public static POPOVERS: Array<any>              =[]                    ;
-  public static TOASTS  : Array<any>              =[]                    ;
-  public alerts         : any                     =AlertService.ALERTS   ;
-  public loadings       : any                     =AlertService.LOADINGS ;
-  public popovers       : any                     =AlertService.POPOVERS ;
-  public toasts         : any                     =AlertService.TOASTS   ;
+  // public static ALERTS  : Array<any>              =[]                    ;
+  // public static LOADINGS: Array<any>              =[]                    ;
+  // public static POPOVERS: Array<any>              =[]                    ;
+  // public static TOASTS  : Array<any>              =[]                    ;
+  // public alerts         : any                     =AlertService.ALERTS   ;
+  // public loadings       : any                     =AlertService.LOADINGS ;
+  // public popovers       : any                     =AlertService.POPOVERS ;
+  // public toasts         : any                     =AlertService.TOASTS   ;
+  public alerts  : Array<any> = [] ;
+  public loadings: Array<any> = [] ;
+  public popovers: Array<any> = [] ;
+  public toasts  : Array<any> = [] ;
+  public spinners:Spinners = new Map();
   public popoverData    : any                     =null                  ;
   public UUID           : any                     = UUID                 ;
 
@@ -35,148 +40,309 @@ export class AlertService {
     Log.l('Hello AlertService Provider');
     window['onsitealerts'] = this;
     window['UUID'] = UUID;
-    this.alerts   = AlertService.ALERTS   ;
-    this.loadings = AlertService.LOADINGS ;
-    this.popovers = AlertService.POPOVERS ;
-    this.toasts   = AlertService.TOASTS   ;
     this.translate.get(['ok', 'cancel', 'yes', 'no']).subscribe((result) => {
       Log.l("AlertService: translated values available!\n", result);
       this.lang = result;
     });
   }
 
-  public showSpinner(text: string, returnPromise?:boolean, milliseconds?:number) {
-    let options;
-    if(milliseconds) {
-      options = { content: text, duration: milliseconds, showBackdrop: false};
-    } else {
-      options = { content: text, showBackdrop: false};
-    }
-    let loading = this.loadingCtrl.create(options);
-    this.loadings.push(loading);
-    if(!returnPromise) {
-      loading.present().then(res => {
-        Log.l("showSpinner(): Showed spinner with text: ", text);
-        Log.l(this.loading);
-      }).catch((reason: any) => {
-        Log.l("AlertService: loading.present() error:\n", reason);
-        // reject(res);
-      });
-    } else {
-      return new Promise((resolve,reject) => {
-        loading.present().then(res => {
-          Log.l("showSpinner(): Showed spinner with text: ", text);
-          resolve(res);
-        }).catch((reason:any) => {
-          Log.l("AlertService: loading.present() error:\n", reason);
-          resolve(reason);
-          // reject(res);
-        });
-      });
-    }
-  }
-
-  public hideSpinner(milliseconds?:number, returnPromise?:boolean) {
-    if(returnPromise) {
-      return new Promise((resolve,reject) => {
-        if(this.loadings && this.loadings.length) {
-          if(milliseconds) {
-            setTimeout(() => {
-              let load = this.loadings.pop();
-              load.dismiss().then((res) => {
-                Log.l("hideSpinner(): Finished showing spinner:\n", load);
-                resolve(res);
-              }).catch((reason: any) => {
-                Log.l("hideSpinner(): loading.dismiss() error for spinner:\n", load);
-                Log.e(reason)
-                let len = this.loadings.length;
-                for(let i = 0; i < len; i++) {
-                  this.loadings[i].dismiss();
-                  // oneload.dismissAll();
-                }
-                this.loadings = [];
-                resolve(reason);
-              });
-            }, milliseconds);
-          } else {
-            let load = this.loadings.pop();
-            load.dismiss().then(res => {
-              Log.l("hideSpinner(): Finished showing spinner:\n", load);
-              resolve(res);
-            }).catch((reason: any) => {
-              Log.l('hideSpinner(): loading.dismiss() error:\n', reason);
-              let len = this.loadings.length;
-              for (let i = 0; i < len; i++) {
-                this.loadings[i].dismiss();
-              // for (let i in this.loadings) {
-                // this.loadings.pop().dismiss();
-                // oneload.dismissAll();
-              }
-              this.loadings = [];
-              resolve(reason);
-            });
-          }
-        } else {
-          resolve("No spinners found to hide.");
-        }
-      });
-    } else {
-      if(this.loadings && this.loadings.length) {
-        if(milliseconds) {
-          setTimeout(() => {
-            let load = this.loadings.pop();
-            load.dismiss().catch((reason: any) => {
-              Log.l('hideSpinner(): loading.dismiss() error:\n', reason);
-              let len = this.loadings.length;
-              for(let i = 0; i < len; i++) {
-                this.loadings[i].dismiss();
-                // oneload.dismissAll();
-              }
-              this.loadings = [];
-            });
-          }, milliseconds);
-        } else {
-          let load = this.loadings.pop();
-          load.dismiss().catch((reason: any) => {
-            Log.l('hideSpinner(): loading.dismiss() error:\n', reason);
-            let len = this.loadings.length;
-            for (let i = 0; i < len; i++) {
-              this.loadings[i].dismiss();
-            // for (let i in this.loadings) {
-              // this.loadings.pop().dismiss();
-              // oneload.dismissAll();
-            }
-            this.loadings = [];
-          });
-        }
+  public async showSpinner(text: string, milliSeconds?:number) {
+    try {
+      let options:any = {
+        content: text,
+        showBackdrop: false,
+      };
+      if(milliSeconds) {
+        options.duration = milliSeconds;
       }
-    }
-  }
+      const loading = this.loadingCtrl.create(options);
 
-  public hideSpinnerPromise() {
-    return new Promise((resolve,reject) => {
-      if(this.loadings && this.loadings.length) {
-        let load = this.loadings.pop();
-        load.dismiss().then(res => {
-          Log.l("hideSpinner(): Finished showing spinner:\n", load);
-          resolve(res);
-        }).catch((reason: any) => {
-          Log.l('hideSpinner(): loading.dismiss() error:\n', reason);
-          let len = this.loadings.length;
-          for (let i = 0; i < len; i++) {
-            this.loadings[i].dismiss();
-          // for (let i in this.loadings) {
-            // this.loadings.pop().dismiss();
-            // oneload.dismissAll();
-          }
-          this.loadings = [];
-          resolve(reason);
-        });
+      let id = UUID();
+      // let id = loading.id;
+      let i = this.spinners.size;
+      Log.l(`showSpinner(): Created spinner #${i} '${id}':\n`, loading);
+      if(!id) {
+        Log.l(`showSpinner(): Spinner ID 'undefined' for spinner, can't add it to Spinners Map:\n`, loading);
       } else {
-        resolve("No spinners found to hide.");
+        this.spinners.set(id, loading);
       }
-    });
+      Log.l("showSpinner(): Active spinner array:\n", this.spinners);
+      try {
+        let res = loading.present();
+        return id;
+      } catch(err) {
+        Log.l(`showSpinner(): Error presenting spinner!\n`, loading);
+        Log.e(err);
+      }
+    } catch(err) {
+      Log.l(`showSpinner(): Error creating and showing spinner '${text}'`);
+      Log.e(err);
+      throw new Error(err);
+    }
   }
+
+  public async showSpinnerPromise(text: string, milliSeconds?:number) {
+    try {
+      let options:any = {
+        content: text,
+        showBackdrop: false,
+      };
+      if(milliSeconds) {
+        options.duration = milliSeconds;
+      }
+      const loading = this.loadingCtrl.create(options);
+
+      let id = UUID();
+      // let id = loading.id;
+      let i = this.spinners.size;
+      Log.l(`showSpinner(): Created spinner #${i} '${id}':\n`, loading);
+      if(!id) {
+        Log.l(`showSpinner(): Spinner ID 'undefined' for spinner, can't add it to Spinners Map:\n`, loading);
+      } else {
+        this.spinners.set(id, loading);
+      }
+      Log.l("showSpinner(): Active spinner array:\n", this.spinners);
+      try {
+        let res = await loading.present();
+        return id;
+      } catch(err) {
+        Log.l(`showSpinner(): Error presenting spinner!\n`, loading);
+        Log.e(err);
+      }
+    } catch(err) {
+      Log.l(`showSpinner(): Error creating and showing spinner '${text}'`);
+      Log.e(err);
+      throw new Error(err);
+    }
+  }
+
+  public getSpinner(spinID?:string) {
+    let spinners = this.spinners;
+    let length = spinners.size;
+    let spinner = undefined;
+    if(!length) {
+      Log.l("getSpinner(): No spinners found!");
+      return spinner;
+    }
+    let id;
+    if(spinID !== undefined) {
+      id = spinID;
+      spinner = spinners.get(id);
+    } else {
+      let list = Array.from(spinners);
+      let entry = list.pop();
+      id = entry[0];
+      spinner = spinners.get(id);
+      Log.l(`getSpinner(): Called with no ID, returning last added spinner...`);
+    }
+    return spinner;
+  }
+
+  public hideSpinner(spinID?:string) {
+    let id = spinID ? spinID : "(no id provided)";
+    let spinner = this.getSpinner(spinID);
+    let spinners = this.spinners;
+    if(spinner) {
+      // id = spinner.id;
+      Log.l(`hideSpinner(): Hiding spinner '${id}':\n`, spinner);
+      spinner.dismiss().catch(err => {Log.l(`hideSpinner(): Error dismissing spinner '${id}'!`); Log.l(err); });
+      spinners.delete(id);
+    } else {
+      Log.l(`hideSpinner(): Could not find spinner '${id}' to hide! Spinners array is:\n`, spinners);
+    }
+  }
+
+  public async hideSpinnerPromise(spinID?:string) {
+    let id = spinID ? spinID : "(no id provided)";
+    try {
+      let spinner = this.getSpinner(spinID);
+      let spinners = this.spinners;
+      if(spinner) {
+        // id = spinner.id;
+        Log.l(`hideSpinnerPromise(): Hiding spinner '${id}':\n`, spinner);
+        try {
+          let res:any = await spinner.dismiss();
+          spinners.delete(id);
+          return res;
+        } catch(err) {
+          Log.l(`hideSpinnerPromise(): Error dismissing spinner '${id}'!`);
+          Log.e(err);
+          throw new Error(err);
+        }
+      } else {
+        throw new Error(`Could not find spinner '${id}' to hide!`);
+      }
+    } catch(err) {
+      Log.l(`hideSpinnerPromise(): Could not find spinner '${id}' to hide!`);
+      Log.e(err);
+      // let msg = `Spinner '${id}' not found to be dismissed.`;
+      // throw new Error(msg);
+    }
+  }
+
+  public async clearSpinners() {
+    try {
+      let spinners = this.spinners;
+      Log.l("clearSpinners(): called, spinner array is:\n", spinners);
+      for(let [id, spinner] of spinners) {
+        try {
+          let res:any = await spinner.dismiss();
+          spinners.delete(id);
+        } catch(err) {
+          Log.l(`clearSpinners(): Error dismissing spinner '${id}':\n`, spinner);
+          Log.e(err);
+          spinners.delete(id);
+        }
+      }
+      return true;
+    } catch(err) {
+      Log.l(`clearSpinners(): Error clearing spinners!`);
+      Log.e(err);
+      throw new Error(err);
+    }
+  }
+
+  // public showSpinner(text: string, returnPromise?:boolean, milliseconds?:number) {
+  //   let options;
+  //   if(milliseconds) {
+  //     options = { content: text, duration: milliseconds, showBackdrop: false};
+  //   } else {
+  //     options = { content: text, showBackdrop: false};
+  //   }
+  //   let loading = this.loadingCtrl.create(options);
+  //   this.loadings.push(loading);
+  //   loading.present().then(res => {
+  //     Log.l("showSpinner(): Showed spinner with text: ", text);
+  //     Log.l(this.loading);
+  //   }).catch((reason: any) => {
+  //     Log.l("AlertService: loading.present() error:\n", reason);
+  //     // reject(res);
+  //   });
+  //   return loading;
+  // }
+
+  // public showSpinnerPromise(text: string, returnPromise?:boolean, milliseconds?:number) {
+  //   let options;
+  //   if(milliseconds) {
+  //     options = { content: text, duration: milliseconds, showBackdrop: false};
+  //   } else {
+  //     options = { content: text, showBackdrop: false};
+  //   }
+  //   let loading = this.loadingCtrl.create(options);
+  //   this.loadings.push(loading);
+  //   return new Promise((resolve,reject) => {
+  //     loading.present().then(res => {
+  //       Log.l("showSpinner(): Showed spinner with text: ", text);
+  //       resolve(loading);
+  //     }).catch((reason:any) => {
+  //       Log.l("AlertService: loading.present() error:\n", reason);
+  //       resolve(reason);
+  //       // reject(res);
+  //     });
+  //   });
+  // }
+
+  // public hideSpinner(milliseconds?:number, returnPromise?:boolean) {
+  //   if(returnPromise) {
+  //     return new Promise((resolve,reject) => {
+  //       if(this.loadings && this.loadings.length) {
+  //         if(milliseconds) {
+  //           setTimeout(() => {
+  //             let load = this.loadings.pop();
+  //             load.dismiss().then((res) => {
+  //               Log.l("hideSpinner(): Finished showing spinner:\n", load);
+  //               resolve(res);
+  //             }).catch((reason: any) => {
+  //               Log.l("hideSpinner(): loading.dismiss() error for spinner:\n", load);
+  //               Log.e(reason)
+  //               let len = this.loadings.length;
+  //               for(let i = 0; i < len; i++) {
+  //                 this.loadings[i].dismiss();
+  //                 // oneload.dismissAll();
+  //               }
+  //               this.loadings = [];
+  //               resolve(reason);
+  //             });
+  //           }, milliseconds);
+  //         } else {
+  //           let load = this.loadings.pop();
+  //           load.dismiss().then(res => {
+  //             Log.l("hideSpinner(): Finished showing spinner:\n", load);
+  //             resolve(res);
+  //           }).catch((reason: any) => {
+  //             Log.l('hideSpinner(): loading.dismiss() error:\n', reason);
+  //             let len = this.loadings.length;
+  //             for (let i = 0; i < len; i++) {
+  //               this.loadings[i].dismiss();
+  //             // for (let i in this.loadings) {
+  //               // this.loadings.pop().dismiss();
+  //               // oneload.dismissAll();
+  //             }
+  //             this.loadings = [];
+  //             resolve(reason);
+  //           });
+  //         }
+  //       } else {
+  //         resolve("No spinners found to hide.");
+  //       }
+  //     });
+  //   } else {
+  //     if(this.loadings && this.loadings.length) {
+  //       if(milliseconds) {
+  //         setTimeout(() => {
+  //           let load = this.loadings.pop();
+  //           load.dismiss().catch((reason: any) => {
+  //             Log.l('hideSpinner(): loading.dismiss() error:\n', reason);
+  //             let len = this.loadings.length;
+  //             for(let i = 0; i < len; i++) {
+  //               this.loadings[i].dismiss();
+  //               // oneload.dismissAll();
+  //             }
+  //             this.loadings = [];
+  //           });
+  //         }, milliseconds);
+  //       } else {
+  //         let load = this.loadings.pop();
+  //         load.dismiss().catch((reason: any) => {
+  //           Log.l('hideSpinner(): loading.dismiss() error:\n', reason);
+  //           let len = this.loadings.length;
+  //           for (let i = 0; i < len; i++) {
+  //             this.loadings[i].dismiss();
+  //           // for (let i in this.loadings) {
+  //             // this.loadings.pop().dismiss();
+  //             // oneload.dismissAll();
+  //           }
+  //           this.loadings = [];
+  //         });
+  //       }
+  //     }
+  //   }
+  // }
+
+  // public hideSpinnerPromise() {
+  //   return new Promise((resolve,reject) => {
+  //     if(this.loadings && this.loadings.length) {
+  //       let load = this.loadings.pop();
+  //       load.dismiss().then(res => {
+  //         Log.l("hideSpinner(): Finished showing spinner:\n", load);
+  //         resolve(res);
+  //       }).catch((reason: any) => {
+  //         Log.l('hideSpinner(): loading.dismiss() error:\n', reason);
+  //         let len = this.loadings.length;
+  //         for (let i = 0; i < len; i++) {
+  //           this.loadings[i].dismiss();
+  //         // for (let i in this.loadings) {
+  //           // this.loadings.pop().dismiss();
+  //           // oneload.dismissAll();
+  //         }
+  //         this.loadings = [];
+  //         resolve(reason);
+  //       });
+  //     } else {
+  //       resolve("No spinners found to hide.");
+  //     }
+  //   });
+  // }
 
   public showAlert(title: string, text: string) {
     let lang = this.lang;

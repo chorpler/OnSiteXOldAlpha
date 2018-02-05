@@ -9,8 +9,8 @@ import { AlertService                                                           
 import { NetworkStatus                                                                     } from 'providers/network-status' ;
 import { UserData                                                                          } from 'providers/user-data'      ;
 import { Preferences                                                                       } from 'providers/preferences'    ;
-import { Employee                                                                          } from 'onsitex-domain'    ;
-import { Log                                                                               } from 'onsitex-domain'  ;
+import { Employee                                                                          } from 'domain/onsitexdomain'    ;
+import { Log                                                                               } from 'domain/onsitexdomain'  ;
 import { TranslateService                                                                  } from '@ngx-translate/core'      ;
 import { TabsService                                                                       } from 'providers/tabs-service'   ;
 
@@ -60,6 +60,7 @@ export class Login implements OnInit {
   }
 
   ngOnInit() {
+    Log.l('Login: ionViewDidLoad fired.');
     this.tabServ.disableTabs();
     if (!(this.ud.isAppLoaded())) {
       this.tabServ.goToPage('OnSiteHome');
@@ -93,61 +94,62 @@ export class Login implements OnInit {
     this.loginClicked();
   }
 
-  public loginClicked() {
-    let tmpUserData = this.LoginForm.value;
-    this.username = tmpUserData.formUser;
-    this.password = tmpUserData.formPass;
-    let lang = this.translate.instant('spinner_logging_in');
-    if(this.ud.isOnline) {
-      this.alert.showSpinner(lang['spinner_logging_in']);
-      Log.l("Login: Now attempting login:");
-      this.auth.setUser(this.username);
-      this.auth.setPassword(this.password);
-      Log.l("About to call auth.login()");
-      this.auth.login().then((res) => {
+  public async loginClicked() {
+    let spinnerID;
+    try {
+      let tmpUserData = this.LoginForm.value;
+      this.username = tmpUserData.formUser;
+      this.password = tmpUserData.formPass;
+      let lang = this.translate.instant('spinner_logging_in');
+      if(this.ud.isOnline) {
+        spinnerID = await this.alert.showSpinnerPromise(lang['spinner_logging_in']);
+        Log.l("Login: Now attempting login:");
+        this.auth.setUser(this.username);
+        this.auth.setPassword(this.password);
+        Log.l("About to call auth.login()");
+        let res:any = await this.auth.login();
         Log.l("Login succeeded.", res);
-        return this.server.getUserData(this.username);
-      }).then((res) => {
+        res = await this.server.getUserData(this.username);
         let udoc = res;
         udoc.updated = true;
         let user:Employee = Employee.deserialize(udoc);
         Log.l(`loginClicked(): Employee record being set to:\n`, user);
         this.ud.setUser(user);
         udoc._id = this.localURL;
-        return this.db.addLocalDoc(this.prefs.DB.reports, udoc);
-      }).then((res) => {
+        res = await this.db.addLocalDoc(this.prefs.DB.reports, udoc);
         Log.l("loginAttempt(): Finished validating and saving user info, now downloading SESA config data.");
-        return this.db.getAllConfigData();
-      }).then(res => {
+        res = await this.db.getAllConfigData();
         Log.l("loginAtttempt(): Got SESA config data.");
         this.ud.setSesaConfig(res);
-        let creds = { user: this.username, pass: this.password, justLoggedIn: true};
+        let creds:any = { user: this.username, pass: this.password, justLoggedIn: true};
         this.ud.storeCredentials(creds);
         this.ud.setLoginStatus(true);
-        this.alert.hideSpinner();
+        this.alert.hideSpinnerPromise(spinnerID);
         this.events.publish('startup:finished', true);
         this.events.publish('login:finished', true);
         // this.ud.reloadApp();
         if(this.mode === 'modal') {
-          creds['justLoggedIn'] = true;
+          creds.justLoggedIn = true;
           // this.tabServ.setTabDisable(false);
           this.tabServ.enableTabs();
           this.viewCtrl.dismiss(creds);
+          return true;
         } else {
           // this.tabServ.setTabDisable(false);
           this.tabServ.enableTabs();
           this.tabServ.goToPage('OnSiteHome', creds);
+          return true;
         }
-      }).catch((err) => {
-        Log.l("loginAttempt(): Error validating and saving user info.");
-        Log.l(err);
-        this.loginError = true;
-        this.alert.hideSpinner();
-      });
-    } else {
+      } else {
+        this.alert.hideSpinnerPromise(spinnerID);
+        let loginAlert = this.translate.instant(['offline_alert_title', 'offline_alert_message']);
+        this.alert.showAlert(loginAlert['offline_alert_title'], loginAlert['offline_alert_message']);
+      }
+    } catch(err) {
+      Log.l("loginAttempt(): Error validating and saving user info.");
+      Log.l(err);
+      this.loginError = true;
       this.alert.hideSpinner();
-      let loginAlert = this.translate.instant(['offline_alert_title', 'offline_alert_message']);
-      this.alert.showAlert(loginAlert['offline_alert_title'], loginAlert['offline_alert_message']);
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Log, moment, Moment, isMoment                       } from 'onsitex-domain'            ;
+import { Log, moment, Moment, isMoment                       } from 'domain/onsitexdomain'            ;
 import { Component, OnInit, OnDestroy, AfterViewInit,        } from '@angular/core'             ;
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular'             ;
 import { Pipe, PipeTransform                                 } from '@angular/core'             ;
@@ -7,11 +7,11 @@ import { TranslateService                                    } from '@ngx-transl
 import { DBService                                           } from 'providers/db-service'      ;
 import { ServerService                                       } from 'providers/server-service'  ;
 import { SafePipe                                            } from 'pipes/safe'                ;
-import { Message                                             } from 'onsitex-domain'            ;
+import { Message                                             } from 'domain/onsitexdomain'            ;
 import { AlertService                                        } from 'providers/alerts'          ;
 import { MessageService                                      } from 'providers/message-service' ;
 import { TabsService                                         } from 'providers/tabs-service'    ;
-import { Pages                                               } from 'onsitex-domain'            ;
+import { Pages                                               } from 'domain/onsitexdomain'            ;
 
 @IonicPage({
   name: 'Message'

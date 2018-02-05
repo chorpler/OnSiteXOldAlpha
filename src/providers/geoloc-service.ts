@@ -7,9 +7,9 @@ import { Platform, ToastController,                         } from 'ionic-angula
 import { Storage                                            } from '@ionic/storage'                       ;
 import { BackgroundGeolocation, BackgroundGeolocationConfig } from '@ionic-native/background-geolocation' ;
 import { BackgroundGeolocationResponse                      } from '@ionic-native/background-geolocation' ;
-import { Geolocation                                        } from 'onsitex-domain'                       ;
-import { DOMTimeStamp, Coordinates, Position                } from 'onsitex-domain'                       ;
-import { Log                                                } from 'onsitex-domain'                       ;
+import { Geolocation                                        } from 'domain/onsitexdomain'                       ;
+import { DOMTimeStamp, Coordinates, Position                } from 'domain/onsitexdomain'                       ;
+import { Log                                                } from 'domain/onsitexdomain'                       ;
 import { ServerService                                      } from './server-service'                     ;
 import { AuthSrvcs                                          } from './auth-srvcs'                         ;
 import { UserData                                           } from './user-data'                          ;

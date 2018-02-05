@@ -1,41 +1,37 @@
-import { Injectable, NgZone                         } from '@angular/core'                ;
-import { Log, CONSOLE, moment, Moment, isMoment     } from 'onsitex-domain'      ;
-import { Storage                                    } from '@ionic/storage'               ;
-import { NativeStorage                              } from '@ionic-native/native-storage' ;
-import { PouchDBService                             } from './pouchdb-service'            ;
-import { AuthSrvcs                                  } from './auth-srvcs'                 ;
-import { AlertService                               } from './alerts'                     ;
-import { ServerService                                  } from './server-service'                 ;
-import { UserData                                   } from './user-data'                  ;
-import { Preferences                                } from './preferences'                ;
-import { Employee, Jobsite, Report, ReportOther,    } from 'onsitex-domain'        ;
-import { Message, Comment, Shift, PayrollPeriod     } from 'onsitex-domain'        ;
-
+import { Injectable, NgZone                          } from '@angular/core'                ;
+import { Log, CONSOLE, moment, Moment, isMoment      } from 'domain/onsitexdomain'               ;
+import { Storage                                     } from '@ionic/storage'               ;
+import { NativeStorage                               } from '@ionic-native/native-storage' ;
+import { PouchDBService                              } from './pouchdb-service'            ;
+import { AuthSrvcs                                   } from './auth-srvcs'                 ;
+import { AlertService                                } from './alerts'                     ;
+import { ServerService                               } from './server-service'             ;
+import { UserData                                    } from './user-data'                  ;
+import { Preferences                                 } from './preferences'                ;
+import { Employee, Jobsite, Report, ReportOther, oo, } from 'domain/onsitexdomain'               ;
+import { Message, Comment, Shift, PayrollPeriod      } from 'domain/onsitexdomain'               ;
 
 export const noDD = "_\uffff";
 export const noDesign = { include_docs: true, startkey: noDD };
 export const liveNoDesign = { live: true, since: 'now', include_docs: true, startkey: noDD };
 @Injectable()
 export class DBService {
-
-  data                        : any                                                ;
+  public data                 : any                                                ;
   public static db            : any                                                ;
   public static serverdb      : any                                                ;
-  username                    : any                                                ;
-  password                    : any                                                ;
-  remote                      : any                                                ;
-  PouchDB                     : any                                                ;
-  remoteDB                    : any                                                ;
-  pdbOpts                     : any                                                ;
+  public username             : any                                                ;
+  public password             : any                                                ;
+  public remote               : any                                                ;
+  public PouchDB              : any                                                ;
+  public remoteDB             : any                                                ;
+  public pdbOpts              : any                                                ;
   public static StaticPouchDB : any                                                ;
   public static pdb           : any = new Map()                                    ;
   public static rdb           : any = new Map()                                    ;
   public static ldbs          : any                                                ;
   public static rdbs          : any                                                ;
   public static PREFS         : any = new Preferences()                            ;
-  public prefs                : any = DBService.PREFS                                ;
-  // public static PREFS         : any = new Preferences()                            ;
-  // public prefs                : any = DBService.PREFS                                ;
+  public prefs                : any = DBService.PREFS                              ;
 
   constructor(public zone: NgZone, private storage: Storage, private auth: AuthSrvcs, private server: ServerService, public ud:UserData) {
     DBService.StaticPouchDB = PouchDBService.PouchInit();
@@ -44,15 +40,7 @@ export class DBService {
     window["dbserv"] = this;
     window["sdb"] = DBService;
 
-    // this.pdbOpts = {adapter: 'websql', auto_compaction: true};
-
     DBService.addDB(this.prefs.DB.reports);
-
-    // let options = {
-    //   live: true,
-    //   retry: true,
-    //   continuous: false
-    // };
   }
 
   /**
@@ -177,7 +165,7 @@ export class DBService {
     return new Promise((resolve,reject) => {
       let db1 = this.addDB(dbname);
       let db2 = this.addRDB(dbname);
-      let user = this.data.getUsername();
+      let user = this.ud.getUsername();
       db2.replicate.to(db1, {
         filter: 'ref/forTech',
         query_params: {username: user}
@@ -190,6 +178,25 @@ export class DBService {
         reject(err);
       });
     });
+  }
+
+  public async syncSchedulesFromServer(dbname:string) {
+    try {
+      Log.l(`syncSchedulesFromServer(): Starting up...`);
+      let db1 = this.addDB(dbname);
+      let db2 = this.addRDB(dbname);
+      let user = this.ud.getUsername();
+      let res:any = await db2.replicate.to(db1, {
+        filter: 'ref/forTech',
+        query_params: {username: user}
+      });
+      Log.l("syncSchedulesFromServer(): Successfully replicated filtered reports from server.\n", res);
+      return res;
+    } catch(err) {
+      Log.l("syncSchedulesFromServer(): Error during replication!");
+      Log.e(err);
+      throw new Error(err);
+    }
   }
 
   public addDoc(dbname:string, newDoc:any) {
@@ -458,51 +465,6 @@ export class DBService {
     });
   }
 
-  public getAllConfigData() {
-    Log.l("getAllConfigData(): Retrieving clients, locations, locIDs, loc2nd's, shiftRotations, and shiftTimes...");
-    let dbConfig = this.prefs.DB.config;
-    let rdb1     = this.addRDB(dbConfig);
-    let db1      = this.addDB(dbConfig);
-    return new Promise((resolve, reject) => {
-      this.syncSquaredFromServer(dbConfig).then(res => {
-        return db1.allDocs({ keys: ['client', 'location', 'locid', 'loc2nd', 'rotation', 'shift', 'shiftlength', 'shiftstarttime', 'other_reports'], include_docs: true })
-      }).then((records) => {
-        Log.l("getAllConfigData(): Retrieved documents:\n", records);
-        let results = { client: [], location: [], locid: [], loc2nd: [], rotation: [], shift: [], shiftlength: [], shiftstarttime: [], report_types: [], training_types: [] };
-        for (let record of records.rows) {
-          let type = record.id;
-          let types = record.id + "s";
-          if(type === 'other_reports') {
-            let doc                = record.doc         ;
-            let report_types       = doc.report_types   ;
-            let training_types     = doc.training_types ;
-            results.report_types   = report_types       ;
-            results.training_types = training_types     ;
-          } else {
-            let doc = record.doc;
-            if (doc) {
-              if(doc[types]) {
-                for(let result of doc[types]) {
-                  results[type].push(result);
-                }
-              } else {
-                for(let result of doc.list) {
-                  results[type].push(result);
-                }
-              }
-            }
-          }
-        }
-        Log.l("getAllConfigData(): Final config data retrieved is:\n", results);
-        resolve(results);
-      }).catch((err) => {
-        Log.l("getAllConfig(): Error getting all config docs!");
-        Log.e(err);
-        reject(err);
-      });
-    });
-  }
-
   public getConfigData() {
     let db1 = PouchDBService.addDB(this.prefs.DB.config);
     let clients = null, locations = null, locids = null, loc2nds = null, rotations = null, shiftTimes = null;
@@ -579,34 +541,474 @@ export class DBService {
     }
   }
 
-  public async saveReadMessage(message:Message) {
+  public async getReportsForTech(tech:string, dates?:any):Promise<Array<Report>> {
+    let woArray:Array<Report> = [];
+    let res:any = {};
     try {
+      let u:string = this.ud.getUsername();
+      let p:string = this.ud.getPassword();
+      let query:any = {selector: {username: {$eq: tech}}, limit:10000};
+      Log.l("getReportsForTech(): Using database: ", this.prefs.DB.reports);
+      let db1 = this.addDB(this.prefs.DB.reports);
+      if(dates) {
+        if(dates.start !== undefined && dates.end === undefined) {
+          query.selector = {$and: [{username: {$eq: tech}}, {rprtDate: {$eq: dates['start']}}]};
+          let out:any = await db1.createIndex({
+            index: {
+              fields: [
+                'username'
+              ]
+            }
+          });
+          Log.l("getReportsForTech(): created index, result:\n", out);
+        } else if(dates.start !== undefined && dates.end !== undefined) {
+          query.selector = { $and: [{ username: { $eq: tech } }, {rprtDate: { $geq: dates['start'] }}, {rprtDate: {$leq: dates['end']}}]};
+          let out:any = await db1.createIndex({
+            index: {
+              fields: [
+                'username',
+                'rprtDate'
+              ]
+            }
+          });
+          Log.l("getReportsForTech(): created index, result:\n", out);
+        }
+      } else {
+        let out:any = await db1.createIndex({
+          index: {
+            fields: [
+              'username'
+            ]
+          }
+        });
+        Log.l("getReportsForTech(): created index, result:\n", out);
+      }
+      Log.l("getReportsForTech(): now running query:\n", query);
+      res = await db1.find(query);
+      Log.l(`getReportsForTech(): Got reports for '${tech}':\n`, res);
+      // let woArray = new Array<Report>();
+      for(let doc of res.docs) {
+        let wo = new Report();
+        wo.readFromDoc(doc);
+        woArray.push(wo);
+      }
+      Log.l("getReportsForTech(): Returning final reports array:\n", woArray);
+      return woArray;
+    } catch(err) {
+      Log.l(`getReportsForTech(): Error getting reports for '${tech}'.`);
+      Log.l(err);
+      return woArray;
+    }
+  }
+
+  public async getReportsOtherForTech(tech:string, dates?:any):Promise<Array<ReportOther>> {
+    let woArray:Array<ReportOther> = [];
+    let res:any = {};
+    try {
+      let u:string = this.ud.getUsername();
+      let p:string = this.ud.getPassword();
+      let query:any = {selector: {username: {$eq: tech}}, limit:10000};
+      Log.l("getReportsOtherForTech(): Using database: ", this.prefs.DB.reports_other);
+      if(dates) {
+        if(dates.start !== undefined && dates.end === undefined) {
+          query.selector = {$and: [{username: {$eq: tech}}, {report_date: {$eq: dates.start}}]};
+        } else if(dates.start !== undefined && dates.end !== undefined) {
+          query.selector = { $and: [{ username: { $eq: tech } }, {report_date: { $geq: dates.start }}, {report_date: {$leq: dates.end}}]};
+        }
+      }
+      let db1 = this.addDB(this.prefs.DB.reports_other);
+      let out:any = await db1.createIndex({
+        index: {
+          fields: [
+            'username',
+            'rprtDate'
+          ]
+        }
+      });
+      res = await db1.find(query);
+      Log.l(`getReportsOtherForTech(): Got reports for '${tech}':\n`, res);
+      // let woArray = new Array<Report>();
+      for(let doc of res.docs) {
+        let wo = new ReportOther();
+        wo.readFromDoc(doc);
+        woArray.push(wo);
+      }
+      Log.l("getReportsOtherForTech(): Returning final reports array:\n", woArray);
+      return woArray;
+    } catch(err) {
+      Log.l(`getReportsOtherForTech(): Error getting reports for '${tech}'.`);
+      Log.l(err);
+      return woArray;
+    }
+  }
+
+  public async getAllData(tech:Employee):Promise<any> {
+    // return new Promise((resolve, reject) => {
+    try {
+      let data = { employee: [], sites: [], reports: [], otherReports: [], payrollPeriods: [], shifts: [], messages: [], config: {} };
+      let username = tech.getUsername();
+      data.employee.push(tech);
+        // this.getReportsForTech(username).then(res => {
+      let res:any = await this.getReportsForTech(username);
+      for (let doc of res) {
+        let report = new Report();
+        report.readFromDoc(doc);
+        data.reports.push(report);
+      }
+      res = await this.getReportsOtherForTech(username);
+      for(let doc of res) {
+        let other = new ReportOther();
+        other.readFromDoc(doc);
+        data.otherReports.push(other);
+      }
+      res = await this.getJobsites();
+      for (let doc of res) {
+        let site = new Jobsite();
+        site.readFromDoc(doc);
+        data.sites.push(site);
+      }
+      res = await this.getMessages();
+      for(let doc of res) {
+        let msg = new Message();
+        msg.readFromDoc(doc);
+        data.messages.push(msg);
+      }
+      res = await this.getAllConfigData();
+      let keys = Object.keys(res);
+      for(let key of keys) {
+        data.config[key] = res[key];
+      }
+      Log.l("getAllData(): Success, final data to be returned is:\n", data);
+      return data;
+    } catch(err) {
+      Log.l("getAllData(): Error retrieving all data!");
+      Log.e(err);
+      throw new Error(err);
+    }
+  }
+
+  public getReports(user: string) {
+    return new Promise((resolve,reject) => {
+      let u = this.ud.getUsername();
+      let p = this.ud.getPassword();
+      // this.loginToServer(u, p, this.prefs.DB.login).then((res) => {
+      // 	if(res) {
+      		let db1 = this.addDB(this.prefs.DB.reports);
+          db1.allDocs({include_docs: true}).then((result) => {
+		        let data = [];
+						let docs = result.rows.map((row) => {
+							if( row && row.id[0] !== '_' && row.doc && row.doc.username === user ) { data.push(row.doc); }
+							resolve(data);
+						});
+					}).catch((error) => {
+		      	Log.l("getReports(): Error getting reports for user.");
+		      	Log.e(error);
+		      	resolve([]);
+		      });
+      // 	} else {
+      // 		resolve([]);
+      // 	}
+      // }).catch((err) => {
+			// 	Log.l("getReports(): Error logging in to server.")
+			// 	Log.e(err);
+			// 	resolve([]);
+			// });
+		});
+  }
+
+  public getJobsites():Promise<Array<Jobsite>> {
+    return new Promise((resolve,reject) => {
+      let db1 = this.addDB(this.prefs.DB.jobsites);
+      db1.allDocs({include_docs:true}).then(res => {
+        let sites = new Array<Jobsite>();
+        for(let row of res.rows) {
+          let doc = row.doc;
+          if (doc && row.id[0] !== '_') {
+            let site = new Jobsite();
+            site.readFromDoc(doc);
+            sites.push(site);
+          }
+        }
+        Log.l("getJobsites(): Success, final output array is:\n", sites);
+        resolve(sites);
+      }).catch(err => {
+        Log.l("getJobsites(): Error getting all jobsites.");
+        Log.e(err);
+        reject(err);
+      })
+    });
+  }
+
+  public getMessages() {
+    return this.fetchNewMessages();
+  }
+
+  public fetchNewMessages():Promise<Array<Message>> {
+    Log.l('fetchNewMessages(): Getting messages...');
+    let out = new Array<Message>();
+    let remote = new Array<Message>();
+    let local = new Array<Message>();
+    let db = this.prefs.getDB();
+    return new Promise((resolve, reject) => {
+      let dbname = db.messages;
+      let db1 = this.addDB(dbname);
+      db1.allDocs({include_docs: true}).then(res => {
+        for(let row of res.rows) {
+          let doc = row.doc;
+          if(doc && row.id[0] !== '_') {
+            let msg = new Message();
+            msg.readFromDoc(row.doc);
+            let date = msg.getMessageDate().toExcel(true);
+            let duration = msg.getMessageDuration();
+            let expires = date + duration;
+            let now = moment().toExcel();
+            if (now <= expires) {
+              out.push(msg);
+            }
+          }
+          let _orderBy = function (a:Message, b:Message) {
+            let tA = a.date;
+            let tB = b.date;
+            return tA < tB ? 1 : tA > tB ? -1 : 0;
+          }
+          out.sort(_orderBy);
+        }
+        // Log.l("fetchNewMessages(): Final remote messages array is:\n", remote);
+        // Log.l("fetchNewMessages(): Now getting local messages...");
+        // return db1.allDocs({include_docs:true});
+      // }).then(res => {
+        // Log.l("fetchNewMessages(): Done getting local messages:\n", res);
+        // for(let row of res.rows) {
+        //   let doc = row.doc;
+        //   if(doc) {
+        //     let msg = new Message();
+        //     msg.readFromDoc(row.doc);
+        //     local.push(msg);
+        //   }
+        // }
+        // Log.l("fetchNewMessages(): Final output of local messages is:\n", local);
+        // let j = -1;
+        // let msg = null, lmsg = null;
+        // for(msg of remote) {
+        //   let i = 0, match = -1;
+        //   j++;
+        //   for(lmsg of local) {
+        //     // Log.l(`fetchNewMessages():Index ${j}.${i} remote '${msg._id}' to local '${lmsg._id}'...`);
+        //     if(msg._id === lmsg._id && lmsg.read == true) {
+        //       // Log.l(`fetchNewMessages(): ======> Match at index ${j}.${i}!`);
+        //       match = i;
+        //     }
+        //     i++;
+        //   }
+        //   if(match === -1) {
+        //     out.push(msg);
+        //     continue;
+        //   } else {
+        //     out.push(local[match]);
+        //   }
+        // }
+        // Log.l("fetchNewMessages(): Final output of new messages is:\n", out);
+        resolve(out);
+      }).catch(err => {
+        Log.l("fetchNewMessages(): Error retrieving messages from server.");
+        Log.e(err);
+        reject(err);
+      });
+    });
+  }
+
+  public saveReadMessage(message:Message) {
+    return new Promise((resolve, reject) => {
       let dbname = this.prefs.DB.messages;
       let db1 = this.addDB(dbname);
       let out = message.serialize();
       Log.l("saveReadMessage(): Now attempting to save serialized message:\n", out);
       // db1.putIfNotExists()
-      let res = await db1.upsert(message._id, (doc) => {
+      db1.upsert(message._id, (doc) => {
         if(doc && doc._rev) {
           doc.read = true;
           return doc;
         } else {
           return message;
         }
+      }).then(res => {
+        Log.l("saveReadMessage(): Successfully saved message, result:\n", res);
+        resolve(res);
+      }).catch(err => {
+        Log.l("saveReadMessage(): Error saving message:\n", message);
+        Log.e(err);
+        reject(err);
+      });
+    });
+  }
+
+  public saveComment(comment:Comment) {
+    return new Promise((resolve,reject) => {
+      let db1 = this.addDB(this.prefs.DB.comments);
+      let newDoc = comment.serialize();
+      Log.l("saveComment(): Attempting to save comment to server:\n", comment);
+      Log.l(newDoc);
+      db1.upsert(newDoc['_id'], (doc) => {
+        if(doc) {
+          let id = doc._id;
+          let rev = doc._rev;
+          doc = newDoc;
+          doc._rev = rev;
+        } else {
+          doc = newDoc;
+          delete doc['_rev'];
+        }
+        return doc;
+      }).then(res => {
+        Log.l("saveComment(): Succeeded in submitting comment!\n", res);
+        resolve(res);
+      }).catch(err => {
+        Log.l("saveComment(): Error submitting comment!");
+        Log.e(err);
+        reject(err);
+      });
+    });
+  }
+
+  public getAllConfigData() {
+    Log.l("getAllConfigData(): Retrieving clients, locations, locIDs, loc2nd's, shiftRotations, and shiftTimes...");
+    let dbConfig = this.prefs.DB.config;
+    let db1 = this.addDB(dbConfig);
+    return new Promise((resolve, reject) => {
+      // this.syncFromServer(dbConfig).then(res => {
+        // return
+        db1.allDocs({ keys: ['client', 'location', 'locid', 'loc2nd', 'rotation', 'shift', 'shiftlength', 'shiftstarttime', 'other_reports'], include_docs: true })
+      // })
+      .then((records) => {
+        Log.l("getAllConfigData(): Retrieved documents:\n", records);
+        let results = { client: [], location: [], locid: [], loc2nd: [], rotation: [], shift: [], shiftlength: [], shiftstarttime: [], report_types: [], training_types: [] };
+        for (let record of records.rows) {
+          let type = record.id;
+          let types = record.id + "s";
+          if (type === 'other_reports') {
+            let doc = record.doc;
+            let report_types = doc.report_types;
+            let training_types = doc.training_types;
+            results.report_types = report_types;
+            results.training_types = training_types;
+          } else {
+            let doc = record.doc;
+            if (doc) {
+              if (doc[types]) {
+                for (let result of doc[types]) {
+                  results[type].push(result);
+                }
+              } else {
+                for (let result of doc.list) {
+                  results[type].push(result);
+                }
+              }
+            }
+          }
+        }
+        Log.l("getAllConfigData(): Final config data retrieved is:\n", results);
+        resolve(results);
+      }).catch((err) => {
+        Log.l("getAllConfig(): Error getting all config docs!");
+        Log.e(err);
+        reject(err);
+      });
+    });
+  }
+
+  public async savePhoneInfo(tech:Employee, data:any) {
+    try {
+      let dbs = this.prefs.getDB();
+      let phone_db = this.prefs.DB.phoneInfo;
+      let db1 = this.addDB(phone_db);
+      let userid = tech.getUsername();
+      let timestamp = moment();
+      let id = `${userid}_${timestamp.format()}`;
+      let phoneDoc = {'_id': id, 'username': tech.getUsername(), 'timestampM': timestamp.format(), 'timestamp': timestamp.toExcel(), 'device': data};
+      let res:any = await db1.upsert(id, (doc) => {
+        if(doc) {
+          let rev = doc._rev;
+          phoneDoc['_rev'] = rev;
+          return phoneDoc;
+        } else {
+          doc = phoneDoc;
+          delete doc['_rev'];
+          return doc;
+        }
       });
       if(!res.ok && !res.updated) {
-        Log.l("saveReadMessage(): Upsert error, return did not contain 'ok' or 'updated' for message:\n", message);
-        Log.e(res);
-        throw new Error(res);
+        Log.l("savePhoneInfo(): Error updating user phone info!");
+        throw new Error("Error updating user phone info");
       } else {
-        Log.l("saveReadMessage(): Successfully saved message, result:\n", res);
+        Log.l("savePhoneInfo(): Successfully updated user phone info!");
         return res;
       }
     } catch(err) {
-      Log.l(`saveReadMessage(): Error while upserting message.read=true.`);
+      Log.l(`savePhoneInfo(): Unable to save phone info.`);
       Log.e(err);
       throw new Error(err);
     }
   }
 
+  public async saveGeolocation(location:any) {
+    try  {
+      let db = this.prefs.getDB();
+      let db1 = this.addDB(db.geolocation);
+      let locDoc:any = oo.clone(location);
+      let user = this.ud.getUsername();
+      let ts   = moment();
+      locDoc.username = user;
+      let id = `${user}_${ts.format()}`;
+      locDoc._id = id;
+      let res = await db1.upsert(id, (doc) => {
+        if(doc && doc._id && doc._rev) {
+          let rev = doc._rev;
+          doc = locDoc;
+          doc._rev = rev;
+        } else {
+          doc = locDoc;
+          delete doc._rev;
+        }
+        return doc;
+      });
+      if(!res.ok && !res.updated) {
+        Log.l("saveGeolocation(): Upsert error!");
+        Log.w(res);
+        throw new Error(res);
+      } else {
+        Log.l("saveGeolocation(): Successfully saved!");
+        return res;
+      }
+    } catch(err) {
+      Log.l(`saveGeolocation(): Error saving location!`);
+      Log.e(err);
+      throw new Error(err);
+    }
+
+  }
+
+  public async deleteAllLocalDatabases() {
+    try {
+      let dbnames = await this.PouchDB.allDbs();
+      Log.l("resetAllAppData(): Got list of local databases:\n", dbnames);
+      let count = dbnames.length;
+      for(let dbname of dbnames) {
+        let db = this.addDB(dbname);
+        try {
+          let res = await db.destroy();
+          Log.l(`resetAllAppData(): Successfully destroyed database '${dbname}'`);
+        } catch(err) {
+          Log.l(`resetAllAppData(): Error resetting database '${dbname}'`);
+          Log.e(err);
+          throw new Error(err);
+        }
+      }
+      return count;
+      // return res;
+    } catch(err) {
+      Log.l(`deleteAllLocalDatabases(): Error resetting local data.`);
+      Log.e(err);
+      throw new Error(err);
+    }
+  }
 }

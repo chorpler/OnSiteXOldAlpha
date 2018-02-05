@@ -1,14 +1,12 @@
-// import { HttpClient,        } from '@angular/common/http'         ;
-// import { Storage            } from '@ionic/storage'               ;
-// import { NativeStorage      } from '@ionic-native/native-storage' ;
-import { Subject            } from 'rxjs/Subject'                 ;
-import { Subscription       } from 'rxjs/Subscription'            ;
-import { Observable         } from 'rxjs/Observable'              ;
-import { Injectable, NgZone } from '@angular/core'                ;
-import { Log, CONSOLE       } from 'onsitex-domain'      ;
-import { Network            } from '@ionic-native/network'        ;
-import { AlertService       } from './alerts'                     ;
-import { UserData           } from './user-data'                  ;
+import { Subject            } from 'rxjs/Subject'          ;
+import { Subscription       } from 'rxjs/Subscription'     ;
+import { Observable         } from 'rxjs/Observable'       ;
+import { Injectable, NgZone } from '@angular/core'         ;
+import { Log, CONSOLE       } from 'domain/onsitexdomain'  ;
+import { Network            } from '@ionic-native/network' ;
+import { AlertService       } from './alerts'              ;
+import { UserData           } from './user-data'           ;
+import { StorageService     } from './storage-service'     ;
 
 declare var navigator:any;
 @Injectable()
@@ -22,9 +20,9 @@ export class NetworkStatus {
   public networkDisconnect:Subject<any> = new Subject<any>();
   public networkConnect:Subject<any> = new Subject<any>();
 
-  constructor(public net: Network, public alert:AlertService, public ud:UserData) {
-    Log.l("NetworkStatus constructor called");
-    window['netSrvc'] = this;
+  constructor(public net:Network, public alert:AlertService, public storage:StorageService, public ud:UserData) {
+    Log.l("Hello NetworkStatus provider");
+    window['OnSiteNetworkService'] = this;
     // NetworkStatus.network = net;
     this.initializeSubscriptions();
     this.checkInitialConnection();

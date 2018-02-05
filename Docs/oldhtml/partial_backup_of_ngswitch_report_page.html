@@ -1,0 +1,64 @@
+                          <div [ngSwitch]="getReportOtherType(report)">
+                            <ng-container #reportTravelContainer *ngSwitchCase="'Travel'">
+                              <tr>
+                                <td class="label">{{'travel' | translate}}</td>
+                                <td class="data" >{{report?.travel_location}}</td>
+                              </tr>
+                              <tr>
+                                <td class="label">{{'travel_hours' | translate}}</td>
+                                <td class="data" >{{report?.time}}</td>
+                              </tr>
+                            </ng-container>
+                            <ng-container #reportTrainingContainer *ngSwitchCase="'Training'">
+                              <tr>
+                                <td class="label">{{'training' | translate}}</td>
+                                <td class="data" >{{report?.training_type | translate }}</td>
+                              </tr>
+                              <tr>
+                                <!-- <td class="label">{{'training_hours' | translate}}</td> -->
+                                <td class="label">{{'hours_header' | translate}}</td>
+                                <td class="data" >{{report?.time}}</td>
+                              </tr>
+                            </ng-container>
+
+                            <ng-container #reportStandbyContainer *ngSwitchCase="'Standby' || 'Standby: HB Duncan'">
+                              <tr *ngIf="prefs.getShowSite()">
+                                <td class="label">Client</td>
+                                <td class="data" >{{report?.client}}</td>
+                              </tr>
+                              <tr *ngIf="prefs.getShowSite()">
+                                <td class="label">Location</td>
+                                <td class="data" >{{report?.location}}</td>
+                              </tr>
+                              <tr *ngIf="prefs.getShowSite()">
+                                <td class="label">LocID</td>
+                                <td class="data" >{{report?.location_id}}</td>
+                              </tr>
+                              <tr>
+                                <td class="label">{{'standby' | translate}}</td>
+                                <td class="data" >{{report?.time}}</td>
+                              </tr>
+                            </ng-container>
+
+                            <ng-container #reportSickContainer *ngSwitchCase="'Sick'">
+                              <tr>
+                                <td class="label">{{'sick' | translate}}</td>
+                                <td class="data" >{{report?.time}}</td>
+                              </tr>
+                            </ng-container>
+
+                            <ng-container #reportVacationContainer *ngSwitchCase="'Vacation'">
+                              <tr>
+                                <td class="label">{{'vacation' | translate}}</td>
+                                <td class="data" >{{report?.time}}</td>
+                              </tr>
+                            </ng-container>
+
+                            <ng-container #reportHolidayContainer *ngSwitchCase="'Holiday'">
+                              <tr>
+                                <td class="label">{{'holiday' | translate}}</td>
+                                <td class="data" >{{report?.time}}</td>
+                              </tr>
+                            </ng-container>
+
+                          </div>

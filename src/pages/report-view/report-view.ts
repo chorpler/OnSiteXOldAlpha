@@ -11,19 +11,19 @@ import { ServerService                                         } from 'providers
 import { AuthSrvcs                                             } from 'providers/auth-srvcs'        ;
 import { AlertService                                          } from 'providers/alerts'            ;
 import { SmartAudio                                            } from 'providers/smart-audio'       ;
-import { Log, moment, Moment, isMoment                         } from 'onsitex-domain'              ;
-import { SESAClient, SESALocation, SESALocID, CLL              } from 'onsitex-domain'              ;
-import { PayrollPeriod                                         } from 'onsitex-domain'              ;
-import { Shift                                                 } from 'onsitex-domain'              ;
-import { Report                                                } from 'onsitex-domain'              ;
-import { Employee                                              } from 'onsitex-domain'              ;
-import { ReportOther                                           } from 'onsitex-domain'              ;
-import { Jobsite                                               } from 'onsitex-domain'              ;
+import { Log, moment, Moment, isMoment                         } from 'domain/onsitexdomain'              ;
+import { SESAClient, SESALocation, SESALocID, CLL              } from 'domain/onsitexdomain'              ;
+import { PayrollPeriod                                         } from 'domain/onsitexdomain'              ;
+import { Shift                                                 } from 'domain/onsitexdomain'              ;
+import { Report                                                } from 'domain/onsitexdomain'              ;
+import { Employee                                              } from 'domain/onsitexdomain'              ;
+import { ReportOther                                           } from 'domain/onsitexdomain'              ;
+import { Jobsite                                               } from 'domain/onsitexdomain'              ;
 import { UserData                                              } from 'providers/user-data'         ;
 import { Preferences                                           } from 'providers/preferences'       ;
 import { TranslateService                                      } from '@ngx-translate/core'         ;
 import { TabsService                                           } from 'providers/tabs-service'      ;
-import { Pages, SVGIcons, SelectString,                        } from 'onsitex-domain'              ;
+import { Pages, SVGIcons, SelectString,                        } from 'domain/onsitexdomain'              ;
 import { MultiPicker                                           } from 'components/ion-multi-picker' ;
 
 export const focusDelay = 500;
@@ -1010,8 +1010,9 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
 
   public async processReport() {
     let lang = this.lang;
+    let spinnerID;
     try {
-      this.alert.showSpinner(lang['spinner_saving_report']);
+      spinnerID = await this.alert.showSpinnerPromise(lang['spinner_saving_report']);
       // let tempWO:Report = this.report.clone();
       // let newWO:Report  = tempWO.clone();
       // newWO.readFromDoc(tempWO);
@@ -1020,7 +1021,7 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
         Log.l("processReport(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
         res = await this.db.syncSquaredToServer(this.prefs.DB.reports);
         Log.l("processReport(): Successfully synchronized work order to remote.");
-        this.alert.hideSpinner();
+        let out = await this.alert.hideSpinnerPromise(spinnerID);
         this.previousEndTime = moment(this.report.time_start);
         let shift = this.selectedShift;
         shift.addShiftReport(this.report);
@@ -1046,7 +1047,7 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
         Log.l("processReport(): Successfully saved work order to local database. Now synchronizing to remote.\n", res);
         res = await this.db.syncSquaredToServer(this.prefs.DB.reports);
         Log.l("processReport(): Successfully synchronized work order to remote.");
-        this.alert.hideSpinner();
+        let out = await this.alert.hideSpinnerPromise(spinnerID);
         // this.ud.addNewReport(newWO);
         // this.ud.updateShifts();
         this.currentRepairHours = 0;
@@ -1057,28 +1058,30 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
     } catch(err) {
       Log.l(`processReport(): Error during processing of report '${this.report._id}'`);
       Log.e(err);
-      this.alert.hideSpinner();
-      this.alert.showAlert(lang['alert'], lang['unable_to_sync_message']);
+      let out = await this.alert.hideSpinnerPromise(spinnerID);
+      out = await this.alert.showAlert(lang['alert'], lang['unable_to_sync_message']);
       // throw new Error(err);
     }
   }
 
-  public processReportOther() {
+  public async processReportOther() {
     let lang = this.lang;
-    this.alert.showSpinner(lang['spinner_saving_report']);
-    // let doc = this.workOrderForm.getRawValue();
-    // let newReport = new ReportOther().readFromDoc(doc);
-    let other = this.other;
-    // Log.l("processReportOther(): Read new ReportOther:\n", newReport);
-    // let newDoc = newReport.serialize(this.techProfile);
-    // Log.l("processReportOther(): Serialized ReportOther to:\n", newDoc);
-    this.db.saveReportOther(other).then(res => {
+    let spinnerID;
+    try {
+      spinnerID = await this.alert.showSpinnerPromise(lang['spinner_saving_report']);
+      // let doc = this.workOrderForm.getRawValue();
+      // let newReport = new ReportOther().readFromDoc(doc);
+      let other = this.other;
+      // Log.l("processReportOther(): Read new ReportOther:\n", newReport);
+      // let newDoc = newReport.serialize(this.techProfile);
+      // Log.l("processReportOther(): Serialized ReportOther to:\n", newDoc);
+      let res:any = await this.db.saveReportOther(other);
       Log.l("processReportOther(): Done saving ReportOther!");
       this.selectedShift.addOtherReport(this.other);
       // this.ud.addNewOtherReport(newReport);
       // this.ud.updateShifts();
       this.currentOtherHours = 0;
-      this.alert.hideSpinner();
+      let out = await this.alert.hideSpinnerPromise(spinnerID);
       if(this.prefs.USER.stayInReports) {
         this.tabServ.goToPage('Report View');
         // this.type = this.selReportType[0];
@@ -1089,11 +1092,11 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
       } else {
         this.tabServ.goToPage('ReportHistory');
       }
-    }).catch(err => {
+    } catch(err) {
       Log.l("processReportOther(): Error saving ReportOther!");
       Log.e(err);
       this.alert.showAlert(lang['alert'], lang['unable_to_sync_message']);
-    });
+    }
   }
 
   public cancel() {
@@ -1203,37 +1206,41 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
     this.currentReport.unsetFlag('manual');
   }
 
-  public syncData() {
+  public async syncData() {
     let lang = this.lang;
-    Log.l("syncData(): Started...");
-    let db = this.prefs.getDB();
-    this.alert.showSpinner(lang['spinner_sending_reports_to_server']);
-    this.server.syncToServer(db.reports, db.reports).then(res => {
+    let spinnerID;
+    try {
+      Log.l("syncData(): Started...");
+      let db = this.prefs.getDB();
+      spinnerID = await this.alert.showSpinnerPromise(lang['spinner_sending_reports_to_server']);
+      let res:any = await this.server.syncToServer(db.reports, db.reports);
       Log.l("syncData(): Successfully synchronized to server.");
-      this.alert.hideSpinner();
-      this.alert.showAlert(lang['success'], lang['manual_sync_success']);
-    }).catch(err => {
-      Log.l("syncData(): Error with server sync.");
+      let out = await this.alert.hideSpinnerPromise(spinnerID);
+      out = await this.alert.showAlert(lang['success'], lang['manual_sync_success']);
+    } catch(err) {
+      Log.l(`syncData(): Error `);
       Log.e(err);
-      this.alert.hideSpinner();
-      this.alert.showAlert(lang['error'], lang['manual_sync_error']);
-    });
+      let out = await this.alert.hideSpinnerPromise(spinnerID);
+      out = await this.alert.showAlert(lang['error'], lang['manual_sync_error']);
+    }
   }
 
-  public deleteWorkOrder(event?:any) {
+  public async deleteWorkOrder(event?:any) {
     Log.l("deleteWorkOrder() clicked ...");
     let lang = this.lang;
-    let db = this.prefs.getDB();
-    let tmpReport = this.report;
-    this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
-      if (res) {
-        this.alert.showSpinner(lang['spinner_deleting_report']);
-        Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
-        // let wo = this.report.clone();
-        let wo = this.report;
-        let reports = this.ud.getReportList();
-        let i = reports.indexOf(this.report);
-        this.db.deleteDoc(db.reports, wo).then((res) => {
+    let spinnerID;
+    try {
+      let db = this.prefs.getDB();
+      let tmpReport = this.report;
+      let confirm = await this.alert.showConfirm(lang['confirm'], lang['delete_report']);
+        if (confirm) {
+          spinnerID = await this.alert.showSpinnerPromise(lang['spinner_deleting_report']);
+          Log.l("deleteWorkOrder(): User confirmed deletion, deleting...");
+          // let wo = this.report.clone();
+          let wo = this.report;
+          let reports = this.ud.getReportList();
+          let i = reports.indexOf(this.report);
+          let res:any = await this.db.deleteDoc(db.reports, wo);
           Log.l("deleteWorkOrder(): Success:\n", res);
           Log.l("Going to delete work order %d in the list.", i);
           let tmpReport = this.report;
@@ -1242,72 +1249,59 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
           }
           this.selectedShift.removeShiftReport(tmpReport);
           this.ud.removeReport(tmpReport);
-          return this.server.syncToServer(db.reports, db.reports);
-        }).then(res => {
+          res = await this.server.syncToServer(db.reports, db.reports);
           Log.l(`deleteWorkOrder(): Synchronized local '${db.reports}' to remote.`)
-          this.alert.hideSpinner();
+          let out = await this.alert.hideSpinnerPromise(spinnerID);
           this.tabServ.goToPage('ReportHistory', {report_deleted: tmpReport});
-        }).catch((err) => {
-          this.alert.hideSpinner();
-          Log.l("deleteWorkOrder(): Error!");
-          Log.e(err);
-          this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
-        });
-      } else {
-        Log.l("User canceled deletion.");
-      }
-    }).catch((err) => {
-      this.alert.hideSpinner();
+        } else {
+          Log.l("User canceled deletion.");
+        }
+    } catch(err) {
+      let out = await this.alert.hideSpinnerPromise(spinnerID);
       Log.l("deleteWorkOrder(): Error!");
       Log.e(err);
-      this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
-    });
+      out = await this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
+    }
   }
 
-  public deleteOtherReport(event) {
+  public async deleteOtherReport(event) {
     Log.l("deleteOtherReport() clicked ...");
     let other = this.other;
     let lang = this.lang;
-    let db = this.prefs.getDB();
-    this.audio.play('deleteotherreport');
-    this.alert.showConfirm(lang['confirm'], lang['delete_report']).then((res) => {
-      if (res) {
-        this.alert.showSpinner(lang['spinner_deleting_report']);
+    let spinnerID;
+    try {
+      let db = this.prefs.getDB();
+      this.audio.play('deleteotherreport');
+      let confirm = await this.alert.showConfirm(lang['confirm'], lang['delete_report']);
+      if(confirm) {
+        spinnerID = await this.alert.showSpinnerPromise(lang['spinner_deleting_report']);
         Log.l("deleteOtherReport(): User confirmed deletion, deleting...");
         let shift = this.selectedShift;
         let others = shift.getShiftOtherReports();
         let ro:ReportOther = other.clone();
         let reportDate = ro.report_date.format("YYYY-MM-DD");
-        this.db.deleteDoc(db.reports_other, other).then((res) => {
-          Log.l("deleteOtherReport(): Success:\n", res);
-          let tmpReport = this.other;
-          let i = others.indexOf(other);
-          if(i > -1) {
-            tmpReport = others.splice(i, 1)[0];
-          }
-          this.selectedShift.removeOtherReport(tmpReport);
-          // this.ud.removeOtherReport(tmpReport);
-          return this.server.syncToServer(db.reports_other, db.reports_other);
-        }).then(res => {
-          Log.l(`deleteOtherReport(): Synchronized local '${db.reports}' to remote.`);
-          this.alert.hideSpinner();
-          this.tabServ.goToPage('ReportHistory', { report_deleted: this.other });
-        }).catch((err) => {
-          this.alert.hideSpinner();
-          Log.l("deleteOtherReport(): Error!");
-          Log.e(err);
-          this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
-        });
+        let res:any = await this.db.deleteDoc(db.reports_other, other);
+        Log.l("deleteOtherReport(): Success:\n", res);
+        let tmpReport = this.other;
+        let i = others.indexOf(other);
+        if(i > -1) {
+          tmpReport = others.splice(i, 1)[0];
+        }
+        this.selectedShift.removeOtherReport(tmpReport);
+        // this.ud.removeOtherReport(tmpReport);
+        res = await this.server.syncToServer(db.reports_other, db.reports_other);
+        Log.l(`deleteOtherReport(): Synchronized local '${db.reports}' to remote.`);
+        let out = await this.alert.hideSpinnerPromise(spinnerID);
+        this.tabServ.goToPage('ReportHistory', { report_deleted: this.other });
       } else {
         Log.l("User canceled deletion.");
       }
-    }).catch((err) => {
-      this.alert.hideSpinner();
+    } catch(err) {
+      let out = await this.alert.hideSpinnerPromise(spinnerID);
       Log.l("deleteOtherReport(): Error!");
       Log.e(err);
-      this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
-    });
-
+      out = await this.alert.showAlert(lang['error'], lang['error_deleting_report_message']);
+    }
   }
 
 }

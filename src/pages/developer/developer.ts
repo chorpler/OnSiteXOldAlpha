@@ -1,19 +1,19 @@
-// import { TabsComponent                                 } from 'components/tabs/tabs'       ;
 import { Component, OnInit, OnDestroy, AfterViewInit,  } from '@angular/core'              ;
 import { NgZone                                        } from '@angular/core'              ;
 import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular'              ;
 import { AuthSrvcs                                     } from 'providers/auth-srvcs'       ;
 import { GeolocService                                 } from 'providers/geoloc-service'   ;
 import { AlertService                                  } from 'providers/alerts'           ;
-import { Log, moment, Moment                           } from 'onsitex-domain'    ;
-import { DBService                                       } from 'providers/db-service'         ;
+import { Log, moment, Moment                           } from 'domain/onsitexdomain'             ;
+import { DBService                                     } from 'providers/db-service'       ;
 import { SmartAudio                                    } from 'providers/smart-audio'      ;
 import { TranslateModule, TranslateLoader              } from '@ngx-translate/core'        ;
 import { TranslateHttpLoader                           } from '@ngx-translate/http-loader' ;
 import { TranslateService                              } from '@ngx-translate/core'        ;
 import { Preferences                                   } from 'providers/preferences'      ;
 import { TabsService                                   } from 'providers/tabs-service'     ;
-import { Pages                                         } from 'onsitex-domain'        ;
+import { Pages                                         } from 'domain/onsitexdomain'             ;
+import { OnSiteApp                                     } from 'app/app.component'          ;
 
 @IonicPage({name: 'DevPage'})
 @Component({
@@ -43,12 +43,13 @@ export class DeveloperPage implements OnInit,OnDestroy,AfterViewInit {
     public platform  : Platform         ,
     public zone      : NgZone           ,
     public geoloc    : GeolocService    ,
-    public db        : DBService          ,
+    public db        : DBService        ,
     public audio     : SmartAudio       ,
     public alert     : AlertService     ,
     public translate : TranslateService ,
     // public tabs      : TabsComponent    ,
     public tabServ   : TabsService      ,
+    public onsiteapp : OnSiteApp        ,
 
   ) {
     window['onsitedev'] = this;
@@ -230,6 +231,23 @@ export class DeveloperPage implements OnInit,OnDestroy,AfterViewInit {
       this.unicodeChars = temp1;
     } else {
       this.unicodeChars = temp2;
+    }
+  }
+
+  public async resetAppData(event?:any) {
+    try {
+      let res;
+      let result = await this.alert.showConfirmYesNo("RESET APP", "Are you sure you want to reset the local data on this app?");
+      if(result) {
+        res = await this.onsiteapp.resetAllAppData();
+        res = await this.alert.showAlert("SUCCESS", "All local app data deleted. Reset app now.");
+      } else {
+      }
+      return res;
+    } catch(err) {
+      Log.l(`resetAppData(): Error during app data reset!`);
+      Log.e(err);
+      throw new Error(err);
     }
   }
 

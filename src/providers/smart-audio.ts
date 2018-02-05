@@ -2,7 +2,7 @@ import { Injectable  } from '@angular/core'              ;
 import { Platform    } from 'ionic-angular'              ;
 import { NativeAudio } from '@ionic-native/native-audio' ;
 import { Preferences } from './preferences'              ;
-import { Log         } from 'onsitex-domain'             ;
+import { Log         } from 'domain/onsitexdomain'             ;
 
 @Injectable()
 export class SmartAudio {
@@ -20,41 +20,50 @@ export class SmartAudio {
     }
   }
 
-  public preload(key, asset) {
-    if (this.audioType === 'html5') {
-      let audio = {
-        key: key,
-        asset: asset,
-        type: 'html5'
-      };
-      let found = false;
-      for(let file of this.sounds) {
-        if(audio.key === file.key) {
-          found = true;
+  public async preload(key, asset) {
+    try {
+      if (this.audioType === 'html5') {
+        let audio = {
+          key: key,
+          asset: asset,
+          type: 'html5'
+        };
+        let found = false;
+        for(let file of this.sounds) {
+          if(audio.key === file.key) {
+            found = true;
+          }
+        }
+        if(!found) {
+          this.sounds.push(audio);
+        }
+      } else {
+        let audio = {
+          key: key,
+          asset: key,
+          type: 'native'
+        };
+        let found = false;
+        for (let file of this.sounds) {
+          if (audio.key === file.key) {
+            found = true;
+          }
+        }
+        if(!found) {
+          try {
+            this.sounds.push(audio);
+            let res:any = await this.nativeAudio.preloadSimple(key, asset);
+            return res;
+          } catch(err) {
+            Log.l(`preload(): Error preloading asset '${asset}' as key '${key}' even though not found yet.`);
+            Log.e(err);
+          }
         }
       }
-      if(!found) {
-        this.sounds.push(audio);
-      }
-    } else {
-      let audio = {
-        key: key,
-        asset: key,
-        type: 'native'
-      };
-      let found = false;
-      for (let file of this.sounds) {
-        if (audio.key === file.key) {
-          found = true;
-        }
-      }
-      if (!found) {
-        this.sounds.push(audio);
-        this.nativeAudio.preloadSimple(key, asset).catch(err => {
-          Log.l(`preload(): Error preloading asset ${asset} with key ${key}.`);
-          Log.e(err);
-        });
-      }
+    } catch(err) {
+      Log.l(`preload(): Error preloading audio file '${asset}' with key '${key}'.`);
+      Log.e(err);
+      // throw new Error(err);
     }
   }
 

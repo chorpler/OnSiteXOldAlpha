@@ -5,9 +5,9 @@ import { Device                                              } from '@ionic-nati
 import { AppVersion                                          } from '@ionic-native/app-version'      ;
 import { UniqueDeviceID                                      } from '@ionic-native/unique-device-id' ;
 import { TranslateService                                    } from '@ngx-translate/core'            ;
-import { Log, moment, isMoment, Moment                       } from 'onsitex-domain'                 ;
-import { Comment                                             } from 'onsitex-domain'                 ;
-import { Employee                                            } from 'onsitex-domain'                 ;
+import { Log, moment, isMoment, Moment                       } from 'domain/onsitexdomain'                 ;
+import { Comment                                             } from 'domain/onsitexdomain'                 ;
+import { Employee                                            } from 'domain/onsitexdomain'                 ;
 import { ServerService                                       } from 'providers/server-service'       ;
 import { CommentService                                      } from 'providers/comment-service'      ;
 import { AlertService                                        } from 'providers/alerts'               ;
@@ -58,23 +58,25 @@ export class CommentPage implements OnInit {
     Log.l('ionViewDidLoad CommentPage');
   }
 
-  submitComment() {
-    let timestamp = moment();
+  public async submitComment() {
     let lang = this.lang;
-    this.comment.setTimestamp(timestamp);
-    this.alert.showSpinner(lang['submitting_comment']);
-    this.server.saveComment(this.comment).then(res => {
+    let spinnerID;
+    try {
+      let timestamp = moment();
+      this.comment.setTimestamp(timestamp);
+      spinnerID = this.alert.showSpinnerPromise(lang['submitting_comment']);
+      let res:any = await this.server.saveComment(this.comment);
       Log.l("submitComment(): Saved comment!");
-      this.alert.hideSpinner()
-      this.alert.showAlert(lang['success'], lang['submitted_comment_successfully']).then(() => {
-        this.closeCommentPage();
-      });
-    }).catch(err => {
+      let out:any = await this.alert.hideSpinnerPromise(spinnerID)
+      out = await this.alert.showAlert(lang['success'], lang['submitted_comment_successfully']);
+      this.closeCommentPage();
+      return res;
+    } catch(err) {
       Log.l("submitComment(): Error submitting comment!");
       Log.e(err);
-      this.alert.hideSpinner();
-      this.alert.showAlert(lang['error'], lang['could_not_submit_comment']);
-    })
+      let out = await this.alert.hideSpinnerPromise(spinnerID);
+      // out = await this.alert.showAlert(lang['error'], lang['could_not_submit_comment']);
+    }
   }
 
   public checkPhoneInfo() {

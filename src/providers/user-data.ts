@@ -6,16 +6,18 @@ import { NativeStorage                 } from '@ionic-native/native-storage'   ;
 import { Device                        } from '@ionic-native/device'           ;
 import { AppVersion                    } from '@ionic-native/app-version'      ;
 import { UniqueDeviceID                } from '@ionic-native/unique-device-id' ;
-import { Log, isMoment, moment, Moment } from 'onsitex-domain'                 ;
-import { DBService                     } from './db-service'                   ;
+import { Log, isMoment, moment, Moment } from 'domain/onsitexdomain'                 ;
+// import { DBService                     } from './db-service'                   ;
 import { Preferences                   } from './preferences'                  ;
-import { Shift                         } from 'onsitex-domain'                 ;
-import { PayrollPeriod                 } from 'onsitex-domain'                 ;
-import { Report                        } from 'onsitex-domain'                 ;
-import { ReportOther                   } from 'onsitex-domain'                 ;
-import { Employee                      } from 'onsitex-domain'                 ;
-import { Message                       } from 'onsitex-domain'                 ;
-import { Jobsite                       } from 'onsitex-domain'                 ;
+import { Shift                         } from 'domain/onsitexdomain'                 ;
+import { PayrollPeriod                 } from 'domain/onsitexdomain'                 ;
+import { Report                        } from 'domain/onsitexdomain'                 ;
+import { ReportOther                   } from 'domain/onsitexdomain'                 ;
+import { Employee                      } from 'domain/onsitexdomain'                 ;
+import { Message                       } from 'domain/onsitexdomain'                 ;
+import { Jobsite                       } from 'domain/onsitexdomain'                 ;
+
+export type DataKey = "employee" | "sites" | "reports" | "otherReports" | "payrollPeriods" | "shifts" | "messages" | "report_types" | "training_types" | "site_info" | "techUpdated";
 
 @Injectable()
 export class UserData {
@@ -127,12 +129,13 @@ export class UserData {
   public isWiFi:boolean = false;
 
   constructor(
-    public events  : Events,
-    public storage : Storage,
-    public platform: Platform,
-    public device  : Device,
-    public unique  : UniqueDeviceID,
-    public version : AppVersion
+    public events  : Events         ,
+    public storage : Storage        ,
+    public platform: Platform       ,
+    public device  : Device         ,
+    public unique  : UniqueDeviceID ,
+    public version : AppVersion     ,
+    // public db      : DBService      ,
   ) {
     window["onsiteuserdata"] = this;
     window["UserData"] = UserData;
@@ -368,6 +371,11 @@ export class UserData {
     }
   }
 
+  public setDataItem(key:DataKey, value:any) {
+    UserData.data[key] = value;
+    return UserData.data[key];
+  }
+
   public setData(data:any) {
     Log.l("setData(): Attempting to set UserData.data to:\n", data);
     if(data['sites']['length'] === undefined || data['reports']['length'] === undefined || data['otherReports']['length'] === undefined) {
@@ -386,10 +394,11 @@ export class UserData {
             }
           }
         } else {
-          UserData.data[key] = [];
-          for(let object of data[key]) {
-            UserData.data[key].push(object);
-          }
+          UserData.data[key] = data[key];
+          // UserData.data[key] = [];
+          // for(let object of data[key]) {
+          //   UserData.data[key].push(object);
+          // }
         }
       }
       Log.l("setData(): Done. UserData.data is now:\n", UserData.data);
@@ -398,7 +407,8 @@ export class UserData {
     }
   }
 
-  public getData(key?:string) {
+  // public getData(key?:string) {
+  public getData(key?:DataKey) {
     if(key) {
       if(UserData.data[key]['length'] !== undefined) {
         return UserData.data[key];
@@ -539,9 +549,9 @@ export class UserData {
         }
       }
     }
-    UserData.reports = newReports;
-    UserData.otherReports = newOthers;
-    return UserData.reports;
+    UserData.data.reports = newReports;
+    UserData.data.otherReports = newOthers;
+    return UserData.data.reports;
   }
 
   public setReportList(list:Array<Report>) {
@@ -808,14 +818,15 @@ export class UserData {
   }
 
   public addNewReport(newReport:Report) {
-    // Log.l("addNewReport(): Now adding report:\n", newReport);
+    Log.l("addNewReport(): Now adding report:\n", newReport);
     // let reports = this.getWorkOrderList();
     let id = newReport.getReportID();
     let exists = false, existingReport = null, rightShift = null;
     let periods = this.getPayrollPeriods() || [];
 
     if(!(periods && periods.length)) {
-      periods = this.createPayrollPeriods(this.getUser()) || [];
+      // periods = this.createPayrollPeriods(this.getUser()) || [];
+      periods = this.createPayrollPeriods(this.getTechProfile()) || [];
     }
     let date = moment(newReport.report_date).startOf('day');
     loop1:
@@ -978,46 +989,51 @@ export class UserData {
 
   public findEmployeeSite(tech:Employee):Jobsite {
     let sites = this.getData('sites');
-    let cli = tech.client.trim().toUpperCase();
-    let loc = tech.location.trim().toUpperCase();
-    let lid = tech.locID.trim().toUpperCase();
-    Log.l(`findEmployeeSite(): Searching for tech site '${cli} ${loc} ${lid}' ...`);
     let unassigned = sites.find((a:Jobsite) => {
       return a.site_number === 1;
-    })
-    let site = sites.find((a:Jobsite) => {
-      let jscli1 = a.client.name.trim().toUpperCase();
-      let jscli2 = a.client.fullName.trim().toUpperCase();
-      let jsloc1 = a.location.name.trim().toUpperCase();
-      let jsloc2 = a.location.fullName.trim().toUpperCase();
-      let jslid1 = a.locID.name.trim().toUpperCase();
-      let jslid2 = a.locID.fullName.trim().toUpperCase();
-      let clientMatch   = Boolean(cli === jscli1 || cli === jscli2);
-      let locationMatch = Boolean(loc === jsloc1 || loc === jsloc2);
-      let locIDMatch    = Boolean(lid === jslid1 || lid === jslid2);
-      let isAtSite = Boolean(clientMatch && locationMatch && locIDMatch);
-      if(isAtSite) {
-        Log.l(`findEmployeeSite(): Testing for tech '${tech.getUsername()}' at ${jscli1} ${jsloc1} ${jslid1}: ${clientMatch} ${locationMatch} ${locIDMatch}`);
-      }
-      return isAtSite;
     });
-    if(site) {
-      return site;
-    } else {
-      Log.l(`findEmployeeSite(): Could not find tech '${tech.getUsername()}' at any work site!`);
+    if(!tech || !(tech && tech.client && tech.location && tech.locID)) {
       return unassigned;
+    } else {
+      let cli = tech.client.trim().toUpperCase();
+      let loc = tech.location.trim().toUpperCase();
+      let lid = tech.locID.trim().toUpperCase();
+      Log.l(`findEmployeeSite(): Searching for tech site '${cli} ${loc} ${lid}' ...`);
+      let site = sites.find((a:Jobsite) => {
+        let jscli1 = a.client.name.trim().toUpperCase();
+        let jscli2 = a.client.fullName.trim().toUpperCase();
+        let jsloc1 = a.location.name.trim().toUpperCase();
+        let jsloc2 = a.location.fullName.trim().toUpperCase();
+        let jslid1 = a.locID.name.trim().toUpperCase();
+        let jslid2 = a.locID.fullName.trim().toUpperCase();
+        let clientMatch   = Boolean(cli === jscli1 || cli === jscli2);
+        let locationMatch = Boolean(loc === jsloc1 || loc === jsloc2);
+        let locIDMatch    = Boolean(lid === jslid1 || lid === jslid2);
+        let isAtSite = Boolean(clientMatch && locationMatch && locIDMatch);
+        if(isAtSite) {
+          Log.l(`findEmployeeSite(): Testing for tech '${tech.getUsername()}' at ${jscli1} ${jsloc1} ${jslid1}: ${clientMatch} ${locationMatch} ${locIDMatch}`);
+        }
+        return isAtSite;
+      });
+      if(site) {
+        return site;
+      } else {
+        Log.l(`findEmployeeSite(): Could not find tech '${tech.getUsername()}' at any work site!`);
+        return unassigned;
+      }
     }
   }
 
   public createPayrollPeriods(tech:Employee, count?:number):Array<PayrollPeriod> {
     let now = moment().startOf('day');
+    Log.l("createPayrollPeriods(): finding for tech:\n", tech);
     let periods:Array<PayrollPeriod> = [];
     // let payp = periods;
     // let len  = payp.length;
     // let tmp1 = payp;
     // UserData.payrollPeriods = payp.splice(0,len);
     let site = this.findEmployeeSite(tech);
-    if(site) {
+    if(tech && tech.username && site) {
       let periodCount = count || 2;
       for(let i = 0; i < periodCount; i++) {
         let start = PayrollPeriod.getPayrollPeriodDateForShiftDate(moment(now).subtract(i, 'weeks'));
@@ -1132,20 +1148,24 @@ export class UserData {
   //   }
   // }
 
-  getPeriodShifts():Array<Shift> {
+  public getPeriodShifts():Array<Shift> {
     return UserData.shifts;
   }
 
-  setTechProfile(profile:any) {
-    let user:Employee = Employee.deserialize(profile);
-    UserData.techProfile = user;
+  public setTechProfile(profile:any) {
+    if(profile instanceof Employee) {
+      UserData.techProfile = profile;
+    } else {
+      let user:Employee = Employee.deserialize(profile);
+      UserData.techProfile = user;
+    }
   }
 
-  getTechProfile():Employee {
+  public getTechProfile():Employee {
     return UserData.techProfile;
   }
 
-  playSoundClip(index?:number) {
+  public playSoundClip(index?:number) {
     let i = index ? index : 0;
     let prefix = '/assets/audio/';
     let audioclips = ['nospoilers.wav', 'nospoilers2.wav'];

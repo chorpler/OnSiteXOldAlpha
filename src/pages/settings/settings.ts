@@ -1,11 +1,10 @@
-// import { TabsComponent                                                       } from 'components/tabs/tabs'          ;
 import { Component, OnInit, NgZone, OnDestroy, AfterViewInit                 } from '@angular/core'                 ;
 import { IonicPage, NavController, Platform, ModalController, ViewController } from 'ionic-angular'                 ;
-import { DBService                                                             } from 'providers/db-service'            ;
+import { DBService                                                           } from 'providers/db-service'          ;
 import { Login                                                               } from 'pages/login/login'             ;
-import { Log, moment, Moment                                                 } from 'onsitex-domain'       ;
+import { Log, moment, Moment                                                 } from 'domain/onsitexdomain'          ;
 import { AuthSrvcs                                                           } from 'providers/auth-srvcs'          ;
-import { ServerService                                                           } from 'providers/server-service'          ;
+import { ServerService                                                       } from 'providers/server-service'      ;
 import { AlertService                                                        } from 'providers/alerts'              ;
 import { TranslateService                                                    } from '@ngx-translate/core'           ;
 import { AppVersion                                                          } from '@ionic-native/app-version'     ;
@@ -14,7 +13,7 @@ import { Preferences                                                         } f
 import { UserData                                                            } from 'providers/user-data'           ;
 import { IonDigitKeyboardCmp, IonDigitKeyboardOptions                        } from 'components/ion-digit-keyboard' ;
 import { TabsService                                                         } from 'providers/tabs-service'        ;
-import { Pages                                                               } from 'onsitex-domain'           ;
+import { Pages                                                               } from 'domain/onsitexdomain'          ;
 
 
 @IonicPage({ name: 'Settings' })
@@ -84,7 +83,7 @@ export class Settings implements OnInit,OnDestroy,AfterViewInit {
     this.tabServ.setPageLoaded(Pages.Settings);
   }
 
-  runFromInit() {
+  public runFromInit() {
     let translations = [
       'confirm_logout_title',
       'confirm_logout_message',
@@ -141,9 +140,9 @@ export class Settings implements OnInit,OnDestroy,AfterViewInit {
     }
   }
 
-  terminateApp() { this.platform.exitApp(); }
+  public terminateApp() { this.platform.exitApp(); }
 
-  logoutOfApp() {
+  public logoutOfApp() {
     Log.l("User clicked logout button.");
     this.auth.logout().then((res) => {
       Log.l("Done logging out. Reloading app.");
@@ -152,7 +151,7 @@ export class Settings implements OnInit,OnDestroy,AfterViewInit {
     });
   }
 
-  confirmLogout() {
+  public confirmLogout() {
     let lang = this.lang;
     let title = lang['confirm_logout_title'];
     let text  = lang['confirm_logout_message'];
@@ -166,7 +165,7 @@ export class Settings implements OnInit,OnDestroy,AfterViewInit {
     });
   }
 
-  updateLanguage(language:any) {
+  public updateLanguage(language:any) {
     this.selectedLanguage = language;
     if(language.value === 'es') {
       this.translate.use('es');
@@ -182,7 +181,7 @@ export class Settings implements OnInit,OnDestroy,AfterViewInit {
     })
   }
 
-  sendComment() {
+  public sendComment() {
     // let lang = this.translate.instant(['send_comment_title', 'send_comment_message'])
     // this.alert.showAlert(lang['send_comment_title'], lang['send_comment_message']);
     let commentModal = this.modalCtrl.create('Comment', {}, {enableBackdropDismiss: true, cssClass: 'comment-modal'});
@@ -195,7 +194,7 @@ export class Settings implements OnInit,OnDestroy,AfterViewInit {
     commentModal.present();
   }
 
-  toggleSounds() {
+  public toggleSounds() {
     this.prefs.USER.audio = this.sounds;
     this.savePreferences().then(res => {
       Log.l("toggleSounds(): Sounds turned to '%s' and preferences saved:\n", this.prefs.USER.audio);
@@ -206,7 +205,7 @@ export class Settings implements OnInit,OnDestroy,AfterViewInit {
     });
   }
 
-  toggleStayInReports() {
+  public toggleStayInReports() {
     Log.l("toggleStayInReports(): set to '%s'", this.stayInReports);
     this.prefs.USER.stayInReports = this.stayInReports;
     this.savePreferences().then(res => {
@@ -247,7 +246,7 @@ export class Settings implements OnInit,OnDestroy,AfterViewInit {
     let text = lang['confirm_app_restart_text'];
     // let msg   = sprintf("%s<br>\n<br>\n%s", text, window.location.href)
     this.alert.showConfirm(title, text).then((restart) => {
-      if (restart) {
+      if(restart) {
         Log.l("RELOADING ONSITEX....");
         this.dataReady = false;
         this.ud.reloadApp();
@@ -258,21 +257,23 @@ export class Settings implements OnInit,OnDestroy,AfterViewInit {
     });
   }
 
-  public syncData() {
+  public async syncData() {
     let lang = this.lang;
-    Log.l("syncData(): Started...");
-    let db = this.prefs.getDB();
-    this.alert.showSpinner(lang['spinner_sending_reports_to_server']);
-    this.server.syncToServer(db.reports, db.reports).then(res => {
+    let spinnerID;
+    try {
+      Log.l("syncData(): Started...");
+      let db = this.prefs.getDB();
+      spinnerID = await this.alert.showSpinnerPromise(lang['spinner_sending_reports_to_server']);
+      let res:any = await this.server.syncToServer(db.reports, db.reports);
       Log.l("syncData(): Successfully synchronized to server.");
-      this.alert.hideSpinner();
-      this.alert.showAlert(lang['success'], lang['manual_sync_success']);
-    }).catch(err => {
+      let out = await this.alert.hideSpinnerPromise(spinnerID);
+      out = await this.alert.showAlert(lang['success'], lang['manual_sync_success']);
+    } catch(err) {
       Log.l("syncData(): Error with server sync.");
       Log.e(err);
-      this.alert.hideSpinner();
-      this.alert.showAlert(lang['error'], lang['manual_sync_error']);
-    });
+      let out = await this.alert.hideSpinnerPromise(spinnerID);
+      out = await this.alert.showAlert(lang['error'], lang['manual_sync_error']);
+  }
   }
 
   public syncHelp() {

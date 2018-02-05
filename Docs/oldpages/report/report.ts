@@ -1,6 +1,6 @@
 // import { Status                                                } from '../../providers/status'            ;
 // import { TabsComponent                                         } from 'components/tabs/tabs'        ;
-import 'rxjs/add/operator/debounceTime'                                                         ;
+import 'rxjs/add/operator/debounceTime'                                                          ;
 import { sprintf                                               } from 'sprintf-js'               ;
 import { Component, OnInit, ViewChild, NgZone, OnDestroy,      } from '@angular/core'            ;
 import { AfterViewInit,                                        } from '@angular/core'            ;
@@ -13,18 +13,18 @@ import { ServerService                                         } from 'providers
 import { AuthSrvcs                                             } from 'providers/auth-srvcs'     ;
 import { AlertService                                          } from 'providers/alerts'         ;
 import { SmartAudio                                            } from 'providers/smart-audio'    ;
-import { Log, moment, Moment, isMoment, oo,                    } from 'onsitex-domain'           ;
-import { PayrollPeriod                                         } from 'onsitex-domain'           ;
-import { Shift                                                 } from 'onsitex-domain'           ;
-import { Report                                                } from 'onsitex-domain'           ;
-import { Employee                                              } from 'onsitex-domain'           ;
-import { ReportOther                                           } from 'onsitex-domain'           ;
-import { Jobsite                                               } from 'onsitex-domain'           ;
+import { Log, moment, Moment, isMoment, oo,                    } from 'domain/onsitexdomain'     ;
+import { PayrollPeriod                                         } from 'domain/onsitexdomain'     ;
+import { Shift                                                 } from 'domain/onsitexdomain'     ;
+import { Report                                                } from 'domain/onsitexdomain'     ;
+import { Employee                                              } from 'domain/onsitexdomain'     ;
+import { ReportOther                                           } from 'domain/onsitexdomain'     ;
+import { Jobsite                                               } from 'domain/onsitexdomain'     ;
+import { Pages                                                 } from 'domain/onsitexdomain'     ;
 import { UserData                                              } from 'providers/user-data'      ;
 import { Preferences                                           } from 'providers/preferences'    ;
 import { TranslateService                                      } from '@ngx-translate/core'      ;
 import { TabsService                                           } from 'providers/tabs-service'   ;
-import { Pages                                                 } from 'onsitex-domain'           ;
 
 export const focusDelay = 500;
 
@@ -926,7 +926,7 @@ export class ReportPage implements OnInit,OnDestroy,AfterViewInit {
     });
   }
 
-  onSubmit() {
+  public onSubmit() {
     let form = this.workOrderForm.getRawValue();
     let type = form.type;
     let lang = this.lang;
@@ -951,12 +951,12 @@ export class ReportPage implements OnInit,OnDestroy,AfterViewInit {
   //   return docID;
   // }
 
-  convertFormToWorkOrder() {
+  public convertFormToWorkOrder() {
     let sWO = this.workOrderForm.getRawValue();
     let wo = this.workOrder;
   }
 
-  processWO() {
+  public processWO() {
     let data = this.workOrderForm.getRawValue();
     let lang = this.lang;
     // if(!data.repair_hours) {
@@ -1018,7 +1018,7 @@ export class ReportPage implements OnInit,OnDestroy,AfterViewInit {
     }
   }
 
-  processAlternateWO() {
+  public processAlternateWO() {
     let lang = this.lang;
     let db =
     this.alert.showSpinner(lang['spinner_saving_report']);
@@ -1055,7 +1055,7 @@ export class ReportPage implements OnInit,OnDestroy,AfterViewInit {
     });
   }
 
-  cancel() {
+  public cancel() {
     Log.l("ReportPage: User canceled work order.");
     if (this.mode === 'Add' || this.mode === 'Añadir') {
       this.tabServ.goToPage('OnSiteHome');
@@ -1064,7 +1064,7 @@ export class ReportPage implements OnInit,OnDestroy,AfterViewInit {
     }
   }
 
-  createFreshReport() {
+  public createFreshReport() {
     let tech  = this.techProfile     ;
     let now   = moment()             ;
     let shift = this.selectedShift   ;
@@ -1092,7 +1092,7 @@ export class ReportPage implements OnInit,OnDestroy,AfterViewInit {
     return this.workOrder;
   }
 
-  createFreshOtherReport() {
+  public createFreshOtherReport() {
     let tech          = this.techProfile            ;
     let now           = moment()                    ;
     let shift         = this.selectedShift          ;
@@ -1119,7 +1119,7 @@ export class ReportPage implements OnInit,OnDestroy,AfterViewInit {
     return this.workOrder;
   }
 
-  createReport() {
+  public createReport() {
     // Log.l("ReportPage: createReport(): Now creating report...");
     let partialReport = this.workOrderForm.getRawValue();
     Log.l("ReportPage: createReport(): Now creating report from form and workOrder...\n", partialReport);
@@ -1160,7 +1160,7 @@ export class ReportPage implements OnInit,OnDestroy,AfterViewInit {
     return this.workOrder.serialize(this.techProfile);
   }
 
-  checkPageMode(event:any) {
+  public checkPageMode(event:any) {
     Log.l("checkPageMode(): Called with event:\n", event);
     let lang = this.lang;
     if(this.mode==='Edit') {
@@ -1169,7 +1169,7 @@ export class ReportPage implements OnInit,OnDestroy,AfterViewInit {
     }
   }
 
-  deleteReport(event, type) {
+  public deleteReport(event, type) {
     if(type && type.name && type.name !== 'work_report' || typeof type === 'string' && type !== 'Work Report' && type !== 'work_report') {
       this.deleteOtherReport(event);
     } else {
@@ -1194,7 +1194,7 @@ export class ReportPage implements OnInit,OnDestroy,AfterViewInit {
     });
   }
 
-  deleteWorkOrder(event) {
+  public deleteWorkOrder(event) {
     Log.l("deleteWorkOrder() clicked ...");
     let lang = this.lang;
     let db = this.prefs.getDB();
@@ -1238,7 +1238,7 @@ export class ReportPage implements OnInit,OnDestroy,AfterViewInit {
     });
   }
 
-  deleteOtherReport(event) {
+  public deleteOtherReport(event) {
     Log.l("deleteOtherReport() clicked ...");
     let other = this.reportOther;
     let lang = this.lang;

@@ -12,23 +12,23 @@ import { Pipe, PipeTransform                              } from '@angular/core'
 import { Platform, IonicPage, NavParams, Events           } from 'ionic-angular'             ;
 import { NavController, ToastController, Content          } from 'ionic-angular'             ;
 import { ModalController,ViewController,PopoverController } from 'ionic-angular'             ;
-import { Log, moment, isMoment, Moment                    } from 'onsitex-domain'            ;
+import { Log, moment, isMoment, Moment                    } from 'domain/onsitexdomain'            ;
 import { DBService                                        } from 'providers/db-service'      ;
 import { AuthSrvcs                                        } from 'providers/auth-srvcs'      ;
 import { ServerService                                    } from 'providers/server-service'  ;
 import { AlertService                                     } from 'providers/alerts'          ;
 import { UserData                                         } from 'providers/user-data'       ;
-import { Report                                           } from 'onsitex-domain'            ;
-import { ReportOther                                      } from 'onsitex-domain'            ;
-import { Shift                                            } from 'onsitex-domain'            ;
-import { PayrollPeriod                                    } from 'onsitex-domain'            ;
-import { Employee                                         } from 'onsitex-domain'            ;
+import { Report                                           } from 'domain/onsitexdomain'            ;
+import { ReportOther                                      } from 'domain/onsitexdomain'            ;
+import { Shift                                            } from 'domain/onsitexdomain'            ;
+import { PayrollPeriod                                    } from 'domain/onsitexdomain'            ;
+import { Employee                                         } from 'domain/onsitexdomain'            ;
 import { TabsService                                      } from 'providers/tabs-service'    ;
 import { Preferences                                      } from 'providers/preferences'     ;
 import { SafePipe                                         } from 'pipes/safe'                ;
 import { SmartAudio                                       } from 'providers/smart-audio'     ;
-import { STRINGS                                          } from 'onsitex-domain'            ;
-import { Icons, Pages                                     } from 'onsitex-domain'            ;
+import { STRINGS                                          } from 'domain/onsitexdomain'            ;
+import { Icons, Pages                                     } from 'domain/onsitexdomain'            ;
 
 // enum Icons {
 //   'box-check-no'   = 0,
@@ -272,15 +272,21 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     let ready = this.ud.isHomePageReady();
     let loading = this.ud.isHomePageLoading();
     let attempts = this.ud.getLoadAttempts();
-    if (!this.ud.isAppLoaded()) {
-      Log.l("HOMEPAGE.ionViewDidEnter() SAYS QUIT TRYING TO DUAL LOAD!");
-    } else {
-      if(this.justLoggedIn) {
-        this.justLoggedIn = false;
-        this.newLoginSetup().then(res => {
-          this.runEveryTime();
-          Log.l("HomePage: Done loading in ionViewDidEnter().");
-        }).catch(err => {
+    this.checkLoginStatus();
+  }
+
+  public async checkLoginStatus() {
+    try {
+      let lang = this.lang;
+      let tech:Employee = this.ud.getTechProfile();
+      this.tech = tech;
+
+      // if(this.justLoggedIn) {
+      //   this.justLoggedIn = false;
+        try {
+          let res:any = await this.newLoginSetup();
+          res = await this.ifLoggedInAndAlreadySetUp();
+        } catch(err) {
           Log.l("HomePage: Error after new login!");
           Log.e(err);
           let errMessage = err;
@@ -288,104 +294,101 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
             errMessage = err.message;
           }
           let msg = sprintf(lang['startup_error'], errMessage)
-          this.alert.showConfirmYesNo(lang['error'], msg).then(res => {
-            if(res) {
-              this.ud.reloadApp();
-            }
-          });
-        });
-      } else {
-        this.runEveryTime();
-      }
-    }
-    if(loaded) {
-      // if(!ready && !loading) {
-        // this.runEveryTime();
-      // } else {
-        // this.dataReady = true;
-      // }
-      // else {
-      //   if (!this.pageError && attempts < 20) {
-      //     setTimeout(() => {
-      //       Log.l("HomePage attempting reload attempt %d.", attempts);
-      //       this.ud.setLoadAttempts(attempts + 1);
-      //       this.ionViewDidEnter();
-      //     }, 1500);
-      //   } else {
-      //     this.pageError = true;
-      //   }
-
-      // }
-    } else {
-      // Log.l("HomePage.ionViewDidEnter(): PREMATURE ELOADULATION DETECTED!");
-      // if(!this.pageError && attempts < 20) {
-      //   setTimeout(() => {
-      //     Log.l("HomePage attempting reload attempt %d.", attempts);
-      //     this.ud.setLoadAttempts(attempts+1);
-      //     this.ionViewDidEnter();
-      //   }, 1500);
-      // } else {
-      //   this.alert.showAlert(this.lang['error'], this.lang['alet_retrieve_reports_error'])
-      // }
-    }
-    //  else if(loaded && ready) {
-    //   // this.dataReady = true;
-    // } else {
-      // Log.l("HomePage.ionViewDidEnter(): EXTRA LARGE LOAD DETECTED");
-    // }
-    // this.runEveryTime();
-    // }
-  }
-
-  ionViewDidLoad() {
-    Log.l("HomePage: ionViewDidLoad() called... not doing anything right now.");
-    // this.dataReady = false;
-    // if(this.ud.isAppLoaded()) {
-    //   this.runEveryTime();
-    // }
-    // this.
-  }
-
-  public runEveryTime() {
-    // try {
-      // let lang = this.translate.instant(['error', 'alert_retrieve_reports_error'])
-    this.dataReady = false;
-    this.ud.setHomePageLoading(true);
-    this.ud.setHomePageReady(true);
-    let lang = this.lang;
-    if (this.ud.getLoginStatus() === false) {
-      Log.l("HomePage.runEveryTime(): User not logged in, showing login modal.");
-      this.presentLoginModal();
-    } else if(this.justLoggedIn) {
-      this.justLoggedIn = false;
-      this.newLoginSetup().then(res => {
-        Log.l("HomePage: Done loading in ionViewDidEnter().");
-        this.ifLoggedInAndAlreadySetUp();
-      }).catch(err => {
-        Log.l("HomePage: Error after new login!");
-        Log.e(err);
-        let errMessage = err;
-        if (err && err.message) {
-          errMessage = err.message;
-        }
-        let msg = sprintf(lang['startup_error'], errMessage)
-        this.alert.showConfirmYesNo(lang['error'], msg).then(res => {
-          if (res) {
+          let restart = await this.alert.showConfirmYesNo(lang['error'], msg);
+          if(restart) {
             this.ud.reloadApp();
           }
-        });
-      });
-    } else {
-      this.ifLoggedInAndAlreadySetUp();
+          return false;
+        }
+      // } else {
+      //   this.ifLoggedInAndAlreadySetUp();
+      //   return true;
+      // }
+    } catch(err) {
+      Log.l(`checkLoginStatus(): Error during check for user logged in!`);
+      Log.e(err);
+      throw new Error(err);
     }
+
   }
 
-  public ifLoggedInAndAlreadySetUp() {
+  // public async runEveryTime() {
+  //   // try {
+  //     // let lang = this.translate.instant(['error', 'alert_retrieve_reports_error'])
+  //   this.dataReady = false;
+  //   this.ud.setHomePageLoading(true);
+  //   this.ud.setHomePageReady(true);
+  //   let lang = this.lang;
+  //   if (this.ud.getLoginStatus() === false) {
+  //     Log.l("HomePage.runEveryTime(): User not logged in, showing login modal.");
+  //     this.presentLoginModal();
+  //   } else if(this.justLoggedIn) {
+  //     this.justLoggedIn = false;
+  //     this.newLoginSetup().then(res => {
+  //       Log.l("HomePage: Done loading in ionViewDidEnter().");
+  //       this.ifLoggedInAndAlreadySetUp();
+  //     }).catch(err => {
+  //       Log.l("HomePage: Error after new login!");
+  //       Log.e(err);
+  //       let errMessage = err;
+  //       if (err && err.message) {
+  //         errMessage = err.message;
+  //       }
+  //       let msg = sprintf(lang['startup_error'], errMessage)
+  //       this.alert.showConfirmYesNo(lang['error'], msg).then(res => {
+  //         if (res) {
+  //           this.ud.reloadApp();
+  //         }
+  //       });
+  //     });
+  //   } else {
+  //     this.ifLoggedInAndAlreadySetUp();
+  //   }
+  // }
+
+  // public ifLoggedInAndAlreadySetUp() {
+  //   let lang = this.lang;
+  //   this.ud.setHomePageLoading(true);
+  //   Log.l("HomePage.runEveryTime(): Fetching work orders.");
+  //   this.fetchTechReports().then((res) => {
+  //     this.techProfile = this.ud.getTechProfile();
+  //     this.shifts = this.ud.getPeriodShifts();
+  //     HomePage.homePageStatus.startupFinished = true;
+  //     this.ud.setHomePageReady(true);
+  //     // this.watchScroll();
+  //     // this.dataReady = true;
+  //     // this.alert.hideSpinner(0, true).then(res => {
+  //     this.ud.setHomePageReady(true);
+  //     HomePage.homePageStatus.startupFinished = true;
+  //     // this.watchScroll();
+  //     this.dataReady = true;
+  //     this.tabServ.enableTabs();
+  //     this.tabServ.setPageLoaded(Pages.OnSiteHome);
+  //   }).catch(err => {
+  //     Log.l("Error fetching tech work orders!");
+  //     Log.e(err);
+  //     // this.alert.hideSpinner();
+  //     this.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
+  //   });
+  // }
+
+  public async ifLoggedInAndAlreadySetUp() {
     let lang = this.lang;
-    this.ud.setHomePageLoading(true);
-    Log.l("HomePage.runEveryTime(): Fetching work orders.");
-    this.fetchTechReports().then((res) => {
-      this.techProfile = this.ud.getTechProfile();
+    try {
+      this.ud.setHomePageLoading(true);
+      // let res:any = await this.fetchTechReports();
+      let profile = this.ud.getTechProfile();
+      let tech:Employee = new Employee();
+      tech.readFromDoc(profile);
+      this.techProfile = profile;
+      this.tech = tech;
+      Log.l("ifLoggedInAndAlreadySetUp(): Now attempting to get all data for user:\n", tech);
+      let res:any = await this.db.getAllData(this.tech);
+      Log.l("ifLoggedInAndAlreadySetUp(): Got all data, result:\n", res);
+      this.ud.setData(res);
+      Log.l("ifLoggedInAndAlreadySetUp(): Fetching work orders.");
+      res = await this.fetchTechReports();
+      Log.l("ifLoggedInAndAlreadySetUp(): Got tech reports, result:\n", res);
       this.shifts = this.ud.getPeriodShifts();
       HomePage.homePageStatus.startupFinished = true;
       this.ud.setHomePageReady(true);
@@ -398,46 +401,49 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
       this.dataReady = true;
       this.tabServ.enableTabs();
       this.tabServ.setPageLoaded(Pages.OnSiteHome);
-    }).catch(err => {
-      Log.l("Error fetching tech work orders!");
+      return true;
+    } catch(err) {
+      Log.l(`ifLoggedInAndAlreadySetUp(): Error in post-login startup!`);
       Log.e(err);
-      // this.alert.hideSpinner();
-      this.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
-    });
+      let res:any = this.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
+      return false;
+      // throw new Error(err);
+    }
   }
 
-  public newLoginSetup() {
-    return new Promise((resolve,reject) => {
+  public async newLoginSetup() {
+    try {
       let profile = this.ud.getTechProfile();
       let tech = new Employee();
       tech.readFromDoc(profile);
       this.tech = tech;
-      this.server.getAllData(this.tech).then(res => {
-        this.ud.setData(res);
-        Log.l("newLoginSetup(): Got all data.");
-        return this.server.getAllConfigData();
-      }).then(res => {
-        Log.l("checkLogin(): Successfully retrieved config data...");
-        this.ud.setSesaConfig(res);
-        return this.ud.checkPhoneInfo();
-      }).then(res => {
-        let tech = this.tech;
-        let phoneInfo = res;
-        let pp = this.ud.createPayrollPeriods(tech, this.prefs.getPayrollPeriodCount());
-        if(phoneInfo) {
+      let res:any = await this.db.getAllData(this.tech);
+      this.ud.setData(res);
+      Log.l("newLoginSetup(): Got all data.");
+      res = await this.db.getAllConfigData();
+      Log.l("checkLogin(): Successfully retrieved config data...");
+      this.ud.setSesaConfig(res);
+      res = await this.ud.checkPhoneInfo();
+      let phoneInfo = res;
+      let pp = this.ud.createPayrollPeriods(tech, this.prefs.getPayrollPeriodCount());
+      if(phoneInfo) {
+        try {
           Log.l("newLoginSetup(): Got phone data:\n", phoneInfo);
-          this.server.savePhoneInfo(tech, phoneInfo).then(res => {
-            resolve(true);
-          }).catch(err => {
-            Log.l("OnSite.bootApp(): Error saving phone info to server!");
-            Log.e(err);
-            resolve(false);
-          });
-        } else {
-          resolve(true);
+          res = await this.server.savePhoneInfo(tech, phoneInfo);
+          return true;
+        } catch(err) {
+          Log.l("OnSite.bootApp(): Error saving phone info to server!");
+          Log.e(err);
+          return false;
         }
-      });
-    });
+      } else {
+        return true;
+      }
+    } catch(err) {
+      Log.l(`newLoginSetup(): Error during new login startup!`);
+      Log.e(err);
+      throw new Error(err);
+    }
   }
 
   public runAfterTranslation() {
@@ -490,116 +496,106 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     return HomePage.checkStartupStatus();
   }
 
-  public fetchTechReports():Promise<Array<any>> {
+  public async fetchTechReports():Promise<Array<any>> {
     let techid = this.ud.getCredentials().user;
-    return new Promise((resolve,reject) => {
-      this.server.getReportsForTech(techid).then((res:Array<Report>) => {
-        Log.l(`HomePage: getReportsForTech(${techid}): Success! Result:\n`, res);
-        for(let report of res) {
-          this.ud.addNewReport(report);
-        }
-        // this.ud.setWorkOrderList(res);
-        // this.techWorkOrders    = this.ud.getWorkOrderList();
-        this.techWorkOrders = this.ud.getReportList();
-        return this.server.getReportsOtherForTech(techid);
-      }).then((res:Array<ReportOther>) => {
-        for(let other of res) {
-          this.ud.addNewOtherReport(other);
-        }
-        this.otherReports      = this.ud.getReportOtherList();
-        let profile            = this.ud.getTechProfile();
-        let tech               = new Employee();
-        tech.readFromDoc(profile);
-        this.tech              = tech;
-        let now                = moment();
-        this.payrollPeriods    = this.ud.getPayrollPeriods();
-        Log.l("fetchTechReports(): Payroll periods created as:\n", this.payrollPeriods);
-        for(let period of this.payrollPeriods) {
-          for(let shift of period.shifts) {
-            // let reports = new Array<Report>();
-            // for(let report of this.techWorkOrders) {
-            //   if(report.report_date === shift.start_time.format("YYYY-MM-DD")) {
-            //     reports.push(report);
-            //   }
-            // }
-            // let otherReports = new Array<ReportOther>();
-            // for(let other of this.otherReports) {
-            //   if(other.report_date.format("YYYY-MM-DD") === shift.start_time.format("YYYY-MM-DD")) {
-            //     otherReports.push(other);
-            //   }
-            // }
-            // shift.setShiftReports(reports);
-            // shift.setOtherReports(otherReports);
-            let shiftDay     = shift.start_time.isoWeekday()      ;
-            let ppIndex      = (shiftDay + 4) % 7                 ;
-            let sites        = this.ud.getData('sites')           ;
-            let techClient   = tech.client.toUpperCase().trim()   ;
-            let techLocation = tech.location.toUpperCase().trim() ;
-            let techLocID    = tech.locID.toUpperCase().trim()    ;
-            // let techLoc2nd   = typeof tech.loc2nd === 'string' ? tech.loc2nd.toUpperCase().trim() : "";
-            let rotation     = tech.rotation && typeof tech.rotation === 'string' ? tech.rotation : "CONTN WEEK";
-            tech.rotation    = rotation;
-            innerloop:
-            for(let site of sites) {
-              let clientName   = site.client.name.toUpperCase()       ;
-              let clientFull   = site.client.fullName.toUpperCase()   ;
-              let locationName = site.location.name.toUpperCase()     ;
-              let locationFull = site.location.fullName.toUpperCase() ;
-              let locIDName    = site.locID.name.toUpperCase()        ;
-              let locIDFull    = site.locID.fullName.toUpperCase()    ;
-              if((techClient === clientName || techClient === clientFull) && (techLocation === locationName || techLocation === locationFull) && (techLocID === locIDName || techLocID === locIDFull)) {
-                let times             = site.getShiftStartTimes()                   ;
-                let shiftType         = tech.shift                                  ;
-                let shiftRotation     = tech.rotation                               ;
-                let hoursList         = site.getHoursList(shiftRotation, shiftType) ;
-                let shiftLengthString = hoursList[ppIndex]                          ;
-                let shiftLength;
-                if(isNaN(Number(shiftLengthString))) {
-                  shiftLength = shiftLengthString;
-                } else {
-                  shiftLength = Number(shiftLengthString);
-                }
-                shift.setShiftLength(shiftLength);
-                let startTimeString = times[shiftType]            ;
-                let xl              = shift.shift_id              ;
-                let startTime       = moment().fromExcel(xl)      ;
-                let hrsMins         = startTimeString.split(":")  ;
-                let hrs             = hrsMins[0]                  ;
-                let min             = hrsMins[1]                  ;
-                startTime.hours(hrs).minutes(min)                 ;
-                shift.setStartTime(startTime)                     ;
-                break innerloop;
+    let res:Array<any> = [];
+    try {
+      let tech:Employee = this.tech;
+      // let res:any = await this.server.getReportsForTech(techid);
+      res = await this.db.getReportsForTech(techid);
+      this.ud.setDataItem('reports', res);
+      Log.l(`HomePage: fetchTechReports(${techid}): Success! Result:\n`, res);
+      for(let report of res) {
+        this.ud.addNewReport(report);
+      }
+      this.techWorkOrders = this.ud.getReportList();
+      res = await this.db.getReportsOtherForTech(techid);
+      this.ud.setDataItem('otherReports', res);
+      for(let other of res) {
+        this.ud.addNewOtherReport(other);
+      }
+      this.otherReports      = this.ud.getReportOtherList();
+      // let tech               = new Employee();
+      // tech.readFromDoc(profile);
+      // this.tech              = tech;
+      let now                = moment();
+      this.payrollPeriods    = this.ud.getPayrollPeriods();
+      Log.l("fetchTechReports(): Payroll periods created as:\n", this.payrollPeriods);
+      for(let period of this.payrollPeriods) {
+        for(let shift of period.shifts) {
+          let shiftDay     = shift.start_time.isoWeekday()      ;
+          let ppIndex      = (shiftDay + 4) % 7                 ;
+          let sites        = this.ud.getData('sites')           ;
+          let techClient   = tech.client.toUpperCase().trim()   ;
+          let techLocation = tech.location.toUpperCase().trim() ;
+          let techLocID    = tech.locID.toUpperCase().trim()    ;
+          // let techLoc2nd   = typeof tech.loc2nd === 'string' ? tech.loc2nd.toUpperCase().trim() : "";
+          let rotation     = tech.rotation && typeof tech.rotation === 'string' ? tech.rotation : "CONTN WEEK";
+          tech.rotation    = rotation;
+          innerloop:
+          for(let site of sites) {
+            let clientName   = site.client.name.toUpperCase()       ;
+            let clientFull   = site.client.fullName.toUpperCase()   ;
+            let locationName = site.location.name.toUpperCase()     ;
+            let locationFull = site.location.fullName.toUpperCase() ;
+            let locIDName    = site.locID.name.toUpperCase()        ;
+            let locIDFull    = site.locID.fullName.toUpperCase()    ;
+            if((techClient === clientName || techClient === clientFull) && (techLocation === locationName || techLocation === locationFull) && (techLocID === locIDName || techLocID === locIDFull)) {
+              let times             = site.getShiftStartTimes()                   ;
+              let shiftType         = tech.shift                                  ;
+              let shiftRotation     = tech.rotation                               ;
+              let hoursList         = site.getHoursList(shiftRotation, shiftType) ;
+              let shiftLengthString = hoursList[ppIndex]                          ;
+              let shiftLength;
+              if(isNaN(Number(shiftLengthString))) {
+                shiftLength = shiftLengthString;
+              } else {
+                shiftLength = Number(shiftLengthString);
               }
+              shift.setShiftLength(shiftLength);
+              let startTimeString = times[shiftType]            ;
+              let xl              = shift.shift_id              ;
+              let startTime       = moment().fromExcel(xl)      ;
+              let hrsMins         = startTimeString.split(":")  ;
+              let hrs             = hrsMins[0]                  ;
+              let min             = hrsMins[1]                  ;
+              startTime.hours(hrs).minutes(min)                 ;
+              shift.setStartTime(startTime)                     ;
+              break innerloop;
             }
           }
         }
-        let prd = this.ud.getHomePeriod();
-        if(prd) {
-          let i = this.payrollPeriods.indexOf(prd);
-          if(i > -1) {
-            Log.l("fetchTechReports(): Found payroll period at index %d.", i);
-            this.period = this.payrollPeriods[i];
-            this.ud.setHomePeriod(this.period);
-          } else {
-            Log.l("fetchTechReports(): Payroll periods not found.");
-            this.period = prd;
-            this.ud.setHomePeriod(this.period);
-          }
+      }
+      let prd = this.ud.getHomePeriod();
+      if(prd) {
+        let i = this.payrollPeriods.indexOf(prd);
+        if(i > -1) {
+          Log.l("fetchTechReports(): Found payroll period at index %d.", i);
+          this.period = this.payrollPeriods[i];
+          this.ud.setHomePeriod(this.period);
         } else {
-          Log.l("fetchTechReports(): HomePage payroll period will be:\n", this.payrollPeriods[0]);
-          this.period = this.payrollPeriods[0];
+          Log.l("fetchTechReports(): Payroll periods not found.");
+          this.period = prd;
           this.ud.setHomePeriod(this.period);
         }
-        Log.l("fetchTechReports(): Got payroll periods and all work orders:\n", this.payrollPeriods);
-        Log.l(this.techWorkOrders);
-        Log.l(this.otherReports);
-        resolve(this.techWorkOrders);
-      }).catch((err) => {
-        Log.l(`HomePage: getReportsForTech(${techid}): Error!`);
-        Log.e(err);
-        reject(err);
-      });
-    });
+      } else {
+        Log.l("fetchTechReports(): HomePage payroll period will be:\n", this.payrollPeriods[0]);
+        this.period = this.payrollPeriods[0];
+        this.ud.setHomePeriod(this.period);
+      }
+      Log.l("fetchTechReports(): Got payroll periods and all work orders:\n", this.payrollPeriods);
+      Log.l(this.techWorkOrders);
+      Log.l(this.otherReports);
+      let rpts:Report[] = this.ud.getData('reports');
+      let othrs:ReportOther[] = this.ud.getData('otherReports');
+      Log.l(rpts);
+      Log.l(othrs);
+      return this.techWorkOrders;
+    } catch(err) {
+      Log.l(`HomePage: getReportsForTech(${techid}): Error!`);
+      Log.e(err);
+      throw new Error(err);
+    }
   }
 
   public isAuthorized() {

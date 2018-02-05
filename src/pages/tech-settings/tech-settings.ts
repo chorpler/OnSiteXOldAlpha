@@ -5,14 +5,14 @@ import { FormGroup, FormControl, Validators       } from "@angular/forms"       
 import { IonicPage, NavController, NavParams      } from 'ionic-angular'          ;
 import { ViewController                           } from 'ionic-angular'          ;
 import { TranslateService                         } from '@ngx-translate/core'    ;
-import { Log, sizeOf, isMoment, moment, Moment    } from 'onsitex-domain'         ;
-import { SESAClient, SESALocation, SESALocID, CLL } from 'onsitex-domain'         ;
+import { Log, sizeOf, isMoment, moment, Moment    } from 'domain/onsitexdomain'         ;
+import { SESAClient, SESALocation, SESALocID, CLL } from 'domain/onsitexdomain'         ;
 import { DBService                                } from 'providers/db-service'   ;
 import { UserData                                 } from 'providers/user-data'    ;
 import { AlertService                             } from 'providers/alerts'       ;
-import { Employee,Jobsite                         } from 'onsitex-domain'         ;
+import { Employee,Jobsite                         } from 'domain/onsitexdomain'         ;
 import { TabsService                              } from 'providers/tabs-service' ;
-import { Pages                                    } from 'onsitex-domain'         ;
+import { Pages                                    } from 'domain/onsitexdomain'         ;
 
 export const _matchCLL = (a:CLL, b:string):boolean => {
   let cA1 = a.name.toUpperCase();
@@ -489,70 +489,76 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
     }
   }
 
-  public onSubmit() {
+  public async onSubmit() {
     let lang = this.lang;
-    // let form            = this.techSettings.value               ;
-    let tech            = this.tech                             ;
-    let keys = ['firstName', 'lastName', 'client', 'location', 'locID', 'shift', 'shiftLength', 'shiftStartTime'];
-    let error = false;
-    let errorKey = "";
-    for(let key of keys) {
-      if(error) {
-        break
-      };
-      let value = this[key];
-      if(!value) {
-        error = true;
-        errorKey = key;
+    let spinnerID;
+    try {
+      // let form            = this.techSettings.value               ;
+      let tech            = this.tech                             ;
+      let keys = ['firstName', 'lastName', 'client', 'location', 'locID', 'shift', 'shiftLength', 'shiftStartTime'];
+      let error = false;
+      let errorKey = "";
+      for(let key of keys) {
+        if(error) {
+          break;
+        };
+        let value = this[key];
+        if(!value) {
+          error = true;
+          errorKey = key;
+        }
       }
-    }
-    if(!error) {
-      this.alert.showSpinner(lang['spinner_saving_tech_profile']) ;
-      tech.updated        = true                                  ;
-      tech.technician     = this.lastName + ', ' + this.firstName ;
-      tech.client         = this.client.fullName.toUpperCase()    ;
-      tech.location       = this.location.fullName.toUpperCase()  ;
-      tech.locID          = this.locID.name.toUpperCase()         ;
-      tech.shift          = this.shift.name                       ;
-      tech.shiftLength    = Number(this.shiftLength.name)         ;
-      tech.shiftStartTime = Number(this.shiftStartTime.name)      ;
-      tech.firstName      = this.firstName                        ;
-      tech.lastName       = this.lastName                         ;
-      this.reportMeta     = tech                                  ;
-      let site:Jobsite = this.getSiteFromInfo(this.client, this.location, this.locID);
-      if(site) {
-        this.site = site;
-      }
-      Log.l("onSubmit(): Now attempting to save tech profile:");
-      this.db.saveTechProfile(this.reportMeta).then((res) => {
+      if(!error) {
+        spinnerID = await this.alert.showSpinnerPromise(lang['spinner_saving_tech_profile']);
+        tech.updated        = true                                  ;
+        tech.technician     = this.lastName + ', ' + this.firstName ;
+        tech.client         = this.client.fullName.toUpperCase()    ;
+        tech.location       = this.location.fullName.toUpperCase()  ;
+        tech.locID          = this.locID.name.toUpperCase()         ;
+        tech.shift          = this.shift.name                       ;
+        tech.shiftLength    = Number(this.shiftLength.name)         ;
+        tech.shiftStartTime = Number(this.shiftStartTime.name)      ;
+        tech.firstName      = this.firstName                        ;
+        tech.lastName       = this.lastName                         ;
+        this.reportMeta     = tech                                  ;
+        let site:Jobsite = this.getSiteFromInfo(this.client, this.location, this.locID);
+        if(site) {
+          this.site = site;
+        }
+        Log.l("onSubmit(): Now attempting to save tech profile:");
+        let res:any = await this.db.saveTechProfile(this.reportMeta);
         Log.l("onSubmit(): Saved techProfile successfully. Now updating shift info for new site:\n", this.site);
         this.ud.updateAllShiftInfo(this.site, tech);
         this.ud.setTechUpdated(true);
         Log.l("onSubmit(): Updated all shift info successfully. Now returning from tech settings.");
         if ( this.mode === 'modal' ) {
           Log.l('Mode = ' + this.mode );
-          this.alert.hideSpinner();
+          let out = await this.alert.hideSpinnerPromise(spinnerID);
           this.viewCtrl.dismiss();
+          return true;
         } else {
           Log.l('Mode = ' + this.mode );
-          this.alert.hideSpinner();
+          let out = await this.alert.hideSpinnerPromise(spinnerID);
           this.tabServ.goToPage('OnSiteHome');
+          return true;
         }
-      }).catch((err) => {
-        Log.l("onSubmit(): Error saving techProfile!");
-        Log.e(err);
-        this.alert.showAlert(lang['error'], lang['error_saving_tech_profile'])
-      });
-    } else {
-      let title = lang['error'];
-      let text = sprintf(lang['error_blank_item'], errorKey);
-      Log.l("onSubmit(): User left form item '%s' blank.", errorKey);
-      this.alert.showAlert(title, text).catch(err => {
-        Log.l("onSubmit(): Error showing alert to user!");
-        Log.e(err);
-      });
+      } else {
+        let title = lang['error'];
+        let text = sprintf(lang['error_blank_item'], errorKey);
+        Log.l("onSubmit(): User left form item '%s' blank.", errorKey);
+        this.alert.showAlert(title, text);
+      }
+    } catch(err) {
+      Log.l("onSubmit(): Error saving techProfile!");
+      Log.e(err);
+      let out = await this.alert.showAlert(lang['error'], lang['error_saving_tech_profile'])
     }
   }
+
+  public async updateUser() {
+
+  }
+
 
   public cancel() {
     if(this.mode === 'modal') {

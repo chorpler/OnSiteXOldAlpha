@@ -60,9 +60,9 @@
   @include button-like-menu;
 }
 
-.ionic-root-nav-element {
+// .ionic-root-nav-element {
 
-}
+// }
 
 ion-content {
   &.page-content {
@@ -101,10 +101,10 @@ ion-app .fixed-content {
   margin-top: unset !important;
   display: none;
 }
-.scroll-content {
-  // margin-left: 2px;
-  // margin-right: 2px;
-}
+// .scroll-content {
+//   // margin-left: 2px;
+//   // margin-right: 2px;
+// }
 ion-app.ios ion-content > .scroll-content {
   margin-top: unset !important;
 }
@@ -178,14 +178,14 @@ ion-content {
 .loading-spinner {
   // zoom: 2;
   ion-spinner {
-    zoom: 3;
+    zoom: 1.5;
   }
 }
 
 .loading-content {
   color: black;
   background: rgba(250, 250, 250, 1.0) !important;
-  font-size: 32px !important;
+  font-size: 16px !important;
   font-weight: bold;
   text-align: center;
   white-space: pre-wrap;
@@ -285,10 +285,10 @@ ion-content {
   height: 100%;
   margin-left: auto;
   margin-right: auto;
-  min-width: 350px;
-  min-height: 350px;
-  min-width: var(--widthA);
-  min-height: var(--widthA);
+  // min-width: 350px;
+  // min-height: 350px;
+  // min-width: var(--widthA);
+  // min-height: var(--widthA);
   // margin-top: calc(15vh + 56px);
   z-index: -1;
 
@@ -313,16 +313,16 @@ ion-content {
   // zoom: calc(var(--widthA) / 700);
 }
 
-ion-app.ios .waiting-clock {
-  // margin-left: calc(50vw - 350px/2);
-  // margin-right: calc(50vw - 350px/2);
-}
+// ion-app.ios .waiting-clock {
+//   // margin-left: calc(50vw - 350px/2);
+//   // margin-right: calc(50vw - 350px/2);
+// }
 
-ion-app.ios .scroll-content {
-  // padding-bottom: 100px !important;
-  // margin-top: 10px !important;
-}
+// ion-app.ios .scroll-content {
+//   // padding-bottom: 100px !important;
+//   // margin-top: 10px !important;
+// }
 
-ion-popover.popover-template.popover-ios .scroll-content {
-  // padding-bottom: 150px;
-}
+// ion-popover.popover-template.popover-ios .scroll-content {
+//   // padding-bottom: 150px;
+// }

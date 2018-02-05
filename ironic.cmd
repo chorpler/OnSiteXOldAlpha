@@ -5,8 +5,8 @@ rd /s/q www
 echo Deleting package-lock.json...
 del package-lock.json
 REM xcopy moment.d.ts node_modules\moment\ /y
-xcopy moment.d.ts node_modules\moment /y
-xcopy pouchdb-authentication.utils.js node_modules\pouchdb-authentication\lib\utils.js /y
+REM xcopy moment.d.ts node_modules\moment /y
+REM xcopy pouchdb-authentication.utils.js node_modules\pouchdb-authentication\lib\utils.js /y
 echo Installing new plugins (if any) ...
 REM if not exist plugins\cordova-plugin-app-update
 if not exist plugins\cordova-plugin-nativestorage (

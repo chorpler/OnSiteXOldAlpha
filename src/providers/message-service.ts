@@ -1,15 +1,14 @@
 import { Injectable                    } from '@angular/core'        ;
 import { HttpClient                    } from '@angular/common/http' ;
-import { Log, isMoment, moment, Moment } from 'onsitex-domain'       ;
+import { Log, isMoment, moment, Moment } from 'domain/onsitexdomain'       ;
 import { ServerService                 } from './server-service'     ;
 import { DBService                     } from './db-service'         ;
 import { AlertService                  } from './alerts'             ;
-import { Message                       } from 'onsitex-domain'       ;
+import { Message                       } from 'domain/onsitexdomain'       ;
 import { UserData                      } from 'providers/user-data'  ;
 
 @Injectable()
 export class MessageService {
-
   public static messages:Array<Message> = [];
   public static messageInfo:any = {new_messages: 0};
   public static unread:number = 0;
@@ -28,23 +27,48 @@ export class MessageService {
     window["onsitemessageservice"] = this;
   }
 
-  public getMessages():Promise<Array<Message>> {
-    return new Promise((resolve,reject) => {
-      let messages = new Array<Message>();
-      this.server.fetchNewMessages().then(res => {
-        let messages = res;
+  public async getMessages(offline?:boolean):Promise<Array<Message>> {
+    try {
+      let messages:Array<Message> = new Array<Message>();
+      if(offline) {
+        messages = await this.db.fetchNewMessages();
         let badgeCount = 0;
         this.messages = messages;
         this.ud.setMessages(messages);
         MessageService.messageInfo.new_messages = this.getNewMessageCount();
-        resolve(messages);
-      }).catch(err => {
-        Log.l("getMessages(): Error fetching new messages.");
-        Log.e(err);
-        reject(err);
-      });
-    });
+        return messages;
+      } else {
+        messages = await this.server.fetchNewMessages();
+        let badgeCount = 0;
+        this.messages = messages;
+        this.ud.setMessages(messages);
+        MessageService.messageInfo.new_messages = this.getNewMessageCount();
+        return messages;
+      }
+    } catch(err) {
+      Log.l("getMessages(): Error fetching new messages.");
+      Log.e(err);
+      throw new Error(err);
+    }
   }
+
+  // public getMessages(offline?:boolean):Promise<Array<Message>> {
+  //   return new Promise((resolve,reject) => {
+  //     let messages = new Array<Message>();
+  //     this.server.fetchNewMessages().then(res => {
+  //       let messages = res;
+  //       let badgeCount = 0;
+  //       this.messages = messages;
+  //       this.ud.setMessages(messages);
+  //       MessageService.messageInfo.new_messages = this.getNewMessageCount();
+  //       resolve(messages);
+  //     }).catch(err => {
+  //       Log.l("getMessages(): Error fetching new messages.");
+  //       Log.e(err);
+  //       reject(err);
+  //     });
+  //   });
+  // }
 
   public static getNewMessageCount():number {
     let badges = 0;

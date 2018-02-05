@@ -1,10 +1,9 @@
 import { Component, ViewChild, OnInit,                } from '@angular/core'                     ;
 import { ComponentFactoryResolver, ViewContainerRef,  } from '@angular/core'                     ;
-import { ElementRef,                                  } from '@angular/core'                     ;
+import { ElementRef, NgZone,                          } from '@angular/core'                     ;
 import { Platform, Nav, ToastController, Events, App  } from 'ionic-angular'                     ;
 import { StatusBar                                    } from '@ionic-native/status-bar'          ;
 import { SplashScreen                                 } from '@ionic-native/splash-screen'       ;
-import { Storage                                      } from '@ionic/storage'                    ;
 import { Push, PushObject, PushOptions                } from '@ionic-native/push'                ;
 import { LocalNotifications                           } from '@ionic-native/local-notifications' ;
 import { AppVersion                                   } from '@ionic-native/app-version'         ;
@@ -12,28 +11,30 @@ import { AppUpdate                                    } from '@ionic-native/app-
 import { OpenNativeSettings                           } from '@ionic-native/open-native-settings';
 import { UserData                                     } from 'providers/user-data'               ;
 import { PouchDBService                               } from 'providers/pouchdb-service'         ;
+import { StorageService                               } from 'providers/storage-service'         ;
 import { DBService                                    } from 'providers/db-service'              ;
 import { ServerService                                } from 'providers/server-service'          ;
 import { AuthSrvcs                                    } from 'providers/auth-srvcs'              ;
 import { AlertService                                 } from 'providers/alerts'                  ;
 import { NetworkStatus                                } from 'providers/network-status'          ;
 import { GeolocService                                } from 'providers/geoloc-service'          ;
-import { Log, CONSOLE, moment, Moment                 } from 'onsitex-domain'           ;
+import { Log, CONSOLE, moment, Moment                 } from 'domain/onsitexdomain'              ;
 import { HomePage                                     } from 'pages/home/home'                   ;
 import { MessageService                               } from 'providers/message-service'         ;
 import { TabsComponent                                } from 'components/tabs/tabs'              ;
 import { Preferences                                  } from 'providers/preferences'             ;
 import { TranslateService                             } from '@ngx-translate/core'               ;
 import { SmartAudio                                   } from 'providers/smart-audio'             ;
-import { Jobsite                                      } from 'onsitex-domain'                    ;
-import { ReportOther                                  } from 'onsitex-domain'                    ;
-import { Report                                       } from 'onsitex-domain'                    ;
-import { Employee                                     } from 'onsitex-domain'                    ;
-import { Shift                                        } from 'onsitex-domain'                    ;
-import { PayrollPeriod                                } from 'onsitex-domain'                    ;
-import { Message                                      } from 'onsitex-domain'                    ;
+import { Jobsite                                      } from 'domain/onsitexdomain'              ;
+import { ReportOther                                  } from 'domain/onsitexdomain'              ;
+import { Report                                       } from 'domain/onsitexdomain'              ;
+import { Employee                                     } from 'domain/onsitexdomain'              ;
+import { Shift                                        } from 'domain/onsitexdomain'              ;
+import { PayrollPeriod                                } from 'domain/onsitexdomain'              ;
+import { Message                                      } from 'domain/onsitexdomain'              ;
 import { IonDigitKeyboardCmp, IonDigitKeyboardOptions } from 'components/ion-digit-keyboard'     ;
 import { TabsService                                  } from 'providers/tabs-service'            ;
+import { ClockComponent                               } from 'components/clock'                  ;
 // import { Sim                                          } from '@ionic-native/sim'                 ;
 
 export const homePage:string = "OnSiteHome";
@@ -44,12 +45,14 @@ export const homePage:string = "OnSiteHome";
 export class OnSiteApp implements OnInit {
   @ViewChild(Nav) nav: Nav;
   @ViewChild('tabsTarget') tabsTarget;
+  @ViewChild('clockComponent') clockComponent:ClockComponent;
 
   public title                   : string  = 'OnSiteHome'      ;
   public rootPage                : string                      ;
   public lang                    : any                         ;
   public langStrings             : Array<string> = []          ;
   public pouchOptions            : any     = { }               ;
+  public clockCaption            : string  = ""                ;
   public backButtonPressedAlready: boolean = false             ;
   public static status           : any     = {bootError: false};
   public static PREFS            : any     = new Preferences() ;
@@ -70,11 +73,12 @@ export class OnSiteApp implements OnInit {
     public toast        : ToastController          ,
     public statusBar    : StatusBar                ,
     public splashScreen : SplashScreen             ,
+    public zone         : NgZone                   ,
     public cfResolver   : ComponentFactoryResolver ,
     public net          : NetworkStatus            ,
     public push         : Push                     ,
     public localNotify  : LocalNotifications       ,
-    public storage      : Storage                  ,
+    public storage      : StorageService           ,
     public version      : AppVersion               ,
     public db           : DBService                ,
     public ud           : UserData                 ,
@@ -120,135 +124,6 @@ export class OnSiteApp implements OnInit {
       }
     });
   }
-
-  // public async initializeApp(vagueParameter:any) {
-  //   try {
-  //     Log.l("AppComponent: Initializing app...");
-  //     this.hiddenArray = this.tabServ.getHiddenArray();
-  //     this.keysetup = {visible: false, width: '100%', swipeToHide: true};
-  //     // let componentFactory = this.cfResolver.resolveComponentFactory(TabsComponent);
-  //     // let vcRef = this.tabsTarget.viewContainer;
-  //     // let tabsComponentRef = vcRef.createComponent(componentFactory);
-  //     // let instance:TabsComponent = tabsComponentRef.instance as TabsComponent;
-
-  //     Log.l("OnSite: platform ready returned:\n", vagueParameter);
-  //     let res = await this.getAppVersion();
-  //     this.platform.registerBackButtonAction(() => {
-  //       let page = this.nav && this.nav.getActive ? this.nav.getActive() : {name: "none", id: "none"};
-  //       if(page && page.id) {
-  //         let pageName = page.id;
-  //         if(pageName === 'OnSiteHome') {
-  //           if (this.backButtonPressedAlready) {
-  //             if(this.timeoutHandle) {
-  //               clearTimeout(this.timeoutHandle);
-  //             }
-  //             this.exitApp();
-  //           } else {
-  //             this.alert.showToast("Press back again to exit", 2000);
-  //             this.backButtonPressedAlready = true;
-  //             this.timeoutHandle = setTimeout(() => { this.backButtonPressedAlready = false; }, 2000)
-  //           }
-  //         } else {
-  //           if(this.nav.canGoBack()) {
-  //             this.nav.pop();
-  //           } else {
-  //             this.nav.setRoot('OnSiteHome');
-  //           }
-  //         }
-  //       };
-  //     });
-  //     this.translate.setDefaultLang('en');
-  //     this.statusBar.styleDefault();
-  //     this.splashScreen.hide();
-  //     // NetworkStatus.watchForDisconnect();
-  //     // this.pouchOptions = { adapter: 'websql', auto_compaction: true };
-  //     this.pouchOptions = { auto_compaction: true };
-  //     window["PouchDB"] = PouchDBService.PouchInit();
-  //     window["Platform"] = this.platform;
-  //     window["PouchDB" ].defaults(this.pouchOptions);
-
-  //     // window[ "PouchDB"].debug.enable('*');
-  //     window[ "PouchDB"].debug.disable('*');
-  //     window[ 'moment' ] = moment;
-  //     window[ 'Log'    ] = Log;
-  //     window[ 't1'     ] = CONSOLE.t1;
-  //     window[ 'c1'     ] = CONSOLE.c1;
-  //     this.preloadAudioFiles();
-  //     // this.checkPreferences().then(() => {
-  //     //   Log.l("OnSite.initializeApp(): Done messing with preferences, now checking login...");
-  //     //   let language = this.prefs.getLanguage();
-  //     //   this.translate.addLangs(this.appLanguages);
-  //     //   if (language !== 'en') {
-  //     //     this.translate.use(language);
-  //     //   }
-  //     this.translate.get(this.langStrings).subscribe((result) => {
-  //       this.lang = result;
-  //       let lang = this.lang;
-  //       if(!this.ud.isBootError()) {
-  //         this.bootApp().then(res => {
-  //           Log.l("OnSite.initializeApp(): bootApp() returned successfully!");
-  //           this.alert.hideSpinner(0, true).then(res => {
-  //             this.ud.showClock = false;
-  //             Log.l("OnSiteApp: boot finished, setting home page to 'OnSiteHome'.")
-  //             this.ud.setAppLoaded(true);
-  //             this.rootPage = 'OnSiteHome';
-  //             // setTimeout(() => {
-  //             //   Log.l("OnSite.bootApp(): Publishing startup event after timeout!");
-  //             //   callingClass.events.publish('startup:finished', true);
-  //             // }, 50);
-  //           })
-  //         }).catch(err => {
-  //           Log.l("OnSite.initializeApp(): bootApp() returned error.");
-  //           Log.e(err);
-  //           // let errorText = "";
-  //           // if(err && err.message) {
-  //           //   errorText = err.message;
-  //           // } else if(typeof err === 'string') {
-  //           //   errorText = err;
-  //           // }
-  //           // this.alert.showAlert("STARTUP ERROR", "Error on load, please tell developers:<br>\n<br>\n" + errorText).then(res => {
-  //           this.ud.showClock = false;
-  //           this.ud.setAppLoaded(true);
-  //           this.rootPage = 'Login';
-  //           // });
-  //         });
-  //       } else {
-  //         Log.w("OnSite.initializeApp(): app boot error has been thrown.");
-  //         // this.alert.showAlert("STARTUP ERROR", "Unknown error on loading app.").then(res => {
-  //         this.ud.setAppLoaded(true);
-  //         this.ud.showClock = false;
-  //         this.rootPage = 'Login';
-  //         // });
-  //       }
-  //     });
-  //     // return res;
-  //   } catch(err) {
-  //     Log.l("initializeApp(): Error in getAppVersion() or platform.ready()! That's bad! Or in checkPreferences or translate.get or something!");
-  //     Log.e(err);
-  //     let errorText = "";
-  //     if (err && err.message) {
-  //       errorText = err.message;
-  //     } else if (typeof err === 'string') {
-  //       errorText = err;
-  //     }
-  //     this.ud.showClock = false;
-  //     this.rootPage = 'Login';
-  //   }
-  //   // }).catch(err => {
-  //   //   Log.l("initializeApp(): Error in getAppVersion() or platform.ready()! That's bad! Or in checkPreferences or translate.get or something!");
-  //   //   Log.e(err);
-  //   //   let errorText = "";
-  //   //   if (err && err.message) {
-  //   //     errorText = err.message;
-  //   //   } else if (typeof err === 'string') {
-  //   //     errorText = err;
-  //   //   }
-  //   //   // this.alert.showAlert("ERROR", "Error starting app, please tell developers:<br>\n<br>\n" + errorText).then(res => {
-  //   //   this.ud.showClock = false;
-  //   //   this.rootPage = 'Login';
-  //   //   // });
-  //   // });
-  // }
 
   public registerListeners() {
     this.platform.registerBackButtonAction(() => {
@@ -321,16 +196,26 @@ export class OnSiteApp implements OnInit {
             if(firstBoot) {
               Log.l("OnSite.initializeApp(): bootApp() detected first boot, going to first boot page.");
               this.ud.showClock = false;
+              this.ud.setAppLoaded(true);
               this.rootPage = 'First Login';
+              return;
             } else {
               Log.l("OnSite.initializeApp(): Not first login! Booting app...");
               let res = await this.bootApp();
-              Log.l("OnSite.initializeApp(): bootApp() returned successfully!");
-              let hide = await this.alert.hideSpinner(0, true);
-              this.ud.showClock = false;
-              Log.l("OnSiteApp: boot finished, setting home page to 'OnSiteHome'.")
-              this.ud.setAppLoaded(true);
-              this.rootPage = 'OnSiteHome';
+              if(res) {
+                Log.l("OnSite.initializeApp(): bootApp() returned successfully!");
+                // let hide = await this.alert.hideSpinnerPromise();
+                this.ud.showClock = false;
+                Log.l("OnSiteApp: boot finished, setting home page to 'OnSiteHome'.")
+                this.ud.setAppLoaded(true);
+                this.rootPage = 'OnSiteHome';
+                return true;
+              } else {
+                // this.rootPage = 'Login';
+                this.goToLogin();
+                return false;
+              }
+
             }
           } else {
             Log.l("OnSite: there was a boot error");
@@ -344,8 +229,9 @@ export class OnSiteApp implements OnInit {
           } else if (typeof err === 'string') {
             errorText = err;
           }
-          this.ud.showClock = false;
-          this.rootPage = 'Login';
+          // this.ud.showClock = false;
+          // this.rootPage = 'Login';
+          this.goToLogin();
         }
         // }).catch(err => {
         //   Log.l("initializeApp(): Error in getAppVersion() or platform.ready()! That's bad! Or in checkPreferences or translate.get or something!");
@@ -368,9 +254,17 @@ export class OnSiteApp implements OnInit {
     }
   }
 
+  public goToLogin() {
+    Log.l("goToLogin(): Going to Login page.");
+    this.ud.showClock = false;
+    this.ud.setAppLoaded(true);
+    this.rootPage = 'Login';
+    return true;
+}
+
   public async onlineBoot() {
     try {
-      let out = await this.checkPreferences();
+      let out:any = await this.checkPreferences();
       Log.l("OnSite.onlineBoot(): Done messing with preferences, now checking login...");
       let language = this.prefs.getLanguage();
       if (language !== 'en') {
@@ -378,10 +272,12 @@ export class OnSiteApp implements OnInit {
       }
       out = await this.checkLogin();
       if(out === false) {
+        // this.rootPage = 'Login';
+        this.goToLogin();
         return false;
       }
       Log.l("OnSite.onlineBoot(): User passed login check. Should be fine. Checking for Android app update.");
-      // this.checkForAndroidUpdate().then(res => {
+      // let androidUpdate = await this.checkForAndroidUpdate();
       //   Log.l("OnSite.onlineBoot(): Done with Android update check. Now getting all data from server.");
         // return
       let res = await this.server.getAllData(this.tech);
@@ -392,7 +288,7 @@ export class OnSiteApp implements OnInit {
       let phoneInfo = await this.ud.checkPhoneInfo();
       let tech = this.ud.getData('employee')[0];
       let newMsgs = await this.checkForNewMessages();
-      let pp = this.ud.createPayrollPeriods(this.data.employee[0], this.prefs.getPayrollPeriodCount());
+      let pp = this.ud.createPayrollPeriods(tech, this.prefs.getPayrollPeriodCount());
       this.ud.getReportList();
       if(phoneInfo) {
         Log.l("OnSite.onlineBoot(): Got phone data:\n", phoneInfo);
@@ -442,34 +338,27 @@ export class OnSiteApp implements OnInit {
       // this.checkForAndroidUpdate().then(res => {
       //   Log.l("OnSite.offlineBoot(): Done with Android update check. Now getting all data from server.");
         // return
-      // let res = await this.server.getAllData(this.tech);
-      // this.data = res;
-      // this.ud.setData(this.data);
-      // let msgs = this.msg.getMessages();
+      let tech:Employee = await this.getEmployeeRecord();
+      this.tech = tech;
+      this.ud.setTechProfile(tech);
+      let res = await this.db.getAllData(this.tech);
+      this.data = res;
+      this.ud.setData(this.data);
+      let msgs = this.msg.getMessages(true);
       // Log.l("OnSite.offlineBoot(): Checked new messages.");
       let phoneInfo = await this.ud.checkPhoneInfo();
-      let tech = this.ud.getData('employee')[0];
+      // let tech = this.ud.getData('employee')[0];
       let newMsgs = await this.checkForNewMessages();
       let pp = this.ud.createPayrollPeriods(this.data.employee[0], this.prefs.getPayrollPeriodCount());
       this.ud.getReportList();
       if(phoneInfo) {
         Log.l("OnSite.offlineBoot(): Got phone data:\n", phoneInfo);
-        let savePhoneInfo = await this.server.savePhoneInfo(tech, phoneInfo);
+        // let savePhoneInfo = await this.server.savePhoneInfo(tech, phoneInfo);
+        let savePhoneInfo = await this.db.savePhoneInfo(tech, phoneInfo);
         return true;
       } else {
         return true;
       }
-    // }).catch(err => {
-    //   Log.l("OnSite.offlineBoot(): Error with check preferences.");
-    //   Log.e(err);
-    //   this.alert.showConfirmYesNo("STARTUP ERROR", "Caught app loading error:<br>\n<br>\n" + err.message + "<br>\n<br>\nTry to restart app?").then(res => {
-    //     if (res) {
-    //       this.ud.reloadApp();
-    //     } else {
-    //       reject(err);
-    //     }
-    //   });
-    // });
     } catch(err) {
       Log.l(`offlineBoot(): Error while checking for online status!`);
       Log.e(err);
@@ -494,10 +383,10 @@ export class OnSiteApp implements OnInit {
         } else if(result === 2) {
           /* Open phone settings */
           Log.l("bootApp(): Opening phone settings...");
-          let out = this.settings.open('settings');
-          this.timeoutHandle = setTimeout(() => {
-            this.exitApp();
-          }, 500);
+          let out = await this.settings.open('settings');
+          // this.timeoutHandle = setTimeout(() => {
+          //   this.exitApp();
+          // }, 500);
         } else {
           // out = await this.settings.open('settings');
           // Log.l("bootApp(): Back from phone settings, result:\n", out);
@@ -509,7 +398,13 @@ export class OnSiteApp implements OnInit {
         }
       } else {
         let res = await this.onlineBoot();
-        return res;
+        if(res === false) {
+          // this.rootPage = 'Login';
+          this.goToLogin();
+          return false;
+        } else {
+          return res;
+        }
       }
     } catch(err) {
       Log.l(`bootApp(): Error thrown during boot process!`);
@@ -565,18 +460,16 @@ export class OnSiteApp implements OnInit {
     }
   }
 
-  public finishStartup() {
-    return new Promise((resolve,reject) => {
-      try {
-        Log.l("finishStartup(): Now attempting to publish startup:finished event and set home page...");
-        this.events.publish('startup:finished', HomePage);
-        resolve(true);
-      } catch(err) {
-        Log.l("finishStartup(): Error publishing startup:finished event, and/or seting root page!");
-        Log.e(err);
-        reject(false);
-      }
-    });
+  public async finishStartup() {
+    try {
+      Log.l("finishStartup(): Now attempting to publish startup:finished event and set home page...");
+      this.events.publish('startup:finished', HomePage);
+      return true;
+    } catch(err) {
+      Log.l("finishStartup(): Error publishing startup:finished event, and/or seting root page!");
+      Log.e(err);
+      throw new Error(err);
+    }
   }
 
   public checkForNewMessages() {
@@ -595,6 +488,21 @@ export class OnSiteApp implements OnInit {
     }, 1000 * 60 * interval);
   }
 
+  public async getEmployeeRecord():Promise<Employee> {
+    try {
+      let dbname = this.prefs.DB.reports;
+      let db1 = this.db.addDB(dbname);
+      let employeeDoc = await db1.get('_local/techProfile');
+      let tech:Employee = new Employee();
+      tech.deserialize(employeeDoc);
+      return tech;
+    } catch(err) {
+      Log.l(`getEmployeeRecord(): Error during retrieval or reading of Employee record!`);
+      Log.e(err);
+      throw new Error(err);
+    }
+  }
+
   public showToast(text: string) {
     let toast = this.toast.create({
       message: text,
@@ -603,60 +511,52 @@ export class OnSiteApp implements OnInit {
     toast.present();
   }
 
-  public checkPreferences() {
-    return new Promise((resolve,reject) => {
-      this.storage.get('PREFS').then((storedPrefs) => {
-        let updatePrefs = storedPrefs;
-        if(storedPrefs !== null && storedPrefs !== undefined && typeof storedPrefs !== 'undefined' && storedPrefs !== 'undefined') {
-          updatePrefs = this.prefs.comparePrefs(storedPrefs);
-          this.prefs.setPrefs(updatePrefs);
-        } else {
-          updatePrefs = this.prefs.getPrefs();
-        }
-        Log.l("OnSite: Preferences at version %d, saving again.", this.prefs.USER.preferencesVersion);
-        this.storage.set('PREFS', updatePrefs).then((res) => {
-          Log.l("OnSite: Preferences stored:\n", this.prefs.getPrefs());
-          resolve(res);
-        }).catch(err => {
-          Log.l("OnSite: Error while trying to save preferences.");
-          Log.e(err);
-          reject(err);
-        });
-      }).catch((err) => {
-        Log.l("OnSite: Error while checking for stored preferences!");
-        Log.e(err);
-        reject(err);
-      });
-    });
+  public async checkPreferences() {
+    try {
+      let storedPrefs:any = await this.storage.persistentGet('PREFS');
+      let updatePrefs = storedPrefs;
+      if(storedPrefs !== null && storedPrefs !== undefined && typeof storedPrefs !== 'undefined' && storedPrefs !== 'undefined') {
+        updatePrefs = this.prefs.comparePrefs(storedPrefs);
+        this.prefs.setPrefs(updatePrefs);
+      } else {
+        updatePrefs = this.prefs.getPrefs();
+      }
+      Log.l("OnSite: Preferences at version %d, saving again.", this.prefs.USER.preferencesVersion);
+      let res:any = await this.storage.persistentSet('PREFS', updatePrefs);
+      Log.l("OnSite: Preferences stored:\n", this.prefs.getPrefs());
+      return res;
+    } catch(err) {
+      Log.l("OnSite: Error while checking for stored preferences!");
+      Log.e(err);
+      throw new Error(err);
+    }
   }
 
-  public checkLogin() {
-    return new Promise((resolve,reject) => {
-      this.auth.areCredentialsSaved().then((res) => {
-        Log.l("checkLogin(): Got saved credentials back:\n", res);
-        Log.l("... using them to log in to the server...");
-        let loginData = res;
-        let u = loginData['username'];
-        let p = loginData['password'];
-        this.ui = {u:u, p:p};
-        return this.server.loginToServer(u, p, '_session');
-      }).then((res) => {
-        Log.l("checkLogin(): Successfully logged in! Now retrieving config...");
-        let profile = this.ud.getTechProfile();
-        let tech:Employee = this.ud.getTechProfile();
-        this.tech = tech;
-        this.ud.setLoginStatus(true);
-        return this.db.getAllConfigData();
-      }).then(res => {
-        Log.l("checkLogin(): Successfully retrieved config data...");
-        this.ud.setSesaConfig(res);
-        resolve(res);
-      }).catch((err) => {
-        Log.l("checkLogin(): Error checking for saved credentials. User not authenticated properly!");
-        Log.e(err);
-        reject(err);
-      });
-    });
+  public async checkLogin():Promise<boolean> {
+    try {
+      let res:any = await this.auth.areCredentialsSaved();
+      Log.l("checkLogin(): Got saved credentials back:\n", res);
+      Log.l("... using them to log in to the server...");
+      let loginData = res;
+      let u = loginData['username'];
+      let p = loginData['password'];
+      this.ui = {u:u, p:p};
+      res = await this.server.loginToServer(u, p, '_session');
+      Log.l("checkLogin(): Successfully logged in! Now retrieving config...");
+      let profile = this.ud.getTechProfile();
+      let tech:Employee = this.ud.getTechProfile();
+      this.tech = tech;
+      this.ud.setLoginStatus(true);
+      res = await this.db.getAllConfigData();
+      Log.l("checkLogin(): Successfully retrieved config data:\n", res);
+      this.ud.setSesaConfig(res);
+      return true;
+    } catch(err) {
+      Log.l(`checkLogin(): Error during login check! User not authenticated properly.`);
+      Log.e(err);
+      return false;
+      // throw new Error(err);
+    }
   }
 
   public checkMessages() {
@@ -724,6 +624,21 @@ export class OnSiteApp implements OnInit {
 
   public exitApp() {
     this.platform.exitApp();
+  }
+
+  public async resetAllAppData() {
+    try {
+      Log.l(`resetAllAppData(): First deleting local databases...`)
+      let res:any = await this.db.deleteAllLocalDatabases();
+      Log.l(`resetAllAppData(): Deleted local databases, now clearing persistent storage...`)
+      res = await this.storage.persistentClear();
+      Log.l(`resetAllAppData(): All local databases and keys cleared.`);
+      return res;
+    } catch(err) {
+      Log.l(`resetAllAppData(): Error during reset`);
+      Log.e(err);
+      throw new Error(err);
+    }
   }
 }
 

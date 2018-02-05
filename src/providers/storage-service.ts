@@ -5,36 +5,33 @@ import { SecureStorage, SecureStorageObject } from '@ionic-native/secure-storage
 import { ServerService                      } from './server-service'             ;
 import { AlertService                       } from './alerts'                     ;
 import { UserData                           } from './user-data'                  ;
-import { Log                                } from 'onsitex-domain'               ;
+import { Log                                } from 'domain/onsitexdomain'               ;
 
 @Injectable()
 export class StorageService {
-
-  data        : any      ;
-  remote      : any      ;
-  options     : any      ;
-  docId       : string   ;
-  profileDoc  : any      ;
-  settingsDoc : any      ;
-  couchUser   : any      ;
-  userProfile : any = {} ;
-  remoteDB    : any = {} ;
-  localDB     : any = {} ;
+  public data        : any      ;
+  public remote      : any      ;
+  public options     : any      ;
+  public docId       : string   ;
+  public profileDoc  : any      ;
+  public settingsDoc : any      ;
+  public couchUser   : any      ;
+  public userProfile : any = {} ;
+  public remoteDB    : any = {} ;
+  public localDB     : any = {} ;
 
   constructor(
-    public storage      : Storage,
-    public secureStorage: SecureStorage,
-    public ud           : UserData,
-    public alert        : AlertService,
-    public platform     : Platform,
-
+    public storage       : Storage       ,
+    public secureStorage : SecureStorage ,
+    public ud            : UserData      ,
+    public alert         : AlertService  ,
+    public platform      : Platform      ,
   ) {
     window['securestorage'] = this.secureStorage;
     window['onsitestorage'] = this;
   }
 
-
-  persistentSave(key:string, value:any) {
+  public persistentSave(key:string, value:any) {
     return new Promise((resolve,reject) => {
       this.storage.set(key, value).then((res) => {
         resolve(res);
@@ -46,11 +43,11 @@ export class StorageService {
     });
   }
 
-  persistentSet(key:string, value:any) {
+  public persistentSet(key:string, value:any) {
     return this.persistentSave(key, value);
   }
 
-  persistentGet(key:string) {
+  public persistentGet(key:string) {
     return new Promise((resolve,reject) => {
       this.storage.get(key).then((value) => {
         if(value) {
@@ -58,7 +55,7 @@ export class StorageService {
           resolve(value);
         } else {
           Log.l(`persistentGet(): key '${key}' not found in local storage!`);
-          reject(false);
+          resolve(false);
         }
       }).catch((err) => {
         Log.e(`persistentGet(): Error retrieving '${key}' from local storage!`);
@@ -68,7 +65,7 @@ export class StorageService {
     });
   }
 
-  persistentDelete(key:string) {
+  public persistentDelete(key:string) {
     return new Promise((resolve,reject) => {
       this.storage.remove(key).then((value) => {
         if(value) {
@@ -85,7 +82,18 @@ export class StorageService {
     });
   }
 
-  secureSave(key:string, value:any) {
+  public async persistentClear() {
+    try {
+      let res = await this.storage.clear();
+      return res;
+    } catch(err) {
+      Log.l(`persistentClear(): Error clearing persistent storage!`);
+      Log.e(err);
+      throw new Error(err);
+    }
+  }
+
+  public secureSave(key:string, value:any) {
     return new Promise((resolve,reject) => {
       this.secureAvailable().then((ssAvailable) => {
         if(ssAvailable) {
@@ -130,11 +138,11 @@ export class StorageService {
     });
   }
 
-  secureSet(key:string, value:any) {
+  public secureSet(key:string, value:any) {
     return this.secureSave(key, value);
   }
 
-  secureGet(key:string) {
+  public secureGet(key:string) {
     return new Promise((resolve,reject) => {
       this.secureAvailable().then((ssAvailable) => {
         if(ssAvailable) {
@@ -194,7 +202,7 @@ export class StorageService {
     });
   }
 
-  secureDelete(key:string) {
+  public secureDelete(key:string) {
     return new Promise((resolve,reject) => {
       this.secureAvailable().then((ssAvailable) => {
         if(ssAvailable) {
@@ -227,7 +235,7 @@ export class StorageService {
     });
   }
 
-  secureAvailable() {
+  public secureAvailable() {
     return new Promise((resolve, reject) => {
       if(this.platform.is('cordova') && !this.platform.is('android')) {
         Log.l("SecureStorage is probably available (cordova and not Android)");

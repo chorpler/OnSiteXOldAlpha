@@ -8,30 +8,30 @@ import { UserData                                               } from 'provider
 import { AlertService                                           } from 'providers/alerts'          ;
 import { MessageService                                         } from 'providers/message-service' ;
 import { TabsService                                            } from 'providers/tabs-service'    ;
-import { Log, moment, Moment                                    } from 'onsitex-domain'            ;
-import { Tab                                                    } from 'onsitex-domain'            ;
+import { Log, moment, Moment                                    } from 'domain/onsitexdomain'            ;
+import { Tab, Pages,                                            } from 'domain/onsitexdomain'            ;
 
-export enum Pages {
-  'OnSiteHome'      = 0,
-  'ReportHistory'   = 1,
-  'Report History'  = 1,
-  'Report'          = 1,
-  'ReportView'      = 1,
-  'Report View'     = 1,
-  'Flagged Reports' = 2,
-  'Reports Flagged' = 2,
-  'ReportsFlagged'  = 2,
-  'FlaggedReports'  = 2,
-  'User'            = 3,
-  'Message List'    = 4,
-  'MessageList'     = 4,
-  'Settings'        = 5,
-  'DevPage'         = 6,
-  'Message'         = 7,
-  'Comment'         = 8,
-  'Fancy Select'    = 9,
-  'Testing'         = 10,
-}
+// export enum Pages {
+//   'OnSiteHome'      = 0,
+//   'ReportHistory'   = 1,
+//   'Report History'  = 1,
+//   'Report'          = 1,
+//   'ReportView'      = 1,
+//   'Report View'     = 1,
+//   'Flagged Reports' = 2,
+//   'Reports Flagged' = 2,
+//   'ReportsFlagged'  = 2,
+//   'FlaggedReports'  = 2,
+//   'User'            = 3,
+//   'Message List'    = 4,
+//   'MessageList'     = 4,
+//   'Settings'        = 5,
+//   'DevPage'         = 6,
+//   'Message'         = 7,
+//   'Comment'         = 8,
+//   'Fancy Select'    = 9,
+//   'Testing'         = 10,
+// }
 
 @Component({
   selector: 'onsite-tabs',

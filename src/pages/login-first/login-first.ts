@@ -1,7 +1,7 @@
 import { sprintf                                                                           } from 'sprintf-js'               ;
-import { Component, OnInit                                                                 } from '@angular/core'            ;
+import { Component, OnInit, ViewChild, ElementRef, NgZone,                                 } from '@angular/core'            ;
 import { IonicPage, NavController, NavParams, Platform, LoadingController, AlertController } from 'ionic-angular'            ;
-import { PopoverController, ViewController, Events                                         } from 'ionic-angular'            ;
+import { PopoverController, ViewController, Events,                                        } from 'ionic-angular'            ;
 import { FormGroup, FormControl, Validators                                                } from "@angular/forms"           ;
 import { AuthSrvcs                                                                         } from 'providers/auth-srvcs'     ;
 import { ServerService                                                                     } from 'providers/server-service' ;
@@ -10,10 +10,12 @@ import { AlertService                                                           
 import { NetworkStatus                                                                     } from 'providers/network-status' ;
 import { UserData                                                                          } from 'providers/user-data'      ;
 import { Preferences                                                                       } from 'providers/preferences'    ;
-import { Employee                                                                          } from 'onsitex-domain'    ;
-import { Log                                                                               } from 'onsitex-domain'  ;
+import { Employee                                                                          } from 'domain/onsitexdomain'    ;
+import { Log                                                                               } from 'domain/onsitexdomain'  ;
 import { TranslateService                                                                  } from '@ngx-translate/core'      ;
 import { TabsService                                                                       } from 'providers/tabs-service'   ;
+
+export const focusDelay = 500;
 
 @IonicPage({name: 'First Login'})
 @Component({
@@ -21,6 +23,8 @@ import { TabsService                                                            
   templateUrl: 'login-first.html',
 })
 export class LoginFirst implements OnInit {
+  @ViewChild('usernameInput') usernameInput:any;
+  @ViewChild('passwordInput') passwordInput:any;
   public title          : string  = "OnSite First Login" ;
   public static PREFS   : any     = new Preferences()    ;
   public get prefs():any { return LoginFirst.PREFS; }    ;
@@ -67,6 +71,7 @@ export class LoginFirst implements OnInit {
     public events    : Events           ,
     public tabServ   : TabsService      ,
     public translate : TranslateService ,
+    public zone      : NgZone           ,
   ) {
     window['onsitefirstlogin'] = this;
   }
@@ -77,7 +82,10 @@ export class LoginFirst implements OnInit {
 
   ngOnInit() {
     this.tabServ.disableTabs();
-    if (this.ud.isOnline) {
+    // if(this.ud.isOnline) {
+    //   this.runFromInit();
+    // }
+    if(this.ud.isAppLoaded()) {
       this.runFromInit();
     }
   }
@@ -98,6 +106,9 @@ export class LoginFirst implements OnInit {
         this.initializeForm();
         this.version = this.ud.getVersion();
         let out = await this.alert.showAlertPromise(lang['login_first_title'], lang['login_first_message']);
+        setTimeout(() => {
+          this.usernameInput.setFocus();
+        }, focusDelay);
         this.dataReady = true;
       }
     });
@@ -117,13 +128,14 @@ export class LoginFirst implements OnInit {
 
   public async loginClicked() {
     let lang = this.lang;
+    let spinnerID;
     try {
       let tmpUserData = this.LoginForm.value;
       this.username = tmpUserData.formUser;
       this.password = tmpUserData.formPass;
       // let lang = this.translate.instant('spinner_logging_in');
       if(this.ud.isOnline) {
-        this.alert.showSpinner(lang['spinner_logging_in']);
+        spinnerID = await this.alert.showSpinnerPromise(lang['spinner_logging_in']);
         Log.l("Login: Now attempting login:");
         this.auth.setUser(this.username);
         this.auth.setPassword(this.password);
@@ -145,7 +157,7 @@ export class LoginFirst implements OnInit {
         let creds = { user: this.username, pass: this.password, justLoggedIn: true};
         this.ud.storeCredentials(creds);
         this.ud.setLoginStatus(true);
-        this.alert.hideSpinner();
+        let out = await this.alert.hideSpinnerPromise(spinnerID);
         // let dbs = Object.keys(this.prefs.DB);
         let dbs = [
           'reports',
@@ -155,18 +167,23 @@ export class LoginFirst implements OnInit {
           'jobsites',
         ];
         let syncText = lang['synchronizing_db'];
+        let spinnerText = sprintf("%s:\n'%s'", syncText);
+        spinnerID = await this.alert.showSpinnerPromise(spinnerText);
+        let spinner = this.alert.getSpinner(spinnerID);
+
         for(let key of dbs) {
           // if(key === 'reports' || key === 'reports_other' || key === 'config') {
             let dbname = this.prefs.DB[key];
+            spinnerText = sprintf("%s:\n'%s'", syncText, dbname);
+            spinner.setContent(spinnerText);
             Log.l(`loginClicked(): Now replicating database '${key}': '${dbname}'`);
-            let spinnerText = sprintf("%s:\n'%s'", syncText, dbname);
-            let spinnerID = this.alert.showSpinner(spinnerText);
             this.db.addDB(dbname);
             this.server.addRDB(dbname);
-            let out = await this.server.syncFromServer(dbname);
-            let outID = await this.alert.hideSpinnerPromise();
-          // }
-        }
+            // let out = await this.server.syncFromServer(dbname);
+            let out = await this.server.syncFromServerViaSelector(dbname);
+            // }
+          }
+          let outID = await this.alert.hideSpinnerPromise(spinnerID);
         // this.events.publish('startup:finished', true);
         // this.events.publish('login:finished', true);
         // this.ud.reloadApp();

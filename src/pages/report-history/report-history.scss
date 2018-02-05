@@ -2,8 +2,8 @@ page-report-history {
   ion-navbar {
     box-shadow: 0px 3px 10px 1px rgba(140,140,140,1);
   }
-  .frozenToolbar {}
-  .reportHeaderList {}
+  // .frozenToolbar {}
+  // .reportHeaderList {}
   .scrollList {
     height: 80vh;
   }
@@ -76,9 +76,9 @@ page-report-history {
     // &:active {
     //   background: rgba(0, 0, 255, 0.3);
     // }
-    .ion-item {
-      // background-color: transparent;
-    }
+    // .ion-item {
+    //   // background-color: transparent;
+    // }
   }
   .report-wrapper {
     border: 1px dotted lightgrey;
@@ -93,21 +93,24 @@ page-report-history {
     border: 0;
     tr {
       border-bottom: 1px dotted lightgrey;
+      &:last-of-type {
+        border-bottom: 0;
+      }
       td {
         // border: 1px dotted lightgrey;
         &.label {
           font-weight: bold;
           // text-align: right;
           padding-right: 2px;
-          width: 62px;
-          min-width: 62px;
-          max-width: 62px;
+          width: 72px;
+          min-width: 72px;
+          max-width: 72px;
           white-space: pre-wrap;
           word-break: normal;
         }
-        &.data {
+        // &.data {
 
-        }
+        // }
         &.label-notes {
           font-weight: bold;
           text-align: left;
@@ -126,13 +129,13 @@ page-report-history {
             max-height: 100px;
             overflow-y: auto;
             white-space: pre-line;
-            border: 1px solid lightgrey;
+            // border: 1px solid lightgrey;
           }
         }
       }
     }
   }
-  $stripe-color-1: rgba(255,128,128,0.15);
+  $stripe-color-1: rgba(255,128,128,0.25);
   $stripe-color-2: rgba(255,255,255,1.0);
   ion-item.report-history-list-item {
     -webkit-tap-highlight-color: unset !important;

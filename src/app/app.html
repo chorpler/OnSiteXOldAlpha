@@ -1,5 +1,5 @@
 <div class="waiting-clock" *ngIf="ud.showClock" (tap)="ud.showClock=false">
-  <clock></clock>
+  <clock #clockComponent [caption]="clockCaption"></clock>
 </div>
 <ion-nav [hidden]="ud.showClock" class="ionic-root-nav-element" [(root)]="rootPage"></ion-nav>
 <onsite-tabs></onsite-tabs>

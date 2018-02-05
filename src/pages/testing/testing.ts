@@ -1,9 +1,9 @@
 import { Component, OnInit, ChangeDetectionStrategy, NgZone,                 } from '@angular/core'           ;
 import { OnDestroy, AfterViewInit,                                           } from '@angular/core'           ;
 import { IonicPage, NavController, NavParams, } from 'ionic-angular'           ;
-import { Log, isMoment, moment, Moment        } from 'onsitex-domain' ;
+import { Log, isMoment, moment, Moment        } from 'domain/onsitexdomain' ;
 import { TabsService                          } from 'providers/tabs-service'  ;
-import { Pages                                } from 'onsitex-domain'     ;
+import { Pages                                } from 'domain/onsitexdomain'     ;
 
 @IonicPage({ name: 'Testing' })
 @Component({ selector: 'page-testing',

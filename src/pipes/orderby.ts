@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform           } from '@angular/core'  ;
-import { Log, moment, Moment, isMoment } from 'onsitex-domain' ;
+import { Log, moment, Moment, isMoment } from 'domain/onsitexdomain' ;
 
 /*
  * Example use

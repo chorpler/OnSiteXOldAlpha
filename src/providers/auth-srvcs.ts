@@ -3,7 +3,7 @@ import { AlertService       } from './alerts'          ;
 import { ServerService      } from './server-service'  ;
 import { UserData           } from './user-data'       ;
 import { StorageService     } from './storage-service' ;
-import { Log                } from 'onsitex-domain'    ;
+import { Log                } from 'domain/onsitexdomain'    ;
 
 @Injectable()
 export class AuthSrvcs {

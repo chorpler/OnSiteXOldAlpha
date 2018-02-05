@@ -19,7 +19,7 @@
           <div class="date-header">
             <span class="shift-number">{{numChars[shift?.shift_number]}}</span>
             <span class="shift-date">{{shift?.getStartTime()?.format("ddd, MMM D")}}</span>
-            <span class="shift-hours">{{shift?.getShiftHours()}} hrs</span>
+            <span class="shift-hours">{{shift?.getAllShiftHours()}} hrs</span>
             <span class="document-icon block-button-like" (tap)="addNewReportForShift(shift, $event)">
               <i class="icomoon-document-add"></i>
             </span>
@@ -31,7 +31,7 @@
             <div class="report-history-reports-subcontainer" *ngIf="shift.getAllShiftReports()">
               <div class="report-and-reportother-container" *ngFor="let report of shift.getAllShiftReports(); let j=index">
                 <ion-item-sliding class="report-history-list-item-sliding" *ngIf="getReportType(report) === 'report'">
-                  <ion-item class="report-history-list-item" [class.flagged]="report && report?.flagged" (tap)="itemTapped($event, report, shift)">
+                  <ion-item class="report-history-list-item" [class.flagged]="report?.isFlagged()" (tap)="itemTapped($event, report, shift)">
                     <div class="report-wrapper">
                       <table class="report-table">
                         <tbody>
@@ -136,77 +136,77 @@
                             <td class="label">LocID</td>
                             <td class="data" >{{report?.location_id}}</td>
                           </tr> -->
-                          <div [ngSwitch]="getReportOtherType(report)">
-                            <ng-container #reportTravelContainer *ngSwitchCase="'Travel'">
-                              <tr>
-                                <td class="label">{{'travel' | translate}}</td>
-                                <td class="data" >{{report?.travel_location}}</td>
-                              </tr>
-                              <tr>
-                                <td class="label">{{'travel_hours' | translate}}</td>
-                                <td class="data" >{{report?.time}}</td>
-                              </tr>
-                            </ng-container>
-                            <ng-container #reportTrainingContainer *ngSwitchCase="'Training'">
-                              <tr>
-                                <td class="label">{{'training' | translate}}</td>
-                                <td class="data" >{{report?.training_type}}</td>
-                              </tr>
-                              <tr>
-                                <td class="label">{{'training_hours' | translate}}</td>
-                                <td class="data" >{{report?.time}}</td>
-                              </tr>
-                            </ng-container>
+                          <span *ngIf="getReportOtherType(report) === 'Travel'; then reportTravelContainer"></span>
+                          <span *ngIf="getReportOtherType(report) === 'Training'; then reportTrainingContainer"></span>
+                          <span *ngIf="getReportOtherType(report) === 'Standby' || getReportOtherType(report) === 'Standby: HB Duncan'; then reportStandbyContainer"></span>
+                          <span *ngIf="getReportOtherType(report) === 'Sick'; then reportSickContainer"></span>
+                          <span *ngIf="getReportOtherType(report) === 'Vacation'; then reportVacationContainer"></span>
+                          <span *ngIf="getReportOtherType(report) === 'Holiday'; then reportHolidayContainer"></span>
+                          <ng-template #reportTravelContainer>
+                            <tr>
+                              <td class="label">{{'travel' | translate}}</td>
+                              <td class="data" >{{report?.travel_location}}</td>
+                            </tr>
+                            <tr>
+                              <td class="label">{{'travel_hours' | translate}}</td>
+                              <td class="data" >{{report?.time}}</td>
+                            </tr>
+                          </ng-template>
 
-                            <ng-container #reportStandbyContainer *ngSwitchCase="'Standby' || 'Standby: HB Duncan'">
-                              <tr *ngIf="prefs.getShowSite()">
-                                <td class="label">Client</td>
-                                <td class="data" >{{report?.client}}</td>
-                              </tr>
-                              <tr *ngIf="prefs.getShowSite()">
-                                <td class="label">Location</td>
-                                <td class="data" >{{report?.location}}</td>
-                              </tr>
-                              <tr *ngIf="prefs.getShowSite()">
-                                <td class="label">LocID</td>
-                                <td class="data" >{{report?.location_id}}</td>
-                              </tr>
-                              <tr>
-                                <td class="label">{{'standby' | translate}}</td>
-                                <td class="data" >{{report?.time}}</td>
-                              </tr>
-                            </ng-container>
+                          <ng-template #reportTrainingContainer>
+                            <tr>
+                              <td class="label">{{'training' | translate}}</td>
+                              <td class="data" >{{report?.training_type | translate }}</td>
+                            </tr>
+                            <tr>
+                              <!-- <td class="label">{{'training_hours' | translate}}</td> -->
+                              <td class="label">{{'hours_header' | translate}}</td>
+                              <td class="data" >{{report?.time}}</td>
+                            </tr>
+                          </ng-template>
 
-                            <ng-container #reportSickContainer *ngSwitchCase="'Sick'">
-                              <tr>
-                                <td class="label">{{'sick' | translate}}</td>
-                                <td class="data" >{{report?.time}}</td>
-                              </tr>
-                            </ng-container>
+                          <ng-template #reportStandbyContainer>
+                            <tr *ngIf="prefs.getShowSite()">
+                              <td class="label">Client</td>
+                              <td class="data" >{{report?.client}}</td>
+                            </tr>
+                            <tr *ngIf="prefs.getShowSite()">
+                              <td class="label">Location</td>
+                              <td class="data" >{{report?.location}}</td>
+                            </tr>
+                            <tr *ngIf="prefs.getShowSite()">
+                              <td class="label">LocID</td>
+                              <td class="data" >{{report?.location_id}}</td>
+                            </tr>
+                            <tr>
+                              <td class="label">{{'standby' | translate}}</td>
+                              <td class="data" >{{report?.time}}</td>
+                            </tr>
+                          </ng-template>
 
-                            <ng-container #reportVacationContainer *ngSwitchCase="'Vacation'">
-                              <tr>
-                                <td class="label">{{'vacation' | translate}}</td>
-                                <td class="data" >{{report?.time}}</td>
-                              </tr>
-                            </ng-container>
+                          <ng-template #reportSickContainer>
+                            <tr>
+                              <td class="label">{{'sick' | translate}}</td>
+                              <td class="data" >{{report?.time}}</td>
+                            </tr>
+                          </ng-template>
 
-                            <ng-container #reportHolidayContainer *ngSwitchCase="'Holiday'">
-                              <tr>
-                                <td class="label">{{'holiday' | translate}}</td>
-                                <td class="data" >{{report?.time}}</td>
-                              </tr>
-                            </ng-container>
+                          <ng-template #reportVacationContainer>
+                            <tr>
+                              <td class="label">{{'vacation' | translate}}</td>
+                              <td class="data" >{{report?.time}}</td>
+                            </tr>
+                          </ng-template>
 
-                          </div>
-                          <tr class="notes">
+                          <ng-template #reportHolidayContainer>
+                            <tr>
+                              <td class="label">{{'holiday' | translate}}</td>
+                              <td class="data" >{{report?.time}}</td>
+                            </tr>
+                          </ng-template>
+                          <!-- <tr class="notes">
                             <td class="label label-notes">{{'report_label_notes' | translate}}</td>
                             <td class="data data-notes"><span class="notes-wrapper">{{report?.notes}}</span></td>
-                          </tr>
-                          <!-- <tr>
-                            <td class="data-notes" colspan="2" >
-                              <span class="notes-wrapper">{{report?.notes}}</span>
-                            </td>
                           </tr> -->
                         </tbody>
                       </table>

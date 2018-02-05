@@ -1,7 +1,7 @@
 <ion-header>
   <ion-navbar>
     <ion-buttons left>
-      <button ion-button icon-only (tap)="addFlag($event)" (press)="removeFlag($event)" [disabled]="!report">
+      <button ion-button icon-only (tap)="addFlag($event)" (press)="removeFlag($event)" [disabled]="!report" *ngIf="currentReport?.isFlagged() || ud.isDeveloper()">
         <i class="icomoon-flag-checkered flag-icon" [class.flagged]="currentReport?.isFlagged()"></i>
         <!-- <ion-icon item-end class="flag-icon" [class.flagged]="currentReport?.isFlagged()" [innerHTML]="SVGIcons.flagcheckered | safe: 'html'"></ion-icon> -->
         <!-- <ion-icon item-end class="flag-icon" [class.flagged]="false" [innerHTML]="SVGIcons.flagcheckered | safe: 'html'" *ngIf="!report"></ion-icon> -->
@@ -94,9 +94,15 @@
           <ion-label floating>{{'unit_number' | translate}}</ion-label>
           <ion-input #unitNumberInput type="text" [(ngModel)]="report.unit_number"></ion-input>
         </ion-item>
-        <ion-item class="item-with-full-select" *ngIf="site?.client?.name === 'KN' || this.show_crew_number">
+        <!-- <ion-item class="item-with-full-select" *ngIf="site?.client?.name === 'KN' || this.show_crew_number">
           <ion-label class="manual-float-label">{{'crew_number_translate' | translate}}</ion-label>
           <ion-select class="full-select" [(ngModel)]="report.crew_number" (ngModelChange)="updateCrewNumber($event)">
+            <ion-option *ngFor="let crew_number of crew_numbers" [value]="crew_number">{{crew_number}}</ion-option>
+          </ion-select>
+        </ion-item> -->
+        <ion-item *ngIf="site?.client?.name === 'KN' || this.show_crew_number">
+          <ion-label>{{'crew_number_translate' | translate}}</ion-label>
+          <ion-select class="partial-select" [(ngModel)]="report.crew_number" (ngModelChange)="updateCrewNumber($event)">
             <ion-option *ngFor="let crew_number of crew_numbers" [value]="crew_number">{{crew_number}}</ion-option>
           </ion-select>
         </ion-item>

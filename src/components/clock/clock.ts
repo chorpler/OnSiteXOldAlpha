@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, OnDestroy,       } from '@angular/core'       ;
 import { trigger, state, style, animate, transition } from '@angular/animations' ;
 import { UserData                                   } from 'providers/user-data' ;
-import { Log, moment, Moment, isMoment              } from 'onsitex-domain'      ;
+import { Log, moment, Moment, isMoment              } from 'domain/onsitexdomain'      ;
 @Component({
   selector: 'clock',
   templateUrl: 'clock.html',
@@ -20,7 +20,8 @@ import { Log, moment, Moment, isMoment              } from 'onsitex-domain'     
   // ]
 })
 export class ClockComponent implements OnInit,OnDestroy {
-  @Input('start') start: number;
+  @Input('start') start:number;
+  @Input('caption') caption:string;
   public get zoomFactor():number { return this.getZoom(); };
   // public get clockStyle():any { return {get zoom() { return this.zoomFactor; } };
   public clockStyle:any = { get zoom():number { return this.getZoom() } };
@@ -117,6 +118,14 @@ export class ClockComponent implements OnInit,OnDestroy {
   public rotate(deg:number) {
     let res = `rotate(${deg}deg)`;
     return res;
+  }
+
+  public setCaption(text:string) {
+    this.caption = text;
+  }
+
+  public clearCaption() {
+    this.caption = null;
   }
 
 }

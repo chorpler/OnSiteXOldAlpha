@@ -4,15 +4,15 @@ import { Pipe, PipeTransform                                  } from '@angular/c
 import { DomSanitizer                                         } from '@angular/platform-browser' ;
 import { IonicPage, NavController, NavParams, ModalController } from 'ionic-angular'             ;
 import { TranslateService                                     } from '@ngx-translate/core'       ;
-import { Log, isMoment, moment, Moment                        } from 'onsitex-domain'            ;
+import { Log, isMoment, moment, Moment                        } from 'domain/onsitexdomain'            ;
 import { DBService                                            } from 'providers/db-service'      ;
 import { ServerService                                        } from 'providers/server-service'  ;
 import { UserData                                             } from 'providers/user-data'       ;
 import { SafePipe                                             } from 'pipes/safe'                ;
-import { Message                                              } from 'onsitex-domain'            ;
+import { Message                                              } from 'domain/onsitexdomain'            ;
 import { MessageService                                       } from 'providers/message-service' ;
 import { TabsService                                          } from 'providers/tabs-service'    ;
-import { Pages                                                } from 'onsitex-domain'            ;
+import { Pages                                                } from 'domain/onsitexdomain'            ;
 
 export const _msgSort = (a, b) => {
   let timeA = moment(a.date);

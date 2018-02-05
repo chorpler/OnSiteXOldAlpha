@@ -1,17 +1,17 @@
-import { Injectable              } from '@angular/core'         ;
-import { HttpClient              } from '@angular/common/http'  ;
-import { PouchDBService          } from './pouchdb-service'     ;
-import { UserData                } from './user-data'           ;
-import { Preferences             } from './preferences'         ;
-import { Log, moment, Moment, oo } from 'onsitex-domain'        ;
-import { Message                 } from 'onsitex-domain'        ;
-import { Comment                 } from 'onsitex-domain'        ;
-import { Jobsite                 } from 'onsitex-domain'        ;
-import { Report                  } from 'onsitex-domain'        ;
-import { ReportOther             } from 'onsitex-domain'        ;
-import { Employee                } from 'onsitex-domain'        ;
-import { Shift                   } from 'onsitex-domain'        ;
-import { PayrollPeriod           } from 'onsitex-domain'        ;
+import { Injectable              } from '@angular/core'               ;
+import { PouchDBService          } from './pouchdb-service'           ;
+import { UserData                } from './user-data'                 ;
+import { Preferences             } from './preferences'               ;
+import { AlertService            } from './alerts'                    ;
+import { Log, moment, Moment, oo } from 'domain/onsitexdomain'        ;
+import { Message                 } from 'domain/onsitexdomain'        ;
+import { Comment                 } from 'domain/onsitexdomain'        ;
+import { Jobsite                 } from 'domain/onsitexdomain'        ;
+import { Report                  } from 'domain/onsitexdomain'        ;
+import { ReportOther             } from 'domain/onsitexdomain'        ;
+import { Employee                } from 'domain/onsitexdomain'        ;
+import { Shift                   } from 'domain/onsitexdomain'        ;
+import { PayrollPeriod           } from 'domain/onsitexdomain'        ;
 
 export const noDD     = "_\uffff";
 export const noDesign = {include_docs: true, startkey: noDD };
@@ -29,7 +29,7 @@ export class ServerService {
   public static prefs         : any    = new Preferences()                                      ;
   public prefs                : any    = ServerService.prefs                                        ;
 
-  constructor(public http:HttpClient, public ud:UserData) {
+  constructor(public alert:AlertService, public pdbService:PouchDBService, public ud:UserData) {
     Log.l("Hello ServerService provider");
     window["ServerServices"] = this;
     window["ServerService"] = ServerService;
@@ -296,39 +296,6 @@ export class ServerService {
         } else {
           resolve(res);
         }
-      // db1.get(localID).then((res) => {
-      //   Log.l("Server.saveTechProfile(): Found techProfile locally. Deleting it.");
-      //   let id = res._id;
-      //   let rev = res._rev;
-      //   return db1.remove(id, rev);
-      // }).then((res) => {
-      //   Log.l("Server.saveTechProfile(): Deleted techProfile locally. Now updating it.");
-      //   return db1.put(localProfileDoc);
-      // }).then((res) => {
-      //   Log.l("Server.saveTechProfile(): Saved local profile successfully!\n", res);
-      //   resolve(localProfileDoc);
-      // }).catch((err) => {
-      //   Log.l("Server.saveTechProfile(): Local tech profile not found. Creating.");
-      //   delete localProfileDoc._rev;
-      //   // doc.docID = doc._id;
-      //   // doc._id = localID;
-      //   // delete doc._rev;
-      //   Log.l("Server.saveTechProfile(): Attempting to save local tech profile:\n", doc);
-      //   return db1.put(localProfileDoc);
-      // }).then((res) => {
-      //   Log.l("Server.saveTechProfile(): Successfully saved local tech profile:\n", res);
-      // //   rdb1 = this.srvr.addRDB('sesa-employees');
-      // //   uid = `org.couchdb.user:${doc.username}`;
-      // //   Log.l(`saveTechProfile(): Now fetching remote copy with id '${uid}'...`);
-      // //   return rdb1.get(uid);
-      // // }).then((res) => {
-      // //   Log.l(`saveTechProfile(): Got remote user ${uid}:\n`, res);
-      // //   newProfileDoc._id = res._id;
-      // //   newProfileDoc._rev = res._rev;
-      // //   return rdb1.put(newProfileDoc);
-      // // }).then((res) => {
-      // //   Log.l("saveTechProfile(): Saved updated techProfile:\n", res);
-      //   resolve(localProfileDoc);
       }).catch((err) => {
         Log.l("Server.saveTechProfile(): Error saving to local tech profile!");
         Log.e(err);
@@ -337,111 +304,124 @@ export class ServerService {
     });
   }
 
-  public getReportsForTech(tech:string, dates?:any):Promise<Array<Report>> {
-    return new Promise((resolve, reject) => {
-      let u = this.ud.getUsername();
-      let p = this.ud.getPassword();
-      let woArray = new Array<Report>();
+  public async getReportsForTech(tech:string, dates?:any):Promise<Array<Report>> {
+    let woArray:Array<Report> = [];
+    try {
+      let u:string = this.ud.getUsername();
+      let p:string = this.ud.getPassword();
       let query:any = {selector: {username: {$eq: tech}}, limit:10000};
       Log.l("getReportsForTech(): Using database: ", this.prefs.DB.reports);
       if(dates) {
-        if(dates['start'] !== undefined && dates['end'] === undefined) {
+        if(dates.start !== undefined && dates.end === undefined) {
           query.selector = {$and: [{username: {$eq: tech}}, {rprtDate: {$eq: dates['start']}}]};
-        } else if(dates['start'] !== undefined && dates['end'] !== undefined) {
+        } else if(dates.start !== undefined && dates.end !== undefined) {
           query.selector = { $and: [{ username: { $eq: tech } }, {rprtDate: { $geq: dates['start'] }}, {rprtDate: {$leq: dates['end']}}]};
         }
       }
-      // this.loginToDatabase(u, p, this.prefs.DB.reports).then((res) => {
-        // if (res) {
-          let rdb1 = this.addRDB(this.prefs.DB.reports);
-          // rdb1.createIndex({index: {fields: ['username']}}).then((res) => {
-          //   Log.l(`getReportsForTech(): index created successfully, now running query...`);
-          //   return
-            rdb1.find(query)
-            // ;
-          // })
-          .then((res) => {
-            Log.l(`getReportsForTech(): Got reports for '${tech}':\n`, res);
-            // let woArray = new Array<Report>();
-            for(let doc of res.docs) {
-              let wo = new Report();
-              wo.readFromDoc(doc);
-              woArray.push(wo);
-            }
-            Log.l("getReportsForTech(): Returning final reports array:\n", woArray);
-            resolve(woArray);
-          }).catch((err) => {
-            Log.l(`getReportsForTech(): Error getting reports for '${tech}'.`);
-            Log.l(err);
-            resolve(woArray);
-          });
-        // } else {
-          // resolve(woArray);
-        // }
-      // }).catch((err) => {
-      //   Log.l("getReportsForTech(): Error logging in to server.");
-      //   if(err.status === 401) {
-
-      //   }
-      //   Log.e(err);
-      //   resolve(woArray);
-      });
-    // });
+      let rdb1 = this.addRDB(this.prefs.DB.reports);
+      let db1 = this.addDB(this.prefs.DB.reports);
+      let res:any = await db1.find(query);
+      Log.l(`getReportsForTech(): Got reports for '${tech}':\n`, res);
+      // let woArray = new Array<Report>();
+      for(let doc of res.docs) {
+        let wo = new Report();
+        wo.readFromDoc(doc);
+        woArray.push(wo);
+      }
+      Log.l("getReportsForTech(): Returning final reports array:\n", woArray);
+      return woArray;
+    } catch(err) {
+      Log.l(`getReportsForTech(): Error getting reports for '${tech}'.`);
+      Log.l(err);
+      return woArray;
+    }
   }
 
-  public getReportsOtherForTech(tech: string, dates?: any):Promise<Array<ReportOther>> {
-    return new Promise((resolve, reject) => {
-      let u = this.ud.getUsername();
-      let p = this.ud.getPassword();
-      // let c = this.ud.getCredentials();
-      // Log.l("getReportsForTech(): Got credentials:\n", c);
-      let query:any = { selector: { username: { $eq: tech } }, limit: 10000 };
+  public async getReportsOtherForTech(tech:string, dates?:any):Promise<Array<ReportOther>> {
+    let woArray:Array<ReportOther> = [];
+    try {
+      let u:string = this.ud.getUsername();
+      let p:string = this.ud.getPassword();
+      let query:any = {selector: {username: {$eq: tech}}, limit:10000};
       Log.l("getReportsOtherForTech(): Using database: ", this.prefs.DB.reports_other);
-      if (dates) {
-        if (dates['start'] !== undefined && dates['end'] === undefined) {
-          query.selector = { $and: [{ username: { $eq: tech } }, { rprtDate: { $eq: dates['start'] } }] };
-        } else if (dates['start'] !== undefined && dates['end'] !== undefined) {
-          query.selector = { $and: [{ username: { $eq: tech } }, { rprtDate: { $geq: dates['start'] } }, { rprtDate: { $leq: dates['end'] } }] };
+      if(dates) {
+        if(dates.start !== undefined && dates.end === undefined) {
+          query.selector = {$and: [{username: {$eq: tech}}, {report_date: {$eq: dates.start}}]};
+        } else if(dates.start !== undefined && dates.end !== undefined) {
+          query.selector = { $and: [{ username: { $eq: tech } }, {report_date: { $geq: dates.start }}, {report_date: {$leq: dates.end}}]};
         }
       }
-      let others = new Array<ReportOther>();
-      Log.l("getReportsOtherForTech(): Using database: ", this.prefs.DB.reports_other);
-      // this.loginToDatabase(u, p, this.prefs.DB.reports_other).then((res) => {
-        // if (res) {
-          let rdb1 = this.addRDB(this.prefs.DB.reports_other);
-          // let query = {selector: {username: {$eq: tech}}};
-          // rdb1.createIndex({index: {fields: ['username']}}).then((res) => {
-          //   Log.l(`getReportsOtherForTech(): index created successfully, now running query...`);
-          //   return
-            rdb1.find(query)
-            // ;
-          // })
-          .then((res) => {
-            Log.l(`getReportsOtherForTech(): Got reports for '${tech}':\n`, res);
-            // let others = new Array<ReportOther>();
-            for(let doc of res.docs) {
-              if(doc && doc._rev) {
-                let report = new ReportOther();
-                report.readFromDoc(doc);
-                others.push(report);
-              }
-            }
-            resolve(others);
-          }).catch((err) => {
-            Log.l(`getReportsOtherForTech(): Error getting reports for '${tech}'.`);
-            Log.l(err);
-            resolve(others);
-          });
-        // } else {
-          // resolve(woArray);
-        // }
-      // }).catch((err) => {
-      //   Log.l("getReportsOtherForTech(): Error logging in to server.")
-      //   Log.e(err);
-      //   resolve(woArray);
-      // });
-    });
+      let rdb1 = this.addRDB(this.prefs.DB.reports_other);
+      let res:any = await rdb1.find(query);
+      Log.l(`getReportsOtherForTech(): Got reports for '${tech}':\n`, res);
+      // let woArray = new Array<Report>();
+      for(let doc of res.docs) {
+        let wo = new ReportOther();
+        wo.readFromDoc(doc);
+        woArray.push(wo);
+      }
+      Log.l("getReportsOtherForTech(): Returning final reports array:\n", woArray);
+      return woArray;
+    } catch(err) {
+      Log.l(`getReportsOtherForTech(): Error getting reports for '${tech}'.`);
+      Log.l(err);
+      return woArray;
+    }
   }
+
+  // public getReportsOtherForTech(tech: string, dates?: any):Promise<Array<ReportOther>> {
+  //   return new Promise((resolve, reject) => {
+  //     let u = this.ud.getUsername();
+  //     let p = this.ud.getPassword();
+  //     // let c = this.ud.getCredentials();
+  //     // Log.l("getReportsForTech(): Got credentials:\n", c);
+  //     let query:any = { selector: { username: { $eq: tech } }, limit: 10000 };
+  //     Log.l("getReportsOtherForTech(): Using database: ", this.prefs.DB.reports_other);
+  //     if (dates) {
+  //       if (dates['start'] !== undefined && dates['end'] === undefined) {
+  //         query.selector = { $and: [{ username: { $eq: tech } }, { rprtDate: { $eq: dates['start'] } }] };
+  //       } else if (dates['start'] !== undefined && dates['end'] !== undefined) {
+  //         query.selector = { $and: [{ username: { $eq: tech } }, { rprtDate: { $geq: dates['start'] } }, { rprtDate: { $leq: dates['end'] } }] };
+  //       }
+  //     }
+  //     let others = new Array<ReportOther>();
+  //     Log.l("getReportsOtherForTech(): Using database: ", this.prefs.DB.reports_other);
+  //     // this.loginToDatabase(u, p, this.prefs.DB.reports_other).then((res) => {
+  //       // if (res) {
+  //         let rdb1 = this.addRDB(this.prefs.DB.reports_other);
+  //         // let query = {selector: {username: {$eq: tech}}};
+  //         // rdb1.createIndex({index: {fields: ['username']}}).then((res) => {
+  //         //   Log.l(`getReportsOtherForTech(): index created successfully, now running query...`);
+  //         //   return
+  //           rdb1.find(query)
+  //           // ;
+  //         // })
+  //         .then((res) => {
+  //           Log.l(`getReportsOtherForTech(): Got reports for '${tech}':\n`, res);
+  //           // let others = new Array<ReportOther>();
+  //           for(let doc of res.docs) {
+  //             if(doc && doc._rev) {
+  //               let report = new ReportOther();
+  //               report.readFromDoc(doc);
+  //               others.push(report);
+  //             }
+  //           }
+  //           resolve(others);
+  //         }).catch((err) => {
+  //           Log.l(`getReportsOtherForTech(): Error getting reports for '${tech}'.`);
+  //           Log.l(err);
+  //           resolve(others);
+  //         });
+  //       // } else {
+  //         // resolve(woArray);
+  //       // }
+  //     // }).catch((err) => {
+  //     //   Log.l("getReportsOtherForTech(): Error logging in to server.")
+  //     //   Log.e(err);
+  //     //   resolve(woArray);
+  //     // });
+  //   });
+  // }
 
   public getReports(user: string) {
     return new Promise((resolve,reject) => {
@@ -534,34 +514,114 @@ export class ServerService {
     });
   }
 
-  public syncFromServer(dbname:string) {
-    Log.l(`syncFromServer(): About to attempt replication of remote->'${dbname}' with options:\n`, this.prefs.SERVER.repopts);
-    // let ev2 = function(b) { Log.l(b.status); Log.l(b);};
-    let db1 = this.addDB(dbname);
-    let db2 = this.addRDB(dbname);
-    Log.l(db1);
-    Log.l(db2);
-    let rdbURL = this.getBaseURL() + "/" + dbname;
-    let opts:any = { live: false, retry: false };
-    let u = this.ud.getUsername(), p = this.ud.getPassword();
-    return new Promise((resolve, reject) => {
-      this.loginToDatabase(u, p, dbname).then(res => {
-        Log.l(`syncFromServer(): Successfully logged in to remote->'${dbname}'`);
-        if(dbname === 'aaa001_reports_ver101100' || dbname === 'sesa-reports-other') {
-          opts.filter = 'ref/forTech';
-          opts.query_params = { username: u };
-        }
-        return db1.replicate.from(db2, opts).on('change', (info) => { Log.l(`Replication '${dbname}': Change event:\n`, info);}).on('complete', (info) => { Log.l(`Replication '${dbname}': Complete event:\n`, info);});
-      }).then((res) => {
-        Log.l(`syncFromServer(): Successfully replicated remote->'${dbname}'`);
-        Log.l(res);
-        resolve(res);
-      }).catch((err) => {
-        Log.l(`syncFromServer(): Failure replicating remote->'${dbname}'`);
-        Log.e(err);
-        reject(err);
+  public async syncFromServer(dbname:string, spinnerID?:string) {
+    try {
+      Log.l(`syncFromServer(): About to attempt replication of remote->'${dbname}' with options:\n`, this.prefs.SERVER.repopts);
+      // let ev2 = function(b) { Log.l(b.status); Log.l(b);};
+      let db1 = this.addDB(dbname);
+      let db2 = this.addRDB(dbname);
+      Log.l(db1);
+      Log.l(db2);
+      let rdbURL = this.getBaseURL() + "/" + dbname;
+      let batch_size = 100;
+      let pendingMax = 0;
+      let opts:any = { live: false, retry: false, batch_size: batch_size };
+      let u = this.ud.getUsername(), p = this.ud.getPassword();
+      let res:any = await this.loginToDatabase(u, p, dbname);
+      Log.l(`syncFromServer(): Successfully logged in to remote->'${dbname}'`);
+      if(dbname === 'reports_ver101100' || dbname === 'sesa-reports-other' || dbname === 'aaa001_reports_ver101100') {
+        let now = moment();
+        let startDate = moment(now).subtract(5, 'weeks');
+        opts.filter = 'ref/forTechDate';
+        opts.query_params = { username: u, start: startDate.format("YYYY-MM-DD"), end: now.format("YYYY-MM-DD") };
+      } else if(dbname === 'sesa-scheduling') {
+        let now = moment();
+        let fromDate = moment(now).subtract(4, 'weeks');
+        opts.filter = 'ref/allRecent';
+        opts.query_params = { fromDate: fromDate.format("YYYY-MM-DD"), toDate: now.format("YYYY-MM-DD") };
+      }
+      Log.l(`syncFromServer(): Now replicating '${dbname}' with options:\n`, opts);
+      res = await db1.replicate.from(db2, opts).on('change', (info) => {
+        Log.l(`Replication '${dbname}': Change event:\n`, info);
+        let progress = this.getProgress(info.pending);
+        Log.l(`PROGRESS: '${progress}'`);
+      }).on('complete', (info) => {
+        Log.l(`Replication '${dbname}': Complete event:\n`, info);
       });
-    });
+      Log.l(`syncFromServer(): Successfully replicated remote->'${dbname}'`);
+      Log.l(res);
+      return res;
+    } catch(err) {
+      Log.l(`syncFromServer(): Failure replicating remote->'${dbname}'`);
+      Log.e(err);
+      throw new Error(err);
+    }
+  }
+
+  public async syncFromServerViaSelector(dbname:string, spinnerID?:string) {
+    try {
+      Log.l(`syncFromServerViaSelector(): About to attempt replication of remote->'${dbname}' with options:\n`, this.prefs.SERVER.repopts);
+      // let ev2 = function(b) { Log.l(b.status); Log.l(b);};
+      let db1 = this.addDB(dbname);
+      let db2 = this.addRDB(dbname);
+      Log.l(db1);
+      Log.l(db2);
+      let rdbURL = this.getBaseURL() + "/" + dbname;
+      let batch_size = 1000;
+      // let batch_size = 1;
+      let pendingMax = 0;
+      let opts:any = { live: false, retry: false, batch_size: batch_size };
+      let u = this.ud.getUsername(), p = this.ud.getPassword();
+      let res:any = await this.loginToDatabase(u, p, dbname);
+      Log.l(`syncFromServerViaSelector(): Successfully logged in to remote->'${dbname}'`);
+      if(dbname === 'reports_ver101100' || dbname === 'sesa-reports-other' || dbname === 'aaa001_reports_ver101100') {
+        // let now = moment();
+        // let startDate = moment(now).subtract(5, 'weeks');
+        // opts.filter = 'ref/forTechDate';
+        // opts.query_params = { username: u, start: startDate.format("YYYY-MM-DD"), end: now.format("YYYY-MM-DD") };
+        let username:string = this.ud.getUsername();
+        // let query = {selector: { username: {$eq: username}}, limit:10000};
+        let query = { "username": username };
+        opts.selector = query;
+      } else if(dbname === 'sesa-scheduling') {
+        let now = moment();
+        let fromDate = moment(now).subtract(4, 'weeks');
+        opts.filter = 'ref/allRecent';
+        opts.query_params = { fromDate: fromDate.format("YYYY-MM-DD"), toDate: now.format("YYYY-MM-DD") };
+      }
+      Log.l(`syncFromServerViaSelector(): Now replicating '${dbname}' with options:\n`, opts);
+      res = await db1.replicate.from(db2, opts).on('change', (info) => {
+        Log.l(`Replication '${dbname}': Change event:\n`, info);
+        let progress = this.getProgress(info.pending);
+        Log.l(`PROGRESS: '${progress}'`);
+      }).on('complete', (info) => {
+        Log.l(`Replication '${dbname}': Complete event:\n`, info);
+      });
+      Log.l(`syncFromServerViaSelector(): Successfully replicated remote->'${dbname}'`);
+      Log.l(res);
+      return res;
+    } catch(err) {
+      Log.l(`syncFromServerViaSelector(): Failure replicating remote->'${dbname}'`);
+      Log.e(err);
+      throw new Error(err);
+    }
+  }
+
+  public getProgress(pending:any, maxPending?:number, batchSize?:number) {
+    let progress;
+    let pendingMax = maxPending || 1;
+    let batch_size = batchSize || 100;
+    // pendingMax = pendingMax < pending ? pending + batch_size : pendingMax;
+    pendingMax = pendingMax < pending ? pending : pendingMax;
+    if(pendingMax > 0) {
+      progress = 1 - (pending / pendingMax);
+      if(pending === 0) {
+        pendingMax = 0;
+      }
+    } else {
+      progress = 1; // 100%
+    }
+    return progress;
   }
 
   public fetchNewMessages():Promise<Array<Message>> {
@@ -791,84 +851,90 @@ export class ServerService {
     });
   }
 
-  public syncReportsFromServer() {
+  public async syncReportsFromServer() {
     Log.l(`syncReportsFromServer(): Starting up...`);
-    let dbname = this.prefs.getDB().reports;
-    return new Promise((resolve, reject) => {
-      let db1 = this.addDB(dbname);
-      let db2 = this.addRDB(dbname);
-      let user = this.ud.getUsername();
-      db2.replicate.to(db1, {
-        filter: 'ref/forTech',
-        query_params: { username: user }
-      }).then(res => {
-        Log.l("syncReportsFromServer(): Successfully replicated filtered reports from server.\n", res);
-        dbname = this.prefs.getDB().reports_other;
-        db1 = this.addDB(dbname);
-        db2 = this.addRDB(dbname);
-        return db2.replicate.to(db1, {
-          filter: 'ref/forTech',
-          query_params: { username: user }
-        });
-      }).then(res => {
-        Log.l("syncReportsFromServer(): Successfully replicated filtered ReportOthers from server.\n", res);
-        resolve(res);
-      }).catch(err => {
-        Log.l("syncReportsFromServer(): Error during replication!");
-        Log.e(err);
-        reject(err);
-      });
-    });
+    let reports = this.prefs.DB.reports;
+    let reports_other = this.prefs.DB.reports_other;
+    Log.l(`syncReportsFromServer(): About to sync from '${reports}'...`);
+    let res:any = await this.syncFromServerViaSelector(reports);
+    Log.l(`syncReportsFromServer(): Done syncing reports, result:\n`, res);
+    Log.l(`syncReportsFromServer(): Now syncing ReportOther db '${reports_other}'...`);
+    res = await this.syncFromServerViaSelector(reports_other);
+    Log.l(`syncReportsFromServer(): Done syncing ReportOther, result:\n`, res);
+    // let dbname = this.prefs.getDB().reports;
+    // try {
+    //   let db1 = this.addDB(dbname);
+    //   let db2 = this.addRDB(dbname);
+    //   let user = this.ud.getUsername();
+    //   let now = moment();
+    //   let startDate = moment(now).subtract(5, 'weeks');
+    //   let res:any = await db2.replicate.to(db1, {
+    //     filter       : 'ref/forTechDate',
+    //     query_params : { username: user, start: startDate.format("YYYY-MM-DD"), end: now.format("YYYY-MM-DD") }
+    //   });
+    //   Log.l("syncReportsFromServer(): Successfully replicated filtered reports from server.\n", res);
+    //   dbname = this.prefs.getDB().reports_other;
+    //   db1 = this.addDB(dbname);
+    //   db2 = this.addRDB(dbname);
+    //   res = await db2.replicate.to(db1, {
+    //     filter: 'ref/forTechDate',
+    //     query_params : { username: user, start: startDate.format("YYYY-MM-DD"), end: now.format("YYYY-MM-DD") }
+    //   });
+    //   Log.l("syncReportsFromServer(): Successfully replicated filtered ReportOthers from server.\n", res);
+    //   return res;
+    // } catch(err) {
+    //   Log.l("syncReportsFromServer(): Error during replication!");
+    //   Log.e(err);
+    //   throw new Error(err);
+    // }
   }
 
-  public getAllData(tech:Employee):Promise<any> {
-    return new Promise((resolve, reject) => {
+  public async getAllData(tech:Employee):Promise<any> {
+    try {
       let data = { employee: [], sites: [], reports: [], otherReports: [], payrollPeriods: [], shifts: [], messages: [], config: {} };
       let username = tech.getUsername();
       data.employee.push(tech);
-      this.syncReportsFromServer().then(res => {
-        return this.getReportsForTech(username);
-      }).then(res => {
-        for (let doc of res) {
-          let report = new Report();
-          report.readFromDoc(doc);
-          data.reports.push(report);
-        }
-        return this.getReportsOtherForTech(username);
-      }).then(res => {
-        for(let doc of res) {
-          let other = new ReportOther();
-          other.readFromDoc(doc);
-          data.otherReports.push(other);
-        }
-        return this.getJobsites();
-      }).then(res => {
-        for (let doc of res) {
-          let site = new Jobsite();
-          site.readFromDoc(doc);
-          data.sites.push(site);
-        }
-        return this.getMessages();
-      }).then(res => {
-        for(let doc of res) {
-          let msg = new Message();
-          msg.readFromDoc(doc);
-          data.messages.push(msg);
-        }
-        return this.getAllConfigData();
-      }).then(res => {
-        let keys = Object.keys(res);
-        for(let key of keys) {
-          data.config[key] = res[key];
-        }
-        Log.l("getAllData(): Success, final data to be returned is:\n", data);
-        resolve(data);
-      }).catch(err => {
-        Log.l("getAllData(): Error retrieving all data!");
-        Log.e(err);
-        reject(err);
-      })
-    });
+      let res:any = await this.syncReportsFromServer();
+      res = await this.getReportsForTech(username);
+      data.reports = res;
+      // for(let doc of res) {
+      //   let report = new Report();
+      //   report.readFromDoc(doc);
+      //   data.reports.push(report);
+      // }
+      res = await this.getReportsOtherForTech(username);
+      // for(let doc of res) {
+      //   let other = new ReportOther();
+      //   other.readFromDoc(doc);
+      //   data.otherReports.push(other);
+      // }
+      data.otherReports = res;
+      res = await this.getJobsites();
+      data.sites = res;
+      // Log.l()
+      // for(let doc of res) {
+      //   let site = new Jobsite();
+      //   site.readFromDoc(doc);
+      //   data.sites.push(site);
+      // }
+      res = await this.getMessages();
+      for(let doc of res) {
+        let msg = new Message();
+        msg.readFromDoc(doc);
+        data.messages.push(msg);
+      }
+      res = await this.getAllConfigData();
+      let keys = Object.keys(res);
+      for(let key of keys) {
+        data.config[key] = res[key];
+      }
+      Log.l("getAllData(): Success, final data to be returned is:\n", data);
+      return data;
+    } catch(err) {
+      Log.l(`getAllData(): Error retrieving all data!`);
+      Log.e(err);
+      throw new Error(err);
+    }
   }
 
   public savePhoneInfo(tech:Employee, data:any) {

@@ -12,14 +12,14 @@
 			</ion-item>
 			<ion-item>
 				<ion-label floating> {{"username" | translate}} </ion-label>
-				<ion-input type="email" formControlName="formUser" [class.invalid]="!LoginForm.controls.formUser.valid && (LoginForm.controls.formUser.dirty || submitAttempt)"></ion-input>
+				<ion-input #usernameInput type="email" formControlName="formUser" [class.invalid]="!LoginForm.controls.formUser.valid && (LoginForm.controls.formUser.dirty || submitAttempt)"></ion-input>
 			</ion-item>
 			<ion-item *ngIf="(!LoginForm.controls.formUser.valid && (LoginForm.controls.formUser.dirty || submitAttempt))">
 				<p> {{"username_error" | translate }} </p>
 			</ion-item>
 			<ion-item>
 				<ion-label floating> {{"password" | translate}} </ion-label>
-				<ion-input type="password" formControlName="formPass" [class.invalid]="!LoginForm.controls.formPass.valid && (LoginForm.controls.formPass.dirty || submitAttempt)"></ion-input>
+				<ion-input #passwordInput type="password" formControlName="formPass" [class.invalid]="!LoginForm.controls.formPass.valid && (LoginForm.controls.formPass.dirty || submitAttempt)"></ion-input>
 			</ion-item>
 			<ion-item *ngIf="(!LoginForm.controls.formPass.valid && (LoginForm.controls.formPass.dirty || submitAttempt))">
 				<p> {{"password_error" | translate}} </p>
