@@ -184,7 +184,12 @@ export class AlertService {
     try {
       let spinners = this.spinners;
       Log.l("clearSpinners(): called, spinner array is:\n", spinners);
-      for(let [id, spinner] of spinners) {
+      let keys = spinners.keys();
+      for(let i in keys) {
+        let key = keys[i];
+        let entry = spinners.get(key);
+        let id = entry[0];
+        let spinner = entry[1];
         try {
           let res:any = await spinner.dismiss();
           spinners.delete(id);

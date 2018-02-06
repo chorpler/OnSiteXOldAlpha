@@ -6,6 +6,7 @@ import * as pdbFind     from 'pouchdb-find'           ;
 // var pdbFind = require('pouchdb-find');
 import * as pdbUpsert   from 'pouchdb-upsert'         ;
 import * as pdbAllDBs   from 'pouchdb-all-dbs'        ;
+import * as pdbSQLite   from 'pouchdb-adapter-cordova-sqlite';
 import { Injectable   } from '@angular/core'          ;
 import { Platform     } from 'ionic-angular'          ;
 import { Log          } from 'domain/onsitexdomain'   ;
@@ -13,7 +14,7 @@ import { Preferences  } from './preferences'          ;
 
 @Injectable()
 export class PouchDBService {
-  public static StaticPouchDB : any = PouchDB.default;
+  public static StaticPouchDB : any = (PouchDB as any).default;
   public static working       : boolean       = false                                        ;
   public static initialized   : boolean       = false                                        ;
   public static pdb           : any           = new Map()                                    ;
@@ -24,12 +25,14 @@ export class PouchDBService {
   constructor(public platform:Platform) {
     Log.l('Hello PouchDBService Provider');
     window['Pouch'] = PouchDB;
-    window['PouchDB'] = PouchDB.default;
+    window['PouchDB'] = (PouchDB as any).default;
     window['PouchDBFind'] = pdbFind;
     window['PDBAuth'] = PDBAuth;
+    window['PDBSqlite'] = pdbSQLite;
     let pdbauth:any = (PDBAuth as any).default;
-    let pouchdb = PouchDB.default;
+    let pouchdb = (PouchDB as any).default;
     // let pouchdb = PouchDB;
+    pouchdb.plugin(pdbSQLite);
     pouchdb.plugin(pdbUpsert);
     pouchdb.plugin(pdbauth);
     pouchdb.plugin(pdbFind.default);
@@ -44,7 +47,7 @@ export class PouchDBService {
   public static PouchInit() {
     // if (!PouchDBService.initialized && PouchDB && PouchDB.plugin !== undefined) {
     if (!PouchDBService.initialized) {
-      let pouchdb = PouchDB.default;
+      let pouchdb = (PouchDB as any).default;
       let pdbauth:any = (PDBAuth as any).default;
       pouchdb.plugin(pdbUpsert);
       pouchdb.plugin(pdbauth);
@@ -90,8 +93,9 @@ export class PouchDBService {
   public static addDB(dbname: string) {
     let dbmap = PouchDBService.pdb;
     // let opts = {adapter: 'websql'};
-    let opts = {adapter: 'idb'};
+    // let opts = {adapter: 'idb'};
     // let opts = {adapter: 'cordova-sqlite'};
+    let opts = {};
     if(dbmap.has(dbname)) {
       // Log.l(`addDB(): Not adding local database ${dbname} because it already exists.`);
       return dbmap.get(dbname);

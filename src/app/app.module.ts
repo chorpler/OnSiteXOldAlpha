@@ -2,7 +2,7 @@
 // import { createJSON5TranslateLoader                              } from 'config/customTranslateLoader'         ;
 // import { TabsComponentModule                                     } from 'components/tabs/tabs.module'          ;
 // import { Sim                                                     } from '@ionic-native/Sim'                    ;
-// import { ClockComponentModule                                    } from 'components/clock/clock.module'        ;
+// import { ClockComponent                                          } from 'components/clock/clock'               ;
 // import { MultiPickerModule                                       } from 'ion-multi-picker'                     ;
 import 'intl'                                                                                                  ;
 import 'intl/locale-data/jsonp/en'                                                                             ;
@@ -16,6 +16,7 @@ import { IonicApp, IonicErrorHandler, IonicModule, NavController } from 'ionic-a
 import { IonicPageModule                                         } from 'ionic-angular'                        ;
 import { LoadingController, AlertController                      } from 'ionic-angular'                        ;
 import { SplashScreen                                            } from '@ionic-native/splash-screen'          ;
+import { ClockComponentModule                                    } from 'components/clock/clock.module'        ;
 import { StatusBar                                               } from '@ionic-native/status-bar'             ;
 import { IonicStorageModule                                      } from '@ionic/storage'                       ;
 import { SecureStorage, SecureStorageObject                      } from '@ionic-native/secure-storage'         ;
@@ -53,18 +54,17 @@ import { MessageService                                          } from 'provide
 import { CommentService                                          } from 'providers/comment-service'            ;
 import { TabsService                                             } from 'providers/tabs-service'               ;
 import { IonDigitKeyboard                                        } from 'components/ion-digit-keyboard'        ;
-import { ClockComponent                                          } from 'components/clock/clock'               ;
 
 @NgModule({
   declarations: [
     OnSiteApp,
     TabsComponent,
-    ClockComponent,
+    // ClockComponent,
   ],
   entryComponents: [
     OnSiteApp,
     TabsComponent,
-    ClockComponent,
+    // ClockComponent,
   ],
   bootstrap: [
     IonicApp,
@@ -90,7 +90,7 @@ import { ClockComponent                                          } from 'compone
     }),
     IonDigitKeyboard,
     PipesModule,
-    // ClockComponentModule,
+    ClockComponentModule,
     // MultiPickerModule,
   ],
 
