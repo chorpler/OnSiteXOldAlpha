@@ -574,22 +574,21 @@ export class OnSiteApp implements OnInit {
     this.audio.preload('laugh'            , 'assets/audio/nospoilers8.mp3')  ;
   }
 
-  public getAppVersion() {
-    return new Promise((resolve) => {
+  public async getAppVersion() {
+    try {
       if (this.platform.is('cordova')) {
-        return this.version.getVersionNumber().then(res => {
-          this.ud.appdata.version = res;
-          resolve(true);
-        }).catch(err => {
-          Log.l("Error getting app version!");
-          Log.e(err);
-          resolve(false);
-        });
+        let res:any = await this.version.getVersionNumber();
+        this.ud.appdata.version = res;
+        return true;
       } else {
         this.ud.appdata.version += "(b)";
-        resolve(true);
+        return false;
       }
-    });
+    } catch(err) {
+      Log.l(`getAppVersion(): Error getting app version!`);
+      Log.e(err);
+      return false;
+    }
   }
 
   public checkForAndroidUpdate() {

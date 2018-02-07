@@ -12,23 +12,23 @@ import { Pipe, PipeTransform                              } from '@angular/core'
 import { Platform, IonicPage, NavParams, Events           } from 'ionic-angular'             ;
 import { NavController, ToastController, Content          } from 'ionic-angular'             ;
 import { ModalController,ViewController,PopoverController } from 'ionic-angular'             ;
-import { Log, moment, isMoment, Moment                    } from 'domain/onsitexdomain'            ;
+import { Log, moment, isMoment, Moment                    } from 'domain/onsitexdomain'      ;
 import { DBService                                        } from 'providers/db-service'      ;
 import { AuthSrvcs                                        } from 'providers/auth-srvcs'      ;
 import { ServerService                                    } from 'providers/server-service'  ;
 import { AlertService                                     } from 'providers/alerts'          ;
 import { UserData                                         } from 'providers/user-data'       ;
-import { Report                                           } from 'domain/onsitexdomain'            ;
-import { ReportOther                                      } from 'domain/onsitexdomain'            ;
-import { Shift                                            } from 'domain/onsitexdomain'            ;
-import { PayrollPeriod                                    } from 'domain/onsitexdomain'            ;
-import { Employee                                         } from 'domain/onsitexdomain'            ;
+import { Report                                           } from 'domain/onsitexdomain'      ;
+import { ReportOther                                      } from 'domain/onsitexdomain'      ;
+import { Shift                                            } from 'domain/onsitexdomain'      ;
+import { PayrollPeriod                                    } from 'domain/onsitexdomain'      ;
+import { Employee                                         } from 'domain/onsitexdomain'      ;
 import { TabsService                                      } from 'providers/tabs-service'    ;
 import { Preferences                                      } from 'providers/preferences'     ;
 import { SafePipe                                         } from 'pipes/safe'                ;
 import { SmartAudio                                       } from 'providers/smart-audio'     ;
-import { STRINGS                                          } from 'domain/onsitexdomain'            ;
-import { Icons, Pages                                     } from 'domain/onsitexdomain'            ;
+import { STRINGS                                          } from 'domain/onsitexdomain'      ;
+import { Icons, Pages                                     } from 'domain/onsitexdomain'      ;
 
 // enum Icons {
 //   'box-check-no'   = 0,
@@ -130,23 +130,24 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
   public scrollEndSub                : Subscription                                   ;
   public legend                      : Array<Array<string>> = []                      ;
 
-  constructor(public http        : HttpClient,
-              public platform    : Platform,
-              public navCtrl     : NavController,
-              public modalCtrl   : ModalController,
-              public viewCtrl    : ViewController ,
-              public popoverCtrl : PopoverController,
-              public authService : AuthSrvcs,
-              public navParams   : NavParams,
-              public server      : ServerService,
-              public ud          : UserData,
-              public db          : DBService,
-              public events      : Events,
-              public tabServ     : TabsService,
-              public alert       : AlertService,
-              public zone        : NgZone,
-              public translate   : TranslateService,
-              public audio       : SmartAudio,
+  constructor(
+    public http        : HttpClient        ,
+    public platform    : Platform          ,
+    public navCtrl     : NavController     ,
+    public modalCtrl   : ModalController   ,
+    public viewCtrl    : ViewController    ,
+    public popoverCtrl : PopoverController ,
+    public authService : AuthSrvcs         ,
+    public navParams   : NavParams         ,
+    public server      : ServerService     ,
+    public ud          : UserData          ,
+    public db          : DBService         ,
+    public events      : Events            ,
+    public tabServ     : TabsService       ,
+    public alert       : AlertService      ,
+    public zone        : NgZone            ,
+    public translate   : TranslateService  ,
+    public audio       : SmartAudio        ,
   ) {
     window["onsitehome"] = window["onsitehome"] ? window["onsitehome"] : this;
     Log.l("HomePage: Hi, I'm the HomePage class constructor!");
@@ -212,38 +213,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
   }
 
   public constructorShit() {
-    // if(this.navParams.get('justLoggedIn') !== undefined) { this.justLoggedIn = this.navParams.get('justLoggedIn');}
-    // HomePage.EVENTS = events;
-    // var caller = this;
-    // this.endWatchScroll();
     this.dataReady = false;
-    // if(!this.ud.isAppLoaded()) {
-    //   Log.l("HOMEPAGE SAYS DON'T LOAD ME YET, D-BAG!");
-    // }
-    // if(HomePage.startupHandler === undefined || HomePage.startupHandler === null) {
-    //   HomePage.startupHandler = (homepage: any) => {
-    //     Log.l("HomePage.startupHandler(): startup:finished event detected. Target is:\n", homepage);
-    //     Log.l("HomePage.startupHandler(): now unsubscribing from startup:finished event...");
-    //     HomePage.EVENTS.unsubscribe('startup:finished', HomePage.startupHandler);
-    //     HomePage.homePageStatus.startupFinished = true;
-    //     Log.l("HomePage.startupHandler(): now executing runEveryTime() function...");
-    //     if(!this.ud.isHomePageReady()) {
-    //       if(!this.ud.isHomePageLoading()) {
-    //         Log.l("HomePage: Loading from ");
-    //         this.runEveryTime();
-    //       } else {
-    //         Log.l("HomePage: Stop trying to dual-load!");
-    //       }
-    //     } else {
-    //       // this.dataReady = true;
-    //       Log.l("HomePage: stop trying to load prematurely!")
-    //     }
-    //   };
-    // }
-    // if(HomePage.homePageStatus.startupFinished === false) {
-    //   this.events.subscribe('startup:finished', HomePage.startupHandler);
-    // }
-
   }
 
   public runWhenReady() {
@@ -251,8 +221,9 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     let translations = [
       'error',
       'startup_error',
+      'loading_work_reports',
+      'spinner_fetching_reports',
       'alert_retrieve_reports_error',
-      'spinner_fetching_reports'
     ];
     this.generateLegend();
     HomePage.translations = translations;
@@ -309,71 +280,11 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
       Log.e(err);
       throw new Error(err);
     }
-
   }
-
-  // public async runEveryTime() {
-  //   // try {
-  //     // let lang = this.translate.instant(['error', 'alert_retrieve_reports_error'])
-  //   this.dataReady = false;
-  //   this.ud.setHomePageLoading(true);
-  //   this.ud.setHomePageReady(true);
-  //   let lang = this.lang;
-  //   if (this.ud.getLoginStatus() === false) {
-  //     Log.l("HomePage.runEveryTime(): User not logged in, showing login modal.");
-  //     this.presentLoginModal();
-  //   } else if(this.justLoggedIn) {
-  //     this.justLoggedIn = false;
-  //     this.newLoginSetup().then(res => {
-  //       Log.l("HomePage: Done loading in ionViewDidEnter().");
-  //       this.ifLoggedInAndAlreadySetUp();
-  //     }).catch(err => {
-  //       Log.l("HomePage: Error after new login!");
-  //       Log.e(err);
-  //       let errMessage = err;
-  //       if (err && err.message) {
-  //         errMessage = err.message;
-  //       }
-  //       let msg = sprintf(lang['startup_error'], errMessage)
-  //       this.alert.showConfirmYesNo(lang['error'], msg).then(res => {
-  //         if (res) {
-  //           this.ud.reloadApp();
-  //         }
-  //       });
-  //     });
-  //   } else {
-  //     this.ifLoggedInAndAlreadySetUp();
-  //   }
-  // }
-
-  // public ifLoggedInAndAlreadySetUp() {
-  //   let lang = this.lang;
-  //   this.ud.setHomePageLoading(true);
-  //   Log.l("HomePage.runEveryTime(): Fetching work orders.");
-  //   this.fetchTechReports().then((res) => {
-  //     this.techProfile = this.ud.getTechProfile();
-  //     this.shifts = this.ud.getPeriodShifts();
-  //     HomePage.homePageStatus.startupFinished = true;
-  //     this.ud.setHomePageReady(true);
-  //     // this.watchScroll();
-  //     // this.dataReady = true;
-  //     // this.alert.hideSpinner(0, true).then(res => {
-  //     this.ud.setHomePageReady(true);
-  //     HomePage.homePageStatus.startupFinished = true;
-  //     // this.watchScroll();
-  //     this.dataReady = true;
-  //     this.tabServ.enableTabs();
-  //     this.tabServ.setPageLoaded(Pages.OnSiteHome);
-  //   }).catch(err => {
-  //     Log.l("Error fetching tech work orders!");
-  //     Log.e(err);
-  //     // this.alert.hideSpinner();
-  //     this.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
-  //   });
-  // }
 
   public async ifLoggedInAndAlreadySetUp() {
     let lang = this.lang;
+    let spinnerID;
     try {
       this.ud.setHomePageLoading(true);
       // let res:any = await this.fetchTechReports();
@@ -387,6 +298,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
       Log.l("ifLoggedInAndAlreadySetUp(): Got all data, result:\n", res);
       this.ud.setData(res);
       Log.l("ifLoggedInAndAlreadySetUp(): Fetching work orders.");
+      spinnerID = await this.alert.showSpinnerPromise(lang['loading_work_reports']);
       res = await this.fetchTechReports();
       Log.l("ifLoggedInAndAlreadySetUp(): Got tech reports, result:\n", res);
       this.shifts = this.ud.getPeriodShifts();
@@ -398,11 +310,13 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
       this.ud.setHomePageReady(true);
       HomePage.homePageStatus.startupFinished = true;
       // this.watchScroll();
-      this.dataReady = true;
-      this.tabServ.enableTabs();
+      spinnerID = await this.alert.hideSpinnerPromise(spinnerID);
       this.tabServ.setPageLoaded(Pages.OnSiteHome);
+      this.tabServ.enableTabs();
+      this.dataReady = true;
       return true;
     } catch(err) {
+      spinnerID = await this.alert.hideSpinnerPromise(spinnerID);
       Log.l(`ifLoggedInAndAlreadySetUp(): Error in post-login startup!`);
       Log.e(err);
       let res:any = this.alert.showAlert(lang['error'], lang['alert_retrieve_reports_error']);
@@ -567,16 +481,32 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
         }
       }
       let prd = this.ud.getHomePeriod();
-      if(prd) {
-        let i = this.payrollPeriods.indexOf(prd);
+      if(prd && prd instanceof PayrollPeriod) {
+        Log.l("fetchTechReports(): HomePage payroll period is set, checking for it:\n", prd);
+        let periodDate = prd.start_date.format("YYYY-MM-DD")
+        let i = this.payrollPeriods.findIndex((a:PayrollPeriod) => {
+          // let period:PayrollPeriod = prd;
+          return prd === a.start_date.format("YYYY-MM-DD");
+        });
+        // let i = this.payrollPeriods.indexOf(prd);
         if(i > -1) {
           Log.l("fetchTechReports(): Found payroll period at index %d.", i);
           this.period = this.payrollPeriods[i];
           this.ud.setHomePeriod(this.period);
         } else {
           Log.l("fetchTechReports(): Payroll periods not found.");
-          this.period = prd;
-          this.ud.setHomePeriod(this.period);
+          // this.period = prd;
+          let pp = this.ud.createPayrollPeriods(this.tech);
+          let period = pp.find((a:PayrollPeriod) => {
+            return a.start_date.format("YYYY-MM-DD") === periodDate;
+          });
+          this.payrollPeriods = pp;
+          if(period) {
+            this.period = period;
+            this.ud.setHomePeriod(this.period);
+          } else {
+            let out:any = await this.alert.showAlert("ERROR", "Error determining payroll period");
+          }
         }
       } else {
         Log.l("fetchTechReports(): HomePage payroll period will be:\n", this.payrollPeriods[0]);
@@ -684,7 +614,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
 
   public changedPayrollPeriod(period:PayrollPeriod) {
     Log.l("changedPayrollPeriod(): Payroll period changed to:\n", period);
-    this.ud.setHomePeriod(this.period);
+    this.ud.setHomePeriod(period);
   }
 
   public legendClick(item:Array<string>, evt?:any) {

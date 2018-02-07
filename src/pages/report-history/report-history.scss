@@ -2,6 +2,22 @@ page-report-history {
   ion-navbar {
     box-shadow: 0px 3px 10px 1px rgba(140,140,140,1);
   }
+  .flagged-only-icon {
+    .flag-icon {
+      font-size: 36px;
+      transform: rotate(22.5deg);
+      // zoom: 0.8;
+      position: relative;
+      // top: 10px;
+    }
+    .flagged {
+      color: rgba(175, 0, 0, 1.0);
+      font-weight: bold;
+    }
+  }
+  .bar-icon {
+    font-size: 36px;
+  }
   // .frozenToolbar {}
   // .reportHeaderList {}
   .scrollList {

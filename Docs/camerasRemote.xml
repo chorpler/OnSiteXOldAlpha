@@ -1,0 +1,13 @@
+<cameras>
+<camera name="Camera 1" type="Geovision 8.x" url="http://sesa.dipmap.com:80" camInstance="1" username="sup" password="_EncodedFAsGFUJCVA==" enabled="true" setNames="" bitOptions="4194304" />
+<camera name="Camera 2" type="Geovision 8.x" url="http://sesa.dipmap.com:80" camInstance="2" username="sup" password="_EncodedFAsGFUJCVA==" enabled="true" setNames="" bitOptions="4194304" />
+<camera name="Camera 3" type="Geovision 8.x" url="http://sesa.dipmap.com:80" camInstance="3" username="sup" password="_EncodedFAsGFUJCVA==" enabled="true" setNames="" bitOptions="4194304" />
+<camera name="Camera 4" type="Geovision 8.x" url="http://sesa.dipmap.com:80" camInstance="4" username="sup" password="_EncodedFAsGFUJCVA==" enabled="true" setNames="" bitOptions="4194304" />
+<camera name="Camera 5" type="Geovision 8.x" url="http://sesa.dipmap.com:80" camInstance="5" username="sup" password="_EncodedFAsGFUJCVA==" enabled="true" setNames="" bitOptions="4194304" />
+<camera name="Camera 6" type="Geovision 8.x" url="http://sesa.dipmap.com:80" camInstance="6" username="sup" password="_EncodedFAsGFUJCVA==" enabled="true" setNames="" bitOptions="4194304" />
+<camera name="Camera 7" type="Geovision 8.x" url="http://sesa.dipmap.com:80" camInstance="7" username="sup" password="_EncodedFAsGFUJCVA==" enabled="true" setNames="" bitOptions="4194304" />
+<camera name="Camera 8" type="Geovision 8.x" url="http://sesa.dipmap.com:80" camInstance="8" username="sup" password="_EncodedFAsGFUJCVA==" enabled="true" setNames="" bitOptions="4194304" />
+<camera name="Camera 9" type="Geovision 8.x" url="http://sesa.dipmap.com:80" camInstance="9" username="sup" password="_EncodedFAsGFUJCVA==" enabled="true" setNames="" bitOptions="4194304" />
+<camera name="Camera 10" type="Geovision 8.x" url="http://sesa.dipmap.com:80" camInstance="10" username="sup" password="_EncodedFAsGFUJCVA==" enabled="true" setNames="" bitOptions="4194304" />
+<camera name="Camera 11" type="Geovision 8.x" url="http://sesa.dipmap.com:80" camInstance="11" username="sup" password="_EncodedFAsGFUJCVA==" enabled="true" setNames="" bitOptions="4194304" />
+</cameras>

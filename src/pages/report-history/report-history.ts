@@ -72,14 +72,16 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
   public prefs        : any                  = ReportHistory.PREFS                                      ;
   public shiftToUse   : Shift                = null                                                     ;
   public numChars     : Array<string>        = STRINGS.NUMCHARS                                         ;
+  public flaggedOnlyMode:boolean = false                                                                ;
+
   constructor(
     public navCtrl     : NavController     ,
     public navParams   : NavParams         ,
-    public db          : DBService           ,
+    public db          : DBService         ,
     public alert       : AlertService      ,
     private auth       : AuthSrvcs         ,
     public loadingCtrl : LoadingController ,
-    public server      : ServerService         ,
+    public server      : ServerService     ,
     public ud          : UserData          ,
     public translate   : TranslateService  ,
     // public tabs        : TabsComponent     ,
@@ -477,6 +479,30 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
 
   public doRefresh(event?:any) {
     Log.l("Refreshing!");
+  }
+
+  public toggleShowFlaggedOnly(evt?:any) {
+    Log.l("Toggling showFlaggedOnly mode...");
+    this.flaggedOnlyMode = !this.flaggedOnlyMode;
+  }
+
+  public showAllShifts(evt?:any) {
+    Log.l("showAllShifts(): Showing all shifts...");
+  //   let periods:PayrollPeriod[] = this.ud.getPayrollPeriods();
+  //   Log.l("showAllShifts(): Got payroll periods:\n", this.periods);
+  //   let period:PayrollPeriod = periods[0];
+  //   let shifts:Shift[] = [];
+  //   for(let period of periods) {
+  //     let periodShifts = period.getPayrollShifts();
+  //     for (let shift of periodShifts) {
+  //       this.shifts.push(shift);
+  //     }
+  //   }
+  //   this.periods = periods
+  //   this.period = period;
+  //   this.shifts = shifts;
+  // }
+    this.tabServ.goToPage('ReportHistory');
   }
 
 }

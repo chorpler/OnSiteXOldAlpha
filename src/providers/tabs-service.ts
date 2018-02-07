@@ -284,8 +284,8 @@ export class TabsService {
     switch (tab) {
       case Pages.OnSiteHome: /* Can't move left, do nothing */ break;
       case Pages.ReportHistory: this.goToPage('OnSiteHome'); break;
-      case Pages.Report: this.goToPage('ReportHistory'); break;
-      case Pages.User: this.goToPage('Report'); break;
+      case Pages.ReportsFlagged: this.goToPage('ReportHistory'); break;
+      case Pages.User: this.goToPage('Flagged Reports'); break;
       case Pages.MessageList: this.goToPage('User'); break;
       case Pages.Settings: this.goToPage('Message List'); break;
       case Pages.DevPage: this.goToPage('Settings'); break;
@@ -298,8 +298,8 @@ export class TabsService {
     let tab = this.currentTab;
     switch (tab) {
       case Pages.OnSiteHome: this.goToPage('ReportHistory'); break;
-      case Pages.ReportHistory: this.goToPage('Report'); break;
-      case Pages.Report: this.goToPage('User'); break;
+      case Pages.ReportHistory: this.goToPage('Flagged Reports'); break;
+      case Pages.ReportsFlagged: this.goToPage('User'); break;
       case Pages.User: this.goToPage('Message List'); break;
       case Pages.MessageList: this.goToPage('Settings'); break;
       case Pages.Settings: if(this.ud.isDeveloper()) { this.goToPage('DevPage') } else { /* Can't move right, do nothing */ }; break;

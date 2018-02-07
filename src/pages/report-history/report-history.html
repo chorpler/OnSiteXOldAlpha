@@ -1,10 +1,26 @@
 <ion-header>
   <ion-navbar>
     <!-- <ion-title> {{"report_history_title" | translate}} </ion-title> -->
+    <ion-buttons left>
+      <button ion-button icon-only (tap)="toggleShowFlaggedOnly($event)" class="flagged-only-icon">
+        <i class="icomoon-flag-checkered flag-icon" [class.flagged]="flaggedOnlyMode"></i>
+        <!-- <ion-icon item-end class="flag-icon" [class.flagged]="currentReport?.isFlagged()" [innerHTML]="SVGIcons.flagcheckered | safe: 'html'"></ion-icon> -->
+        <!-- <ion-icon item-end class="flag-icon" [class.flagged]="false" [innerHTML]="SVGIcons.flagcheckered | safe: 'html'" *ngIf="!report"></ion-icon> -->
+        <!-- <span class="flag-badge" *ngIf="currentReport?.flags"></span> -->
+      </button>
+    </ion-buttons>
     <ion-title class="app-title">
       <span class="app-page-title">{{"report_history_title" | translate}}</span>
       <span class="app-user" *ngIf="ud.getTechName()">{{ud.getTechName()}}</span>
     </ion-title>
+    <ion-buttons right>
+      <button ion-button icon-only (tap)="showAllShifts($event)" class="ion-button-button" *ngIf="shifts?.length === 1">
+        <i class="icomoon-calendar bar-icon"></i>
+        <!-- <ion-icon item-end class="flag-icon" [class.flagged]="currentReport?.isFlagged()" [innerHTML]="SVGIcons.flagcheckered | safe: 'html'"></ion-icon> -->
+        <!-- <ion-icon item-end class="flag-icon" [class.flagged]="false" [innerHTML]="SVGIcons.flagcheckered | safe: 'html'" *ngIf="!report"></ion-icon> -->
+        <!-- <span class="flag-badge" *ngIf="currentReport?.flags"></span> -->
+      </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
@@ -28,9 +44,9 @@
             <div class="no-reports" *ngIf="shift.getAllShiftReports()"></div>
           </div> -->
           <ion-list class="reportList">
-            <div class="report-history-reports-subcontainer" *ngIf="shift.getAllShiftReports()">
-              <div class="report-and-reportother-container" *ngFor="let report of shift.getAllShiftReports(); let j=index">
-                <ion-item-sliding class="report-history-list-item-sliding" *ngIf="getReportType(report) === 'report'">
+            <div class="report-history-reports-subcontainer" *ngIf="shift?.getAllShiftReports()">
+              <div class="report-and-reportother-container" *ngFor="let report of shift?.getAllShiftReports(); let j=index">
+                <ion-item-sliding class="report-history-list-item-sliding" *ngIf="getReportType(report) === 'report' && (!flaggedOnlyMode || report?.isFlagged())">
                   <ion-item class="report-history-list-item" [class.flagged]="report?.isFlagged()" (tap)="itemTapped($event, report, shift)">
                     <div class="report-wrapper">
                       <table class="report-table">
@@ -107,7 +123,7 @@
                     </button>
                   </ion-item-options>
                 </ion-item-sliding>
-                <ion-item-sliding class="report-history-list-item-sliding" *ngIf="getReportType(report) === 'other'">
+                <ion-item-sliding class="report-history-list-item-sliding" *ngIf="getReportType(report) === 'other' && (!flaggedOnlyMode || report.isFlagged())">
                   <ion-item class="report-history-list-item" [class.flagged]="report && report?.flagged" (tap)="itemTapped($event, report, shift)">
                     <div class="report-wrapper">
                       <table class="report-table">

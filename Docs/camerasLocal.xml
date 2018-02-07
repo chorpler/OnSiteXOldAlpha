@@ -1,0 +1,13 @@
+<cameras>
+<camera name="Camera 1" type="Geovision GV Camera" url="http://192.168.0.101:80" camInstance="1" username="admin" password="_EncodedBg0G" enabled="true" setNames="" bitOptions="4194304" />
+<camera name="Camera 2" type="Geovision GV Camera" url="http://192.168.0.102:80" camInstance="" username="admin" password="_EncodedBg0G" enabled="true" setNames="" bitOptions="4194304" />
+<camera name="Camera 3" type="Geovision GV Camera" url="http://192.168.0.112:80" camInstance="3" username="admin" password="_EncodedBg0G" enabled="true" setNames="" bitOptions="4194304" />
+<camera name="Camera 4" type="Geovision GV Camera" url="http://192.168.0.103:80" camInstance="4" username="admin" password="_EncodedBg0G" enabled="true" setNames="" bitOptions="4194304" />
+<camera name="Camera 5" type="Geovision GV Camera" url="http://192.168.0.105:80" camInstance="5" username="admin" password="_EncodedBg0G" enabled="true" setNames="" bitOptions="4194304" />
+<camera name="Camera 6" type="Geovision GV Camera" url="http://192.168.0.109:80" camInstance="6" username="admin" password="_EncodedBg0G" enabled="true" setNames="" bitOptions="4194304" />
+<camera name="Camera 7" type="Geovision GV Camera" url="http://192.168.0.107:80" camInstance="7" username="admin" password="_EncodedBg0G" enabled="true" setNames="" bitOptions="4194304" />
+<camera name="Camera 8" type="Geovision GV Camera" url="http://192.168.0.104:80" camInstance="8" username="admin" password="_EncodedBg0G" enabled="true" setNames="" bitOptions="4194304" />
+<camera name="Camera 9" type="Geovision GV Camera" url="http://192.168.0.106:80" camInstance="9" username="admin" password="_EncodedBg0G" enabled="true" setNames="" bitOptions="4194304" />
+<camera name="Camera 10" type="Geovision GV Camera" url="http://192.168.0.111:80" camInstance="10" username="admin" password="_EncodedBg0G" enabled="true" setNames="" bitOptions="4194304" />
+<camera name="Camera 11" type="Geovision GV Camera" url="http://192.168.0.110:80" camInstance="11" username="admin" password="_EncodedBg0G" enabled="true" setNames="" bitOptions="4194304" />
+</cameras>

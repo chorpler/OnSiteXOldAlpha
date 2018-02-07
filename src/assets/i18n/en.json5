@@ -207,5 +207,6 @@
   "crew": "Crew",
   "crew_number": "Crew No.",
   "crew_translate": "Crew",
-  "crew_number_translate": "Crew No."
+  "crew_number_translate": "Crew No.",
+  "loading_work_reports": "Loading reports ...",
 }
