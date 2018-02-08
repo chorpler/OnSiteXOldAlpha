@@ -367,6 +367,8 @@ export class ReportsFlaggedPage implements OnInit,OnDestroy,AfterViewInit {
 
   public doRefresh(event?:any) {
     Log.l("Refreshing!");
+    let denominator = 0;
+    return 5/0;
   }
 
 }

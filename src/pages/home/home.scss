@@ -318,6 +318,21 @@ page-home {
     align-items: center;
     width: 100%;
   }
+  .item-block {
+    min-height: 3.3rem;
+  }
+  ion-label {
+    &.label {
+      margin: 2px 8px 2px 0;
+    }
+    &.label-md {
+      margin: 2px 8px 2px 0;
+    }
+  }
+  .home-shift {
+    margin-top: 1px;
+    margin-bottom: 1px;
+  }
   .fake-column {
     flex: 1 1 auto;
     align-self: center;

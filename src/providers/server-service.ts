@@ -578,7 +578,8 @@ export class ServerService {
         // let now = moment();
         // let startDate = moment(now).subtract(5, 'weeks');
         // opts.filter = 'ref/forTechDate';
-        // opts.query_params = { username: u, start: startDate.format("YYYY-MM-DD"), end: now.format("YYYY-MM-DD") };
+        // opts.query_
+        // params = { username: u, start: startDate.format("YYYY-MM-DD"), end: now.format("YYYY-MM-DD") };
         let username:string = this.ud.getUsername();
         // let query = {selector: { username: {$eq: username}}, limit:10000};
         let query = { "username": username };

@@ -129,6 +129,9 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
   public scrollStartSub              : Subscription                                   ;
   public scrollEndSub                : Subscription                                   ;
   public legend                      : Array<Array<string>> = []                      ;
+  public pauseSubscription           : Subscription                                   ;
+  public resumeSubscription          : Subscription                                   ;
+  public translateSubscription       : Subscription                                   ;
 
   constructor(
     public http        : HttpClient        ,
@@ -156,12 +159,14 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
   ngOnInit() {
     Log.l("HomePage: ngOnInit() fired");
     if(this.ud.isAppLoaded()) {
+      this.installSubscribers();
       this.runWhenReady();
     }
   }
 
   ngOnDestroy() {
     Log.l("HomePage: ngOnDestroy() fired");
+    this.uninstallSubscribers();
   }
 
   ngAfterViewInit() {
@@ -216,8 +221,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     this.dataReady = false;
   }
 
-  public runWhenReady() {
-    Log.l("HomePage: ionViewDidEnter() called. First wait to make sure app is finished loading.");
+  public installSubscribers() {
     let translations = [
       'error',
       'startup_error',
@@ -225,14 +229,35 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
       'spinner_fetching_reports',
       'alert_retrieve_reports_error',
     ];
-    this.generateLegend();
     HomePage.translations = translations;
     this.translations = HomePage.translations;
-    if(!this.lang) {
-      this.translate.get(this.translations).subscribe((result: any) => {
-        this.lang = result;
-      });
+    this.translateSubscription = this.translate.get(this.translations).subscribe((result:any) => {
+      this.lang = result;
+    });
+
+    this.pauseSubscription = this.platform.pause.subscribe(() => {
+      Log.l(`OnSiteX app paused!`);
+    });
+    this.resumeSubscription = this.platform.resume.subscribe(() => {
+      Log.l(`OnSiteX app resumed!`);
+    });
+  }
+
+  public uninstallSubscribers() {
+    if(this.translateSubscription && !this.translateSubscription.closed) {
+      this.translateSubscription.unsubscribe();
     }
+    if(this.pauseSubscription && !this.pauseSubscription.closed) {
+      this.pauseSubscription.unsubscribe();
+    }
+    if(this.resumeSubscription && !this.resumeSubscription.closed) {
+      this.resumeSubscription.unsubscribe();
+    }
+  }
+
+  public runWhenReady() {
+    Log.l("HomePage: ionViewDidEnter() called. First wait to make sure app is finished loading.");
+    this.generateLegend();
     let lang = this.lang;
     if(this.navParams.get('justLoggedIn') !== undefined) { this.justLoggedIn = this.navParams.get('justLoggedIn');}
     // if(HomePage.homePageStatus.startupFinished) {

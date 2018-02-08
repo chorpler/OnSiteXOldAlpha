@@ -35,7 +35,7 @@
         </ion-list>
       </ion-card-header>
       <ion-list no-lines no-border class="home-card-body-list" *ngIf="period">
-        <ion-item class="ion-item-button-like" *ngFor="let shift of period.shifts; let i=index" (tap)="showShiftReports(shift)">
+        <ion-item class="ion-item-button-like home-shift" *ngFor="let shift of period.shifts; let i=index" (tap)="showShiftReports(shift)">
           <span class="fake-row">
             <span class="fake-column fake-col-01">
               <ion-icon class="shft-num-icon">{{numChars[shift.shift_number]}}</ion-icon>
