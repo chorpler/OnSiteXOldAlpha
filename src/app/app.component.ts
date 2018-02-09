@@ -394,42 +394,55 @@ export class OnSiteApp implements OnInit {
     let lang = this.lang;
     try {
       Log.l("OnSite.bootApp(): Called.");
-      if(!this.ud.isOnline) {
-        let result = await this.alert.showCustomConfirm(lang['offline_login_title'], lang['offline_login_message'], [
-          { text: lang['open_phone_settings'], retVal: 2 },
-          { text: lang['continue']           , retVal: 1 },
-        ]);
-        if(result === 1) {
-          /* Continue opening app */
-          Log.l("bootApp(): User chose to continue.");
-          let res = await this.offlineBoot();
-          return res;
-        } else if(result === 2) {
-          /* Open phone settings */
-          Log.l("bootApp(): Opening phone settings...");
-          let out = await this.settings.open('settings');
-          // this.timeoutHandle = setTimeout(() => {
-          //   this.exitApp();
-          // }, 500);
-        } else {
-          // out = await this.settings.open('settings');
-          // Log.l("bootApp(): Back from phone settings, result:\n", out);
-          // if(!this.ud.isOnline) {
-          //   this.offlineBoot();
-          // } else {
-          //   this.onlineBoot();
-          // }
-        }
-      } else {
-        let res = await this.onlineBoot();
+      let isOnline = await this.networkCheck();
+      if(isOnline) {
+        let res:any = await this.onlineBoot();
         if(res === false) {
-          // this.rootPage = 'Login';
           this.goToLogin();
           return false;
         } else {
-          return res;
+          return true;
         }
+      } else {
+        let res:any = await this.offlineBoot();
+        return res;
       }
+      // if(!this.ud.isOnline) {
+      //     let result = await this.alert.showCustomConfirm(lang['offline_login_title'], lang['offline_login_message'], [
+      //       { text: lang['open_phone_settings'], retVal: 2 },
+      //       { text: lang['continue']           , retVal: 1 },
+      //     ]);
+      //     if(result === 1) {
+      //       /* Continue opening app */
+      //       Log.l("bootApp(): User chose to continue.");
+      //       let res = await this.offlineBoot();
+      //       return res;
+      //     } else if(result === 2) {
+      //       /* Open phone settings */
+      //       Log.l("bootApp(): Opening phone settings...");
+      //       let out = await this.settings.open('settings');
+      //       // this.timeoutHandle = setTimeout(() => {
+      //       //   this.exitApp();
+      //       // }, 500);
+      //     } else {
+      //       // out = await this.settings.open('settings');
+      //       // Log.l("bootApp(): Back from phone settings, result:\n", out);
+      //       // if(!this.ud.isOnline) {
+      //       //   this.offlineBoot();
+      //       // } else {
+      //     //   this.onlineBoot();
+      //     // }
+      //   }
+      // } else {
+      //   let res = await this.onlineBoot();
+      //   if(res === false) {
+      //     // this.rootPage = 'Login';
+      //     this.goToLogin();
+      //     return false;
+      //   } else {
+      //     return res;
+      //   }
+      // }
     } catch(err) {
       Log.l(`bootApp(): Error thrown during boot process!`);
       Log.e(err);
@@ -442,6 +455,33 @@ export class OnSiteApp implements OnInit {
       } else {
         throw new Error(err);
       }
+    }
+  }
+
+  public async networkCheck() {
+    let lang = this.lang;
+    try {
+      while(!this.ud.isOnline) {
+        Log.l(`networkCheck(): not online.`);
+        let result = await this.alert.showCustomConfirm(lang['offline_login_title'], lang['offline_login_message'], [
+          { text: lang['open_phone_settings'], retVal: 2 },
+          { text: lang['continue']           , retVal: 1 },
+        ]);
+        if(result === 1) {
+          /* Continue opening app */
+          Log.l("networkCheck(): User chose to continue.");
+          return false;
+        } else if(result === 2) {
+          /* Open phone settings */
+          Log.l("networkCheck(): Opening phone settings...");
+          let out = await this.settings.open('settings');
+        }
+      }
+      return true;
+    } catch(err) {
+      Log.l(`firstLoginNetworkCheck(): Error opening settings!`);
+      Log.e(err);
+      throw new Error(err);
     }
   }
 

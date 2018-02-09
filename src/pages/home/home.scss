@@ -332,6 +332,10 @@ page-home {
   .home-shift {
     margin-top: 1px;
     margin-bottom: 1px;
+    .input-wrapper {
+      border: 1px dotted lightgrey;
+      border-radius: 5px;
+    }
   }
   .fake-column {
     flex: 1 1 auto;

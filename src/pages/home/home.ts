@@ -25,6 +25,7 @@ import { PayrollPeriod                                    } from 'domain/onsitex
 import { Employee                                         } from 'domain/onsitexdomain'      ;
 import { TabsService                                      } from 'providers/tabs-service'    ;
 import { Preferences                                      } from 'providers/preferences'     ;
+import { Vibration                                        } from '@ionic-native/vibration'   ;
 import { SafePipe                                         } from 'pipes/safe'                ;
 import { SmartAudio                                       } from 'providers/smart-audio'     ;
 import { STRINGS                                          } from 'domain/onsitexdomain'      ;
@@ -132,6 +133,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
   public legend                      : Array<Array<string>> = []                      ;
   public pauseSubscription           : Subscription                                   ;
   public resumeSubscription          : Subscription                                   ;
+  public resizeSubscription          : Subscription                                   ;
   public translateSubscription       : Subscription                                   ;
 
   constructor(
@@ -153,6 +155,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     public translate   : TranslateService  ,
     public audio       : SmartAudio        ,
     public app         : OnSiteApp         ,
+    public vibration   : Vibration         ,
   ) {
     window["onsitehome"] = window["onsitehome"] ? window["onsitehome"] : this;
     Log.l("HomePage: Hi, I'm the HomePage class constructor!");
@@ -245,6 +248,9 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     this.resumeSubscription = this.platform.resume.subscribe(() => {
       Log.l(`OnSiteX app resumed!`);
     });
+    this.resizeSubscription = this.platform.resize.subscribe(() => {
+      Log.l(`OnSiteX app resized!`);
+    });
   }
 
   public uninstallSubscribers() {
@@ -256,6 +262,9 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     }
     if(this.resumeSubscription && !this.resumeSubscription.closed) {
       this.resumeSubscription.unsubscribe();
+    }
+    if(this.resizeSubscription && !this.resizeSubscription.closed) {
+      this.resizeSubscription.unsubscribe();
     }
   }
 
@@ -662,6 +671,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     Log.l("toggleClock(): Event is:\n", event);
     // this.dataReady = !this.dataReady;
     this.ud.showClock = !this.ud.showClock;
+    this.vibration.vibrate([100, 200, 100, 70, 100, 70, 100, 120, 100, 500, 100, 150, 100]);
     if(this.ud.showClock) {
       this.app.clockCaption = lang['tap_to_hide_clock'];
     }

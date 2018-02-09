@@ -3,6 +3,7 @@ import { Subscription                  } from 'rxjs/Subscription'       ;
 import { Observable                    } from 'rxjs/Observable'         ;
 import { Injectable                    } from '@angular/core'           ;
 import { Events, Platform, App         } from 'ionic-angular'           ;
+import { Vibration                     } from '@ionic-native/vibration' ;
 import { Log, isMoment, moment, Moment } from 'domain/onsitexdomain'    ;
 import { Tab, Pages                    } from 'domain/onsitexdomain'    ;
 import { Preferences                   } from './preferences'           ;
@@ -42,7 +43,10 @@ export class TabsService {
   public pageEvent:Subject<any> = new Subject<any>();
   public pageLoadedEvent:Subject<any> = new Subject<any>();
 
-  constructor(public ud:UserData) {
+  constructor(
+    public ud        : UserData  ,
+    public vibration : Vibration ,
+  ) {
     window['onsitetabsservice'] = this;
     Log.l("TabsService constructor called");
     // this.initializeSubscribers();
@@ -78,6 +82,7 @@ export class TabsService {
     if(this.isDisabled() && value !== 'Login') {
       return;
     }
+    this.vibration.vibrate(50);
     if(typeof value === 'string') {
       if(value === 'Login') {
         let out:any = {page: value};

@@ -32,7 +32,8 @@ import { AppVersion                                              } from '@ionic-
 import { NativeAudio                                             } from '@ionic-native/native-audio'           ;
 import { AppUpdate                                               } from '@ionic-native/app-update'             ;
 import { Camera, CameraOptions                                   } from '@ionic-native/camera'                 ;
-import { OpenNativeSettings                                      } from '@ionic-native/open-native-settings';
+import { OpenNativeSettings                                      } from '@ionic-native/open-native-settings'   ;
+import { Vibration                                               } from '@ionic-native/vibration'              ;
 import { TranslateModule, TranslateLoader                        } from '@ngx-translate/core'                  ;
 import { TranslateHttpLoader                                     } from '@ngx-translate/http-loader'           ;
 import { OnSiteApp                                               } from './app.component'                      ;
@@ -121,6 +122,7 @@ import { IonDigitKeyboard                                        } from 'compone
     // Sim,
     NativeAudio,
     OpenNativeSettings,
+    Vibration,
     AppUpdate,
     Camera,
     GeolocService,
