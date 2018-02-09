@@ -209,4 +209,13 @@
   "crew_translate": "Crew",
   "crew_number_translate": "Crew No.",
   "loading_work_reports": "Loading reports ...",
+  "show_only_flagged_reports": "Show only flagged reports",
+  "retrieving_preferences": "Retrieving preferences ...",
+  "checking_login_status": "Checking login status ...",
+  "refreshing_data": "Refreshing data from server ...",
+  "checking_for_new_messages": "Checking for new messages ...",
+  "retrieving_local_data": "Retrieving local data ...",
+  "function_in_development": "This function is still in development",
+  "show_all_shifts": "Show all shifts",
+  "tap_to_hide_clock": "(Tap to hide clock)",
 }

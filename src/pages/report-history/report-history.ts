@@ -131,14 +131,16 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
       'error',
       'confirm',
       'delete_report',
+      'show_all_shifts',
       'error_report_not_found',
       'spinner_deleting_report',
+      'show_only_flagged_reports',
       'spinner_retrieving_reports',
-      'spinner_retrieving_reports_other',
       'error_server_connect_message',
       'error_fetching_reports_title',
+      'error_deleting_report_message',
       'error_fetching_reports_message',
-      'error_deleting_report_message'
+      'spinner_retrieving_reports_other',
     ];
     this.lang = this.translate.instant(translations);
     let lang = this.lang;
@@ -148,7 +150,7 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
       this.shifts = [this.shiftToUse];
     } else {
       Log.l("ReportHistory: Showing all shifts.");
-      this.periods = this.ud.getPayrollPeriods();
+      // this.periods = this.ud.getPayrollPeriods();
       this.period = this.periods[0];
       this.shifts = [];
       Log.l("ReportHistory: Got payroll periods:\n", this.periods);
@@ -503,6 +505,16 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
   //   this.shifts = shifts;
   // }
     this.tabServ.goToPage('ReportHistory');
+  }
+
+  public explain(item:string, evt?:any) {
+    let lang = this.lang;
+    Log.l(`explain(): Explaining item '${item}' and event is:\n`, evt);
+    if(item === 'flag') {
+      this.alert.showToast(lang['show_only_flagged_reports'], 2500, 'middle');
+    } else if(item === 'calendar') {
+      this.alert.showToast(lang['show_all_shifts'], 2500, 'middle');
+    }
   }
 
 }

@@ -85,6 +85,12 @@
       <ng-container *ngSwitchCase="null || undefined || 'work_report'">
         <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && !ud.isDeveloper()); then devInfoReadOnly"></span>
         <span *ngIf="((prefs.getShowID() || prefs.getShowRev() || prefs.getShowTimes() || prefs.getShowSite()) && ud.isDeveloper()); then devInfoEditable"></span>
+        <ion-item *ngIf="site?.client?.name === 'KN' || this.show_crew_number">
+          <ion-label>{{'crew_number_translate' | translate}}</ion-label>
+          <ion-select class="partial-select" [(ngModel)]="report.crew_number" (ngModelChange)="updateCrewNumber($event)">
+            <ion-option *ngFor="let crew_number of crew_numbers" [value]="crew_number">{{crew_number}}</ion-option>
+          </ion-select>
+        </ion-item>
         <ion-item>
           <ion-label>{{'repair_time' | translate}}</ion-label>
           <ion-multi-picker #durationPicker class="repair-hours-picker" item-content [separator]="':'" [multiPickerColumns]="chooseHours" [(ngModel)]="currentRepairHoursString" (ngModelChange)="updateRepairHours(currentRepairHoursString, $event)"></ion-multi-picker>
@@ -100,19 +106,13 @@
             <ion-option *ngFor="let crew_number of crew_numbers" [value]="crew_number">{{crew_number}}</ion-option>
           </ion-select>
         </ion-item> -->
-        <ion-item *ngIf="site?.client?.name === 'KN' || this.show_crew_number">
-          <ion-label>{{'crew_number_translate' | translate}}</ion-label>
-          <ion-select class="partial-select" [(ngModel)]="report.crew_number" (ngModelChange)="updateCrewNumber($event)">
-            <ion-option *ngFor="let crew_number of crew_numbers" [value]="crew_number">{{crew_number}}</ion-option>
-          </ion-select>
-        </ion-item>
         <ion-item>
           <ion-label floating>{{'work_order_number' | translate}}</ion-label>
           <ion-input #woNumberInput type="text" [(ngModel)]="report.work_order_number"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label floating>{{'job_notes' | translate}}</ion-label>
-          <ion-textarea #reportNotes [(ngModel)]="report.notes"></ion-textarea>
+          <ion-textarea #reportNotes elastictext [(ngModel)]="report.notes"></ion-textarea>
         </ion-item>
         <ion-item *ngIf="syncError" class="alert danger">
           <div>{{'report_submit_error' | translate}}</div>

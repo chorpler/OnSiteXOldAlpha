@@ -2,7 +2,7 @@
   <ion-navbar>
     <!-- <ion-title> {{"report_history_title" | translate}} </ion-title> -->
     <ion-buttons left>
-      <button ion-button icon-only (tap)="toggleShowFlaggedOnly($event)" class="flagged-only-icon">
+      <button ion-button icon-only (tap)="toggleShowFlaggedOnly($event)" (press)="explain('flag', $event)" class="flagged-only-icon">
         <i class="icomoon-flag-checkered flag-icon" [class.flagged]="flaggedOnlyMode"></i>
         <!-- <ion-icon item-end class="flag-icon" [class.flagged]="currentReport?.isFlagged()" [innerHTML]="SVGIcons.flagcheckered | safe: 'html'"></ion-icon> -->
         <!-- <ion-icon item-end class="flag-icon" [class.flagged]="false" [innerHTML]="SVGIcons.flagcheckered | safe: 'html'" *ngIf="!report"></ion-icon> -->
@@ -14,7 +14,7 @@
       <span class="app-user" *ngIf="ud.getTechName()">{{ud.getTechName()}}</span>
     </ion-title>
     <ion-buttons right>
-      <button ion-button icon-only (tap)="showAllShifts($event)" class="ion-button-button" *ngIf="shifts?.length === 1">
+      <button ion-button icon-only (tap)="showAllShifts($event)" (press)="explain('calendar', $event)" class="ion-button-button" *ngIf="shifts?.length === 1">
         <i class="icomoon-calendar bar-icon"></i>
         <!-- <ion-icon item-end class="flag-icon" [class.flagged]="currentReport?.isFlagged()" [innerHTML]="SVGIcons.flagcheckered | safe: 'html'"></ion-icon> -->
         <!-- <ion-icon item-end class="flag-icon" [class.flagged]="false" [innerHTML]="SVGIcons.flagcheckered | safe: 'html'" *ngIf="!report"></ion-icon> -->
@@ -44,145 +44,34 @@
             <div class="no-reports" *ngIf="shift.getAllShiftReports()"></div>
           </div> -->
           <ion-list class="reportList">
-            <div class="report-history-reports-subcontainer" *ngIf="shift?.getAllShiftReports()">
-              <div class="report-and-reportother-container" *ngFor="let report of shift?.getAllShiftReports(); let j=index">
-                <ion-item-sliding class="report-history-list-item-sliding" *ngIf="getReportType(report) === 'report' && (!flaggedOnlyMode || report?.isFlagged())">
-                  <ion-item class="report-history-list-item" [class.flagged]="report?.isFlagged()" (tap)="itemTapped($event, report, shift)">
-                    <div class="report-wrapper">
-                      <table class="report-table">
-                        <tbody>
-                          <tr *ngIf="prefs.getShowID()">
-                            <td class="label">ID</td>
-                            <td class="data" >{{report?._id}}</td>
-                          </tr>
-                          <tr *ngIf="prefs.getShowRev()">
-                            <td class="label">Rev</td>
-                            <td class="data" >{{report?._rev}}</td>
-                          </tr>
-                          <tr *ngIf="prefs.getShowTimes()">
-                            <td class="label">Date</td>
-                            <td class="data" >{{report?.report_date}}</td>
-                          </tr>
-                          <tr *ngIf="prefs.getShowTimes()">
-                            <td class="label">Start</td>
-                            <td class="data" >{{report?.time_start}}</td>
-                          </tr>
-                          <tr *ngIf="prefs.getShowTimes()">
-                            <td class="label">End</td>
-                            <td class="data" >{{report?.time_end}}</td>
-                          </tr>
-                          <tr *ngIf="prefs.getShowSite()">
-                            <td class="label">Client</td>
-                            <td class="data" >{{report?.client}}</td>
-                          </tr>
-                          <tr *ngIf="prefs.getShowSite()">
-                            <td class="label">Location</td>
-                            <td class="data" >{{report?.location}}</td>
-                          </tr>
-                          <tr *ngIf="prefs.getShowSite()">
-                            <td class="label">LocID</td>
-                            <td class="data" >{{report?.location_id}}</td>
-                          </tr>
-                          <tr>
-                            <td class="label">Date</td>
-                            <td class="data" >{{report?.report_date}}</td>
-                          </tr>
-                          <tr>
-                            <td class="label">{{'hours_header' | translate}}</td>
-                            <td class="data" >{{report?.repair_hours}}</td>
-                          </tr>
-                          <tr *ngIf="report?.crew_number && report?.crew_number !== ''">
-                            <td class="label">{{'crew' | translate}}</td>
-                            <td class="data" >{{report?.crew_number}}</td>
-                          </tr>
-                          <tr>
-                            <td class="label">{{'report_label_wo_number' | translate}}</td>
-                            <td class="data" >{{report?.work_order_number}}</td>
-                          </tr>
-                          <tr>
-                            <td class="label">{{'report_label_unit_number' | translate}}</td>
-                            <td class="data" >{{report?.unit_number}}</td>
-                          </tr>
-                          <tr class="notes">
-                            <td class="label label-notes">{{'report_label_notes' | translate}}</td>
-                            <td class="data data-notes"><span class="notes-wrapper">{{report?.notes}}</span></td>
-                          </tr>
-                          <!-- <tr>
-                            <td class="data-notes" colspan="2" >
-                              <span class="notes-wrapper">{{report?.notes}}</span>
-                            </td>
-                          </tr> -->
-                        </tbody>
-                      </table>
-                    </div>
-                  </ion-item>
-                  <ion-item-options side="right">
-                    <button ion-button color="danger" (tap)="deleteReport(report, shift, $event)">
-                      <ion-icon name="trash"></ion-icon>
-                      {{"delete" | translate}}
-                    </button>
-                  </ion-item-options>
-                </ion-item-sliding>
-                <ion-item-sliding class="report-history-list-item-sliding" *ngIf="getReportType(report) === 'other' && (!flaggedOnlyMode || report.isFlagged())">
-                  <ion-item class="report-history-list-item" [class.flagged]="report && report?.flagged" (tap)="itemTapped($event, report, shift)">
-                    <div class="report-wrapper">
-                      <table class="report-table">
-                        <tbody>
-                          <tr *ngIf="prefs.getShowID()">
-                            <td class="label">ID</td>
-                            <td class="data" >{{report?._id}}</td>
-                          </tr>
-                          <tr *ngIf="prefs.getShowRev()">
-                            <td class="label">Rev</td>
-                            <td class="data" >{{report?._rev}}</td>
-                          </tr>
-                          <!-- <tr *ngIf="prefs.getShowTimes()">
-                            <td class="label">Date</td>
-                            <td class="data" >{{report?.report_date}}</td>
-                          </tr> -->
-                          <!-- <tr *ngIf="prefs.getShowSite()">
-                            <td class="label">Client</td>
-                            <td class="data" >{{report?.client}}</td>
-                          </tr>
-                          <tr *ngIf="prefs.getShowSite()">
-                            <td class="label">Location</td>
-                            <td class="data" >{{report?.location}}</td>
-                          </tr>
-                          <tr *ngIf="prefs.getShowSite()">
-                            <td class="label">LocID</td>
-                            <td class="data" >{{report?.location_id}}</td>
-                          </tr> -->
-                          <span *ngIf="getReportOtherType(report) === 'Travel'; then reportTravelContainer"></span>
-                          <span *ngIf="getReportOtherType(report) === 'Training'; then reportTrainingContainer"></span>
-                          <span *ngIf="getReportOtherType(report) === 'Standby' || getReportOtherType(report) === 'Standby: HB Duncan'; then reportStandbyContainer"></span>
-                          <span *ngIf="getReportOtherType(report) === 'Sick'; then reportSickContainer"></span>
-                          <span *ngIf="getReportOtherType(report) === 'Vacation'; then reportVacationContainer"></span>
-                          <span *ngIf="getReportOtherType(report) === 'Holiday'; then reportHolidayContainer"></span>
-                          <ng-template #reportTravelContainer>
-                            <tr>
-                              <td class="label">{{'travel' | translate}}</td>
-                              <td class="data" >{{report?.travel_location}}</td>
+            <!-- <ng-template #showAllReportsTemplate> -->
+              <div class="report-history-reports-subcontainer" *ngIf="shift?.getAllShiftReports()">
+                <div class="report-and-reportother-container" *ngFor="let report of shift?.getAllShiftReports(); let j=index">
+                  <ion-item-sliding class="report-history-list-item-sliding" *ngIf="getReportType(report) === 'report' && (!flaggedOnlyMode || report?.isFlagged())">
+                    <ion-item class="report-history-list-item" [class.flagged]="report?.isFlagged()" (tap)="itemTapped($event, report, shift)">
+                      <div class="report-wrapper">
+                        <table class="report-table">
+                          <tbody>
+                            <tr *ngIf="prefs.getShowID()">
+                              <td class="label">ID</td>
+                              <td class="data" >{{report?._id}}</td>
                             </tr>
-                            <tr>
-                              <!-- <td class="label">{{'travel_hours' | translate}}</td> -->
-                              <td class="label">{{'hours_header' | translate}}</td>
-                              <td class="data" >{{report?.time}}</td>
+                            <tr *ngIf="prefs.getShowRev()">
+                              <td class="label">Rev</td>
+                              <td class="data" >{{report?._rev}}</td>
                             </tr>
-                          </ng-template>
-
-                          <ng-template #reportTrainingContainer>
-                            <tr>
-                              <td class="label">{{'training' | translate}}</td>
-                              <td class="data" >{{report?.training_type | translate }}</td>
+                            <tr *ngIf="prefs.getShowTimes()">
+                              <td class="label">Date</td>
+                              <td class="data" >{{report?.report_date}}</td>
                             </tr>
-                            <tr>
-                              <!-- <td class="label">{{'training_hours' | translate}}</td> -->
-                              <td class="label">{{'hours_header' | translate}}</td>
-                              <td class="data" >{{report?.time}}</td>
+                            <tr *ngIf="prefs.getShowTimes()">
+                              <td class="label">Start</td>
+                              <td class="data" >{{report?.time_start}}</td>
                             </tr>
-                          </ng-template>
-
-                          <ng-template #reportStandbyContainer>
+                            <tr *ngIf="prefs.getShowTimes()">
+                              <td class="label">End</td>
+                              <td class="data" >{{report?.time_end}}</td>
+                            </tr>
                             <tr *ngIf="prefs.getShowSite()">
                               <td class="label">Client</td>
                               <td class="data" >{{report?.client}}</td>
@@ -196,49 +85,162 @@
                               <td class="data" >{{report?.location_id}}</td>
                             </tr>
                             <tr>
-                              <td class="label">{{'standby' | translate}}</td>
-                              <td class="data" >{{report?.time}}</td>
+                              <td class="label">Date</td>
+                              <td class="data" >{{report?.report_date}}</td>
                             </tr>
-                          </ng-template>
-
-                          <ng-template #reportSickContainer>
                             <tr>
-                              <td class="label">{{'sick' | translate}}</td>
-                              <td class="data" >{{report?.time}}</td>
+                              <td class="label">{{'hours_header' | translate}}</td>
+                              <td class="data" >{{report?.repair_hours}}</td>
                             </tr>
-                          </ng-template>
-
-                          <ng-template #reportVacationContainer>
+                            <tr *ngIf="report?.crew_number && report?.crew_number !== ''">
+                              <td class="label">{{'crew' | translate}}</td>
+                              <td class="data" >{{report?.crew_number}}</td>
+                            </tr>
                             <tr>
-                              <td class="label">{{'vacation' | translate}}</td>
-                              <td class="data" >{{report?.time}}</td>
+                              <td class="label">{{'report_label_wo_number' | translate}}</td>
+                              <td class="data" >{{report?.work_order_number}}</td>
                             </tr>
-                          </ng-template>
-
-                          <ng-template #reportHolidayContainer>
                             <tr>
-                              <td class="label">{{'holiday' | translate}}</td>
-                              <td class="data" >{{report?.time}}</td>
+                              <td class="label">{{'report_label_unit_number' | translate}}</td>
+                              <td class="data" >{{report?.unit_number}}</td>
                             </tr>
-                          </ng-template>
-                          <!-- <tr class="notes">
-                            <td class="label label-notes">{{'report_label_notes' | translate}}</td>
-                            <td class="data data-notes"><span class="notes-wrapper">{{report?.notes}}</span></td>
-                          </tr> -->
-                        </tbody>
-                      </table>
-                    </div>
-                  </ion-item>
-                  <ion-item-options side="right">
-                    <button ion-button color="danger" (tap)="deleteOtherReport(report, shift, $event)">
-                      <ion-icon name="trash"></ion-icon>
-                      {{"delete" | translate}}
-                    </button>
-                  </ion-item-options>
-                </ion-item-sliding>
+                            <tr class="notes">
+                              <td class="label label-notes">{{'report_label_notes' | translate}}</td>
+                              <td class="data data-notes"><span class="notes-wrapper">{{report?.notes}}</span></td>
+                            </tr>
+                            <!-- <tr>
+                              <td class="data-notes" colspan="2" >
+                                <span class="notes-wrapper">{{report?.notes}}</span>
+                              </td>
+                            </tr> -->
+                          </tbody>
+                        </table>
+                      </div>
+                    </ion-item>
+                    <ion-item-options side="right">
+                      <button ion-button color="danger" (tap)="deleteReport(report, shift, $event)">
+                        <ion-icon name="trash"></ion-icon>
+                        {{"delete" | translate}}
+                      </button>
+                    </ion-item-options>
+                  </ion-item-sliding>
+                  <ion-item-sliding class="report-history-list-item-sliding" *ngIf="getReportType(report) === 'other' && (!flaggedOnlyMode || report.isFlagged())">
+                    <ion-item class="report-history-list-item" [class.flagged]="report && report?.flagged" (tap)="itemTapped($event, report, shift)">
+                      <div class="report-wrapper">
+                        <table class="report-table">
+                          <tbody>
+                            <tr *ngIf="prefs.getShowID()">
+                              <td class="label">ID</td>
+                              <td class="data" >{{report?._id}}</td>
+                            </tr>
+                            <tr *ngIf="prefs.getShowRev()">
+                              <td class="label">Rev</td>
+                              <td class="data" >{{report?._rev}}</td>
+                            </tr>
+                            <!-- <tr *ngIf="prefs.getShowTimes()">
+                              <td class="label">Date</td>
+                              <td class="data" >{{report?.report_date}}</td>
+                            </tr> -->
+                            <!-- <tr *ngIf="prefs.getShowSite()">
+                              <td class="label">Client</td>
+                              <td class="data" >{{report?.client}}</td>
+                            </tr>
+                            <tr *ngIf="prefs.getShowSite()">
+                              <td class="label">Location</td>
+                              <td class="data" >{{report?.location}}</td>
+                            </tr>
+                            <tr *ngIf="prefs.getShowSite()">
+                              <td class="label">LocID</td>
+                              <td class="data" >{{report?.location_id}}</td>
+                            </tr> -->
+                            <span *ngIf="getReportOtherType(report) === 'Travel'; then reportTravelContainer"></span>
+                            <span *ngIf="getReportOtherType(report) === 'Training'; then reportTrainingContainer"></span>
+                            <span *ngIf="getReportOtherType(report) === 'Standby' || getReportOtherType(report) === 'Standby: HB Duncan'; then reportStandbyContainer"></span>
+                            <span *ngIf="getReportOtherType(report) === 'Sick'; then reportSickContainer"></span>
+                            <span *ngIf="getReportOtherType(report) === 'Vacation'; then reportVacationContainer"></span>
+                            <span *ngIf="getReportOtherType(report) === 'Holiday'; then reportHolidayContainer"></span>
+                            <ng-template #reportTravelContainer>
+                              <tr>
+                                <td class="label">{{'travel' | translate}}</td>
+                                <td class="data" >{{report?.travel_location}}</td>
+                              </tr>
+                              <tr>
+                                <!-- <td class="label">{{'travel_hours' | translate}}</td> -->
+                                <td class="label">{{'hours_header' | translate}}</td>
+                                <td class="data" >{{report?.time}}</td>
+                              </tr>
+                            </ng-template>
+
+                            <ng-template #reportTrainingContainer>
+                              <tr>
+                                <td class="label">{{'training' | translate}}</td>
+                                <td class="data" >{{report?.training_type | translate }}</td>
+                              </tr>
+                              <tr>
+                                <!-- <td class="label">{{'training_hours' | translate}}</td> -->
+                                <td class="label">{{'hours_header' | translate}}</td>
+                                <td class="data" >{{report?.time}}</td>
+                              </tr>
+                            </ng-template>
+
+                            <ng-template #reportStandbyContainer>
+                              <tr *ngIf="prefs.getShowSite()">
+                                <td class="label">Client</td>
+                                <td class="data" >{{report?.client}}</td>
+                              </tr>
+                              <tr *ngIf="prefs.getShowSite()">
+                                <td class="label">Location</td>
+                                <td class="data" >{{report?.location}}</td>
+                              </tr>
+                              <tr *ngIf="prefs.getShowSite()">
+                                <td class="label">LocID</td>
+                                <td class="data" >{{report?.location_id}}</td>
+                              </tr>
+                              <tr>
+                                <td class="label">{{'standby' | translate}}</td>
+                                <td class="data" >{{report?.time}}</td>
+                              </tr>
+                            </ng-template>
+
+                            <ng-template #reportSickContainer>
+                              <tr>
+                                <td class="label">{{'sick' | translate}}</td>
+                                <td class="data" >{{report?.time}}</td>
+                              </tr>
+                            </ng-template>
+
+                            <ng-template #reportVacationContainer>
+                              <tr>
+                                <td class="label">{{'vacation' | translate}}</td>
+                                <td class="data" >{{report?.time}}</td>
+                              </tr>
+                            </ng-template>
+
+                            <ng-template #reportHolidayContainer>
+                              <tr>
+                                <td class="label">{{'holiday' | translate}}</td>
+                                <td class="data" >{{report?.time}}</td>
+                              </tr>
+                            </ng-template>
+                            <!-- <tr class="notes">
+                              <td class="label label-notes">{{'report_label_notes' | translate}}</td>
+                              <td class="data data-notes"><span class="notes-wrapper">{{report?.notes}}</span></td>
+                            </tr> -->
+                          </tbody>
+                        </table>
+                      </div>
+                    </ion-item>
+                    <ion-item-options side="right">
+                      <button ion-button color="danger" (tap)="deleteOtherReport(report, shift, $event)">
+                        <ion-icon name="trash"></ion-icon>
+                        {{"delete" | translate}}
+                      </button>
+                    </ion-item-options>
+                  </ion-item-sliding>
+                </div>
               </div>
-            </div>
-            <div class="report-history-reports-subcontainer" *ngIf="shift?.getAllShiftReports()?.length === 0">
+            <!-- </ng-template> -->
+            <div class="report-history-reports-subcontainer" *ngIf="(shift?.getAllShiftReports()?.length === 0) || (flaggedOnlyMode && shift?.getFlaggedReports()?.length === 0)">
               <ion-item class="report-history-list-item">
                 <div class="report-history-no-report">{{'no_reports_for_date' | translate}} </div>
               </ion-item>

@@ -209,4 +209,13 @@
   "crew_translate": "Equipo",
   "crew_number_translate": "Número de Equipo",
   "loading_work_reports": "Carga de reportes ...",
+  "show_only_flagged_reports": "Mostrar solo reportes marcados",
+  "retrieving_preferences": "Recuperando preferencias ...",
+  "checking_login_status": "Verificando usuario ...",
+  "refreshing_data": "Actualización de datos del servidor ...",
+  "checking_for_new_messages": "Buscando nuevos mensajes ...",
+  "retrieving_local_data": "Recuperando datos locales ...",
+  "function_in_development": "Esta función aún está en desarrollo",
+  "show_all_shifts": "Mostrar todos los turnos",
+  "tap_to_hide_clock": "(Toca para ocultar el reloj)",
 }

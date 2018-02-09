@@ -255,9 +255,9 @@ page-report-view {
       font-size: 42px;
       margin-top: 10px;
     }
-    // &.cancel {
-
-    // }
+    &.cancel {
+      background-color: #d4d4d4;
+    }
   }
   svg {
     fill: currentColor;

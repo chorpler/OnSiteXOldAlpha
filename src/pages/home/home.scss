@@ -229,7 +229,7 @@ page-home {
     align-items: space-around;
     .home-legend-button {
       @include button-like-block;
-      min-width: 150px;
+      min-width: 170px;
       box-sizing: border-box;
       flex: 0 1 auto;
       display: flex;
@@ -346,6 +346,7 @@ page-home {
   }
   .fake-col-03 {
     width: 130px;
+    padding-top: 5px;
   }
   .fake-col-04 {
     width: 30px;

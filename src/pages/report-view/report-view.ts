@@ -11,19 +11,19 @@ import { ServerService                                         } from 'providers
 import { AuthSrvcs                                             } from 'providers/auth-srvcs'        ;
 import { AlertService                                          } from 'providers/alerts'            ;
 import { SmartAudio                                            } from 'providers/smart-audio'       ;
-import { Log, moment, Moment, isMoment                         } from 'domain/onsitexdomain'              ;
-import { SESAClient, SESALocation, SESALocID, CLL              } from 'domain/onsitexdomain'              ;
-import { PayrollPeriod                                         } from 'domain/onsitexdomain'              ;
-import { Shift                                                 } from 'domain/onsitexdomain'              ;
-import { Report                                                } from 'domain/onsitexdomain'              ;
-import { Employee                                              } from 'domain/onsitexdomain'              ;
-import { ReportOther                                           } from 'domain/onsitexdomain'              ;
-import { Jobsite                                               } from 'domain/onsitexdomain'              ;
+import { Log, moment, Moment, isMoment                         } from 'domain/onsitexdomain'        ;
+import { SESAClient, SESALocation, SESALocID, CLL              } from 'domain/onsitexdomain'        ;
+import { PayrollPeriod                                         } from 'domain/onsitexdomain'        ;
+import { Shift                                                 } from 'domain/onsitexdomain'        ;
+import { Report                                                } from 'domain/onsitexdomain'        ;
+import { Employee                                              } from 'domain/onsitexdomain'        ;
+import { ReportOther                                           } from 'domain/onsitexdomain'        ;
+import { Jobsite                                               } from 'domain/onsitexdomain'        ;
 import { UserData                                              } from 'providers/user-data'         ;
 import { Preferences                                           } from 'providers/preferences'       ;
 import { TranslateService                                      } from '@ngx-translate/core'         ;
 import { TabsService                                           } from 'providers/tabs-service'      ;
-import { Pages, SVGIcons, SelectString,                        } from 'domain/onsitexdomain'              ;
+import { Pages, SVGIcons, SelectString,                        } from 'domain/onsitexdomain'        ;
 import { MultiPicker                                           } from 'components/ion-multi-picker' ;
 
 export const focusDelay = 500;
@@ -1011,6 +1011,7 @@ export class ReportViewPage implements OnInit,OnDestroy,AfterViewInit {
   public async processReport() {
     let lang = this.lang;
     let spinnerID;
+    Log.l(`processReport(): Now attempting to save report:\n`, this.report);
     try {
       spinnerID = await this.alert.showSpinnerPromise(lang['spinner_saving_report']);
       // let tempWO:Report = this.report.clone();

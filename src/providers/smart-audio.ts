@@ -67,26 +67,35 @@ export class SmartAudio {
     }
   }
 
-  public play(key) {
-    if(this.prefs.USER.audio) {
-      let audio = this.sounds.find((sound) => {
-        return sound.key === key;
-      });
-
-      if (audio.type === 'html5') {
-        let audioAsset = new Audio(audio.asset);
-        audioAsset.play();
-      } else {
-        this.nativeAudio.play(audio.asset).then((res) => {
-          console.log(res);
-        }, (err) => {
-          console.log(err);
+  public async play(key:string) {
+    try {
+      if(this.prefs.USER.audio) {
+        let audio = this.sounds.find((sound) => {
+          return sound.key === key;
         });
+
+        if(audio) {
+          if(audio.type === 'html5') {
+            let audioAsset = new Audio(audio.asset);
+            let res:any = await audioAsset.play();
+            return res;
+          } else {
+            let res:any = await this.nativeAudio.play(audio.asset);
+            Log.l(`play(): Played sound '${key}' via native audio.\n`, res);
+            return res;
+          }
+        }
+      } else {
+        Log.l(`play(): Not playing sound '${key}' because user has sounds preference off.`);
       }
+    } catch(err) {
+      Log.l(`play(): Error playing sound '${key}'.`);
+      Log.e(err);
+      // throw new Error(err);
     }
   }
 
-  public playForcibly(key) {
+  public async playForcibly(key) {
     let audio = this.sounds.find((sound) => {
       return sound.key === key;
     });

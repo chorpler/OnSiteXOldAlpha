@@ -56,15 +56,16 @@ export class UserData {
   public static shift                 : Shift                                          ;
   public static current_shift_hours   : any                                            ;
   public static circled_numbers       : Array<string>                                  ;
+  public static payrollPeriods        : PayrollPeriod[]      = []                      ;
   // public static circled_numbers_chars : Array<string>        = STRINGS.NUMCHARS        ;
   public static get techWOArrayInitialized():boolean {return Boolean(UserData.reports && UserData.reports.length);};
   public static get shifts():Array<Shift> {return UserData.data.shifts;};
-  public static get payrollPeriods():Array<PayrollPeriod> {return UserData.data.payrollPeriods;};
+  // public static get payrollPeriods():Array<PayrollPeriod> {return UserData.data.payrollPeriods;};
   public static get reports():Array<Report> {return UserData.data.reports;};
   public static get otherReports():Array<ReportOther> {return UserData.data.otherReports;};
   public static get messages():Array<Message> {return UserData.data.messages;};
   public static set shifts(value: Array<Shift>) { UserData.data.shifts = value;} ;
-  public static set payrollPeriods(value:Array<PayrollPeriod>) {UserData.data.payrollPeriods = value;};
+  // public static set payrollPeriods(value:Array<PayrollPeriod>) {UserData.data.payrollPeriods = value;};
   public static set reports(value:Array<Report>) {UserData.data.reports = value;};
   public static set otherReports(value:Array<ReportOther>) {UserData.data.otherReports = value;};
   public static set messages(value:Array<Message>) {UserData.data.messages = value;};
@@ -104,7 +105,8 @@ export class UserData {
   public get reports()                : Array<Report>     {return UserData.reports;        };
   public get otherReports()           : Array<ReportOther>   {return UserData.otherReports;   };
   public set shifts(value: Array<Shift>) { UserData.data.shifts = value; };
-  public set payrollPeriods(value: Array<PayrollPeriod>) { UserData.data.payrollPeriods = value; };
+  // public set payrollPeriods(value: Array<PayrollPeriod>) { UserData.data.payrollPeriods = value; };
+  public set payrollPeriods(value: Array<PayrollPeriod>) { UserData.payrollPeriods = value; };
   public set reports(value: Array<Report>) { UserData.data.reports = value; };
   public set otherReports(value: Array<ReportOther>) { UserData.data.otherReports = value; };
   public get user()                         : Employee  { return UserData.user           ;};
@@ -125,6 +127,7 @@ export class UserData {
   private get loginData() {return UserData.loginData;};
   private set loginData(value:any) {UserData.loginData = value;};
   public showClock:boolean = true;
+  public caption:string = "";
   public isOnline:boolean = false;
   public isWiFi:boolean = false;
 
@@ -520,8 +523,10 @@ export class UserData {
   }
 
   public getReportList():Array<Report> {
-    let reports:Array<Report> = this.getData('reports').slice(0);
-    let others:Array<ReportOther>  = this.getData('otherReports').slice(0);
+    // let reports:Array<Report> = this.getData('reports').slice(0);
+    // let others:Array<ReportOther>  = this.getData('otherReports').slice(0);
+    let reports:Array<Report> = this.getData('reports');
+    let others:Array<ReportOther>  = this.getData('otherReports');
     let periods = this.getPayrollPeriods();
     let newReports:Array<Report> = [];
     let newOthers:Array<ReportOther> = [];
@@ -563,7 +568,8 @@ export class UserData {
   public getReportOtherList():Array<ReportOther> {
     let periods = this.getPayrollPeriods();
     let newOthers:ReportOther[] = [];
-    let others:Array<ReportOther>  = this.getData('otherReports').slice(0);
+    // let others:Array<ReportOther>  = this.getData('otherReports').slice(0);
+    let others:Array<ReportOther>  = this.getData('otherReports');
     for(let period of periods) {
       let shifts = period.getPayrollShifts();
       for(let shift of shifts) {
@@ -828,7 +834,7 @@ export class UserData {
       // periods = this.createPayrollPeriods(this.getUser()) || [];
       periods = this.createPayrollPeriods(this.getTechProfile()) || [];
     }
-    let date = moment(newReport.report_date).startOf('day');
+    let date = moment(newReport.report_date, "YYYY-MM-DD").startOf('day');
     loop1:
     for(let period of periods) {
       let shifts = period.getPayrollShifts();
@@ -1044,6 +1050,7 @@ export class UserData {
       }
       UserData.payrollPeriods = periods;
       this.getReportList();
+      Log.l(`createPayrollPeriods(): Returning payroll periods:\n`, periods);
       return UserData.payrollPeriods;
     } else {
       Log.e("createPayrollPeriods(): Could not find tech at any jobsites!");
@@ -1052,7 +1059,7 @@ export class UserData {
     }
   }
 
-  public getPayrollPeriods() {
+  public getPayrollPeriods():PayrollPeriod[] {
     return UserData.payrollPeriods;
   }
 

@@ -521,7 +521,8 @@ export class AlertService {
 
   public showToast(msg: string, ms?:number, position?: string, cssClass?:string) {
     let duration = ms ? ms : 3000;
-    let place = position ? position : 'bottom';
+    // let place = position ? position : 'bottom';
+    let place = position ? position : 'middle';
     let css = cssClass ? cssClass : 'onsite-alert-toast';
     let toast = this.toastCtrl.create({
       message: msg,

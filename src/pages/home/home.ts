@@ -29,6 +29,7 @@ import { SafePipe                                         } from 'pipes/safe'   
 import { SmartAudio                                       } from 'providers/smart-audio'     ;
 import { STRINGS                                          } from 'domain/onsitexdomain'      ;
 import { Icons, Pages                                     } from 'domain/onsitexdomain'      ;
+import { OnSiteApp                                        } from 'app/app.component'         ;
 
 // enum Icons {
 //   'box-check-no'   = 0,
@@ -151,6 +152,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     public zone        : NgZone            ,
     public translate   : TranslateService  ,
     public audio       : SmartAudio        ,
+    public app         : OnSiteApp         ,
   ) {
     window["onsitehome"] = window["onsitehome"] ? window["onsitehome"] : this;
     Log.l("HomePage: Hi, I'm the HomePage class constructor!");
@@ -228,6 +230,8 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
       'loading_work_reports',
       'spinner_fetching_reports',
       'alert_retrieve_reports_error',
+      'function_in_development',
+      'tap_to_hide_clock',
     ];
     HomePage.translations = translations;
     this.translations = HomePage.translations;
@@ -280,7 +284,8 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
       // if(this.justLoggedIn) {
       //   this.justLoggedIn = false;
         try {
-          let res:any = await this.newLoginSetup();
+          let res:any;
+          // let res:any = await this.newLoginSetup();
           res = await this.ifLoggedInAndAlreadySetUp();
         } catch(err) {
           Log.l("HomePage: Error after new login!");
@@ -326,13 +331,14 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
       spinnerID = await this.alert.showSpinnerPromise(lang['loading_work_reports']);
       res = await this.fetchTechReports();
       Log.l("ifLoggedInAndAlreadySetUp(): Got tech reports, result:\n", res);
+      Log.l(`ifLoggedInAndAlreadySetUp(): Payroll periods currently:\n`, this.payrollPeriods);
       this.shifts = this.ud.getPeriodShifts();
       HomePage.homePageStatus.startupFinished = true;
       this.ud.setHomePageReady(true);
       // this.watchScroll();
       // this.dataReady = true;
       // this.alert.hideSpinner(0, true).then(res => {
-      this.ud.setHomePageReady(true);
+      // this.ud.setHomePageReady(true);
       HomePage.homePageStatus.startupFinished = true;
       // this.watchScroll();
       spinnerID = await this.alert.hideSpinnerPromise(spinnerID);
@@ -350,40 +356,40 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     }
   }
 
-  public async newLoginSetup() {
-    try {
-      let profile = this.ud.getTechProfile();
-      let tech = new Employee();
-      tech.readFromDoc(profile);
-      this.tech = tech;
-      let res:any = await this.db.getAllData(this.tech);
-      this.ud.setData(res);
-      Log.l("newLoginSetup(): Got all data.");
-      res = await this.db.getAllConfigData();
-      Log.l("checkLogin(): Successfully retrieved config data...");
-      this.ud.setSesaConfig(res);
-      res = await this.ud.checkPhoneInfo();
-      let phoneInfo = res;
-      let pp = this.ud.createPayrollPeriods(tech, this.prefs.getPayrollPeriodCount());
-      if(phoneInfo) {
-        try {
-          Log.l("newLoginSetup(): Got phone data:\n", phoneInfo);
-          res = await this.server.savePhoneInfo(tech, phoneInfo);
-          return true;
-        } catch(err) {
-          Log.l("OnSite.bootApp(): Error saving phone info to server!");
-          Log.e(err);
-          return false;
-        }
-      } else {
-        return true;
-      }
-    } catch(err) {
-      Log.l(`newLoginSetup(): Error during new login startup!`);
-      Log.e(err);
-      throw new Error(err);
-    }
-  }
+  // public async newLoginSetup() {
+  //   try {
+  //     let profile = this.ud.getTechProfile();
+  //     let tech = new Employee();
+  //     tech.readFromDoc(profile);
+  //     this.tech = tech;
+  //     let res:any = await this.db.getAllData(this.tech);
+  //     this.ud.setData(res);
+  //     Log.l("newLoginSetup(): Got all data.");
+  //     res = await this.db.getAllConfigData();
+  //     Log.l("checkLogin(): Successfully retrieved config data...");
+  //     this.ud.setSesaConfig(res);
+  //     res = await this.ud.checkPhoneInfo();
+  //     let phoneInfo = res;
+  //     // let pp = this.ud.createPayrollPeriods(tech, this.prefs.getPayrollPeriodCount());
+  //     if(phoneInfo) {
+  //       try {
+  //         Log.l("newLoginSetup(): Got phone data:\n", phoneInfo);
+  //         res = await this.server.savePhoneInfo(tech, phoneInfo);
+  //         return true;
+  //       } catch(err) {
+  //         Log.l("OnSite.bootApp(): Error saving phone info to server!");
+  //         Log.e(err);
+  //         return false;
+  //       }
+  //     } else {
+  //       return true;
+  //     }
+  //   } catch(err) {
+  //     Log.l(`newLoginSetup(): Error during new login startup!`);
+  //     Log.e(err);
+  //     throw new Error(err);
+  //   }
+  // }
 
   public runAfterTranslation() {
   }
@@ -441,18 +447,18 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     try {
       let tech:Employee = this.tech;
       // let res:any = await this.server.getReportsForTech(techid);
-      res = await this.db.getReportsForTech(techid);
-      this.ud.setDataItem('reports', res);
+      // res = await this.db.getReportsForTech(techid);
+      // this.ud.setDataItem('reports', res);
       Log.l(`HomePage: fetchTechReports(${techid}): Success! Result:\n`, res);
-      for(let report of res) {
-        this.ud.addNewReport(report);
-      }
+      // for(let report of res) {
+        // this.ud.addNewReport(report);
+      // }
       this.techWorkOrders = this.ud.getReportList();
-      res = await this.db.getReportsOtherForTech(techid);
-      this.ud.setDataItem('otherReports', res);
-      for(let other of res) {
-        this.ud.addNewOtherReport(other);
-      }
+      // res = await this.db.getReportsOtherForTech(techid);
+      // this.ud.setDataItem('otherReports', res);
+      // for(let other of res) {
+        // this.ud.addNewOtherReport(other);
+      // }
       this.otherReports      = this.ud.getReportOtherList();
       // let tech               = new Employee();
       // tech.readFromDoc(profile);
@@ -521,7 +527,8 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
         } else {
           Log.l("fetchTechReports(): Payroll periods not found.");
           // this.period = prd;
-          let pp = this.ud.createPayrollPeriods(this.tech);
+          // let pp = this.ud.createPayrollPeriods(this.tech);
+          let pp:PayrollPeriod[] = this.ud.getPayrollPeriods() || [];
           let period = pp.find((a:PayrollPeriod) => {
             return a.start_date.format("YYYY-MM-DD") === periodDate;
           });
@@ -608,7 +615,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
   }
 
   public showHelp(event:any) {
-    this.audio.play('help');
+    // this.audio.play('help');
     let params = { cssClass: 'popover-template', showBackdrop: true, enableBackdropDismiss: true, ev: event };
     let popup = this.popoverCtrl.create('Popover', {contents: 'home_app_help_text'}, params);
     popup.onDidDismiss(data => {
@@ -643,19 +650,21 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
   }
 
   public legendClick(item:Array<string>, evt?:any) {
+    let lang = this.lang;
     Log.l(`legendClick(): Clicked on item:\n`, item);
     let code = item[0];
     let text = item[1];
-    this.alert.showToast("Not implemented yet", 1500);
+    this.alert.showToast(lang['function_in_development'], 1500, 'middle');
   }
 
   public toggleClock(event?:any) {
+    let lang = this.lang;
     Log.l("toggleClock(): Event is:\n", event);
-    let now = moment();
-    if(this.dataReady === true) {
-    }
-    this.dataReady = !this.dataReady;
+    // this.dataReady = !this.dataReady;
     this.ud.showClock = !this.ud.showClock;
+    if(this.ud.showClock) {
+      this.app.clockCaption = lang['tap_to_hide_clock'];
+    }
   }
 
 }

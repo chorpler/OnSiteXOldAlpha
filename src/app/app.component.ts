@@ -19,7 +19,7 @@ import { AlertService                                 } from 'providers/alerts' 
 import { NetworkStatus                                } from 'providers/network-status'          ;
 import { GeolocService                                } from 'providers/geoloc-service'          ;
 import { Log, CONSOLE, moment, Moment                 } from 'domain/onsitexdomain'              ;
-import { HomePage                                     } from 'pages/home/home'                   ;
+// import { HomePage                                     } from 'pages/home/home'                   ;
 import { MessageService                               } from 'providers/message-service'         ;
 import { TabsComponent                                } from 'components/tabs/tabs'              ;
 import { Preferences                                  } from 'providers/preferences'             ;
@@ -43,9 +43,9 @@ export const homePage:string = "OnSiteHome";
 
 @Component({ templateUrl: 'app.html' })
 export class OnSiteApp implements OnInit {
-  @ViewChild(Nav) nav: Nav;
-  @ViewChild('tabsTarget') tabsTarget;
-  @ViewChild('clockComponent') clockComponent:ClockComponent;
+  @ViewChild(Nav) nav:Nav;
+  @ViewChild('tabsTarget') tabsTarget:ElementRef;
+  @ViewChild('clock') clock:ClockComponent;
 
   public title                   : string  = 'OnSiteHome'      ;
   public rootPage                : string                      ;
@@ -113,6 +113,12 @@ export class OnSiteApp implements OnInit {
           'offline_login_message',
           'continue',
           'open_phone_settings',
+          "retrieving_preferences",
+          "checking_login_status",
+          "refreshing_data",
+          "checking_for_new_messages",
+          "retrieving_local_data",
+          "function_in_development",
         ];
         this.initializeApp(res);
       } else {
@@ -197,6 +203,7 @@ export class OnSiteApp implements OnInit {
               Log.l("OnSite.initializeApp(): bootApp() detected first boot, going to first boot page.");
               this.ud.showClock = false;
               this.ud.setAppLoaded(true);
+              this.clock.setCaption("(Tap to hide clock)");
               this.rootPage = 'First Login';
               return;
             } else {
@@ -205,6 +212,7 @@ export class OnSiteApp implements OnInit {
               if(res) {
                 Log.l("OnSite.initializeApp(): bootApp() returned successfully!");
                 // let hide = await this.alert.hideSpinnerPromise();
+                this.clock.setCaption("(Tap to hide clock)");
                 this.ud.showClock = false;
                 Log.l("OnSiteApp: boot finished, setting home page to 'OnSiteHome'.")
                 this.ud.setAppLoaded(true);
@@ -256,6 +264,9 @@ export class OnSiteApp implements OnInit {
 
   public goToLogin() {
     Log.l("goToLogin(): Going to Login page.");
+    if(this.clock) {
+      this.clock.setCaption("(Tap to hide clock)");
+    }
     this.ud.showClock = false;
     this.ud.setAppLoaded(true);
     this.rootPage = 'Login';
@@ -263,13 +274,16 @@ export class OnSiteApp implements OnInit {
 }
 
   public async onlineBoot() {
+    let lang = this.lang;
     try {
+      this.clock.setCaption(lang['retrieving_preferences']);
       let out:any = await this.checkPreferences();
       Log.l("OnSite.onlineBoot(): Done messing with preferences, now checking login...");
       let language = this.prefs.getLanguage();
       if (language !== 'en') {
         this.translate.use(language);
       }
+      this.clock.setCaption(lang['checking_login_status']);
       out = await this.checkLogin();
       if(out === false) {
         // this.rootPage = 'Login';
@@ -279,7 +293,8 @@ export class OnSiteApp implements OnInit {
       Log.l("OnSite.onlineBoot(): User passed login check. Should be fine. Checking for Android app update.");
       // let androidUpdate = await this.checkForAndroidUpdate();
       //   Log.l("OnSite.onlineBoot(): Done with Android update check. Now getting all data from server.");
-        // return
+      // return
+      this.clock.setCaption(lang['refreshing_data']);
       let res = await this.server.getAllData(this.tech);
       this.data = res;
       this.ud.setData(this.data);
@@ -287,9 +302,12 @@ export class OnSiteApp implements OnInit {
       Log.l("OnSite.onlineBoot(): Checked new messages.");
       let phoneInfo = await this.ud.checkPhoneInfo();
       let tech = this.ud.getData('employee')[0];
+      this.clock.setCaption(lang['checking_for_new_messages']);
       let newMsgs = await this.checkForNewMessages();
-      let pp = this.ud.createPayrollPeriods(tech, this.prefs.getPayrollPeriodCount());
-      this.ud.getReportList();
+      let pp:PayrollPeriod[] = this.ud.createPayrollPeriods(tech, this.prefs.getPayrollPeriodCount());
+      UserData.payrollPeriods = pp;
+      // this.ud.getReportList();
+      this.clock.clearCaption();
       if(phoneInfo) {
         Log.l("OnSite.onlineBoot(): Got phone data:\n", phoneInfo);
         let savePhoneInfo = await this.server.savePhoneInfo(tech, phoneInfo);
@@ -297,18 +315,19 @@ export class OnSiteApp implements OnInit {
       } else {
         return true;
       }
-    // }).catch(err => {
-    //   Log.l("OnSite.onlineBoot(): Error with check preferences.");
-    //   Log.e(err);
-    //   this.alert.showConfirmYesNo("STARTUP ERROR", "Caught app loading error:<br>\n<br>\n" + err.message + "<br>\n<br>\nTry to restart app?").then(res => {
-    //     if (res) {
-    //       this.ud.reloadApp();
-    //     } else {
-    //       reject(err);
-    //     }
-    //   });
-    // });
+      // }).catch(err => {
+        //   Log.l("OnSite.onlineBoot(): Error with check preferences.");
+        //   Log.e(err);
+        //   this.alert.showConfirmYesNo("STARTUP ERROR", "Caught app loading error:<br>\n<br>\n" + err.message + "<br>\n<br>\nTry to restart app?").then(res => {
+          //     if (res) {
+            //       this.ud.reloadApp();
+            //     } else {
+              //       reject(err);
+              //     }
+              //   });
+              // });
     } catch(err) {
+      this.clock.clearCaption();
       Log.l(`onlineBoot(): Error while checking for online status!`);
       Log.e(err);
       // throw new Error(err);
@@ -317,6 +336,7 @@ export class OnSiteApp implements OnInit {
   }
 
   public async offlineBoot() {
+    let lang = this.lang;
     try {
       let out = await this.checkPreferences();
       Log.l("OnSite.offlineBoot(): Done messing with preferences, now checking login...");
@@ -341,6 +361,7 @@ export class OnSiteApp implements OnInit {
       let tech:Employee = await this.getEmployeeRecord();
       this.tech = tech;
       this.ud.setTechProfile(tech);
+      this.clock.setCaption(lang['retrieving_local_data']);
       let res = await this.db.getAllData(this.tech);
       this.data = res;
       this.ud.setData(this.data);
@@ -349,8 +370,10 @@ export class OnSiteApp implements OnInit {
       let phoneInfo = await this.ud.checkPhoneInfo();
       // let tech = this.ud.getData('employee')[0];
       let newMsgs = await this.checkForNewMessages();
-      let pp = this.ud.createPayrollPeriods(this.data.employee[0], this.prefs.getPayrollPeriodCount());
-      this.ud.getReportList();
+      let pp:PayrollPeriod[] = this.ud.createPayrollPeriods(this.data.employee[0], this.prefs.getPayrollPeriodCount());
+      UserData.payrollPeriods = pp;
+      // this.ud.getReportList();
+      this.clock.clearCaption();
       if(phoneInfo) {
         Log.l("OnSite.offlineBoot(): Got phone data:\n", phoneInfo);
         // let savePhoneInfo = await this.server.savePhoneInfo(tech, phoneInfo);
@@ -360,6 +383,7 @@ export class OnSiteApp implements OnInit {
         return true;
       }
     } catch(err) {
+      this.clock.clearCaption();
       Log.l(`offlineBoot(): Error while checking for online status!`);
       Log.e(err);
       throw new Error(err);
@@ -410,7 +434,7 @@ export class OnSiteApp implements OnInit {
       Log.l(`bootApp(): Error thrown during boot process!`);
       Log.e(err);
       if(err === false) {
-        throw err;
+        throw new Error(err);
       }
       let retry = await this.alert.showConfirmYesNo("STARTUP ERROR", "Caught app loading error:<br>\n<br>\n" + err.message + "<br>\n<br>\nTry to restart app?");
       if(retry) {
@@ -463,7 +487,7 @@ export class OnSiteApp implements OnInit {
   public async finishStartup() {
     try {
       Log.l("finishStartup(): Now attempting to publish startup:finished event and set home page...");
-      this.events.publish('startup:finished', HomePage);
+      // this.events.publish('startup:finished', HomePage);
       return true;
     } catch(err) {
       Log.l("finishStartup(): Error publishing startup:finished event, and/or seting root page!");

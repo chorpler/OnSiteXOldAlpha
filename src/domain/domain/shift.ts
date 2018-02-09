@@ -1,8 +1,9 @@
 /**
  * Name: Shift domain class
- * Vers: 5.0.2
- * Date: 2018-01-29
+ * Vers: 5.1.1
+ * Date: 2018-02-08
  * Auth: David Sargeant
+ * Logs: 5.1.1 2018-02-08: Added getFlaggedReports() method
  * Logs: 5.0.2 2018-01-29: Added getAllShiftHours() method
  * Logs: 5.0.1 2017-12-15: Merged app and console versions
  * Logs: 4.2.2 2017-12-04: Added getBillableHours method
@@ -934,6 +935,23 @@ export class Shift {
     let format = fmt || "YYYY-MM-DD";
     let dateString = date.format(fmt);
     return dateString;
+  }
+
+  public getFlaggedReports():Array<Report|ReportOther> {
+    let out:Array<Report|ReportOther> = [];
+    let reports:Report[] = this.getShiftReports();
+    let others:ReportOther[] = this.getShiftOtherReports();
+    for(let report of reports) {
+      if(report.isFlagged()) {
+        out.push(report);
+      }
+    }
+    for(let other of others) {
+      if(other.isFlagged()) {
+        out.push(other);
+      }
+    }
+    return out;
   }
 
   public toString(translate?: any) {
