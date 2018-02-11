@@ -55,6 +55,7 @@ import { MessageService                                          } from 'provide
 import { CommentService                                          } from 'providers/comment-service'            ;
 import { TabsService                                             } from 'providers/tabs-service'               ;
 import { IonDigitKeyboard                                        } from 'components/ion-digit-keyboard'        ;
+import { ColorService                                            } from 'providers/color-service'              ;
 
 @NgModule({
   declarations: [
@@ -86,7 +87,9 @@ import { IonDigitKeyboard                                        } from 'compone
         provide: TranslateLoader,
         useFactory: (createTranslateLoader),
         // useFactory: (createJSON5TranslateLoader),
-        deps: [HttpClient],
+        deps: [
+          HttpClient,
+        ],
       }
     }),
     IonDigitKeyboard,
@@ -101,6 +104,7 @@ import { IonDigitKeyboard                                        } from 'compone
     SecureStorage,
     TabsService,
     LoadingController,
+    ColorService,
     AlertController,
     AlertService,
     {

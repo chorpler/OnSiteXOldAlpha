@@ -162,6 +162,54 @@ export class UserData {
     };
   }
 
+  public random(min?:number, max?:number, roundToNearest?:number):number {
+    let umin    = min || 0;
+    let umax    = max || 10;
+    let randInt = Math.trunc(Math.random()*(umax - umin)) + umin;
+    let RTN = Number(roundToNearest);
+    if (RTN !== undefined && RTN > 0 && RTN <= (max - min)) {
+      randInt = Math.ceil(randInt / RTN) * RTN;
+      if(randInt > max) {
+        randInt = max;
+      } else if(randInt < min) {
+        randInt = min;
+      }
+    }
+    return randInt;
+  }
+
+  public randomInt(min?:number, max?:number):number {
+    return this.random(min, max, 1);
+  }
+
+  public randomColor({
+    redLow = 0,
+    redHigh = 255,
+    greenLow = 0,
+    greenHigh = 255,
+    blueLow = 0,
+    blueHigh = 255,
+    alpha = 0.7
+  }):string {
+    let [ r, g, b ] = [ this.random(redLow, redHigh), this.random(greenLow, greenHigh), this.random(blueLow, blueHigh) ];
+    let out = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    return out;
+  }
+
+  public randomColorRGB({
+    redLow = 0,
+    redHigh = 255,
+    greenLow = 0,
+    greenHigh = 255,
+    blueLow = 0,
+    blueHigh = 255
+  }):string {
+    let [ r, g, b ] = [ this.random(redLow, redHigh), this.random(greenLow, greenHigh), this.random(blueLow, blueHigh) ];
+    let alpha:number = 1;
+    let out = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    return out;
+  }
+
   public static isTechUpdated() {
     return UserData.data.techUpdated;
   }

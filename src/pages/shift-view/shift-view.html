@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-navbar>
+    <!-- <ion-buttons left>
+      <button ion-button icon-only (tap)="addFlag($event)" (press)="removeFlag($event)" [disabled]="!report" *ngIf="currentReport?.isFlagged() || ud.isDeveloper()">
+        <i class="icomoon-flag-checkered flag-icon" [class.flagged]="currentReport?.isFlagged()"></i>
+        <span class="flag-badge" [class.is-flagged]="currentReport?.isFlagged()"><span class="flag-badge-text">{{currentReport?.flags}}</span></span>
+      </button>
+    </ion-buttons> -->
+    <ion-title class="app-title">
+      <span class="app-page-title">{{title}}</span>
+      <span class="app-user" *ngIf="ud.getTechName()">{{ud.getTechName()}}</span>
+    </ion-title>
+    <!-- <ion-buttons right>
+      <button ion-button icon-only (tap)="deleteReport(type, $event)" *ngIf="mode=='Edit'">
+        <ion-icon class="work-order-delete-button" name="ios-trash-outline"></ion-icon>
+      </button>
+    </ion-buttons> -->
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="page-content report-page-content" (swipe)="tabServ.handleSwipe($event)">
+  <div class="data-elements" *ngIf="dataReady">
+    <div class="shift-select-wrapper">
+      <span class="label" >{{'shift' | translate}}</span>
+      <span class="select">
+        <ion-select class="shift-select" [(ngModel)]="type" (ngModelChange)="updateShift(shift, $event)">
+          <ion-option *ngFor="let shift of allShifts" [value]="shift">{{shift.getShiftName("MMM DD")}}</ion-option>
+        </ion-select>
+      </span>
+    </div>
+
+    <div class="shift-chart-wrapper">
+      <chart-stacked #chartComponent [data]="chartData" [options]="chartOptions" (onclick)="chartClick($event)"></chart-stacked>
+    </div>
+  </div>
+</ion-content>

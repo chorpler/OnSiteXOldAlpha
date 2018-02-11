@@ -2,17 +2,18 @@ import { Subject                       } from 'rxjs/Subject'            ;
 import { Subscription                  } from 'rxjs/Subscription'       ;
 import { Observable                    } from 'rxjs/Observable'         ;
 import { Injectable                    } from '@angular/core'           ;
-import { Events, Platform, App         } from 'ionic-angular'           ;
-import { Vibration                     } from '@ionic-native/vibration' ;
+import { Events, Platform, App,        } from 'ionic-angular'           ;
+import { Vibration,                    } from '@ionic-native/vibration' ;
 import { Log, isMoment, moment, Moment } from 'domain/onsitexdomain'    ;
-import { Tab, Pages                    } from 'domain/onsitexdomain'    ;
+import { Tab, Pages,                   } from 'domain/onsitexdomain'    ;
 import { Preferences                   } from './preferences'           ;
 import { UserData                      } from './user-data'             ;
 
 const tabArrayDev:Array<Tab> = [
   { name: 'OnSiteHome'      , fullName: 'OnSite Home'        , show: true  , role: 'user', icon: 'ion-ios-home-outline'     , waiting: false, active: false, } ,
   { name: 'ReportHistory'   , fullName: 'Report History'     , show: true  , role: 'user', icon: 'icomoon-reports'          , waiting: false, active: false, } ,
-  { name: 'Flagged Reports' , fullName: 'Flagged Reports'    , show: true  , role: 'user', icon: 'icomoon-reports-flagged'  , waiting: false, active: false, } ,
+  // { name: 'Flagged Reports' , fullName: 'Flagged Reports'    , show: true  , role: 'user', icon: 'icomoon-reports-flagged'  , waiting: false, active: false, } ,
+  { name: 'Shift View'      , fullName: 'Shift View'         , show: true  , role: 'user', icon: 'icomoon-work-shift-light' , waiting: false, active: false, } ,
   { name: 'User'            , fullName: 'User'               , show: true  , role: 'user', icon: 'ion-ios-contact-outline'  , waiting: false, active: false, } ,
   // { name: 'User'            , fullName: 'User'               , show: true  , role: 'user', icon: 'icomoon-person-outline'   , waiting: false, active: false, } ,
   { name: 'Message List'    , fullName: 'Messages'           , show: true  , role: 'user', icon: 'ion-ios-text-outline'     , waiting: false, active: false, } ,
@@ -290,7 +291,7 @@ export class TabsService {
       case Pages.OnSiteHome: /* Can't move left, do nothing */ break;
       case Pages.ReportHistory: this.goToPage('OnSiteHome'); break;
       case Pages.ReportsFlagged: this.goToPage('ReportHistory'); break;
-      case Pages.User: this.goToPage('Flagged Reports'); break;
+      case Pages.User: this.goToPage('Shift View'); break;
       case Pages.MessageList: this.goToPage('User'); break;
       case Pages.Settings: this.goToPage('Message List'); break;
       case Pages.DevPage: this.goToPage('Settings'); break;
@@ -303,7 +304,7 @@ export class TabsService {
     let tab = this.currentTab;
     switch (tab) {
       case Pages.OnSiteHome: this.goToPage('ReportHistory'); break;
-      case Pages.ReportHistory: this.goToPage('Flagged Reports'); break;
+      case Pages.ReportHistory: this.goToPage('Shift View'); break;
       case Pages.ReportsFlagged: this.goToPage('User'); break;
       case Pages.User: this.goToPage('Message List'); break;
       case Pages.MessageList: this.goToPage('Settings'); break;

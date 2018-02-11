@@ -33,7 +33,7 @@
       <div class="report-list">
         <div class="single-date" *ngFor="let shift of shifts; let i=index">
           <div class="date-header">
-            <span class="shift-number">{{numChars[shift?.shift_number]}}</span>
+            <span class="shift-number icon-button-like" (tap)="viewShift(shift, $event)">{{numChars[shift?.shift_number]}}</span>
             <span class="shift-date">{{shift?.getStartTime()?.format("ddd, MMM D")}}</span>
             <span class="shift-hours">{{shift?.getAllShiftHours()}} hrs</span>
             <span class="document-icon block-button-like" (tap)="addNewReportForShift(shift, $event)">

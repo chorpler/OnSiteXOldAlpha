@@ -1,8 +1,9 @@
 /**
  * Name: Various TypeScript types for OnSiteX/OnSiteConsoleX apps
- * Vers: 3.0.1
- * Date: 2018-02-04
+ * Vers: 3.1.1
+ * Date: 2018-02-09
  * Auth: David Sargeant
+ * Logs: 3.1.1 2018-02-09: Added Shift View page to Pages
  * Logs: 3.0.1 2018-02-04: Now requires bignumber.js@6.0.0 or later
  * Logs: 2.0.1 2018-01-21: Added to OnSiteXDomains,
  * Logs: 1.0.1 2018-01-20: Created (this statement is a paradoxical lie)
@@ -33,7 +34,7 @@ export const JSON5     = JSON5p0;
 export const ooPatch   = JSON8Patch   ;
 export const ooPointer = JSON8Pointer ;
 export const pointer   = JSON8Pointer ;
-export const UUID      = UUID0        ; 
+export const UUID      = UUID0        ;
 // export const XLSXStyle = XlsxStyle    ;
 export const fileSaver = FILE_SAVER   ;
 export type FileSaver  = FILE_SAVER.FileSaver;
@@ -253,6 +254,8 @@ export enum Pages {
   'Reports Flagged' = 2,
   'ReportsFlagged'  = 2,
   'FlaggedReports'  = 2,
+  'Shift View'      = 2,
+  'ShiftView'       = 2,
   'User'            = 3,
   'Message List'    = 4,
   'MessageList'     = 4,

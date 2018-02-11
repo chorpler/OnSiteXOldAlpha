@@ -517,4 +517,9 @@ export class ReportHistory implements OnInit,OnDestroy,AfterViewInit {
     }
   }
 
+  public viewShift(shift:Shift, evt?:any) {
+    Log.l(`viewShift(): Now viewing shift:\n`, shift);
+    this.tabServ.goToPage('Shift View', {shift: shift});
+  }
+
 }

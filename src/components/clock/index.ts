@@ -1,2 +1,2 @@
-export { ClockComponent } from './clock';
-export { ClockComponentModule } from './clock.module';
+export { ClockComponent       } from './clock'        ;
+export { ClockComponentModule } from './clock.module' ;

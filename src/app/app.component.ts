@@ -1,41 +1,42 @@
-import { Component, ViewChild, OnInit,                } from '@angular/core'                     ;
-import { ComponentFactoryResolver, ViewContainerRef,  } from '@angular/core'                     ;
-import { ElementRef, NgZone,                          } from '@angular/core'                     ;
-import { Platform, Nav, ToastController, Events, App  } from 'ionic-angular'                     ;
-import { StatusBar                                    } from '@ionic-native/status-bar'          ;
-import { SplashScreen                                 } from '@ionic-native/splash-screen'       ;
-import { Push, PushObject, PushOptions                } from '@ionic-native/push'                ;
-import { LocalNotifications                           } from '@ionic-native/local-notifications' ;
-import { AppVersion                                   } from '@ionic-native/app-version'         ;
-import { AppUpdate                                    } from '@ionic-native/app-update'          ;
-import { OpenNativeSettings                           } from '@ionic-native/open-native-settings';
-import { UserData                                     } from 'providers/user-data'               ;
-import { PouchDBService                               } from 'providers/pouchdb-service'         ;
-import { StorageService                               } from 'providers/storage-service'         ;
-import { DBService                                    } from 'providers/db-service'              ;
-import { ServerService                                } from 'providers/server-service'          ;
-import { AuthSrvcs                                    } from 'providers/auth-srvcs'              ;
-import { AlertService                                 } from 'providers/alerts'                  ;
-import { NetworkStatus                                } from 'providers/network-status'          ;
-import { GeolocService                                } from 'providers/geoloc-service'          ;
-import { Log, CONSOLE, moment, Moment                 } from 'domain/onsitexdomain'              ;
 // import { HomePage                                     } from 'pages/home/home'                   ;
-import { MessageService                               } from 'providers/message-service'         ;
-import { TabsComponent                                } from 'components/tabs/tabs'              ;
-import { Preferences                                  } from 'providers/preferences'             ;
-import { TranslateService                             } from '@ngx-translate/core'               ;
-import { SmartAudio                                   } from 'providers/smart-audio'             ;
-import { Jobsite                                      } from 'domain/onsitexdomain'              ;
-import { ReportOther                                  } from 'domain/onsitexdomain'              ;
-import { Report                                       } from 'domain/onsitexdomain'              ;
-import { Employee                                     } from 'domain/onsitexdomain'              ;
-import { Shift                                        } from 'domain/onsitexdomain'              ;
-import { PayrollPeriod                                } from 'domain/onsitexdomain'              ;
-import { Message                                      } from 'domain/onsitexdomain'              ;
-import { IonDigitKeyboardCmp, IonDigitKeyboardOptions } from 'components/ion-digit-keyboard'     ;
-import { TabsService                                  } from 'providers/tabs-service'            ;
-import { ClockComponent                               } from 'components/clock'                  ;
 // import { Sim                                          } from '@ionic-native/sim'                 ;
+import { Component, ViewChild, OnInit,                } from '@angular/core'                      ;
+import { ComponentFactoryResolver, ViewContainerRef,  } from '@angular/core'                      ;
+import { ElementRef, NgZone,                          } from '@angular/core'                      ;
+import { Platform, Nav, ToastController, Events, App  } from 'ionic-angular'                      ;
+import { StatusBar                                    } from '@ionic-native/status-bar'           ;
+import { SplashScreen                                 } from '@ionic-native/splash-screen'        ;
+import { Push, PushObject, PushOptions                } from '@ionic-native/push'                 ;
+import { LocalNotifications                           } from '@ionic-native/local-notifications'  ;
+import { AppVersion                                   } from '@ionic-native/app-version'          ;
+import { AppUpdate                                    } from '@ionic-native/app-update'           ;
+import { OpenNativeSettings                           } from '@ionic-native/open-native-settings' ;
+import { UserData                                     } from 'providers/user-data'                ;
+import { PouchDBService                               } from 'providers/pouchdb-service'          ;
+import { StorageService                               } from 'providers/storage-service'          ;
+import { DBService                                    } from 'providers/db-service'               ;
+import { ServerService                                } from 'providers/server-service'           ;
+import { AuthSrvcs                                    } from 'providers/auth-srvcs'               ;
+import { AlertService                                 } from 'providers/alerts'                   ;
+import { NetworkStatus                                } from 'providers/network-status'           ;
+import { GeolocService                                } from 'providers/geoloc-service'           ;
+import { Log, CONSOLE, moment, Moment                 } from 'domain/onsitexdomain'               ;
+import { MessageService                               } from 'providers/message-service'          ;
+import { TabsComponent                                } from 'components/tabs/tabs'               ;
+import { Preferences                                  } from 'providers/preferences'              ;
+import { TranslateService                             } from '@ngx-translate/core'                ;
+import { SmartAudio                                   } from 'providers/smart-audio'              ;
+import { Jobsite                                      } from 'domain/onsitexdomain'               ;
+import { ReportOther                                  } from 'domain/onsitexdomain'               ;
+import { Report                                       } from 'domain/onsitexdomain'               ;
+import { Employee                                     } from 'domain/onsitexdomain'               ;
+import { Shift                                        } from 'domain/onsitexdomain'               ;
+import { PayrollPeriod                                } from 'domain/onsitexdomain'               ;
+import { Message                                      } from 'domain/onsitexdomain'               ;
+import { IonDigitKeyboardCmp, IonDigitKeyboardOptions } from 'components/ion-digit-keyboard'      ;
+import { TabsService                                  } from 'providers/tabs-service'             ;
+import { ClockComponent                               } from 'components/clock'                   ;
+import { ColorService                                 } from 'providers/color-service'            ;
 
 export const homePage:string = "OnSiteHome";
 // export const homePage:string = "Testing";
@@ -69,6 +70,7 @@ export class OnSiteApp implements OnInit {
   public hiddenArray             : Array<boolean>              ;
 
   constructor(
+    // public sim          : Sim                      ,
     public platform     : Platform                 ,
     public toast        : ToastController          ,
     public statusBar    : StatusBar                ,
@@ -94,7 +96,7 @@ export class OnSiteApp implements OnInit {
     public appUpdate    : AppUpdate                ,
     public geoloc       : GeolocService            ,
     public settings     : OpenNativeSettings       ,
-    // public sim          : Sim                      ,
+    public colors       : ColorService             ,
   ) {
     window['onsiteapp'] = this;
     window['moment'] = moment;

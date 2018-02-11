@@ -4,7 +4,7 @@ import { TranslateService                                                       
 import { Pipe, PipeTransform                                                    } from '@angular/core'             ;
 import { DomSanitizer                                                           } from '@angular/platform-browser' ;
 import { SafePipe                                                               } from 'pipes/safe'                ;
-import { Log                                                                    } from 'domain/onsitexdomain'            ;
+import { Log                                                                    } from 'domain/onsitexdomain'      ;
 
 @IonicPage({name: 'Popover'})
 @Component({
