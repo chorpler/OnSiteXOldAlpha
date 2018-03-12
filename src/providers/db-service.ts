@@ -1,5 +1,5 @@
 import { Injectable, NgZone                          } from '@angular/core'                ;
-import { Log, CONSOLE, moment, Moment, isMoment      } from 'domain/onsitexdomain'               ;
+import { Log, CONSOLE, moment, Moment, isMoment      } from 'domain/onsitexdomain'         ;
 import { Storage                                     } from '@ionic/storage'               ;
 import { NativeStorage                               } from '@ionic-native/native-storage' ;
 import { PouchDBService                              } from './pouchdb-service'            ;
@@ -8,12 +8,13 @@ import { AlertService                                } from './alerts'          
 import { ServerService                               } from './server-service'             ;
 import { UserData                                    } from './user-data'                  ;
 import { Preferences                                 } from './preferences'                ;
-import { Employee, Jobsite, Report, ReportOther, oo, } from 'domain/onsitexdomain'               ;
-import { Message, Comment, Shift, PayrollPeriod      } from 'domain/onsitexdomain'               ;
+import { Employee, Jobsite, Report, ReportOther, oo, } from 'domain/onsitexdomain'         ;
+import { Message, Comment, Shift, PayrollPeriod      } from 'domain/onsitexdomain'         ;
 
 export const noDD = "_\uffff";
 export const noDesign = { include_docs: true, startkey: noDD };
 export const liveNoDesign = { live: true, since: 'now', include_docs: true, startkey: noDD };
+
 @Injectable()
 export class DBService {
   public data                 : any                                                ;
@@ -33,7 +34,13 @@ export class DBService {
   public static PREFS         : any = new Preferences()                            ;
   public prefs                : any = DBService.PREFS                              ;
 
-  constructor(public zone: NgZone, private storage: Storage, private auth: AuthSrvcs, private server: ServerService, public ud:UserData) {
+  constructor(
+    public zone    : NgZone        ,
+    public storage : Storage       ,
+    public auth    : AuthSrvcs     ,
+    public server  : ServerService ,
+    public ud      : UserData      ,
+  ) {
     DBService.StaticPouchDB = PouchDBService.PouchInit();
     this.PouchDB = DBService.StaticPouchDB;
 
@@ -877,7 +884,8 @@ export class DBService {
     return new Promise((resolve, reject) => {
       // this.syncFromServer(dbConfig).then(res => {
         // return
-        db1.allDocs({ keys: ['client', 'location', 'locid', 'loc2nd', 'rotation', 'shift', 'shiftlength', 'shiftstarttime', 'other_reports'], include_docs: true })
+        let keys:string[] = [ 'client', 'location', 'locid', 'loc2nd', 'rotation', 'shift', 'shiftlength', 'shiftstarttime', 'other_reports' ];
+        db1.allDocs({ keys: keys, include_docs: true })
       // })
       .then((records) => {
         Log.l("getAllConfigData(): Retrieved documents:\n", records);

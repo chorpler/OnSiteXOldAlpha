@@ -1,16 +1,42 @@
-import * as PouchDBAuth from 'pouchdb-auth'           ;
-import * as PouchDB     from 'pouchdb'                ;
-// var PouchDB = require('pouchdb-browser');
-import * as PDBAuth     from 'pouchdb-authentication' ;
-import * as pdbFind     from 'pouchdb-find'           ;
-// var pdbFind = require('pouchdb-find');
-import * as pdbUpsert   from 'pouchdb-upsert'         ;
-import * as pdbAllDBs   from 'pouchdb-all-dbs'        ;
+// import * as PouchDBAuth from 'pouchdb-auth'           ;
+// import * as PDBAuth     from 'pouchdb-authentication' ;
+// import * as pdbFind     from 'pouchdb-find'           ;
+// import * as pdbUpsert   from 'pouchdb-upsert'         ;
+// import * as pdbAllDBs   from 'pouchdb-all-dbs'        ;
 import * as pdbSQLite   from 'pouchdb-adapter-cordova-sqlite';
-import { Injectable   } from '@angular/core'          ;
+// import { Injectable   } from '@angular/core'          ;
 import { Platform     } from 'ionic-angular'          ;
-import { Log          } from 'domain/onsitexdomain'   ;
-import { Preferences  } from './preferences'          ;
+// import { Log                  } from 'domain/onsitexdomain'   ;
+// import { Preferences          } from './preferences'          ;
+// import   PouchDB                from 'pouchdb'                ;
+// import * as workerPouch         from 'worker-pouch'           ;
+// import PouchDB from 'pouchdb-authentication';
+
+import { Injectable           } from '@angular/core'          ;
+import { Log                  } from 'domain/onsitexdomain'   ;
+import { Preferences          } from './preferences'          ;
+import   PouchDB                from 'pouchdb-browser'        ;
+import * as workerPouch         from 'worker-pouch'           ;
+import * as PDBAuth             from 'pouchdb-authentication' ;
+import * as pdbFind             from 'pouchdb-find'           ;
+import * as pdbUpsert           from 'pouchdb-upsert'         ;
+import * as pdbAllDBs           from 'pouchdb-all-dbs'        ;
+
+export const addPouchDBPlugin = (pouchdbObject:any, plugin:any) => {
+  if(plugin) {
+    if(plugin['default'] !== undefined) {
+      pouchdbObject.plugin(plugin.default);
+    } else {
+      pouchdbObject.plugin(plugin);
+    }
+  } else {
+    Log.w(`addPouchDBPlugin(): This plugin did not exist:\n`, plugin);
+    return;
+  }
+};
+
+export type StaticPouch   = PouchDB.Database;
+export type PouchDatabase = PouchDB.Database;
 
 @Injectable()
 export class PouchDBService {
@@ -22,33 +48,44 @@ export class PouchDBService {
   public static PREFS         : any           = new Preferences()                            ;
   public get prefs() { return PouchDBService.PREFS;};
 
-  constructor(public platform:Platform) {
+  constructor() {
     Log.l('Hello PouchDBService Provider');
     window['Pouch'] = PouchDB;
-    window['PouchDB'] = (PouchDB as any).default;
-    window['PouchDBFind'] = pdbFind;
-    window['PDBAuth'] = PDBAuth;
-    window['PDBSqlite'] = pdbSQLite;
-    let pdbauth:any = (PDBAuth as any).default;
-    let pouchdb = (PouchDB as any).default;
-    // let pouchdb = PouchDB;
-    pouchdb.plugin(pdbSQLite);
-    pouchdb.plugin(pdbUpsert);
-    pouchdb.plugin(pdbauth);
-    pouchdb.plugin(pdbFind.default);
-    pouchdb.plugin(pdbAllDBs);
-    window["pouchdbserv"] = this;
-    // window["StaticPouchDB"] = PouchDB;
-    PouchDBService.StaticPouchDB = pouchdb;
-    PouchDBService.initialized = true;
+    // window['PouchDB'] = (PouchDB as any).default;
+    // window['PouchDBFind'] = pdbFind;
+    // window['PDBAuth'] = PDBAuth;
+    // window['PDBSqlite'] = pdbSQLite;
   // window['PouchDBStatic'] = PouchDB.Static;
   }
 
+  public static setupGlobals() {
+    window['onsitePouchDB'] = PouchDB;
+    window['onsitePouchDBService'] = PouchDBService;
+    window['onsitepouchdbservice'] = this;
+    window['onsitepouchdbworker'] = workerPouch;
+    window['onsitepouchdbauthentication'] = PDBAuth;
+    window['onsitePouchDBService'] = PouchDBService;
+    window['onsitepouchdbservice'] = this;
+    window['onsitepouchdbworker'] = workerPouch;
+    window['onsitepouchdbauthentication'] = PDBAuth;
+    window['onsitepouchdbfind'] = pdbFind;
+  }
+
   public static PouchInit() {
-    // if (!PouchDBService.initialized && PouchDB && PouchDB.plugin !== undefined) {
-    if (!PouchDBService.initialized) {
-      let pouchdb = (PouchDB as any).default;
+    if(!PouchDBService.initialized) {
+      PouchDBService.setupGlobals();
+      let pouchdb:any = PouchDB;
+      if(PouchDB && PouchDB['default']) {
+        pouchdb = PouchDB.default;
+      }
+      // let pouchdb = (PouchDB as any).default;
+      addPouchDBPlugin(pouchdb, PDBAuth);
+      addPouchDBPlugin(pouchdb, pdbUpsert);
+      addPouchDBPlugin(pouchdb, pdbFind);
+      addPouchDBPlugin(pouchdb, pdbAllDBs);
+      pouchdb.adapter('worker', workerPouch);
       let pdbauth:any = (PDBAuth as any).default;
+      pouchdb.plugin(pdbSQLite);
       pouchdb.plugin(pdbUpsert);
       pouchdb.plugin(pdbauth);
       pouchdb.plugin(pdbFind.default);

@@ -1,8 +1,12 @@
 /**
  * Name: Shift domain class
- * Vers: 5.1.1
- * Date: 2018-02-08
+ * Vers: 5.4.2
+ * Date: 2018-02-21
  * Auth: David Sargeant
+ * Logs: 5.4.2 2018-02-21: Changed getShiftStatus() to fix coloring for S shift lengths with work reports
+ * Logs: 5.4.1 2018-02-21: Changed getShiftStatus() return value for T/Q/M/V shifts with work reports
+ * Logs: 5.3.1 2018-02-12: Mike changed getShiftStatus() logic significantly without updating all versions of Shift. For shame.
+ * Logs: 5.2.1 2018-02-09: Added getShiftTimeline() method
  * Logs: 5.1.1 2018-02-08: Added getFlaggedReports() method
  * Logs: 5.0.2 2018-01-29: Added getAllShiftHours() method
  * Logs: 5.0.1 2017-12-15: Merged app and console versions
@@ -16,14 +20,14 @@ import { Log, isMoment, moment, Moment          } from '../config'        ;
 import { Report, ReportOther, Jobsite, Employee } from './domain-classes' ;
 
 export const _sortReports = (a:Report, b:Report): number => {
-  let dateA:any  = a['report_date'];
-  let dateB:any  = b['report_date'];
-  let startA = a['time_start'];
-  let startB = b['time_start'];
-  dateA  = isMoment(dateA)  ? dateA  : moment(dateA).startOf('day');
-  dateB  = isMoment(dateB)  ? dateB  : moment(dateB).startOf('day');
-  startA = isMoment(startA) ? startA : moment(startA);
-  startB = isMoment(startB) ? startB : moment(startB);
+  let dateA:any  = moment(a.report_date).startOf('day');
+  let dateB:any  = moment(b.report_date).startOf('day');
+  let startA = moment(a.time_start);
+  let startB = moment(b.time_start);
+  // dateA  = isMoment(dateA)  ? dateA  : moment(dateA).startOf('day');
+  // dateB  = isMoment(dateB)  ? dateB  : moment(dateB).startOf('day');
+  // startA = isMoment(startA) ? startA : moment(startA);
+  // startB = isMoment(startB) ? startB : moment(startB);
   return dateA.isBefore(dateB) ? -1  : dateA.isAfter(dateB) ? 1 : startA.isBefore(startB) ? -1 : startA.isAfter(startB) ? 1 : 0;
 };
 
@@ -451,7 +455,6 @@ export class Shift {
     } else if(countsForBonusHours > 11) {
       bonusHours = 3 + (countsForBonusHours - 11);
     }
-    // shiftTotal += bonusHours;
     // Log.l("getTotalPayrollHoursForShift(): For shift %s, %d reports, %f hours, %f hours eligible, so bonus hours = %f.\nShift total: %f hours.", this.getShiftSerial(), this.shift_reports.length, shiftTotal, countsForBonusHours, bonusHours, shiftTotal);
     return bonusHours;
   }
@@ -462,11 +465,6 @@ export class Shift {
     for(let report of reports) {
       if(report['type'] === undefined || report['type'] === 'Work Report') {
         total += report.getRepairHours();
-      } else {
-        /**
-         * ToDo(2017-07-05): Ask Mike if miscellaneous reports should count for shift hours, or what
-         * Conclusion: They get their own hours and codes
-         */
       }
     }
     return total;
@@ -552,6 +550,10 @@ export class Shift {
     return total;
   }
 
+  public getShiftTimeline():Array<any> {
+    return [];
+  }
+
   public setShiftReports(reports:Array<Report>) {
     this.shift_reports = reports;
     return this.shift_reports;
@@ -570,15 +572,12 @@ export class Shift {
     }
     if(i > -1) {
       // Log.l(`addShiftReport(): Report '${report._id}' already exists in shift ${this.getShiftSerial()}.`);
-      // window['onsitesplicedreport'] = this.shift_reports.splice(i, 1)[0];
     } else {
       // Log.l(`removeShiftReport(): Report '${report._id}' not found in shift ${this.getShiftSerial()}:\n`, reports[i])
       reports.push(report);
     }
     this.shift_reports = reports;
     return this.shift_reports;
-    // this.shift_reports.push(report);
-    // return this.shift_reports;
   }
 
   public removeShiftReport(report:Report) {
@@ -651,9 +650,6 @@ export class Shift {
     }
     this.other_reports = others;
     return this.other_reports;
-
-    // this.other_reports.push(other);
-    // return this.other_reports;
   }
 
   public removeOtherReport(other:ReportOther) {
@@ -675,7 +671,6 @@ export class Shift {
     }
     this.other_reports = others;
     return this.other_reports;
-    // return others;
   }
 
   public getShiftStats(complete?:boolean) {
@@ -686,9 +681,7 @@ export class Shift {
     let others  = this.getShiftOtherReports() ;
     let reports = this.getShiftReports();
     let output  = []                    ;
-    // let slcode  = ""                     ;
     let data    = { status: 0, hours: 0, workHours: 0, otherReportHours: 0, code: "" };
-    // let data    = {status: 0, hours: 0, code: output};
     // M Training and Travel
     // T Training
     // Q Travel
@@ -701,70 +694,23 @@ export class Shift {
       if(type === 'Training') {
         output.push("T");
         data.otherReportHours += other.time;
-        // if(data.code === "Q") {
-        //   data.code = "M";
-        // } else {
-        //   data.code = "T";
-        // }
-
-        // let i = output.indexOf("Q");
-        // let j = output.indexOf("T");
-        // if(i > -1) {
-        //   output[i] = "M";
-        // } else if(j > -1) {
-        //   output[i] = "M";
-        // } else {
-        //   output.push("T");
-        // }
       } else if(type === 'Travel') {
         output.push("Q");
         data.otherReportHours += other.time;
-        // let i = output.indexOf("T");
-        // let j = output.indexOf("Q");
-        // if(i > -1) {
-        //   output[i] = "M";
-        // } else if(j > -1) {
-        //   output[i] = "M";
-        // } else {
-        //   output.push("Q");
-        // }
-        // if(data.code === "T") {
-        //   data.code = "M";
-        // } else {
-        //   data.code = "Q";
-        // }
       } else if(type === 'Standby') {
-        // data.otherReportHours += other.time;
         output.push("B");
-        // data.workHours += other.time;
         data.otherReportHours += other.time;
       } else if(type === 'Standby: HB Duncan') {
         output.push("S");
-        // if(output.indexOf("S") === -1) {
-        //   output.push("S");
-        // }
-        // data.code = "S";
       } else if(type === 'Sick') {
         output.push("E");
         data.otherReportHours += other.time;
-        // if(output.indexOf("E") === -1) {
-        //   output.push("E");
-        // }
-        // data.code = "E";
       } else if(type === 'Vacation') {
         output.push("V");
         data.otherReportHours += other.time;
-        // if(output.indexOf("V") === -1) {
-        //   output.push("V");
-        // }
-        // data.code = "V"
       } else if(type === 'Holiday') {
         output.push("H");
         data.otherReportHours += other.time;
-        // if(output.indexOf("H") === -1) {
-        //   output.push("H");
-        // }
-        // data.code = "H";
       }
     }
     if(reports.length > 0) {
@@ -819,9 +765,6 @@ export class Shift {
         data.code += "S";
       }
     }
-    // if(output.length > 1) {
-    //   data.status++;
-    // }
     if(data.code) {
       data.status = 1;
     }
@@ -895,35 +838,56 @@ export class Shift {
     if(colors !== undefined && colors === false) {
       return "noColors";
     }
-    let hours = this.getNormalHours();
-    let total = this.getShiftLength();
+    let hours = this.getNormalHours(); // Total work report hours
+    let total = this.getShiftLength(); // worksite shift hours
     let status = this.getShiftReportsStatus();
     let date = this.getShiftDate().format("YYYY-MM-DD");
     let now = moment().format("YYYY-MM-DD");
     let retVal;
     if(date > now) {
-      retVal="hoursFuture";
-    } else if(total === 'off') {
-      retVal = "hoursComplete";
-    } else if(status.status && !status.workHours) {
-      retVal = "hoursComplete";
+      retVal = "hoursFuture";
+    } else if(status.code === 'S') {
+      retVal = "standby";
+    } else if(status.code === 'T') {
+      retVal = "training";
+    } else if(status.code === 'Q') {
+      retVal = "travel";
+    } else if(status.code === 'M') {
+      retVal = "trng-trvl";
+    } else if(status.code === 'H') {
+      retVal = "holiday";
+    } else if(status.code === 'E') {
+      retVal = "sick";
+    } else if(total === 'OFF' || total === 'off') {
+      retVal ="off";
+    // } else if(status.status && !status.workHours) {
+    //   retVal = "hoursComplete";
     } else if(status.status && status.workHours) {
       retVal = "hoursComplete";
-    } else if(typeof total === 'string' && !status.workHours && !status.otherReportHours && isNaN(Number(total))) {
-      retVal = "hoursUnder";
-    } else if(typeof total === 'string' && status.otherReportHours) {
-      retVal = "hoursComplete";
-    } else if(typeof total === 'string' && status.workHours && isNaN(Number(total))) {
-      retVal = "hoursComplete";
+    // } else if(typeof total === 'string' && !status.workHours && !status.otherReportHours && isNaN(Number(total))) {
+    //   retVal = "hoursUnder";
+    // } else if(typeof total === 'string' && status.otherReportHours) {
+    //   retVal = "hoursComplete";
+    // } else if(typeof total === 'string' && status.workHours && isNaN(Number(total))) {
+    //   retVal = "hoursComplete";
     } else if(!status.status) {
-      if(hours > total) {
-        retVal = "hoursOver";
-      } else if(hours < total) {
-        retVal = "hoursUnder";
-      } else if(hours === total) {
-        retVal = "hoursComplete";
+      let numericTotal = Number(total);
+      if(isNaN(numericTotal)) {
+        if(hours) {
+          retVal = 'hoursComplete';
+        } else {
+          retVal = 'hoursUnder'
+        }
       } else {
-        retVal = "hoursUnknown";
+        if(hours > total) {
+          retVal = "hoursOver";
+        } else if(hours < total) {
+          retVal = "hoursUnder";
+        } else if(hours == total) {
+          retVal = "hoursComplete";
+        } else {
+          retVal = "hoursUnknown";
+        }
       }
     }
     return retVal;

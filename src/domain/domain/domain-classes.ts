@@ -10,6 +10,7 @@
 import { Address       } from './address'           ;
 import { Employee      } from './employee'          ;
 import { Jobsite       } from './jobsite'           ;
+import { Jobsites      } from './jobsites'           ;
 import { Street        } from './street'            ;
 import { Shift         } from './shift'             ;
 import { Report        } from './report'            ;
@@ -31,6 +32,7 @@ import { PreAuth       } from './preauth'           ;
 import { Notice        } from './notice'            ;
 import { Notices       } from './notice'            ;
 
+
 export module OnSiteX {
 
 }
@@ -38,6 +40,7 @@ export module OnSiteX {
 export { Address       } from './address'           ;
 export { Employee      } from './employee'          ;
 export { Jobsite       } from './jobsite'           ;
+export { Jobsites      } from './jobsites'           ;
 export { Street        } from './street'            ;
 export { Shift         } from './shift'             ;
 export { Report        } from './report'            ;

@@ -33,6 +33,8 @@ import { Employee                                     } from 'domain/onsitexdoma
 import { Shift                                        } from 'domain/onsitexdomain'               ;
 import { PayrollPeriod                                } from 'domain/onsitexdomain'               ;
 import { Message                                      } from 'domain/onsitexdomain'               ;
+import { Street, Address, Geolocation, Schedule,      } from 'domain/onsitexdomain'               ;
+import { Schedules, Jobsites,                         } from 'domain/onsitexdomain'               ;
 import { IonDigitKeyboardCmp, IonDigitKeyboardOptions } from 'components/ion-digit-keyboard'      ;
 import { TabsService                                  } from 'providers/tabs-service'             ;
 import { ClockComponent                               } from 'components/clock'                   ;
@@ -98,8 +100,9 @@ export class OnSiteApp implements OnInit {
     public settings     : OpenNativeSettings       ,
     public colors       : ColorService             ,
   ) {
-    window['onsiteapp'] = this;
-    window['moment'] = moment;
+    window['onsiteapp']     = this;
+    window['moment']        = moment;
+    this.createConsoleObjects();
   }
 
   ngOnInit() {
@@ -131,6 +134,29 @@ export class OnSiteApp implements OnInit {
         this.rootPage = homePage;
       }
     });
+  }
+
+  public createConsoleObjects() {
+    window[ 'moment' ] = moment;
+    window[ 'Log'    ] = Log;
+    window[ 't1'     ] = CONSOLE.t1;
+    window[ 'c1'     ] = CONSOLE.c1;
+    window['onsitedebug'] = window['onsitedebug'] || {}    ;
+    window['onsitedebug']['Jobsite']       = Jobsite       ;
+    window['onsitedebug']['ReportOther']   = ReportOther   ;
+    window['onsitedebug']['Report']        = Report        ;
+    window['onsitedebug']['Employee']      = Employee      ;
+    window['onsitedebug']['Shift']         = Shift         ;
+    window['onsitedebug']['PayrollPeriod'] = PayrollPeriod ;
+    window['onsitedebug']['Message']       = Message       ;
+    window['onsitedebug']['Address']       = Address       ;
+    window['onsitedebug']['Street']        = Street        ;
+    window['onsitedebug']['Geolocation']   = Geolocation   ;
+    window['onsitedebug']['Jobsite']       = Jobsite       ;
+    window['onsitedebug']['Jobsites']      = Jobsites      ;
+    window['onsitedebug']['Schedule']      = Schedule      ;
+    window['onsitedebug']['Schedules']     = Schedules     ;
+
   }
 
   public registerListeners() {
@@ -184,10 +210,6 @@ export class OnSiteApp implements OnInit {
 
       // window[ "PouchDB"].debug.enable('*');
       window[ "PouchDB"].debug.disable('*');
-      window[ 'moment' ] = moment;
-      window[ 'Log'    ] = Log;
-      window[ 't1'     ] = CONSOLE.t1;
-      window[ 'c1'     ] = CONSOLE.c1;
       Log.l(`OnSite: about to register listeners...`);
       this.registerListeners();
       Log.l(`OnSite: about to preload audio...`);

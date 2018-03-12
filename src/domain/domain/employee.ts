@@ -1,8 +1,9 @@
 /**
  * Name: Employee domain class
- * Vers: 5.0.1
- * Date: 2017-12-15
+ * Vers: 5.1.0
+ * Date: 2018-02-21
  * Auth: David Sargeant
+ * Logs: 5.1.0 2018-02-21: Added getQuickbooksName() method
  * Logs: 5.0.1 2017-12-15: Merged app and console domain class
  * Logs: 4.2.1 2017-12-15: Added some serialization/deserialization methods
  * Logs: 4.1.1 2017-11-20: added technician property output to serialize method
@@ -68,7 +69,7 @@ export class Employee implements IFEmployee {
   public technician          : string        ;
   public type                : any           ;
   public avtrNameAsUser      : boolean       ;
-  public userClass           : any           ; 
+  public userClass           : any           ;
   public client              : string        ;
   public location            : string        ;
   public locID               : string        ;
@@ -436,18 +437,30 @@ export class Employee implements IFEmployee {
     return result;
   }
 
-  public isActive() {
+  public isActive():boolean {
     return this.active;
   }
 
-  public activate() {
+  public activate():boolean {
     this.active = true;
     return this.active;
   }
 
-  public deactivate() {
+  public deactivate():boolean {
     this.active = false;
     return this.active;
+  }
+
+  public getQuickbooksName():string {
+    let out:string = `${this.lastName}`;
+    if(this.suffix) {
+      out += ` ${this.suffix}`;
+    }
+    out += `, ${this.firstName}`;
+    if(this.middleName) {
+      out += ` ${this.middleName}`;
+    }
+    return out;
   }
 
   public toString() {

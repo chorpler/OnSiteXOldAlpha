@@ -1,4 +1,3 @@
-// import * as HashMap from '@typed/hashmap';
 import { Injectable                    } from '@angular/core'                  ;
 import { Events, Platform, App         } from 'ionic-angular'                  ;
 import { Storage                       } from '@ionic/storage'                 ;
@@ -6,18 +5,28 @@ import { NativeStorage                 } from '@ionic-native/native-storage'   ;
 import { Device                        } from '@ionic-native/device'           ;
 import { AppVersion                    } from '@ionic-native/app-version'      ;
 import { UniqueDeviceID                } from '@ionic-native/unique-device-id' ;
-import { Log, isMoment, moment, Moment } from 'domain/onsitexdomain'                 ;
-// import { DBService                     } from './db-service'                   ;
+import { Log, isMoment, moment, Moment } from 'domain/onsitexdomain'           ;
 import { Preferences                   } from './preferences'                  ;
-import { Shift                         } from 'domain/onsitexdomain'                 ;
-import { PayrollPeriod                 } from 'domain/onsitexdomain'                 ;
-import { Report                        } from 'domain/onsitexdomain'                 ;
-import { ReportOther                   } from 'domain/onsitexdomain'                 ;
-import { Employee                      } from 'domain/onsitexdomain'                 ;
-import { Message                       } from 'domain/onsitexdomain'                 ;
-import { Jobsite                       } from 'domain/onsitexdomain'                 ;
+import { Shift                         } from 'domain/onsitexdomain'           ;
+import { PayrollPeriod                 } from 'domain/onsitexdomain'           ;
+import { Report                        } from 'domain/onsitexdomain'           ;
+import { ReportOther                   } from 'domain/onsitexdomain'           ;
+import { Employee                      } from 'domain/onsitexdomain'           ;
+import { Message                       } from 'domain/onsitexdomain'           ;
+import { Jobsite                       } from 'domain/onsitexdomain'           ;
 
 export type DataKey = "employee" | "sites" | "reports" | "otherReports" | "payrollPeriods" | "shifts" | "messages" | "report_types" | "training_types" | "site_info" | "techUpdated";
+export interface ConfigKey {
+  client         ?: string ;
+  location       ?: string ;
+  locid          ?: string ;
+  loc2nd         ?: string ;
+  rotation       ?: string ;
+  shift          ?: string ;
+  shiftlength    ?: string ;
+  shiftstarttime ?: string ;
+  other_reports  ?: string ;
+};
 
 @Injectable()
 export class UserData {
@@ -142,11 +151,6 @@ export class UserData {
   ) {
     window["onsiteuserdata"] = this;
     window["UserData"] = UserData;
-    // let hm = ['empty', 'set', 'get', 'has', 'size', 'remove', 'entries', 'keys', 'values', 'reduce', 'map', 'forEach', 'filter', 'fromIterable', 'fromObject', 'fromArray'];
-    // window['hm'] = window['hm'] || {};
-    // for(let key of hm) {
-    //   window['hm'][key] = HashMap[key];
-    // }
     UserData.data = UserData.data || {
       employee      : [],
       sites         : [],

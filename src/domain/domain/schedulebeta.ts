@@ -1,15 +1,16 @@
 /**
  * Name: Schedule Beta domain class
- * Vers: 2.0.1
- * Date: 2017-12-03
+ * Vers: 4.0.0
+ * Date: 2018-02-20
  * Auth: David Sargeant
+ * Logs: 4.0.0 2018-02-20: Added getTechUsernames(), isTechInSchedule(), isUsernameInSchedule(), getTechRotation(), getTechRotationSeq(), getRotationSeq() methods
  * Logs: 2.0.1 2017-12-03: Added functionality and added _id and _rev to serialize output
  * Logs: 1.1.2 2017-09-07: Initial
  */
 
-import { sprintf                           } from 'sprintf-js'                 ;
-import { Log, moment, Moment, isMoment, oo } from '../config' ;
-import { Jobsite, Employee, Shift          } from './domain-classes'           ;
+import { sprintf                           } from 'sprintf-js'       ;
+import { Log, moment, Moment, isMoment, oo } from '../config'        ;
+import { Jobsite, Employee, Shift          } from './domain-classes' ;
 
 export class ScheduleBeta {
   // public sites         : Array<Jobsite>       = []    ;
@@ -35,8 +36,6 @@ export class ScheduleBeta {
   public _rev          : string               = ""    ;
 
   constructor(type?:string,creator?:string,start?:Moment|Date,end?:Moment|Date) {
-    // window['onsitedebug'] = window['onsitedebug'] || {};
-    // window['onsitedebug']['Schedule'] = Schedule;
     let today     = moment().startOf('day') ;
     this.type     = type                    || "week"                       ;
     this.creator  = creator                 || "grumpy"                     ;
@@ -468,6 +467,96 @@ export class ScheduleBeta {
       Log.w(entry);
       return null;
     }
+  }
+
+  public getTechUsernames():Array<string> {
+    let out:Array<string> = this.techs.map((a:Employee) => a.username);
+    return out;
+  }
+
+  public isTechInSchedule(tech:Employee):boolean {
+    let username = tech.getUsername();
+    return this.isUsernameInSchedule(username);
+  }
+
+  public isUsernameInSchedule(name:string):boolean {
+    let techInList = this.techs.find((a:Employee) => a.username === name);
+    if(techInList) {
+      return true;
+    } else {
+      let techUnassigned = this.unassigned.find((a:Employee) => a.username === name);
+      if(techUnassigned) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
+  // public findTech(tech:Employee):Employee {
+
+  // }
+  // public findTechUsername():string {
+
+  // }
+  // public findActiveTech() {
+
+  // }
+  public getTechRotation(tech:Employee):string {
+    if(!this.isTechInSchedule(tech)) {
+      return "MISSING";
+    } else {
+      let techRotation;
+      let name = tech.getUsername();
+      let schedule = this.getSchedule();
+      outerloop:
+      for(let siteName in schedule) {
+        let siteRotations = schedule[siteName];
+        for(let rotation in siteRotations) {
+          let techs = siteRotations[rotation];
+          if(techs.indexOf(name) > -1) {
+            techRotation = rotation;
+            break outerloop;
+          }
+          // let i = techs.findIndex((a:Employee) => {
+          //   return a.username === tech.username;
+          // });
+          // if(i > -1) {
+          //   techRotation = rotation;
+          //   break outerloop;
+          // }
+        }
+      }
+      if(techRotation) {
+        return techRotation;
+      } else {
+        let date = this.getStartDate().format("YYYY-MM-DD");
+        Log.w(`Schedule.getTechRotation(): Unable to find tech rotation for '${tech.getUsername()}', date '${date}'`);
+        return "UNASSIGNED";
+      }
+    }
+  }
+
+  public getTechRotationSeq(tech:Employee):string {
+    let rotation = this.getTechRotation(tech);
+    return this.getRotationSeq(rotation);
+  }
+
+  public static getRotationSeq(rotation:string|{name:string,fullName:string,code?:string,value?:string,id?:string}):string {
+    let a = "";
+    if(typeof rotation === 'string') {
+      a = rotation;
+    } else if(typeof rotation === 'object' && rotation.name !== undefined) {
+      a = rotation.name;
+    } else {
+      a = JSON.stringify(rotation);
+    }
+    let out = a === 'FIRST WEEK' ? "A" : a === 'CONTN WEEK' ? "B" : a === 'FINAL WEEK' ? "C" : a === 'DAYS OFF' ? "D" : a === 'VACATION' ? "V" : a === "UNASSIGNED" ? "X" : a === "MISSING" ? "Y" : "Z";
+    return out;
+  }
+
+  public getRotationSeq(rotation:string|{name:string,fullName:string,code?:string,value?:string,id?:string}):string {
+    return ScheduleBeta.getRotationSeq(rotation);
   }
 
   public static getNextScheduleStartDateFor(forDate?:Moment|Date) {

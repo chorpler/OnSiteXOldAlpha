@@ -1,13 +1,16 @@
 /**
  * Name: Schedule domain class
- * Vers: 3.1.4
- * Date: 2017-09-19
+ * Vers: 4.0.1
+ * Date: 2018-02-21
  * Auth: David Sargeant
+ * Logs: 4.0.1 2018-02-21: Added a debugging output for loadTechs Log line
+ * Logs: 4.0.0 2018-02-20: Added getTechUsernames(), isTechInSchedule(), isUsernameInSchedule(), getTechRotation(), getTechRotationSeq(), getRotationSeq() methods
+ * Logs: 3.1.4 2017-09-19: Initial keeping of logs.
  */
 
-import { sprintf                           } from 'sprintf-js'                 ;
-import { Log, moment, Moment, isMoment, oo } from '../config' ;
-import { Jobsite, Employee, Shift          } from './domain-classes'           ;
+import { sprintf                           } from 'sprintf-js'       ;
+import { Log, moment, Moment, isMoment, oo } from '../config'        ;
+import { Jobsite, Employee, Shift          } from './domain-classes' ;
 
 export class Schedule {
   // public sites         : Array<Jobsite>       = []    ;
@@ -25,6 +28,8 @@ export class Schedule {
   // public stats         : any = null                   ;
   public schedule      : any = null                   ;
   public scheduleDoc   : any = null                   ;
+  // public techs         : Array<Employee>      = []    ;
+  // public unassigned    : Array<Employee>      = []    ;
   public techs         : Array<Employee>      = []    ;
   public unassigned    : Array<Employee>      = []    ;
   public backup        : boolean              = false ;
@@ -32,8 +37,8 @@ export class Schedule {
   public _rev          : string               = ""    ;
 
   constructor(type?:string,creator?:string,start?:Moment|Date,end?:Moment|Date) {
-    // window['onsitedebug'] = window['onsitedebug'] || {};
-    // window['onsitedebug']['Schedule'] = Schedule;
+    window['onsitedebug'] = window['onsitedebug'] || {};
+    window['onsitedebug']['Schedule'] = Schedule;
     let today        = moment().startOf('day')  ;
     this.type        = type                     || "week"                       ;
     this.creator     = creator                  || "grumpy"                     ;
@@ -48,7 +53,6 @@ export class Schedule {
     this.timestamp   = moment()                 ;
     this.timestampXL = this.timestamp.toExcel() ;
     this.backup      = false                    ;
-
   }
 
   public readFromDoc(doc:any) {
@@ -75,8 +79,15 @@ export class Schedule {
     let keys = Object.keys(this);
     for(let key of keys) {
       if(key === 'techs' || key === 'unassigned') {
-        let tmp = this[key].map((a:Employee) => a.username);
-        doc[key] = tmp;
+        let value:Array<any> = this[key];
+        if(value[0] instanceof Employee) {
+          let tmp = value.map((a:Employee) => a.username);
+          doc[key] = tmp;
+        } else if(typeof value[0] === 'string') {
+          doc[key] = value;
+        } else {
+          doc[key] = this[key];
+        }
       } else if(key === 'start' || key ==='end') {
         doc[key] = this[key].format("YYYY-MM-DD");
       } else if(key === 'startXL') {
@@ -113,6 +124,37 @@ export class Schedule {
 
   public serialize() {
     return this.saveToDoc();
+  }
+
+  public loadTechs(employees:Array<Employee>) {
+    let techNames = this.techs.slice(0);
+    let unassignedNames = this.unassigned.slice(0);
+    let techCount = techNames.length;
+    let unassignedCount = unassignedNames.length;
+    let techsConverted = 0, unassignedConverted = 0;
+    for(let i = 0; i < techCount; i++) {
+      let name:any = techNames[i];
+      if(typeof name === 'string') {
+        let tech:Employee = employees.find((a:Employee) => a.username === name);
+        if(tech) {
+          this.techs[i] = tech;
+          techsConverted++;
+        }
+      }
+    }
+    for(let i = 0; i < unassignedCount; i++) {
+      let name:any = unassignedNames[i];
+      if(typeof name === 'string') {
+        let tech:Employee = employees.find((a:Employee) => a.username === name);
+        if(tech) {
+          this.unassigned[i] = tech;
+          unassignedConverted++;
+        }
+      }
+    }
+    let id = this._id || 'unknown'
+    Log.l(`Schedule.loadTechs(${id}): Converted ${techsConverted} working techs and ${unassignedConverted} unassigned techs.`);
+    return this;
   }
 
   public getType() {
@@ -368,6 +410,97 @@ export class Schedule {
     }
     this.schedule = schedule;
     return this.schedule;
+  }
+
+  public getTechUsernames():Array<string> {
+    let out:Array<string> = this.getTechs().map((a:Employee) => a.username);
+    return out;
+  }
+
+  public isTechInSchedule(tech:Employee):boolean {
+    let username = tech.getUsername();
+    return this.isUsernameInSchedule(username);
+  }
+
+  public isUsernameInSchedule(name:string):boolean {
+    let techInList = this.getTechs().find((a:Employee) => a.username === name);
+    if(techInList) {
+      return true;
+    } else {
+      let techUnassigned = this.getUnassigned().find((a:Employee) => a.username === name);
+      if(techUnassigned) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
+  // public findTech(tech:Employee):Employee {
+
+  // }
+  // public findTechUsername():string {
+
+  // }
+  // public findActiveTech() {
+
+  // }
+  public getTechRotation(tech:Employee):string {
+    if(!this.isTechInSchedule(tech)) {
+      // return "MISSING";
+      return "UNASSIGNED";
+    } else {
+      let techRotation;
+      let name = tech.getUsername();
+      let schedule = this.getSchedule();
+      outerloop:
+      for(let siteName in schedule) {
+        let siteRotations = schedule[siteName];
+        for(let rotation in siteRotations) {
+          let techs = siteRotations[rotation];
+          if(techs.indexOf(name) > -1) {
+            techRotation = rotation;
+            break outerloop;
+          }
+          // let i = techs.findIndex((a:Employee) => {
+          //   return a.username === tech.username;
+          // });
+          // if(i > -1) {
+          //   techRotation = rotation;
+          //   break outerloop;
+          // }
+        }
+      }
+      if(techRotation) {
+        return techRotation;
+      } else {
+        let date = this.getStartDate().format("YYYY-MM-DD");
+        Log.w(`Schedule.getTechRotation(): Unable to find tech rotation for '${tech.getUsername()}', date '${date}'`);
+        return "UNASSIGNED";
+      }
+    }
+  }
+
+  public getTechRotationSeq(tech:Employee):string {
+    let rotation = this.getTechRotation(tech);
+    return this.getRotationSeq(rotation);
+  }
+
+  public static getRotationSeq(rotation:string|{name:string,fullName:string,code?:string,value?:string,id?:string}):string {
+    let a = "";
+    if(typeof rotation === 'string') {
+      a = rotation;
+    } else if(typeof rotation === 'object' && rotation.name !== undefined) {
+      a = rotation.name;
+    } else {
+      a = JSON.stringify(rotation);
+    }
+    let out = a === 'FIRST WEEK' ? "A" : a === 'CONTN WEEK' ? "B" : a === 'FINAL WEEK' ? "C" : a === 'DAYS OFF' ? "D" : a === 'VACATION' ? "V" : a === "UNASSIGNED" ? "X" : a === "MISSING" ? "Y" : "Z";
+    return out;
+  }
+
+  public getRotationSeq(rotation:string|{name:string,fullName:string,code?:string,value?:string,id?:string}):string {
+    return Schedule.getRotationSeq(rotation);
   }
 
   public static getNextScheduleStartDateFor(forDate?:Moment|Date) {

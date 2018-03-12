@@ -19,7 +19,7 @@ import { Injectable } from '@angular/core'  ;
 import { Log        } from 'domain/onsitexdomain' ;
 
 export const version      = 56                  ;
-export var adapter    = 'idb'            ;
+export var adapter        = 'idb'               ;
 // export var adapter        = 'worker'            ;
 // export var adapter      = 'websql'            ;
 // export var adapter    = 'memory'            ;

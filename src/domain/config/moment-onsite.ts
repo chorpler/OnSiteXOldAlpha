@@ -1,10 +1,15 @@
-// import * as moment from 'moment-timezone';
-// import * as momentParseFormat from 'moment-parseformat' ;          
-// import * as momentRecur from 'moment-recur'       ;    
-// import * as momentRound from 'moment-round'       ;    
-import * as moment from 'moment';
-import * as momentShortFormat from 'moment-shortformat' ;          
-import * as momentTimer from 'moment-timer'       ;    
+// import * as momentParseFormat from 'moment-parseformat' ;
+// import * as momentRecur       from 'moment-recur'       ;
+// import * as momentRound       from 'moment-round'       ;
+// import * as moment            from 'moment-timezone'    ;
+// declare const require                                   ;
+import * as moment            from 'moment'             ;
+import * as momentTimezone    from 'moment-timezone'    ;
+import * as momentShortFormat from 'moment-shortformat' ;
+import * as momentTimer       from 'moment-timer'       ;
+
+// const twix = require('twix');
+// import {Twix,TwixStatic,} from 'twix';
 
 declare module "moment" {
   interface Moment {
@@ -18,7 +23,10 @@ declare module "moment" {
     round(precision: number, key: string, direction?: string): moment.Moment;
     ceil(precision:number, key:string):moment.Moment;
     floor(precision:number, key:string):moment.Moment;
-  }  
+    toOADate():moment.Moment;
+  }
+  function fromExcel(days:number|string):moment.Moment;
+  function fromOADate(oaDate:string|number, offset?:string|number):moment.Moment;
 }
 
 export var momentRound = function (precision: number, key: string, direction?: string): moment.Moment {
@@ -91,7 +99,7 @@ export var moment2excel = function (mo?: Date | moment.Moment | string | boolean
   return xlDate;
 };
 
-export var excel2moment = function (days: number | string) {
+export var excel2moment = function (days:number|string, sourceIsMacExcel?:boolean) {
   let value;
   if (typeof days === 'number') {
     value = days;
@@ -105,22 +113,43 @@ export var excel2moment = function (days: number | string) {
   } else {
     throw new TypeError("Cannot convert Excel date if it is not a number or numberlike string: " + days + " (" + typeof days + ")");
   }
-  var XLDay0 = moment([1900, 0, 1, 0, 0, 0]);
-  var now = moment();
-  var daysInMilliseconds = moment.duration(moment.duration(value - 2, 'days').asMilliseconds());
-  var newMoment = moment(XLDay0).add(daysInMilliseconds);
-  let tzDifference = now.utcOffset() - XLDay0.utcOffset();
-  // Log.l("New Moment and XLDay0 TZ difference is (%d - %d = %d):", now.utcOffset(), XLDay0.utcOffset(), tzDifference);
-  // Log.l(newMoment);
-  // Log.l(XLDay0);
-  window['xldays'] = { xlday0: XLDay0, value: value, now: newMoment };
-  let lastMoment = moment(newMoment).subtract(tzDifference, 'minutes');
-  lastMoment.round(10, 'milliseconds');
-  return lastMoment;
+  // let xlDay0Array = [1900, 0, 1, 0, 0, 0];
+  // if(sourceIsMacExcel) {
+    // xlDay0Array = [1904, 0, 1, 0, 0, 0];
+  // }
+  // let XLDay0 = moment(xlDay0Array);
+  // let now = moment();
+  // let daysInMilliseconds = moment.duration(moment.duration(value - 2, 'days').asMilliseconds());
+  // let newMoment = moment(XLDay0).add(daysInMilliseconds);
+  // let tzDifference = now.utcOffset() - XLDay0.utcOffset();
+  // // Log.l("New Moment and XLDay0 TZ difference is (%d - %d = %d):", now.utcOffset(), XLDay0.utcOffset(), tzDifference);
+  // // Log.l(newMoment);
+  // // Log.l(XLDay0);
+  // window['xldays'] = { xlday0: XLDay0, value: value, now: newMoment };
+  // let midnightDateInQuestion = moment(newMoment).startOf('day');
+  // let morningDateInQuestion  = moment(newMoment).startOf('day').add(6, 'hours');
+  // let offset1 = midnightDateInQuestion.utcOffset();
+  // let offset2 = morningDateInQuestion.utcOffset();
+  // if(offset1 !== offset2) {
+  //   tzDifference = tzDifference +
+  // }
+  // let lastMoment = moment(newMoment).subtract(tzDifference, 'minutes');
+  // lastMoment.round(10, 'milliseconds');
+  // let outMoment = moment(lastMoment);
+  // let DSTTest1 = moment(lastMoment).startOf('day').add(30, 'minutes');
+  // let DSTTest2 = moment(DSTTest1).add(2, 'hours');
+  // if(!DSTTest1.isDST() && DSTTest2.isDST()) {
+  //   outMoment.add(1, 'hour');
+  // }
+  // let testForDSTMoment = moment(lastMoment).startOf('day').add(2, 'hours');
+  // return lastMoment;
+  let OADate:Moment = moment.fromOADate(days);
+  let OADateString:string = moment(OADate).format("YYYY-MM-DDTHH:mm:ss.SSS");
+  let CorrectedOADate:Moment = moment(OADateString);
+  return CorrectedOADate;
 }
 
 // (<any>moment).fromExcel = excel2moment;
-
 
 var momentFnObject:any = moment.fn || {};
 (<any>moment).fn = momentFnObject;
@@ -139,4 +168,17 @@ var momentFnObject:any = moment.fn || {};
 // (moment as any).floor = momentFloor;
 
 export type Moment = moment.Moment;
-export {moment};
+export type Duration = moment.Duration;
+export type MomentInput = moment.MomentInput;
+export type MomentZone = momentTimezone.MomentZone;
+export type MomentTimezone = momentTimezone.MomentTimezone;
+// export type Twix = Twix;
+// export type TwixStatic = TwixStatic;
+
+// momentMS.momentMS(moment, momentTimezone);
+// momentMSPlugin();
+// const momentTimezone = moment;
+const msDatePlugin = require('lib/moment-msdate-plugin.js');
+
+export {moment, momentTimezone};
+// export {moment, momentTimezone};
