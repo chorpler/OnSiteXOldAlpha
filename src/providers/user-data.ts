@@ -145,7 +145,7 @@ export class UserData {
     public storage : Storage        ,
     public platform: Platform       ,
     public device  : Device         ,
-    public unique  : UniqueDeviceID ,
+    // public unique  : UniqueDeviceID ,
     public version : AppVersion     ,
     // public db      : DBService      ,
   ) {
