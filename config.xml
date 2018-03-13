@@ -134,4 +134,5 @@
     <plugin name="cordova-custom-config" spec="^5.0.2" />
     <plugin name="cordova-plugin-camera" spec="^4.0.2" />
     <engine name="android" spec="^7.1.0" />
+    <plugin name="cordova-sqlite-evcore-extbuild-free" spec="^0.9.3" />
 </widget>

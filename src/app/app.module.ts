@@ -24,13 +24,13 @@ import { Geofence                                                } from '@ionic-
 import { BackgroundGeolocation, BackgroundGeolocationConfig      } from '@ionic-native/background-geolocation' ;
 import { BackgroundGeolocationResponse                           } from '@ionic-native/background-geolocation' ;
 import { Network                                                 } from '@ionic-native/network'                ;
-import { Push, PushObject, PushOptions                           } from '@ionic-native/push'                   ;
-import { LocalNotifications                                      } from '@ionic-native/local-notifications'    ;
+// import { Push, PushObject, PushOptions                           } from '@ionic-native/push'                   ;
+// import { LocalNotifications                                      } from '@ionic-native/local-notifications'    ;
 import { UniqueDeviceID                                          } from '@ionic-native/unique-device-id'       ;
 import { Device                                                  } from '@ionic-native/device'                 ;
 import { AppVersion                                              } from '@ionic-native/app-version'            ;
 import { NativeAudio                                             } from '@ionic-native/native-audio'           ;
-import { AppUpdate                                               } from '@ionic-native/app-update'             ;
+// import { AppUpdate                                               } from '@ionic-native/app-update'             ;
 import { Camera, CameraOptions                                   } from '@ionic-native/camera'                 ;
 import { OpenNativeSettings                                      } from '@ionic-native/open-native-settings'   ;
 import { Vibration                                               } from '@ionic-native/vibration'              ;
@@ -119,15 +119,15 @@ import { ColorService                                            } from 'provide
     Geofence,
     BackgroundGeolocation,
     Network,
-    Push,
-    LocalNotifications,
+    // Push,
+    // LocalNotifications,
     UniqueDeviceID,
     Device,
     // Sim,
     NativeAudio,
     OpenNativeSettings,
     Vibration,
-    AppUpdate,
+    // AppUpdate,
     Camera,
     GeolocService,
     PouchDBService,
