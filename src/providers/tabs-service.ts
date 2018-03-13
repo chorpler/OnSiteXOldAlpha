@@ -11,15 +11,16 @@ import { UserData                      } from './user-data'             ;
 
 const tabArrayDev:Array<Tab> = [
   { name: 'OnSiteHome'      , fullName: 'OnSite Home'        , show: true  , role: 'user', icon: 'ion-ios-home-outline'     , waiting: false, active: false, } ,
+  { name: 'Report View'     , fullName: 'Work Report'        , show: true  , role: 'user', icon: 'ion-ios-document-outline' , waiting: false, active: false, } ,
   { name: 'ReportHistory'   , fullName: 'Report History'     , show: true  , role: 'user', icon: 'icomoon-reports'          , waiting: false, active: false, } ,
   // { name: 'Flagged Reports' , fullName: 'Flagged Reports'    , show: true  , role: 'user', icon: 'icomoon-reports-flagged'  , waiting: false, active: false, } ,
-  { name: 'Shift View'      , fullName: 'Shift View'         , show: true  , role: 'user', icon: 'icomoon-work-shift-light' , waiting: false, active: false, } ,
   { name: 'User'            , fullName: 'User'               , show: true  , role: 'user', icon: 'ion-ios-contact-outline'  , waiting: false, active: false, } ,
   // { name: 'User'            , fullName: 'User'               , show: true  , role: 'user', icon: 'icomoon-person-outline'   , waiting: false, active: false, } ,
   { name: 'Message List'    , fullName: 'Messages'           , show: true  , role: 'user', icon: 'ion-ios-text-outline'     , waiting: false, active: false, } ,
   { name: 'Settings'        , fullName: 'Settings'           , show: true  , role: 'user', icon: 'ion-ios-settings-outline' , waiting: false, active: false, } ,
   { name: 'DevPage'         , fullName: 'Developer Settings' , show: true  , role: 'dev' , icon: 'ion-md-options'           , waiting: false, active: false, } ,
-  { name: 'Report View'     , fullName: 'Work Report'        , show: false , role: 'user', icon: 'ion-ios-document-outline' , waiting: false, active: false, } ,
+  // { name: 'Report View'     , fullName: 'Work Report'        , show: false , role: 'user', icon: 'ion-ios-document-outline' , waiting: false, active: false, } ,
+  { name: 'Shift View'      , fullName: 'Shift View'         , show: false , role: 'dev' , icon: 'icomoon-work-shift-light' , waiting: false, active: false, } ,
   { name: 'Message'         , fullName: 'Message'            , show: false , role: 'user', icon: 'ion-ios-text-outline'     , waiting: false, active: false, } ,
   { name: 'Comment'         , fullName: 'Comment'            , show: false , role: 'user', icon: 'ion-ios-text-outline'     , waiting: false, active: false, } ,
   { name: 'Fancy Select'    , fullName: 'Fancy Select'       , show: false , role: 'user', icon: 'ion-ios-text-outline'     , waiting: false, active: false, } ,

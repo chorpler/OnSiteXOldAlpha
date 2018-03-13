@@ -25,7 +25,7 @@ import { Employee, Report, Jobsite } from '../domain/domain-classes';
 // import * as JSON8                    from 'json8'                   ;
 // import * as momentous                from 'moment'                  ;
 import { Decimal, DecimalConfig, dec, json8, oo, } from './config.types';
-import { moment, Moment } from './moment-onsite';
+import { moment, Moment, isMoment, } from './moment-onsite';
 // import { moment } from './config.types';
 // import * as momentous from 'moment';
 // import 'lib/moment-excel';
@@ -96,7 +96,7 @@ export const _sortReports = (a: Report, b: Report): number => {
 };
 
 
-export const isMoment = function (val: any) { return (moment.isMoment(val) && moment(val).isValid()); }
+// export const isMoment = function (val: any) { return (moment.isMoment(val) && moment(val).isValid()); }
 export const sizeOf = function (val: any) {
   let size = 0;
   if (val === null || val === undefined) {

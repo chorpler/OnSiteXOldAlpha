@@ -13,3 +13,15 @@ var xl2m = function(xlDate) {
   let tmp3 = moment(tmp2);
   return tmp3;
 };
+
+var m2xl = function() {
+  // let now = moment();
+  let now = moment(this);
+  let offset = now.offset();
+  let xl1 = now.toOADate();
+  let n2 = moment.fromOADate(xl1);
+  let n3 = moment(n2);
+  let n4 = n3.utcOffset(offset);
+  let momentString = n4.format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
+  let n5 = moment.utc(momentString); n5.toOADate();
+}

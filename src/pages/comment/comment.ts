@@ -43,7 +43,20 @@ export class CommentPage implements OnInit {
   public lang      : any               ;
   public dataReady : boolean  = false  ;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl:ViewController, public platform: Platform, public app: App, public device: Device, public unique: UniqueDeviceID, public version:AppVersion, public server:ServerService, public translate:TranslateService, public alert: AlertService, public ud: UserData) {
+  constructor(
+    public navCtrl   : NavController    ,
+    public navParams : NavParams        ,
+    public viewCtrl  : ViewController   ,
+    public platform  : Platform         ,
+    public app       : App              ,
+    public device    : Device           ,
+    public unique    : UniqueDeviceID   ,
+    public version   : AppVersion       ,
+    public server    : ServerService    ,
+    public translate : TranslateService ,
+    public alert     : AlertService     ,
+    public ud        : UserData         ,
+  ) {
     window["onsitecomments"] = this;
   }
 
@@ -54,17 +67,13 @@ export class CommentPage implements OnInit {
     this.checkPhoneInfo();
   }
 
-  ionViewDidLoad() {
-    Log.l('ionViewDidLoad CommentPage');
-  }
-
   public async submitComment() {
     let lang = this.lang;
-    let spinnerID;
+    let spinnerID:string;
     try {
       let timestamp = moment();
       this.comment.setTimestamp(timestamp);
-      spinnerID = this.alert.showSpinnerPromise(lang['submitting_comment']);
+      spinnerID = await this.alert.showSpinnerPromise(lang['submitting_comment']);
       let res:any = await this.server.saveComment(this.comment);
       Log.l("submitComment(): Saved comment!");
       let out:any = await this.alert.hideSpinnerPromise(spinnerID)

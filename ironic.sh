@@ -16,9 +16,9 @@ if [ ! -e plugins/cordova-plugin-app-update ]; then
   ionic cordova plugin add cordova-plugin-camera
   npm install --save @ionic-native/app-update @ionic-native/device @ionic-native/unique-device-id @ionic-native/badge @ionic-native/camera
   echo Starting ionic serve completely seriously, if anyone from any government agency is listening...
-  ionic serve --lab
+  ionic serve -p 8100 -r 35729 --dev-logger-port 53703 --lab
 else
   echo "No new plugins required!"
   echo "Starting ionic serve completely seriously, if anyone from any government agency is listening..."
-  ionic serve --lab
+  ionic serve -p 8100 -r 35729 --dev-logger-port 53703 --lab
 fi

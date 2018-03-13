@@ -1,11 +1,32 @@
 page-comment {
-  .comment-item {
-    width: 100%;
+  .page-content {
+    &.comment-page-content {
+      margin-top: 56px;
+      margin-bottom: 0px;
+      height: calc(100% - 56px);
+    }
+  }
+  ion-card {
+    padding: 5px;
+  }
+  .comment-section-wrapper {
     display: flex;
     flex-flow: column nowrap;
     justify-content: flex-start;
     align-content: center;
     align-items: center;
+  }
+  .comment-item {
+    width: 100%;
+    flex: 0 1 auto;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    align-content: center;
+    align-items: center;
+    font-size: 16px;
+    margin-top: 2px;
+    margin-bottom: 2px;
   }
   .item-label {
     display: block;
@@ -33,9 +54,10 @@ page-comment {
     align-items: center;
     width: 100%;
     .comment-button {
-      flex: 0 1 auto;
-      min-width: 120px;
-      width: 48%;
+      flex: 1 0 175px;
+      // min-width: 150px;
+      // width: 48%;
+      // width: 48%;
     }
   }
   .ion-item-box {

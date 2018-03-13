@@ -117,7 +117,7 @@ export class AlertService {
   }
 
   public getSpinner(spinID?:string) {
-    let spinners = this.spinners;
+    let spinners:Spinners = this.spinners;
     let length = spinners.size;
     let spinner = undefined;
     if(!length) {
@@ -170,7 +170,15 @@ export class AlertService {
           throw new Error(err);
         }
       } else {
-        throw new Error(`Could not find spinner '${id}' to hide!`);
+        try {
+          Log.l(`hideSpinnerPromise(): Could not find spinnerID, trying to clear spinners. SpinnerID provided was:\n`, spinID);
+          let res:any = await this.clearSpinners();
+          return res;
+        } catch(err) {
+          Log.l(`hideSpinnerPromise(): Error hiding spinner, could not find spinnerID and could not clear spinners!`);
+          Log.e(err);
+          throw new Error(err);
+        }
       }
     } catch(err) {
       Log.l(`hideSpinnerPromise(): Could not find spinner '${id}' to hide!`);

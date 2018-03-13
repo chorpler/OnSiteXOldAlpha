@@ -3,10 +3,11 @@
 // import * as momentRound       from 'moment-round'       ;
 // import * as moment            from 'moment-timezone'    ;
 // declare const require                                   ;
-import * as moment            from 'moment'             ;
-import * as momentTimezone    from 'moment-timezone'    ;
-import * as momentShortFormat from 'moment-shortformat' ;
-import * as momentTimer       from 'moment-timer'       ;
+import   * as moment              from 'moment'             ;
+import   * as momentTimezone      from 'moment-timezone'    ;
+import   * as momentShortFormat   from 'moment-shortformat' ;
+import   * as momentTimer         from 'moment-timer'       ;
+import { Log                    } from './config.functions' ;
 
 // const twix = require('twix');
 // import {Twix,TwixStatic,} from 'twix';
@@ -23,7 +24,7 @@ declare module "moment" {
     round(precision: number, key: string, direction?: string): moment.Moment;
     ceil(precision:number, key:string):moment.Moment;
     floor(precision:number, key:string):moment.Moment;
-    toOADate():moment.Moment;
+    toOADate():number;
   }
   function fromExcel(days:number|string):moment.Moment;
   function fromOADate(oaDate:string|number, offset?:string|number):moment.Moment;
@@ -76,7 +77,69 @@ export var momentFloor = function(precision, key) {
   return this.round(precision, key, 'floor');
 }
 
-export var moment2excel = function (mo?: Date | moment.Moment | string | boolean, dayOnly?: boolean) {
+export const isMoment = function(val:any) {
+  return (moment.isMoment(val) && moment(val).isValid());
+}
+
+// export var moment2excel = function (mo?: Date | moment.Moment | string | boolean, dayOnly?: boolean) {
+//   let xlDate;
+//   let XLDay0 = moment([1900, 0, 1]).startOf('day');
+//   let value;
+//   if (mo) {
+//     if (typeof mo === 'boolean') {
+//       value = this;
+//       xlDate = Math.trunc(moment(value).diff(XLDay0, 'days', true) + 2);
+//     } else {
+//       value = mo;
+//       if (dayOnly) {
+//         xlDate = Math.trunc(moment(value).diff(XLDay0, 'days', true) + 2);
+//       } else {
+//         xlDate = moment(value).diff(XLDay0, 'days', true) + 2;
+//       }
+//     }
+//   } else {
+//     value = this;
+//     xlDate = moment(value).diff(XLDay0, 'days', true) + 2;
+//   }
+//   return xlDate;
+// };
+
+export var ConvertProvidedMomentToExcel = function(day:moment.MomentInput, dayOnly:boolean) {
+  let xlDate:number, out:number;
+  let XLDay0 = moment([1900, 0, 1, 0, 0, 0]);
+  let tempMoment = moment(day);
+  if(!isMoment(tempMoment)) {
+    Log.l(`moment.toExcel(): Error converting moment '${day}' to excel, moment is:\n`, day);
+    throw new TypeError(`moment provided was not a valid MomentInput, cannot convert moment to Excel date`);
+  } else {
+    let now:Moment = moment(tempMoment);
+    let offset:number = now.utcOffset();
+    let xl1:number = now.toOADate();
+    let n2:Moment = moment.fromOADate(xl1);
+    let n3:Moment = moment(n2);
+    let n4:Moment = n3.utcOffset(offset);
+    let momentString:string = n4.format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
+    let n5:Moment = moment.utc(momentString);
+    let out:number = n5.toOADate();
+    if(dayOnly) {
+      out = Math.trunc(out);
+    }
+    return out;
+  }
+};
+
+export var MomentObjectToExcel = function(dayOnly?:boolean) {
+  var mo = this;
+  let outputInteger = false;
+  if(dayOnly === true) {
+    outputInteger = true;
+  }
+  return ConvertProvidedMomentToExcel(this, outputInteger);
+}
+
+// var moment2excel = MomentObjectToExcel;
+
+export var moment2excel = function (mo?: Date | moment.Moment | string | boolean, dayOnly?: boolean):number {
   let xlDate;
   let XLDay0 = moment([1900, 0, 1]).startOf('day');
   let value;
@@ -99,7 +162,7 @@ export var moment2excel = function (mo?: Date | moment.Moment | string | boolean
   return xlDate;
 };
 
-export var excel2moment = function (days:number|string, sourceIsMacExcel?:boolean) {
+export var excel2moment = function(days:number|string, sourceIsMacExcel?:boolean) {
   let value;
   if (typeof days === 'number') {
     value = days;
