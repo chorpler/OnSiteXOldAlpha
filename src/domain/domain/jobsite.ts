@@ -1,8 +1,11 @@
 /**
  * Name: Jobsite domain class
- * Vers: 5.0.2
- * Date: 2018-01-26
+ * Vers: 6.1.0
+ * Date: 2018-03-06
  * Auth: David Sargeant
+ * Logs: 6.1.0 2018-03-06: Added initializers for shiftRotations, techShifts, and hoursList
+ * Logs: 6.0.1 2018-03-06: Changed serialize() to NEVER use JSON.stringify()
+ * Logs: 6.0.0 2018-03-06: Changed serialize() to only use JSON.stringify() on objects
  * Logs: 5.0.2 2018-01-26: Forgot to actually set the new CLL values to the corresponding Jobsite property. D'OH!
  * Logs: 5.0.1 2018-01-26: Changed client, location, locID, and aux to represent full classes, now defined in config.types
  * Logs: 4.0.1 2018-01-24: Re-enabled loc2nd as aux; added types for client, location, locID, aux; added deserialize methods; changed .name to .code
@@ -52,9 +55,9 @@ export class Jobsite {
 
   constructor(inClient?:any, inLoc?: any, inLocID?:any, inAddress?:Address, inLat?:number, inLon?:number, inWI?:number) {
     this._id                        = ""         ;
-    this.client                     = inClient   || null       ;
-    this.location                   = inLoc      || null       ;
-    this.locID                      = inLocID    || null       ;
+    this.client                     = inClient   || new SESAClient()       ;
+    this.location                   = inLoc      || new SESALocation()       ;
+    this.locID                      = inLocID    || new SESALocID()       ;
     this.aux                        = null       ;
     this.address                    = inAddress  || new Address() || null       ;
     this.billing_address            = inAddress  || new Address() || null       ;
@@ -72,9 +75,9 @@ export class Jobsite {
     this.billing_rate               = 65         ;
     this.site_active                = true       ;
     this.divisions                  =            {           } ;
-    this.shiftRotations             =            {           } ;
-    this.hoursList                  =            {           } ;
-    this.techShifts                 =            {           } ;
+    this.shiftRotations             = this.initializeShiftRotations();
+    this.techShifts                 = this.initializeTechShifts() ;
+    this.hoursList                  = this.initializeHoursList();
     this.schedule_name              = ""         ;
     this.has_standby                = false      ;
     this.sort_number                = 0          ;
@@ -86,15 +89,17 @@ export class Jobsite {
 
   }
 
-  public setBilling(inAddr: Address) {
+  public setBilling(inAddr:Address):Address {
     this.billing_address = inAddr;
+    return this.billing_address;
   }
 
-  public setAddress(inAddr: Address) {
+  public setAddress(inAddr:Address):Address {
     this.address = inAddr;
+    return this.address;
   }
 
-  public readFromDoc(doc:any) {
+  public readFromDoc(doc:any):Jobsite {
     if(typeof doc !== 'object') {
       Log.l("Can't read jobsite from:\n", doc);
       throw new Error("readFromDoc(): Jobsite cannot be read");
@@ -146,30 +151,71 @@ export class Jobsite {
         this._rev = doc['_rev'];
       }
     }
+    return this;
   }
 
-  public serialize() {
+  public serialize():any {
     let keys = Object.keys(this);
     let doc:any = {};
     for(let key of keys) {
-      doc[key] = JSON.stringify(this[key]);
+      let value = this[key];
+      if(isMoment(value)) {
+        doc[key] = value.format();
+      } else {
+        doc[key] = this[key];
+      }
     }
     return doc;
   }
 
-  public static deserialize(doc:any) {
+  public static deserialize(doc:any):Jobsite {
     let site = new Jobsite();
     site.deserialize(doc);
     return site;
   }
 
-  public deserialize(doc:any) {
+  public deserialize(doc:any):Jobsite {
     let site = this;
     site.readFromDoc(doc);
     return site;
   }
 
-  public getSiteName() {
+  public initializeShiftRotations():Array<any> {
+    this.shiftRotations = [
+      { name: "FIRST WEEK", fullName: "First Week"      },
+      { name: "CONTN WEEK", fullName: "Continuing Week" },
+      { name: "FINAL WEEK", fullName: "Final Week"      },
+      { name: "DAYS OFF"  , fullName: "Days Off"        },
+      { name: "VACATION"  , fullName: "Vacation"        },
+    ];
+    return this.shiftRotations;
+  }
+
+  public initializeTechShifts():Array<string> {
+    this.techShifts = [ "AM", "PM" ];
+    return this.techShifts;
+  }
+
+  public initializeHoursList():any {
+    let hoursList:any = {};
+    for(let rotation of this.shiftRotations) {
+      let shiftHours:any = {};
+      for(let shift of this.techShifts) {
+        let weekHours:Array<string> = [ "0", "0", "0", "0", "0", "0", "0" ];
+        shiftHours[shift] = weekHours;
+      }
+      if(!rotation['name']) {
+        Log.w(`Jobsite.initializeHoursList(): can't initialize hoursList with this rotation list!`, this);
+        throw new Error("Hours")
+      } else {
+        hoursList[rotation.name] = shiftHours;
+      }
+    }
+    this.hoursList = hoursList;
+    return hoursList;
+  }
+
+  public getSiteName():string {
     let cli = this.client.fullName.toUpperCase();
     let loc = this.location.fullName.toUpperCase();
     let lid = this.locID.fullName.toUpperCase();

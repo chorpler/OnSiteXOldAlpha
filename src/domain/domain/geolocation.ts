@@ -28,13 +28,13 @@ export type DOMTimeStamp = Number;
  *
  */
 export interface Coordinates {
-  latitude: number;
-  longitude: number;
-  altitude?: number;
-  accuracy: number;
-  altitudeAccuracy?: number;
-  heading?: number;
-  speed?: number;
+  latitude          : number;
+  longitude         : number;
+  altitude         ?: number;
+  accuracy          : number;
+  altitudeAccuracy ?: number;
+  heading          ?: number;
+  speed            ?: number;
 }
 
 
@@ -51,7 +51,7 @@ export interface Position {
   timestamp: DOMTimeStamp;
 };
 
-export class Location implements Position {
+export class Geolocation implements Position {
   public coords: Coordinates;
   public timestamp: DOMTimeStamp;
 
@@ -69,4 +69,4 @@ export class Location implements Position {
   }
 }
 
-export const Geolocation = Location;
+export const Location = Geolocation;

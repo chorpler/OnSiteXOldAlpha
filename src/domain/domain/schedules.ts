@@ -1,51 +1,93 @@
 /**
  * Name: Schedules domain class
- * Vers: 1.0.1
- * Date: 2017-08-14
+ * Vers: 3.0.1
+ * Date: 2018-03-01
  * Auth: David Sargeant
+ * Logs: 3.0.1 2018-03-01: Added getScheduleForDate() and made class iterable, hopefully
+ * Logs: 2.0.1 2018-02-26: Added date fields, plus
+ * Logs: 1.0.1 2017-08-14: Initial creation of class
  */
 
 import { sprintf                                           } from 'sprintf-js'                 ;
 import { Log, moment, Moment, isMoment, oo                 } from '../config' ;
 import { Jobsite, Employee, Shift, Schedule, PayrollPeriod } from './domain-classes'           ;
 
-export class Schedules {
+export class Schedules implements Iterator<Schedule> {
+  public get length():number { return Array.isArray(this.schedules) ? this.schedules.length : 0 };
+  public get lastIndex():number { let len = this.length; return len > 0 ? len - 1 : null; };
+  public get lastSchedule():Schedule { return this.length > 0 ? this.schedules[this.lastIndex] : null };
   public schedules:Array<Schedule> = [];
+  public iteratorSchedule:Schedule;
   public sites:Array<Jobsite> = [];
   constructor() {
     window['Schedules'] = Schedules;
   }
 
-  public addSchedule(schedule:Schedule) {
+  // public [Symbol.iterator]() {
+  //   return {
+  //     next: function() {
+  //       return {
+  //         done: this.counter === this.length,
+  //         value: this.counter++
+  //       }
+  //     }.bind(this)
+  //   }
+  // }
+
+  public next():{done:any,value:Schedule} {
+    // return this.getNextSchedule();
+    return {
+      done: this.iteratorSchedule === this.lastSchedule,
+      value: this.getNextSchedule(),
+    };
+  }
+
+  public getNextSchedule():Schedule {
+    let length = this.schedules.length;
+    let lastIndex = length - 1;
+    let index = this.schedules.indexOf(this.iteratorSchedule);
+    if(index < lastIndex) {
+      index++;
+      this.iteratorSchedule = this.schedules[index];
+      return this.iteratorSchedule;
+    } else {
+      return null;
+    }
+  }
+
+  public addSchedule(schedule:Schedule):Schedule[] {
     this.schedules.push(schedule);
+    this.iteratorSchedule = this.schedules[0];
     return this.schedules;
   }
 
-  public getSchedules() {
+  public getSchedules():Schedule[] {
     return this.schedules;
   }
 
-  public setSchedules(schedules:Array<Schedule>) {
-    this.schedules = schedules;
+  public setSchedules(schedules:Array<Schedule>):Schedule[] {
+    if(schedules && schedules.length) {
+      this.schedules = schedules;
+      this.iteratorSchedule = this.schedules[0];
+    } else {
+      this.schedules = this.schedules.length ? this.schedules : [];
+      this.iteratorSchedule = null;
+    }
     return this.schedules;
   }
 
-  public getSites() {
-
+  public getSites():Jobsite[] {
+    return this.sites;
   }
 
-  public getScheduleStartDate(date:Moment|Date) {
-    // Schedule starts on day 3 (Wednesday)
-    let scheduleStartsOnDay = 3;
-    let day = moment(date);
-    if (day.isoWeekday() <= scheduleStartsOnDay) { return day.isoWeekday(scheduleStartsOnDay); }
-    else { return day.add(1, 'weeks').isoWeekday(scheduleStartsOnDay); }
+  public setSites(value:Jobsite[]):Jobsite[] {
+    this.sites = value;
+    return this.sites;
   }
 
-
-  public getSiteForTechAndDate(tech:Employee, scheduleDate:Moment|Date) {
+  public getSiteForTechAndDate(tech:Employee, scheduleDate:Moment|Date):Jobsite {
     // let date = moment(scheduleDate);
-    let date = this.getScheduleStartDate(scheduleDate);
+    let date = Schedule.getScheduleStartDateFor(scheduleDate);
     let schedules = this.schedules;
     let username = tech.getUsername();
     let foundSiteName = "";
@@ -68,7 +110,7 @@ export class Schedules {
     return site;
   }
 
-  public clone() {
+  public clone():Schedules {
     let output = [];
     for(let schedule of this.schedules) {
       output.push(schedule);
@@ -76,5 +118,47 @@ export class Schedules {
     let newSchedules = new Schedules();
     newSchedules.setSchedules(output);
     return newSchedules;
+  }
+
+  public getScheduleForDate(date:Moment|Date):Schedule {
+    let schedules:Schedule[] = this.getSchedules();
+    let datem = moment(date);
+    let inDateString = datem.format("YYYY-MM-DD");
+    Log.l(`Schedules.getScheduleForDate(): Now getting schedule for date '${inDateString}' ...`);
+    let scheduleDate:Moment = this.getScheduleStartDateFor(datem);
+    // let schDateString = isMoment(scheduleDate) ? scheduleDate.format("YYYY-MM-DD") : "INVALID DATE RESULT";
+    let dateString:string = isMoment(scheduleDate) ? scheduleDate.format("YYYY-MM-DD") : "INVALID DATE RESULT";
+    Log.l(`Schedules.getScheduleForDate(): Schedule for date '${inDateString}' should apparently have id '${dateString}'.`);
+    let schedule:Schedule = schedules.find((a:Schedule) => {
+      return a._id === dateString;
+    });
+    Log.l(`Schedules.getScheduleForDate(): got schedule:\n`, schedule);
+    return schedule;
+  }
+
+  public static getScheduleStartDateFor(date?:Moment|Date):Moment {
+    return Schedule.getScheduleStartDateFor(date);
+  }
+  public static getNextScheduleStartDateFor(date?:Moment|Date):Moment {
+    return Schedule.getNextScheduleStartDateFor(date);
+  }
+  public static getScheduleStartDateString(date?:Moment|Date):string {
+    return Schedule.getScheduleStartDateString(date);
+  }
+  public static getNextScheduleStartDateString(date?:Moment|Date):string {
+    return Schedule.getNextScheduleStartDateString(date);
+  }
+
+  public getScheduleStartDateFor(date?:Moment|Date):Moment {
+    return Schedule.getScheduleStartDateFor(date);
+  }
+  public getNextScheduleStartDateFor(date?:Moment|Date):Moment {
+    return Schedule.getNextScheduleStartDateFor(date);
+  }
+  public getScheduleStartDateString(date?:Moment|Date):string {
+    return Schedule.getScheduleStartDateString(date);
+  }
+  public getNextScheduleStartDateString(date?:Moment|Date):string {
+    return Schedule.getNextScheduleStartDateString(date);
   }
 }

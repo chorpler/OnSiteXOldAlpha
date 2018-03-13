@@ -2,7 +2,7 @@
 // import * as momentRecur       from 'moment-recur'       ;
 // import * as momentRound       from 'moment-round'       ;
 // import * as moment            from 'moment-timezone'    ;
-// declare const require                                   ;
+declare const require                                    ;
 import   * as moment              from 'moment'             ;
 import   * as momentTimezone      from 'moment-timezone'    ;
 import   * as momentShortFormat   from 'moment-shortformat' ;

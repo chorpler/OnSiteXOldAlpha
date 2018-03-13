@@ -138,9 +138,9 @@
     "chartjs-plugin-datalabels": "^0.2.0",
     "chartjs-plugin-stacked100": "^0.4.4",
     "cordova": "^7.1.0",
-    "cordova-android-play-services-gradle-release": "^0.0.2",
-    "cordova-android-support-gradle-release": "0.0.2",
+    "cordova-android": "7.1.0",
     "cordova-browser": "^5.0.3",
+    "cordova-custom-config": "^5.0.2",
     "cordova-ios": "^4.5.4",
     "cordova-open-native-settings": "^1.4.1",
     "cordova-plugin-app-event": "^1.2.1",
@@ -252,7 +252,6 @@
       "cordova-plugin-network-information": {},
       "de.appplant.cordova.plugin.local-notification": {},
       "cordova-plugin-uniquedeviceid": {},
-      "cordova-android-support-gradle-release": {},
       "cordova-plugin-app-version": {},
       "cordova-plugin-nativeaudio": {},
       "cordova-plugin-app-update": {},
@@ -268,10 +267,12 @@
         "CONTENT_AUTHORITY": "$PACKAGE_NAME"
       },
       "cordova-open-native-settings": {},
-      "cordova-plugin-vibration": {}
+      "cordova-plugin-vibration": {},
+      "cordova-custom-config": {}
     },
     "platforms": [
-      "ios"
+      "ios",
+      "android"
     ]
   },
   "false": {}

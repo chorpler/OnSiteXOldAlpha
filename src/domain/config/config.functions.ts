@@ -42,14 +42,33 @@ window['oo']        = oo        ;
 window['dec']       = dec       ;
 window['decimal']   = dec       ;
 
-export const _dedupe = (array, property?) => {
-  let prop = "fullName";
-  if (property) {
-    prop = property;
+export const round = function(value:number, decimals:number):number {
+  let firstString:string = `${value}e${decimals}`;
+  let firstNum:number = Math.round(Number(firstString));
+  let secondString:string = `${firstNum}e-${decimals}`;
+  let secondNum:number = Number(secondString);
+  return secondNum;
+}
+
+export const roundMaxDecimals = function(value:number, decimals?:number):number {
+  let places:number = typeof decimals === 'number' ? decimals : 2;
+  let string1:string = value.toFixed(decimals);
+  let num1:number = Number(string1);
+  return num1;
+}
+
+export const _dedupe = (array:Array<any>, property?:string) => {
+  // let prop = "fullName";
+  if(property) {
+    return array.filter((obj, pos, arr) => {
+      return arr.map(mapObj => mapObj[property]).indexOf(obj[property]) === pos;
+    });
+  } else {
+    let unique_array = array.filter(function(elem, index, self) {
+      return index === self.indexOf(elem);
+    });
+    return unique_array;
   }
-  return array.filter((obj, pos, arr) => {
-    return arr.map(mapObj => mapObj[prop]).indexOf(obj[prop]) === pos;
-  });
 }
 
 export const _matchCLL = (cll: string, sitecll: any) => {
@@ -83,21 +102,72 @@ export const _matchSiteFromSchedule = (tech:Employee, sites:Array<Jobsite>) => {
 
 }
 
-export const _sortReports = (a: Report, b: Report): number => {
-  let dateA:any = a.report_date;
-  let dateB:any = b.report_date;
-  let startA = a.time_start;
-  let startB = b.time_start;
-  dateA = isMoment(dateA) ? dateA : moment(dateA).startOf('day');
-  dateB = isMoment(dateB) ? dateB : moment(dateB).startOf('day');
-  startA = isMoment(startA) ? startA : moment(startA);
-  startB = isMoment(startB) ? startB : moment(startB);
+export const _sortReportsByDate = (a:Report, b:Report):number => {
+  let dateA:Moment, dateB:Moment, startA:Moment, startB:Moment;
+  let now = moment();
+  if(a instanceof Report) {
+    dateA = moment(a.getReportDate()).startOf('day');
+    startA = a.getStartTime();
+  } else {
+    dateA = now;
+    startA = now;
+  }
+  if(b instanceof Report) {
+    dateB = moment(b.getReportDate()).startOf('day');
+    startB = b.getStartTime();
+  } else {
+    dateB = now;
+    startB = now;
+  }
   return dateA.isBefore(dateB) ? -1 : dateA.isAfter(dateB) ? 1 : startA.isBefore(startB) ? -1 : startA.isAfter(startB) ? 1 : 0;
 };
 
+export const _sortReportsByStartTime = (a:Report, b:Report):number => {
+  let timeA:Moment, timeB:Moment;
+  let now = moment();
+  if(a instanceof Report) {
+    timeA = moment(a.getStartTime());
+  } else {
+    timeA = now;
+  }
+  if(b instanceof Report) {
+    timeB = moment(b.getStartTime());
+  } else {
+    timeB = now;
+  }
+  return timeA.isBefore(timeB) ? -1 : timeA.isAfter(timeB) ? 1 : 0;
+}
 
-// export const isMoment = function (val: any) { return (moment.isMoment(val) && moment(val).isValid()); }
-export const sizeOf = function (val: any) {
+export const _sortReports = _sortReportsByDate;
+
+export const _sortTechsByFullName = (a:Employee, b:Employee):number => {
+  let lA:string = "", lB:string = "", fA:string = "", fB:string = "";
+  if(a instanceof Employee) {
+    lA = a.getLastName();
+    lB = b.getLastName();
+  }
+  if(b instanceof Employee) {
+    fA = a.getFirstName();
+    fB = b.getFirstName();
+  }
+  return lA > lB ? 1 : lA < lB ? -1 : fA > fB ? 1 : fA < fB ? -1 : 0;
+}
+
+export const _sortTechsByUsername = (a:Employee, b:Employee):number => {
+  let uA:string = "", uB:string = "";
+  if(a instanceof Employee) {
+    uA = a.getUsername();
+  }
+  if(b instanceof Employee) {
+    uB = b.getUsername();
+  }
+  return uA > uB ? 1 : uA < uB ? -1 : 0;
+}
+
+export const _sortTechs = _sortTechsByFullName;
+
+// export const isMoment = function (val:any) { return (moment.isMoment(val) && moment(val).isValid()); }
+export const sizeOf = function (val:any) {
   let size = 0;
   if (val === null || val === undefined) {
     size = 0;

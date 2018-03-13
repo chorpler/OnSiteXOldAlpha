@@ -1,8 +1,10 @@
 /**
  * Name: Employee domain class
- * Vers: 5.1.0
- * Date: 2018-02-21
+ * Vers: 5.3.0
+ * Date: 2018-03-07
  * Auth: David Sargeant
+ * Logs: 5.3.0 2018-03-07: Added matchesSite() method
+ * Logs: 5.2.0 2018-03-01: Added methods getLastName(), getFirstName(), getMiddleName(), getPrefix(), getSuffix(), and modified getQuickbooksName()
  * Logs: 5.1.0 2018-02-21: Added getQuickbooksName() method
  * Logs: 5.0.1 2017-12-15: Merged app and console domain class
  * Logs: 4.2.1 2017-12-15: Added some serialization/deserialization methods
@@ -12,47 +14,49 @@
  * Logs: 3.5.1: Changed "created" and "lastUpdated" to timestamp strings instead of Moment
  */
 
-import { Address                 } from './address'                  ;
-import { Jobsite                 } from './jobsite'                  ;
-import { Log, moment, Moment, oo } from '../config' ;
+import { Address                              } from './address' ;
+import { Jobsite                              } from './jobsite' ;
+import { Log, moment, Moment, oo              } from '../config' ;
+import { SESACLL,                             } from '../config' ;
+import { SESAClient, SESALocation, SESALocID, } from '../config' ;
 
-export type CLL = {name:string, fullName:string};
+// export type CLL = {name:string, fullName:string};
 
 export interface IFEmployee {
-  _id                 :string           ;
-  _rev                :string           ;
-  name                : string          ;
-  username            : string          ;
-  avatarName          : string          ;
-  prefix              : string          ;
-  firstName           : string          ;
-  lastName            : string          ;
-  middleName          : string          ;
-  suffix              : string          ;
-  technician          : string          ;
-  type                : any             ;
-  avtrNameAsUser      : boolean         ;
-  userClass           : Array<string>   ;
-  client              : string           ;
-  location            : string           ;
-  locID               : string           ;
-  site_number         : number          ;
-  shift               : string          ;
-  shiftLength         : string | number ;
-  shiftStartTime      : string | number ;
-  shiftStartTimeMoment: Moment          ;
-  shiftStartTimeHour  : string          ;
-  rotation            : string          ;
-  email               : Array<string>   ;
-  phone               : string          ;
-  cell                : string          ;
-  address             : Address         ;
-  payRate             : number          ;
-  active              : boolean         ;
-  updated             : boolean         ;
-  created             : string          ;
-  lastUpdated         : string          ;
-  statusUpdates       : Array<any>      ;
+  _id                 : string                ;
+  _rev                : string                ;
+  name                : string                ;
+  username            : string                ;
+  avatarName          : string                ;
+  prefix              : string                ;
+  firstName           : string                ;
+  lastName            : string                ;
+  middleName          : string                ;
+  suffix              : string                ;
+  technician          : string                ;
+  type                : any                   ;
+  avtrNameAsUser      : boolean               ;
+  userClass           : Array<string>         ;
+  client              : SESAClient | string   ;
+  location            : SESALocation | string ;
+  locID               : SESALocID | string    ;
+  site_number         : number                ;
+  shift               : string                ;
+  shiftLength         : string | number       ;
+  shiftStartTime      : string | number       ;
+  shiftStartTimeMoment: Moment                ;
+  shiftStartTimeHour  : string                ;
+  rotation            : string                ;
+  email               : Array<string>         ;
+  phone               : string                ;
+  cell                : string                ;
+  address             : Address               ;
+  payRate             : number                ;
+  active              : boolean               ;
+  updated             : boolean               ;
+  created             : string                ;
+  lastUpdated         : string                ;
+  statusUpdates       : Array<any>            ;
 }
 
 export class Employee implements IFEmployee {
@@ -292,11 +296,11 @@ export class Employee implements IFEmployee {
     return this;
   }
 
-  public getTechID() {
+  public getTechID():string {
     return this.username;
   }
 
-  public getFullName() {
+  public getFullName():string {
     let fullName = "";
     fullName += this.lastName ? this.lastName : '';
     fullName += ",";
@@ -307,30 +311,54 @@ export class Employee implements IFEmployee {
     return fullName;
   }
 
-  public getTechName() {
+  public getTechName():string {
     let fullName = `${this.lastName}, ${this.firstName}`;
     return fullName;
   }
 
-  public getFullNameNormal() {
+  public getFullNameNormal():string {
     let fullName = `${this.firstName} ${this.lastName}`;
     return fullName;
   }
 
-  public getClient() {
+  public getClient():string {
+    let out:string = "";
+    if(this.client) {
+      if(typeof this.client === 'string') {
+        return this.client.toUpperCase();
+      } else if(typeof this.client === 'object') {
+        let out:any;
+        if(this.client && typeof this.client['fullName'] === 'string') {
+          let client = this.client && typeof this.client['fullName'] === 'string' && this.client['fullName'].toUpperCase() ? this.client['fullName'].toUpperCase() : "UNKNOWN";
+          out = client;
+          return out;
+        } else {
+          if(this.client && typeof this.client['[fullName]'] === 'string' && this.client['fullName'].upperCase()) {
+
+          } else {
+            return "UNKNOWN";
+          }
+          return "UNKNOWN";
+        }
+      } else {
+        let cli:string = this.client || "";
+        let client:string = cli.toUpperCase();
+        return client;
+      }
+    }
     return this.client && typeof this.client === 'object' && this.client['fullName'] ? this.client['fullName'].toUpperCase() : typeof this.client === 'string' ? this.client.toUpperCase() : this.client;
   }
 
-  public getUsername() {
-    return this.username ? this.username : this.avatarName;
+  public getUsername():string {
+    return this.username ? this.username : this.avatarName ? this.avatarName : "UNKNOWNUSERNAME";
   }
 
   public getShiftType():string {
-    return this.shift;
+    return this.shift || "AM";
   }
 
-  public setShiftType(AMorPM:string) {
-    this.shift = AMorPM;
+  public setShiftType(AMorPM:string):string {
+    this.shift = AMorPM || "AM";
     return this.shift;
   }
 
@@ -342,11 +370,31 @@ export class Employee implements IFEmployee {
     }
   }
 
-  public getShiftLength() {
-    return this.shiftLength;
+  public getShift():string {
+    let shift:string = this.shift;
+    if(shift) {
+      return shift;
+    } else {
+      return "AM";
+    }
   }
 
-  public setShiftLength(value:string|number) {
+  public setShift(AMorPM:string):string {
+    this.shift = AMorPM;
+    return this.shift;
+  }
+
+  public getShiftLength():string {
+    let out:number = Number(this.shiftLength);
+    let strOut:string = String(out);
+    if(!isNaN(out)) {
+      return strOut;
+    } else {
+      return "0";
+    }
+  }
+
+  public setShiftLength(value:string|number):string|number {
     this.shiftLength = value;
     return this.shiftLength;
   }
@@ -363,14 +411,15 @@ export class Employee implements IFEmployee {
     }
   }
 
-  public setJobsite(site:Jobsite) {
+  public setJobsite(site:Jobsite):string {
     let site_number = site.site_number;
     let site_id     = site.getSiteSelectName();
     this.site_number = site_number;
     this.workSite = site_id;
+    return this.workSite;
   }
 
-  public isOfficeEmployee() {
+  public isOfficeEmployee():boolean {
     let role = "";
     let uclass:any = this.userClass;
     if (Array.isArray(uclass)) {
@@ -396,7 +445,7 @@ export class Employee implements IFEmployee {
     // }
   }
 
-  public isManager() {
+  public isManager():boolean {
     let role = "";
     let uclass:any = this.userClass;
     if (Array.isArray(uclass)) {
@@ -422,7 +471,7 @@ export class Employee implements IFEmployee {
     // }
   }
 
-  public isLevel1Manager() {
+  public isLevel1Manager():boolean {
     let result = false;
     if(this.isManager()) {
       let name = this.getUsername();
@@ -451,19 +500,100 @@ export class Employee implements IFEmployee {
     return this.active;
   }
 
+  public getLastName():string {
+    return this.lastName ? this.lastName : "";
+  }
+
+  public getFirstName():string {
+    return this.firstName ? this.firstName : "";
+  }
+
+  public getMiddleName():string {
+    return this.middleName ? this.middleName : "";
+  }
+
+  public getPrefix():string {
+    return this.prefix ? this.prefix : "";
+  }
+
+  public getSuffix():string {
+    return this.suffix ? this.suffix : "";
+  }
+
   public getQuickbooksName():string {
-    let out:string = `${this.lastName}`;
-    if(this.suffix) {
-      out += ` ${this.suffix}`;
+    let out:string = `${this.getLastName()}`;
+    if(this.getSuffix()) {
+      out += ` ${this.getSuffix()}`;
     }
-    out += `, ${this.firstName}`;
-    if(this.middleName) {
-      out += ` ${this.middleName}`;
+    out += `, ${this.getFirstName()}`;
+    if(this.getMiddleName()) {
+      out += ` ${this.getMiddleName()}`;
     }
+    return out;
+ }
+
+  public matchesSite(site:Jobsite):boolean {
+    if(this.site_number && this.site_number === site.site_number) {
+      // Log.l("Report: matched report to site:\n", this);
+      // Log.l(site);
+      return true;
+    } else {
+      let siteCLI = site.client.name.toUpperCase();
+      let siteLOC = site.location.name.toUpperCase();
+      let siteLID = site.locID.name.toUpperCase();
+      let siteCLI2 = site.client.fullName.toUpperCase();
+      let siteLOC2 = site.location.fullName.toUpperCase();
+      let siteLID2 = site.locID.fullName.toUpperCase();
+      let cli = this.client      ? this.client.toUpperCase() :      "ZZ";
+      let loc = this.location    ? this.location.toUpperCase() :    "Z";
+      let lid = this.locID ? this.locID.toUpperCase() : "ZZZZZZ";
+      if((cli === siteCLI || cli === siteCLI2) && (loc === siteLOC || loc === siteLOC2) && (lid === siteLID || lid === siteLID2)) {
+        // Log.l("Report: matched report to site:\n", this);
+        // Log.l(site);
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
+  public findSite(sites:Jobsite[]):Jobsite {
+    let unassigned_site = sites.find((a:Jobsite) => {
+      return a.site_number === 1;
+    })
+    for(let site of sites) {
+      if(this.site_number && this.site_number === site.site_number) {
+        // Log.l("Report: matched report to site:\n", this);
+        // Log.l(site);
+        return site;
+      } else {
+        let siteCLI = site.client.name.toUpperCase();
+        let siteLOC = site.location.name.toUpperCase();
+        let siteLID = site.locID.name.toUpperCase();
+        let siteCLI2 = site.client.fullName.toUpperCase();
+        let siteLOC2 = site.location.fullName.toUpperCase();
+        let siteLID2 = site.locID.fullName.toUpperCase();
+        let cli = this.client      ? this.client.toUpperCase() :      "ZZ";
+        let loc = this.location    ? this.location.toUpperCase() :    "Z";
+        let lid = this.locID ? this.locID.toUpperCase() : "ZZZZZZ";
+        if((cli === siteCLI || cli === siteCLI2) && (loc === siteLOC || loc === siteLOC2) && (lid === siteLID || lid === siteLID2)) {
+          // Log.l("Report: matched report to site:\n", this);
+          // Log.l(site);
+          return site;
+        }
+      }
+    }
+    let out = this.getSiteInfo();
+    Log.w(`Employee.findSite(): Could not find employee site '${out}' for employee '${this.getUsername()}'!`)
+    return unassigned_site;
+  }
+
+  public getSiteInfo():string {
+    let out = `'${this.client}' '${this.location}' '${this.locID}'`;
     return out;
   }
 
-  public toString() {
+  public toString():string {
     return this.getFullName();
   }
 }

@@ -1,19 +1,21 @@
 /**
  * Name: Schedule Beta domain class
- * Vers: 4.0.0
- * Date: 2018-02-20
+ * Vers: 5.0.1
+ * Date: 2018-02-26
  * Auth: David Sargeant
+ * Logs: 5.0.1 2018-02-26: Updated getScheduleStartDateFor() and getNextScheduleStartDateFor() methods, plus static and string methods
  * Logs: 4.0.0 2018-02-20: Added getTechUsernames(), isTechInSchedule(), isUsernameInSchedule(), getTechRotation(), getTechRotationSeq(), getRotationSeq() methods
  * Logs: 2.0.1 2017-12-03: Added functionality and added _id and _rev to serialize output
  * Logs: 1.1.2 2017-09-07: Initial
  */
 
-import { sprintf                           } from 'sprintf-js'       ;
-import { Log, moment, Moment, isMoment, oo } from '../config'        ;
-import { Jobsite, Employee, Shift          } from './domain-classes' ;
+import { sprintf                                        } from 'sprintf-js'       ;
+import { Log, moment, Moment, isMoment, MomentInput, oo } from '../config'        ;
+import { ScheduleListItem, ScheduleDocItem,             } from '../config'        ;
+import { Jobsite, Employee, Shift                       } from './domain-classes' ;
 
 export class ScheduleBeta {
-  // public sites         : Array<Jobsite>       = []    ;
+  public sites         : Array<Jobsite>       = []    ;
   // public techs         : Array<Employee>      = []    ;
   // public shifts        : Array<Shift>         = []    ;
   public type          : string               = 'week';
@@ -36,6 +38,8 @@ export class ScheduleBeta {
   public _rev          : string               = ""    ;
 
   constructor(type?:string,creator?:string,start?:Moment|Date,end?:Moment|Date) {
+    // window['onsitedebug'] = window['onsitedebug'] || {};
+    // window['onsitedebug']['Schedule'] = Schedule;
     let today     = moment().startOf('day') ;
     this.type     = type                    || "week"                       ;
     this.creator  = creator                 || "grumpy"                     ;
@@ -48,7 +52,7 @@ export class ScheduleBeta {
     this.timestampXL = this.timestamp.toExcel();
   }
 
-  public readFromDoc(doc:any) {
+  public readFromDoc(doc:any):ScheduleBeta {
     let keys = Object.keys(doc);
     for(let key of keys) {
       if(key === 'start' || key === 'end') {
@@ -65,9 +69,16 @@ export class ScheduleBeta {
     if(keys.indexOf('creator') === -1) {
       this.creator = 'grumpy';
     }
+    if(!this.startXL) {
+      this.startXL = moment(this.start).toExcel(true);
+    }
+    if(!this.endXL) {
+      this.endXL = moment(this.end).toExcel(true);
+    }
+    return this;
   }
 
-  public saveToDoc() {
+  public saveToDoc():any {
     let doc:any = {};
     let keys = Object.keys(this);
     if(!this._id) {
@@ -100,15 +111,21 @@ export class ScheduleBeta {
     return doc;
   }
 
-  public deserialize(doc:any) {
-    this.readFromDoc(doc);
+  public deserialize(doc:any):ScheduleBeta {
+    return this.readFromDoc(doc);
   }
 
-  public serialize() {
+  public static deserialize(doc:any):ScheduleBeta {
+    let schedule = new ScheduleBeta();
+    schedule.deserialize(doc);
+    return schedule;
+  }
+
+  public serialize():ScheduleBeta {
     return this.saveToDoc();
   }
 
-  public generateID() {
+  public generateID():string {
     let start = this.start;
     let week = start.format("YYYY-MM-DD");
     this._id = week;
@@ -121,11 +138,17 @@ export class ScheduleBeta {
 
   }
 
-  public getType() {
+  public loadSites(sites:Array<Jobsite>):Array<Jobsite> {
+    let out:Array<Jobsite> = [];
+    this.sites = sites;
+    return this.sites;
+  }
+
+  public getType():string {
     return this.type;
   }
 
-  public setType(value:string) {
+  public setType(value:string):string {
     if(value === 'week' || value === 'day') {
       this.type = value;
     } else {
@@ -135,16 +158,16 @@ export class ScheduleBeta {
     return this.type;
   }
 
-  public getCreator() {
+  public getCreator():string {
     return this.creator;
   }
 
-  public setCreator(value:string) {
+  public setCreator(value:string):string {
     this.creator = value;
     return this.creator;
   }
 
-  public getScheduleID() {
+  public getScheduleID():string {
     let date = moment(this.start).format("YYYY-MM-DD");
     // let type = this.type;
     let creator = this.getCreator();
@@ -153,55 +176,57 @@ export class ScheduleBeta {
     return out;
   }
 
-  public getScheduleTitle() {
+  public getScheduleTitle():string {
     return moment(this.start).format("DD MMM YYYY");
   }
 
-  public getStartDate(str?:boolean) {
+  public getStartDate(str?:boolean):Moment {
     return moment(this.start);
   }
 
-  public setStartDate(day:Date|Moment|string) {
-    let date;
-    if(isMoment(day) || day instanceof Date) {
-      date = moment(day);
-    } else {
-      date = moment(day, "YYYY-MM-DD");
-    }
+  public setStartDate(day:Date|Moment):Moment {
+    // let date;
+    // if(isMoment(day) || day instanceof Date) {
+    //   date = moment(day);
+    // } else {
+    //   date = moment(day, "YYYY-MM-DD");
+    // }
+    let date = moment(day);
     this.start = date.startOf('day');
     this.startXL = date.toExcel(true);
     return moment(this.start);
   }
 
-  public getEndDate() {
+  public getEndDate():Moment {
     return moment(this.end);
   }
 
-  public setEndDate(day: Date | Moment | string) {
-    let date;
-    if (isMoment(day) || day instanceof Date) {
-      date = moment(day);
-    } else {
-      date = moment(day, "YYYY-MM-DD");
-    }
+  public setEndDate(day:Date|Moment):Moment {
+    // let date;
+    // if (isMoment(day) || day instanceof Date) {
+    //   date = moment(day);
+    // } else {
+    //   date = moment(day, "YYYY-MM-DD");
+    // }
+    let date = moment(day);
     this.end = date.startOf('day');
     this.endXL = date.toExcel(true);
     return moment(this.end);
   }
 
-  public getStartXL() {
+  public getStartXL():number {
     return this.startXL;
   }
 
-  public getEndXL() {
+  public getEndXL():number {
     return this.endXL;
   }
 
-  public getSchedule() {
+  public getSchedule():any {
     return this.schedule;
   }
 
-  public setSchedule(schedule:any) {
+  public setSchedule(schedule:any):any {
     for(let i1 in schedule) {
       let el1 = schedule[i1];
       for(let i2 in el1) {
@@ -228,13 +253,44 @@ export class ScheduleBeta {
     return this.schedule;
   }
 
-  public getScheduleDoc() {
+  public createScheduleDoc():Object {
+    let schedule:any = this.getSchedule();
+    let keys = Object.keys(schedule);
+    if(keys.length > 0) {
+      return schedule;
+    } else {
+      Log.w(`Schedule.getScheduleDoc(): For schedule '${this.getScheduleID()}', unable to find proper scheduleDoc to return. Returning empty object.`);
+      return {};
+    }
+  }
+
+  public createScheduleList():Array<ScheduleListItem> {
+    let list:Array<any> = this.scheduleList;
+    if(list && Array.isArray(list) && list.length) {
+      return list;
+    } else {
+      Log.w(`Schedule.getScheduleList(): For schedule '${this.getScheduleID()}', unable to get proper schedule list. Returning empty array.`);
+      return [];
+    }
+  }
+
+  public getScheduleDoc():any {
     return this.scheduleDoc;
   }
 
-  public setScheduleDoc(value:any) {
+  public setScheduleDoc(value:any):any {
     this.scheduleDoc = value;
     return this.scheduleDoc;
+  }
+
+  public getScheduleList():Array<ScheduleListItem> {
+    let list:Array<ScheduleListItem> = this.scheduleList;
+    if(Array.isArray(list)) {
+
+    } else {
+
+    }
+    return this.scheduleList;
   }
 
   public getTechs():Array<Employee> {
@@ -266,7 +322,7 @@ export class ScheduleBeta {
     return this.unassigned;
   }
 
-  public addTech(tech:Employee) {
+  public addTech(tech:Employee):Array<Employee> {
     let ts = this.techs;
     let i = ts.findIndex((a:Employee) => {
       return a.username === tech.username;
@@ -278,7 +334,7 @@ export class ScheduleBeta {
     return this.techs;
   }
 
-  public removeTech(tech:Employee) {
+  public removeTech(tech:Employee):Array<Employee> {
     let ts = this.techs;
     let ua = this.unassigned;
     let i = ts.findIndex((a:Employee) => {
@@ -296,7 +352,7 @@ export class ScheduleBeta {
     return this.techs;
   }
 
-  public addUnassignedTech(tech:Employee) {
+  public addUnassignedTech(tech:Employee):Array<Employee> {
     let ua = this.unassigned;
     let ts = this.techs;
     let name = tech.username;
@@ -336,7 +392,7 @@ export class ScheduleBeta {
     return this.unassigned;
   }
 
-  public removeUnassignedTech(tech:Employee) {
+  public removeUnassignedTech(tech:Employee):Array<Employee> {
     let ua = this.unassigned;
     let ts = this.techs;
     let i = ua.findIndex((a:Employee) => {
@@ -351,7 +407,7 @@ export class ScheduleBeta {
     return this.unassigned;
   }
 
-  public createSchedulingObject(sites:Array<Jobsite>, techs:Array<Employee>) {
+  public createSchedulingObject(sites:Array<Jobsite>, techs:Array<Employee>):any {
     let scheduleObject = {};
     this.unassigned = techs.slice(0);
     this.techs = techs.slice(0);
@@ -559,23 +615,61 @@ export class ScheduleBeta {
     return ScheduleBeta.getRotationSeq(rotation);
   }
 
-  public static getNextScheduleStartDateFor(forDate?:Moment|Date) {
-    // let date = moment(forDate);
-    // Schedule starts on day 3 (Wednesday)
-    let scheduleStartsOnDay = 3;
-    let day = forDate ? moment(forDate) : moment();
+  // public static getNextScheduleStartDateFor(forDate?:Moment|Date) {
+  //   // let date = moment(forDate);
+  //   // Schedule starts on day 3 (Wednesday)
+  //   let scheduleStartsOnDay = 3;
+  //   let day = forDate ? moment(forDate) : moment();
 
-    if (day.isoWeekday() <= scheduleStartsOnDay) { return day.isoWeekday(scheduleStartsOnDay); }
-    else { return day.add(1, 'weeks').isoWeekday(scheduleStartsOnDay); }
+  //   if (day.isoWeekday() <= scheduleStartsOnDay) { return day.isoWeekday(scheduleStartsOnDay); }
+  //   else { return day.add(1, 'weeks').isoWeekday(scheduleStartsOnDay); }
+  // }
+
+  // public static getScheduleStartDateFor(forDate?:Moment|Date) {
+  //   // let date = moment(forDate);
+  //   // Schedule starts on day 3 (Wednesday)
+  //   let scheduleStartsOnDay = 3;
+  //   let day = forDate ? moment(forDate) : moment();
+  //   if (day.isoWeekday() < scheduleStartsOnDay) { return moment(day).subtract(1, 'weeks').isoWeekday(scheduleStartsOnDay); }
+  //   else { return moment(day).isoWeekday(scheduleStartsOnDay); }
+  // }
+
+  public static getScheduleStartDateFor(date?:Moment|Date):Moment {
+    let day                 = date ? moment(date).startOf('day') : moment().startOf('day');
+    let scheduleStartsOnDay = 3;
+    if(day.isoWeekday() < scheduleStartsOnDay) {
+      return moment(day).subtract(1, 'weeks').isoWeekday(scheduleStartsOnDay);
+    } else {
+      return moment(day).isoWeekday(scheduleStartsOnDay);
+    }
+  }
+  public static getNextScheduleStartDateFor(date?:Moment|Date):Moment {
+    let day                 = date ? moment(date).startOf('day') : moment().startOf('day');
+    let scheduleStartsOnDay = 3;
+    if(day.isoWeekday() < scheduleStartsOnDay) {
+      return day.isoWeekday(scheduleStartsOnDay);
+    } else {
+      return day.add(1, 'weeks').isoWeekday(scheduleStartsOnDay);
+    }
+  }
+  public static getScheduleStartDateString(date?:Moment|Date):string {
+    return ScheduleBeta.getScheduleStartDateFor(date).format("YYYY-MM-DD");
+  }
+  public static getNextScheduleStartDateString(date?:Moment|Date):string {
+    return ScheduleBeta.getNextScheduleStartDateFor(date).format("YYYY-MM-DD");
   }
 
-  public static getScheduleStartDateFor(forDate?:Moment|Date) {
-    // let date = moment(forDate);
-    // Schedule starts on day 3 (Wednesday)
-    let scheduleStartsOnDay = 3;
-    let day = forDate ? moment(forDate) : moment();
-    if (day.isoWeekday() < scheduleStartsOnDay) { return moment(day).subtract(1, 'weeks').isoWeekday(scheduleStartsOnDay); }
-    else { return moment(day).isoWeekday(scheduleStartsOnDay); }
+  public getScheduleStartDateFor(date?:Moment|Date):Moment {
+    return ScheduleBeta.getScheduleStartDateFor(date);
+  }
+  public getNextScheduleStartDateFor(date?:Moment|Date):Moment {
+    return ScheduleBeta.getNextScheduleStartDateFor(date);
+  }
+  public getScheduleStartDateString(date?:Moment|Date):string {
+    return this.getScheduleStartDateFor(date).format("YYYY-MM-DD");
+  }
+  public getNextScheduleStartDateString(date?:Moment|Date):string {
+    return this.getNextScheduleStartDateFor(date).format("YYYY-MM-DD");
   }
 
   public toString() {

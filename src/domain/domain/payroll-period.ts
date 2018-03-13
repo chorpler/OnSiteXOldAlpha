@@ -1,8 +1,9 @@
 /**
  * Name: PayrollPeriod domain class
- * Vers: 5.0.2
- * Date: 2018-01-31
+ * Vers: 5.1.0
+ * Date: 2018-02-20
  * Auth: David Sargeant
+ * Logs: 5.1.0 2018-02-20: Updated createConsolePayrollPeriodShiftsForTech() to account for missing shift info
  * Logs: 5.0.2 2018-01-31: Added createConsolePayrollPeriodShiftsForTech() method back in
  * Logs: 5.0.1 2017-12-15: Merged app and console PayrollPeriod classes
  * Logs: 4.2.2 2017-12-04: Added getBillableHours method
@@ -15,8 +16,8 @@ import { Log, isMoment, oo, _matchCLL, _matchSite, _sortReports, reportType } fr
 import { Shift, Employee, Jobsite, Report, ReportOther                      } from './domain-classes' ;
 
 export class PayrollPeriod {
-  public start_date              : Moment                ;
-  public end_date                : Moment                ;
+  public start_date              : Moment             ;
+  public end_date                : Moment             ;
   public serial_number           : number             ;
   public shifts                  : Array<Shift>  = [] ;
   public shift_hours_list        : Array<number> = [] ;
@@ -231,23 +232,23 @@ export class PayrollPeriod {
       let shifts = new Array<Shift>();
       for(let i = 0; i < 7; i++) {
         let tmpDay = moment(day).add(i, 'days');
-          let techShift = tech.shift.toUpperCase();
-          let ampm = techShift ? techShift.trim() : "AM";
-          let shift_day = moment(tmpDay).startOf('day');
-          let tmpStart = site.getShiftStartTime(ampm);
-          let h = Number(tmpStart.split(':')[0]);
-          let m = Number(tmpStart.split(':')[1]);
-          let hrs = h + (m/60);
-          let shift_start_time = moment(shift_day).add(hrs, 'hours');
-          let length = site.getShiftLengthForDate(rotation, ampm, shift_day);
-          let client = site.client.fullName.toUpperCase();
-          let thisShift = new Shift(client, null, ampm, shift_start_time, length);
-          thisShift.updateShiftWeek();
-          thisShift.updateShiftNumber();
-          thisShift.getExcelDates();
-          thisShift.setStartTime(shift_start_time);
-          shifts.push(thisShift);
-          // Log.l(`createPayrollPeriodShiftsForTech(): Now adding day ${i}: ${moment(shift_day).format()} `);
+        let techShift = tech.shift && typeof tech.shift === 'string' ? tech.shift.toUpperCase() : "AM";
+        let ampm = techShift ? techShift.trim() : "AM";
+        let shift_day = moment(tmpDay).startOf('day');
+        let tmpStart = site.getShiftStartTime(ampm);
+        let h = Number(tmpStart.split(':')[0]);
+        let m = Number(tmpStart.split(':')[1]);
+        let hrs = h + (m/60);
+        let shift_start_time = moment(shift_day).add(hrs, 'hours');
+        let length = site.getShiftLengthForDate(rotation, ampm, shift_day);
+        let client = site.client.fullName.toUpperCase();
+        let thisShift = new Shift(client, null, ampm, shift_start_time, length);
+        thisShift.updateShiftWeek();
+        thisShift.updateShiftNumber();
+        thisShift.getExcelDates();
+        thisShift.setStartTime(shift_start_time);
+        shifts.push(thisShift);
+        // Log.l(`createPayrollPeriodShiftsForTech(): Now adding day ${i}: ${moment(shift_day).format()} `);
         // }
       }
       this.shifts = shifts;

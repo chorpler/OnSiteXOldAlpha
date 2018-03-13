@@ -1,8 +1,10 @@
 /**
  * Name: Report domain class
- * Vers: 6.6.2
- * Date: 2018-02-08
+ * Vers: 7.1.1
+ * Date: 2018-03-01
  * Auth: David Sargeant
+ * Logs: 7.1.1 2018-03-01: Imported Duration type, added methods getStartTimeAsExcel(), getEndTimeAsExcel(), and getReportDateAsExcel()
+ * Logs: 7.0.1 2018-02-26: Adjusted report date functions and added getReportDateAsString() method
  * Logs: 6.6.3 2018-02-08: Fixed moment format() bug in serialize() method
  * Logs: 6.6.1 2018-02-08: Added moment encoding for timestampM field, and crew_number to serialize/deserialize
  * Logs: 6.5.4 2018-01-21: Changed flagging to flagged and flagged_fields fields, plus flags(), getFlagNumber(), isFlagged(), isFieldFlagged(), setFlag(), unsetFlag(), clearFlags() methods
@@ -15,6 +17,7 @@
  */
 import { sprintf                                 } from 'sprintf-js'                 ;
 import { Log, isMoment, Moment, moment, oo       } from '../config' ;
+import { Duration                                } from '../config' ;
 import { ReportFlag                              } from '../config/config.types'     ;
 import { Employee, Shift, PayrollPeriod, Jobsite } from './domain-classes'           ;
 
@@ -134,7 +137,7 @@ export class Report {
     }
   }
 
-  public readFromDoc(doc:any) {
+  public readFromDoc(doc:any):Report {
     let fields = [
       ["_id"             , "_id"               ] ,
       ["_rev"            , "_rev"              ] ,
@@ -252,6 +255,7 @@ export class Report {
       // Log.e(err);
       // throw new Error(err);
     // }
+    return this;
   }
 
   public serialize(tech?:Employee):any {
@@ -314,13 +318,13 @@ export class Report {
     return doc;
   }
 
-  public static deserialize(doc:any) {
+  public static deserialize(doc:any):Report {
     let report = new Report();
     report.readFromDoc(doc);
     return report;
   }
 
-  public deserialize(doc:any) {
+  public deserialize(doc:any):Report {
     this.readFromDoc(doc);
     return this;
   }
@@ -347,39 +351,86 @@ export class Report {
   }
 
   public getReportDate(asString?:boolean):Moment|string {
-    let date = moment(this.report_date, "YYYY-MM-DD");
     if(asString) {
-      return date.format("YYYY-MM-DD");
+      return this.getReportDateAsString();
     } else {
-      return date;
+      // let date = moment(this.report_date, "YYYY-MM-DD");
+      // return date;
+      if(typeof this.report_date === 'string') {
+        return moment(this.report_date, "YYYY-MM-DD");
+      } else {
+        return moment(this.report_date);
+      }
     }
   }
 
+  public getReportDateAsString():string {
+    let reportDate:any = this.report_date;
+    if(isMoment(reportDate) || reportDate instanceof Date) {
+      let mo = moment(reportDate);
+      return mo.format("YYYY-MM-DD");
+    } else if(typeof reportDate === 'string') {
+      let mo = moment(reportDate, "YYYY-MM-DD");
+      return mo.format("YYYY-MM-DD");
+    } else {
+      return moment(reportDate).format("YYYY-MM-DD");
+    }
+  }
+
+  public getReportDateAsMoment():Moment {
+    let reportDate:any = this.report_date;
+    if(isMoment(reportDate) || reportDate instanceof Date) {
+      let mo = moment(reportDate);
+      return mo;
+    } else if(typeof reportDate === 'string') {
+      let mo = moment(reportDate, "YYYY-MM-DD");
+      return mo;
+    } else {
+      return moment(reportDate);
+    }
+  }
+
+  public getReportDateAsExcel():number {
+    return this.getReportDateAsMoment().toExcel(true);
+  }
+
   public getStartTime():Moment {
+    return moment(this.time_start);
+  }
+
+  public setStartTime(time:Date|Moment):Moment {
+    this.time_start = moment(time);
+    this.checkTimeCalculations(0);
     return this.time_start;
   }
 
-  public setStartTime(time:Date|Moment) {
-    this.time_start = moment(time);
-    this.checkTimeCalculations(0);
+  public getEndTime():Moment {
+    return moment(this.time_end);
   }
 
-  public getEndTime():Moment {
+  public setEndTime(time:Date|Moment):Moment {
+    this.time_end = moment(time);
+    this.checkTimeCalculations(1);
     return this.time_end;
   }
 
-  public setEndTime(time:Date|Moment) {
-    this.time_end = moment(time);
-    this.checkTimeCalculations(1);
+  public getStartTimeAsExcel():number {
+    return this.getStartTime().toExcel();
   }
 
-  public setRepairHours(duration: any) {
+  public getEndTimeAsExcel():number {
+    return this.getEndTime().toExcel();
+  }
+
+  public setRepairHours(duration:number|Duration):number {
     if(moment.isDuration(duration)) {
       this.repair_hours = duration.asHours();
       this.checkTimeCalculations(2);
+      return this.repair_hours;
     } else if(typeof duration === 'number') {
       this.repair_hours = duration;
       this.checkTimeCalculations(2);
+      return this.repair_hours;
     } else {
       Log.l("Report.setRepairHours(): Need a duration or number, was given this:\n", duration);
     }
@@ -449,7 +500,7 @@ export class Report {
     return newWO;
   }
 
-  public genReportID(tech: Employee) {
+  public genReportID(tech:Employee):string {
     let now = moment();
     // let idDateTime = now.format("dddDDMMMYYYYHHmmss");
     let idDateTime = now.format("YYYY-MM-DD_HH-mm-ss_ZZ_ddd");
@@ -458,7 +509,7 @@ export class Report {
     return docID;
   }
 
-  public matchesSite(site:Jobsite) {
+  public matchesSite(site:Jobsite):boolean {
     if(this.site_number && this.site_number === site.site_number) {
       // Log.l("Report: matched report to site:\n", this);
       // Log.l(site);
@@ -483,7 +534,7 @@ export class Report {
     }
   }
 
-  public setSite(site:Jobsite) {
+  public setSite(site:Jobsite):Report {
     this.client      = site.client.name;
     this.location    = site.location.name;
     this.location_id = site.locID.name;
