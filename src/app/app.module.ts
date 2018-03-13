@@ -26,7 +26,7 @@ import { BackgroundGeolocationResponse                           } from '@ionic-
 import { Network                                                 } from '@ionic-native/network'                ;
 // import { Push, PushObject, PushOptions                           } from '@ionic-native/push'                   ;
 // import { LocalNotifications                                      } from '@ionic-native/local-notifications'    ;
-import { UniqueDeviceID                                          } from '@ionic-native/unique-device-id'       ;
+// import { UniqueDeviceID                                          } from '@ionic-native/unique-device-id'       ;
 import { Device                                                  } from '@ionic-native/device'                 ;
 import { AppVersion                                              } from '@ionic-native/app-version'            ;
 import { NativeAudio                                             } from '@ionic-native/native-audio'           ;
@@ -121,7 +121,7 @@ import { ColorService                                            } from 'provide
     Network,
     // Push,
     // LocalNotifications,
-    UniqueDeviceID,
+    // UniqueDeviceID,
     Device,
     // Sim,
     NativeAudio,

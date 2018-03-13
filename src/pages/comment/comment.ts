@@ -3,7 +3,7 @@ import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angul
 import { Platform, App                                       } from 'ionic-angular'                  ;
 import { Device                                              } from '@ionic-native/device'           ;
 import { AppVersion                                          } from '@ionic-native/app-version'      ;
-import { UniqueDeviceID                                      } from '@ionic-native/unique-device-id' ;
+// import { UniqueDeviceID                                      } from '@ionic-native/unique-device-id' ;
 import { TranslateService                                    } from '@ngx-translate/core'            ;
 import { Log, moment, isMoment, Moment                       } from 'domain/onsitexdomain'                 ;
 import { Comment                                             } from 'domain/onsitexdomain'                 ;
@@ -50,7 +50,7 @@ export class CommentPage implements OnInit {
     public platform  : Platform         ,
     public app       : App              ,
     public device    : Device           ,
-    public unique    : UniqueDeviceID   ,
+    // public unique    : UniqueDeviceID   ,
     public version   : AppVersion       ,
     public server    : ServerService    ,
     public translate : TranslateService ,
@@ -114,38 +114,70 @@ export class CommentPage implements OnInit {
     });
   }
 
-  public readPhoneInfo() {
-    return new Promise((resolve, reject) => {
-      let cordova      = this.device.cordova      ;
-      let model        = this.device.model        ;
-      let platform     = this.device.platform     ;
-      let uuid         = this.device.uuid         ;
-      let version      = this.device.version      ;
-      let manufacturer = this.device.manufacturer ;
-      let virtual      = this.device.isVirtual    ;
-      let serial       = this.device.serial       ;
-      let uniqueID     = ""                       ;
-      this.unique.get().then(res => {
-        uniqueID = res;
-        this.phone = {
-          cordova: cordova,
-          model: model,
-          platform: platform,
-          uuid: uuid,
-          version: version,
-          manufacturer: manufacturer,
-          virtual: virtual,
-          serial: serial,
-          uniqueID: uniqueID,
-        };
-        resolve(this.phone);
-      }).catch(err => {
-        Log.l("readPhoneInfo(): Error reading phone info!");
-        Log.e(err);
-        resolve(this.phone);
-      });
-    });
+  public async readPhoneInfo():Promise<any> {
+    let phoneinfo;
+    try {
+      let cordova = this.device.cordova;
+      let model = this.device.model;
+      let platform = this.device.platform;
+      let uuid = this.device.uuid;
+      let version = this.device.version;
+      let manufacturer = this.device.manufacturer;
+      let virtual = this.device.isVirtual;
+      let serial = this.device.serial;
+      let uniqueID = uuid;
+      phoneinfo = {
+        cordova     : cordova,
+        model       : model,
+        platform    : platform,
+        uuid        : uuid,
+        version     : version,
+        manufacturer: manufacturer,
+        virtual     : virtual,
+        serial      : serial,
+        uniqueID    : uniqueID,
+      };
+      Log.l("readPhoneInfo(): Got phone data:\n", phoneinfo);
+      return phoneinfo;
+    } catch(err) {
+      Log.l("readPhoneInfo(): Error reading phone info!");
+      Log.e(err);
+      return phoneinfo;
+    }
   }
+
+  // public readPhoneInfo() {
+  //   return new Promise((resolve, reject) => {
+  //     let cordova      = this.device.cordova      ;
+  //     let model        = this.device.model        ;
+  //     let platform     = this.device.platform     ;
+  //     let uuid         = this.device.uuid         ;
+  //     let version      = this.device.version      ;
+  //     let manufacturer = this.device.manufacturer ;
+  //     let virtual      = this.device.isVirtual    ;
+  //     let serial       = this.device.serial       ;
+  //     let uniqueID     = ""                       ;
+  //     this.unique.get().then(res => {
+  //       uniqueID = res;
+  //       this.phone = {
+  //         cordova: cordova,
+  //         model: model,
+  //         platform: platform,
+  //         uuid: uuid,
+  //         version: version,
+  //         manufacturer: manufacturer,
+  //         virtual: virtual,
+  //         serial: serial,
+  //         uniqueID: uniqueID,
+  //       };
+  //       resolve(this.phone);
+  //     }).catch(err => {
+  //       Log.l("readPhoneInfo(): Error reading phone info!");
+  //       Log.e(err);
+  //       resolve(this.phone);
+  //     });
+  //   });
+  // }
 
   public getAppVersion() {
     return new Promise((resolve,reject) => {

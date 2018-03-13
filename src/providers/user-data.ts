@@ -4,7 +4,7 @@ import { Storage                       } from '@ionic/storage'                 ;
 import { NativeStorage                 } from '@ionic-native/native-storage'   ;
 import { Device                        } from '@ionic-native/device'           ;
 import { AppVersion                    } from '@ionic-native/app-version'      ;
-import { UniqueDeviceID                } from '@ionic-native/unique-device-id' ;
+// import { UniqueDeviceID                } from '@ionic-native/unique-device-id' ;
 import { Log, isMoment, moment, Moment } from 'domain/onsitexdomain'           ;
 import { Preferences                   } from './preferences'                  ;
 import { Shift                         } from 'domain/onsitexdomain'           ;
@@ -32,7 +32,7 @@ export interface ConfigKey {
 export class UserData {
   public static appdata               : any = {
     ready      : false,
-    version    : "10.12.10",
+    version    : "10.12.13",
     homeLoading: false,
     attempts   : 0,
     homeReady  : false,
@@ -1434,8 +1434,8 @@ export class UserData {
     return this.phonedata;
   }
 
-  public readPhoneInfo() {
-    return new Promise((resolve, reject) => {
+  public async readPhoneInfo():Promise<any> {
+    try {
       let cordova = this.device.cordova;
       let model = this.device.model;
       let platform = this.device.platform;
@@ -1444,31 +1444,64 @@ export class UserData {
       let manufacturer = this.device.manufacturer;
       let virtual = this.device.isVirtual;
       let serial = this.device.serial;
-      let uniqueID = "";
-      this.unique.get().then(res => {
-        uniqueID = res;
-        let phoneinfo = {
-          cordova     : cordova,
-          model       : model,
-          platform    : platform,
-          uuid        : uuid,
-          version     : version,
-          manufacturer: manufacturer,
-          virtual     : virtual,
-          serial      : serial,
-          uniqueID    : uniqueID,
-        };
-        UserData.phonedata = phoneinfo;
-        this.phonedata = UserData.phonedata;
-        Log.l("readPhoneInfo(): Got phone data:\n", this.phonedata);
-        resolve(phoneinfo);
-      }).catch(err => {
-        Log.l("readPhoneInfo(): Error reading phone info!");
-        Log.e(err);
-        resolve(this.phonedata);
-      });
-    });
+      let uniqueID = uuid;
+      let phoneinfo = {
+        cordova     : cordova,
+        model       : model,
+        platform    : platform,
+        uuid        : uuid,
+        version     : version,
+        manufacturer: manufacturer,
+        virtual     : virtual,
+        serial      : serial,
+        uniqueID    : uniqueID,
+      };
+      UserData.phonedata = phoneinfo;
+      this.phonedata = UserData.phonedata;
+      Log.l("readPhoneInfo(): Got phone data:\n", this.phonedata);
+      return phoneinfo;
+    } catch(err) {
+      Log.l("readPhoneInfo(): Error reading phone info!");
+      Log.e(err);
+      return this.phonedata;
+    }
   }
+
+  // public readPhoneInfo() {
+  //   return new Promise((resolve, reject) => {
+  //     let cordova = this.device.cordova;
+  //     let model = this.device.model;
+  //     let platform = this.device.platform;
+  //     let uuid = this.device.uuid;
+  //     let version = this.device.version;
+  //     let manufacturer = this.device.manufacturer;
+  //     let virtual = this.device.isVirtual;
+  //     let serial = this.device.serial;
+  //     let uniqueID = "";
+  //     this.unique.get().then(res => {
+  //       uniqueID = res;
+  //       let phoneinfo = {
+  //         cordova     : cordova,
+  //         model       : model,
+  //         platform    : platform,
+  //         uuid        : uuid,
+  //         version     : version,
+  //         manufacturer: manufacturer,
+  //         virtual     : virtual,
+  //         serial      : serial,
+  //         uniqueID    : uniqueID,
+  //       };
+  //       UserData.phonedata = phoneinfo;
+  //       this.phonedata = UserData.phonedata;
+  //       Log.l("readPhoneInfo(): Got phone data:\n", this.phonedata);
+  //       resolve(phoneinfo);
+  //     }).catch(err => {
+  //       Log.l("readPhoneInfo(): Error reading phone info!");
+  //       Log.e(err);
+  //       resolve(this.phonedata);
+  //     });
+  //   });
+  // }
 
   public getAppVersion() {
     return new Promise((resolve, reject) => {
