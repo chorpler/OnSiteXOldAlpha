@@ -137,7 +137,7 @@
     "chart.js": "^2.7.1",
     "chartjs-plugin-datalabels": "^0.2.0",
     "chartjs-plugin-stacked100": "^0.4.4",
-    "cordova": "^7.1.0",
+    "cordova": "^8.0.0",
     "cordova-android": "7.1.0",
     "cordova-android-support-gradle-release": "^1.2.0",
     "cordova-browser": "^5.0.3",
