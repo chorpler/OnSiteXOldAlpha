@@ -51,6 +51,8 @@ var tsconfig = require('../tsconfig.json')
 var ModuleConcatPlugin = require('webpack/lib/optimize/ModuleConcatenationPlugin');
 var PurifyPlugin = require('@angular-devkit/build-optimizer').PurifyPlugin;
 
+console.log("WEBPACK: OnSiteX Ionic environment is:");
+console.log(JSON.stringify(process.env,null,2));
 
 function srcPath(subdir) {
   return path.join(__dirname, "../src", subdir);
@@ -71,7 +73,8 @@ var optimizedProdLoaders = [
       {
         loader: '@angular-devkit/build-optimizer/webpack-loader',
         options: {
-          sourceMap: true
+          sourceMap: false
+          // sourceMap: true
         }
       },
     ]
@@ -86,7 +89,8 @@ var optimizedProdLoaders = [
       {
         loader: '@angular-devkit/build-optimizer/webpack-loader',
         options: {
-          sourceMap: true
+          // sourceMap: true
+          sourceMap: false
         }
       },
 

@@ -11,7 +11,6 @@
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
-    <preference name="cordova-custom-config-autorestore" value="true" />
     <platform name="android">
         <allow-intent href="market:*" />
         <uses-sdk android:maxSdkVersion="27" android:minSdkVersion="18" android:targetSdkVersion="26" />
@@ -34,9 +33,6 @@
         <splash density="port-xxhdpi" src="resources/android/splash/drawable-port-xxhdpi-screen.png" />
         <splash density="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
         <preference name="loadUrlTimeoutValue" value="70000" />
-        <platform name="android">
-            <resource-file src="google-services.json" target="app/google-services.json" />
-        </platform>
     </platform>
     <platform name="ios">
         <allow-intent href="itms:*" />
@@ -71,7 +67,6 @@
         <splash height="1024" src="resources/ios/splash/Default-Portrait~ipad.png" width="768" />
         <splash height="960" src="resources/ios/splash/Default@2x~iphone.png" width="640" />
         <splash height="480" src="resources/ios/splash/Default~iphone.png" width="320" />
-        <resource-file src="GoogleService-Info.plist" />
         <icon height="1024" src="resources/ios/icon/icon-1024.png" width="1024" />
         <splash height="2732" src="resources/ios/splash/Default@2x~universal~anyany.png" width="2732" />
     </platform>
@@ -92,47 +87,6 @@
     <preference name="DisallowOverscroll" value="true" />
     <preference name="android-minSdkVersion" value="18" />
     <preference name="BackupWebStorage" value="none" />
-    <preference name="windows-target-verion" value="10.0" />
-    <preference name="UseLegacySwiftLanguageVersion" value="true" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <allow-navigation href="http://localhost:8100" />
-    <allow-navigation href="http://192.168.0.140:8100" />
-    <allow-navigation href="http://192.168.0.130:8100" />
-    <allow-navigation href="http://192.168.0.131:8000" />
-    <allow-navigation href="http://192.168.0.32:8100" />
-    <allow-navigation href="http://192.168.0.20:8100" />
-    <allow-navigation href="http://192.168.0.6:8100" />
-    <icon src="resources/ios/icon/icon-small@3x.png" />
-    <allow-navigation href="http://192.168.0.6:8106" />
-    <allow-navigation href="http://192.168.0.6:8120" />
-    <plugin name="cordova-plugin-secure-storage" spec="^2.6.8" />
-    <plugin name="cordova-plugin-console" spec="^1.0.7" />
-    <plugin name="cordova-plugin-device" spec="^1.1.7" />
-    <plugin name="cordova-plugin-splashscreen" spec="^4.0.3" />
-    <plugin name="cordova-plugin-statusbar" spec="^2.2.3" />
-    <plugin name="cordova-plugin-whitelist" spec="^1.3.2" />
-    <plugin name="ionic-plugin-keyboard" spec="^2.2.1" />
-    <plugin name="cordova-plugin-dialogs" spec="^1.3.3" />
-    <plugin name="cordova-plugin-spinner-dialog" spec="^1.3.1" />
-    <plugin name="cordova-plugin-network-information" spec="^1.3.3" />
-    <plugin name="cordova-plugin-uniquedeviceid" spec="^1.3.2" />
-    <plugin name="cordova-plugin-app-version" spec="^0.1.9" />
-    <plugin name="cordova-plugin-nativeaudio" spec="^3.0.9" />
-    <plugin name="cordova-plugin-badge" spec="^0.8.7" />
-    <plugin name="cordova-plugin-nativestorage" spec="^2.2.2" />
-    <plugin name="cordova-plugin-mauron85-background-geolocation" spec="^2.3.3">
-        <variable name="GOOGLE_PLAY_SERVICES_VERSION" value="+" />
-        <variable name="ICON" value="@mipmap/icon" />
-        <variable name="SMALL_ICON" value="@mipmap/icon" />
-        <variable name="ACCOUNT_NAME" value="@string/app_name" />
-        <variable name="ACCOUNT_LABEL" value="@string/app_name" />
-        <variable name="ACCOUNT_TYPE" value="$PACKAGE_NAME.account" />
-        <variable name="CONTENT_AUTHORITY" value="$PACKAGE_NAME" />
-    </plugin>
-    <plugin name="cordova-open-native-settings" spec="^1.4.1" />
-    <plugin name="cordova-plugin-vibration" spec="^3.0.1" />
-    <plugin name="cordova-custom-config" spec="^5.0.2" />
-    <plugin name="cordova-plugin-camera" spec="^4.0.2" />
-    <engine name="android" spec="^7.1.0" />
-    <plugin name="cordova-sqlite-evcore-extbuild-free" spec="^0.9.3" />
 </widget>

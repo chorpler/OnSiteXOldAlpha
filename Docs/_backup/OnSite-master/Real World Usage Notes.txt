@@ -1,6 +1,0 @@
-2015-05-14
-On log end shift, there will be a new page with a summary for the day.
-- They will select a time period
-- We bring up a popup of the open work orders.
-- Time should be selectable in 15-minute increments. Mike will set up the selectable number line because of his ingenious idea for making it a transparent overlay over larger-increment times behind it.
-- After selecting a portion of time to assign to a work order, 
