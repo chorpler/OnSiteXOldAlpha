@@ -6,10 +6,10 @@ import { ElementRef, NgZone,                          } from '@angular/core'    
 import { Platform, Nav, ToastController, Events, App  } from 'ionic-angular'                      ;
 import { StatusBar                                    } from '@ionic-native/status-bar'           ;
 import { SplashScreen                                 } from '@ionic-native/splash-screen'        ;
-import { Push, PushObject, PushOptions                } from '@ionic-native/push'                 ;
-import { LocalNotifications                           } from '@ionic-native/local-notifications'  ;
+// import { Push, PushObject, PushOptions                } from '@ionic-native/push'                 ;
+// import { LocalNotifications                           } from '@ionic-native/local-notifications'  ;
 import { AppVersion                                   } from '@ionic-native/app-version'          ;
-import { AppUpdate                                    } from '@ionic-native/app-update'           ;
+// import { AppUpdate                                    } from '@ionic-native/app-update'           ;
 import { OpenNativeSettings                           } from '@ionic-native/open-native-settings' ;
 import { UserData                                     } from 'providers/user-data'                ;
 import { PouchDBService                               } from 'providers/pouchdb-service'          ;
@@ -80,8 +80,8 @@ export class OnSiteApp implements OnInit {
     public zone         : NgZone                   ,
     public cfResolver   : ComponentFactoryResolver ,
     public net          : NetworkStatus            ,
-    public push         : Push                     ,
-    public localNotify  : LocalNotifications       ,
+    // public push         : Push                     ,
+    // public localNotify  : LocalNotifications       ,
     public storage      : StorageService           ,
     public version      : AppVersion               ,
     public db           : DBService                ,
@@ -95,7 +95,7 @@ export class OnSiteApp implements OnInit {
     public alert        : AlertService             ,
     public audio        : SmartAudio               ,
     public msg          : MessageService           ,
-    public appUpdate    : AppUpdate                ,
+    // public appUpdate    : AppUpdate                ,
     public geoloc       : GeolocService            ,
     public settings     : OpenNativeSettings       ,
     public colors       : ColorService             ,
@@ -679,22 +679,28 @@ export class OnSiteApp implements OnInit {
     }
   }
 
-  public checkForAndroidUpdate() {
-    return new Promise((resolve,reject) => {
-      if(this.platform.is('android') && this.platform.is('cordova')) {
-        this.appUpdate.checkAppUpdate(this.prefs.SERVER.androidUpdateURL).then(res => {
-          Log.l("checkForAndroidUpdate(): Succeeded.");
-          resolve(res);
-        }).catch(err => {
-          Log.l("checkForAndroidUpdate(): Error!");
-          Log.e(err);
-          resolve("Android update error, skipping it.");
-        });
-      } else {
-        Log.l("checkForAndroidUpdate(): Platform is not Android. No need for a check.");
-        resolve("Platform is not Android, not running update check");
-      }
-    });
+  public async checkForAndroidUpdate():Promise<boolean> {
+    try {
+      // if(this.platform.is('android') && this.platform.is('cordova')) {
+      //   try {
+      //     let res:any = await this.appUpdate.checkAppUpdate(this.prefs.SERVER.androidUpdateURL);
+      //     Log.l("checkForAndroidUpdate(): Succeeded.");
+      //     return res;
+      //   } catch(err) {
+      //     Log.l(`checkForAndroidUpdate(): Error while checking for update availability.`);
+      //     Log.e(err);
+      //     return false;
+      //   }
+      // } else {
+      //   Log.l("checkForAndroidUpdate(): Platform is not Android. No need for a check.");
+      //   return false;
+      // }
+      return false;
+    } catch (err) {
+      Log.l("checkForAndroidUpdate(): Error!");
+      Log.e(err);
+      return false;
+    }
   }
 
   public goToTab(idx:number) {
