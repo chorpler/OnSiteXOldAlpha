@@ -1,0 +1,14 @@
+npm un --save cordova-plugin-sqlite-2 cordova-sqlite-ext cordova-sqlite-ext-deps localforage-cordovasqlitedriver pouchdb-adapter-cordova-sqlite pouchdb-adapter-websql-core
+
+cordova-plugin-sqlite-2
+cordova-sqlite-ext
+cordova-sqlite-ext-deps
+localforage-cordovasqlitedriver
+pouchdb-adapter-cordova-sqlite
+pouchdb-adapter-websql-core
+
+cordova-sqlite-ext
+localforage-cordovasqlitedriver
+pouchdb-adapter-cordova-sqlite
+pouchdb-adapter-websql-core
+
