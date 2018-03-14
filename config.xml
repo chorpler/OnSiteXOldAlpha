@@ -132,7 +132,7 @@
     <plugin name="cordova-plugin-vibration" spec="^3.0.1" />
     <plugin name="cordova-custom-config" spec="^5.0.2" />
     <plugin name="cordova-plugin-camera" spec="^4.0.2" />
-    <engine name="ios" spec="latest" />
     <plugin name="cordova-plugin-app-version" spec="~0.1.9" />
     <plugin name="cordova-sqlite-evcore-extbuild-free" spec="^0.9.3" />
+    <engine name="ios" spec="4.5.4" />
 </widget>
