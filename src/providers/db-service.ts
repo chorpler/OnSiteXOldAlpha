@@ -997,22 +997,24 @@ export class DBService {
 
   public async deleteAllLocalDatabases() {
     try {
-      let dbnames = await this.PouchDB.allDbs();
-      Log.l("resetAllAppData(): Got list of local databases:\n", dbnames);
-      let count = dbnames.length;
-      for(let dbname of dbnames) {
-        let db = this.addDB(dbname);
-        try {
-          let res = await db.destroy();
-          Log.l(`resetAllAppData(): Successfully destroyed database '${dbname}'`);
-        } catch(err) {
-          Log.l(`resetAllAppData(): Error resetting database '${dbname}'`);
-          Log.e(err);
-          throw new Error(err);
-        }
-      }
-      return count;
-      // return res;
+      // let dbnames = await this.PouchDB.allDbs();
+      // Log.l("resetAllAppData(): Got list of local databases:\n", dbnames);
+      // let count = dbnames.length;
+      // for(let dbname of dbnames) {
+      //   let db = this.addDB(dbname);
+      //   try {
+      //     let res = await db.destroy();
+      //     Log.l(`resetAllAppData(): Successfully destroyed database '${dbname}'`);
+      //   } catch(err) {
+      //     Log.l(`resetAllAppData(): Error resetting database '${dbname}'`);
+      //     Log.e(err);
+      //     throw new Error(err);
+      //   }
+      // }
+      // return count;
+      // // return res;
+      Log.l(`deleteAllLocalDatabases(): This function is currently disabled due to pouchdb-all-dbs causing startup problems.`);
+      return false;
     } catch(err) {
       Log.l(`deleteAllLocalDatabases(): Error resetting local data.`);
       Log.e(err);

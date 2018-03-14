@@ -1,9 +1,11 @@
-import { Subject         } from 'rxjs/Subject'            ;
-import { Observable      } from 'rxjs/Observable'         ;
-import { Injectable      } from '@angular/core'           ;
-import { HttpClient      } from '@angular/common/http'    ;
-import { TranslateLoader } from '@ngx-translate/core'     ;
-import { Log, JSON5      } from 'domain/onsitexdomain' ;
+// import                         'rxjs/add/observable/of' ;
+// import { Subject             } from 'rxjs/Subject'         ;
+// import { Observable          } from 'rxjs/Observable'      ;
+import { Subject, Observable } from 'rxjs'                 ;
+import { Injectable          } from '@angular/core'        ;
+import { HttpClient          } from '@angular/common/http' ;
+import { TranslateLoader     } from '@ngx-translate/core'  ;
+import { Log, JSON5          } from 'domain/onsitexdomain' ;
 
 @Injectable()
 export class JSON5TranslateLoader implements TranslateLoader {

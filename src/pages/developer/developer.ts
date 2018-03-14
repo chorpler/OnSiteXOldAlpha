@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, AfterViewInit,  } from '@angular/core'   
 import { NgZone                                        } from '@angular/core'              ;
 import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular'              ;
 import { AuthSrvcs                                     } from 'providers/auth-srvcs'       ;
-import { GeolocService                                 } from 'providers/geoloc-service'   ;
+// import { GeolocService                                 } from 'providers/geoloc-service'   ;
 import { AlertService                                  } from 'providers/alerts'           ;
 import { Log, moment, Moment                           } from 'domain/onsitexdomain'             ;
 import { DBService                                     } from 'providers/db-service'       ;
@@ -42,7 +42,7 @@ export class DeveloperPage implements OnInit,OnDestroy,AfterViewInit {
     public navParams : NavParams        ,
     public platform  : Platform         ,
     public zone      : NgZone           ,
-    public geoloc    : GeolocService    ,
+    // public geoloc    : GeolocService    ,
     public db        : DBService        ,
     public audio     : SmartAudio       ,
     public alert     : AlertService     ,
@@ -59,11 +59,12 @@ export class DeveloperPage implements OnInit,OnDestroy,AfterViewInit {
 
   ionViewDidLoad() {
     Log.l('ionViewDidLoad DeveloperPage');
-    if(this.platform.is('cordova') && this.geoloc.isEnabled()) {
-      this.GeolocStatus = true;
-    } else {
-      this.GeolocStatus = false;
-    }
+    // if(this.platform.is('cordova') && this.geoloc.isEnabled()) {
+    //   this.GeolocStatus = true;
+    // } else {
+    //   this.GeolocStatus = false;
+    // }
+    this.GeolocStatus = false;
   }
 
   ngOnInit() {
@@ -97,24 +98,24 @@ export class DeveloperPage implements OnInit,OnDestroy,AfterViewInit {
   public toggleBackgroundGeolocation(evt?:any) {
     if(this.platform.is('cordova')) {
       if(this.GeolocStatus) {
-        this.geoloc.startBackgroundGeolocation().then((res) => {
-          Log.l("toggleBackgroundGeolocation(): Background Geolocation turned on.\n", res);
+        // this.geoloc.startBackgroundGeolocation().then((res) => {
+          // Log.l("toggleBackgroundGeolocation(): Background Geolocation turned on.\n", res);
           // this.GeolocStatus = true;
           // this.geolocToggle = this.GeolocStatus;
-        }).catch((err) => {
-          Log.l("toggleBackgroundGeolocation(): Background Geolocation could not be tuned on.");
-          Log.e(err);
-        })
+        // }).catch((err) => {
+          // Log.l("toggleBackgroundGeolocation(): Background Geolocation could not be tuned on.");
+          // Log.e(err);
+        // })
       } else {
       // if (this.geoloc.isEnabled()) {
-        this.geoloc.endBackgroundGeolocation().then((res) => {
-          Log.l("toggleBackgroundGeolocation(): Background Geolocation turned off.\n", res);
+        // this.geoloc.endBackgroundGeolocation().then((res) => {
+          // Log.l("toggleBackgroundGeolocation(): Background Geolocation turned off.\n", res);
           // this.GeolocStatus = false;
           // this.geolocToggle = this.GeolocStatus;
-        }).catch((err) => {
-          Log.l("toggleBackgroundGeolocation(): Background Geolocation could not be turned off.");
-          Log.e(err);
-        })
+        // }).catch((err) => {
+          // Log.l("toggleBackgroundGeolocation(): Background Geolocation could not be turned off.");
+          // Log.e(err);
+        // })
       // }
       }
     } else {
@@ -236,13 +237,16 @@ export class DeveloperPage implements OnInit,OnDestroy,AfterViewInit {
 
   public async resetAppData(event?:any) {
     try {
-      let res;
-      let result = await this.alert.showConfirmYesNo("RESET APP", "Are you sure you want to reset the local data on this app?");
-      if(result) {
-        res = await this.onsiteapp.resetAllAppData();
-        res = await this.alert.showAlert("SUCCESS", "All local app data deleted. Reset app now.");
-      } else {
-      }
+      // let res;
+      // let result = await this.alert.showConfirmYesNo("RESET APP", "Are you sure you want to reset the local data on this app?");
+      // if(result) {
+      //   res = await this.onsiteapp.resetAllAppData();
+      //   res = await this.alert.showAlert("SUCCESS", "All local app data deleted. Reset app now.");
+      // } else {
+      // }
+      // return res;
+      Log.l(`resetAppData(): This function is currently disabled due to pouchdb-all-dbs causing startup problems.`);
+      let res:any = await this.alert.showAlert("DISABLED", `This function is currently disabled due to pouchdb-all-dbs causing startup problems.`);
       return res;
     } catch(err) {
       Log.l(`resetAppData(): Error during app data reset!`);
