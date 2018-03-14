@@ -19,7 +19,7 @@ import { ServerService                                } from 'providers/server-s
 import { AuthSrvcs                                    } from 'providers/auth-srvcs'               ;
 import { AlertService                                 } from 'providers/alerts'                   ;
 import { NetworkStatus                                } from 'providers/network-status'           ;
-import { GeolocService                                } from 'providers/geoloc-service'           ;
+// import { GeolocService                                } from 'providers/geoloc-service'           ;
 import { Log, CONSOLE, moment, Moment                 } from 'domain/onsitexdomain'               ;
 import { MessageService                               } from 'providers/message-service'          ;
 import { TabsComponent                                } from 'components/tabs/tabs'               ;
@@ -35,7 +35,7 @@ import { PayrollPeriod                                } from 'domain/onsitexdoma
 import { Message                                      } from 'domain/onsitexdomain'               ;
 import { Street, Address, Geolocation, Schedule,      } from 'domain/onsitexdomain'               ;
 import { Schedules, Jobsites,                         } from 'domain/onsitexdomain'               ;
-import { IonDigitKeyboardCmp, IonDigitKeyboardOptions } from 'components/ion-digit-keyboard'      ;
+// import { IonDigitKeyboardCmp, IonDigitKeyboardOptions } from 'components/ion-digit-keyboard'      ;
 import { TabsService                                  } from 'providers/tabs-service'             ;
 import { ClockComponent                               } from 'components/clock'                   ;
 import { ColorService                                 } from 'providers/color-service'            ;
@@ -96,7 +96,7 @@ export class OnSiteApp implements OnInit {
     public audio        : SmartAudio               ,
     public msg          : MessageService           ,
     // public appUpdate    : AppUpdate                ,
-    public geoloc       : GeolocService            ,
+    // public geoloc       : GeolocService            ,
     public settings     : OpenNativeSettings       ,
     public colors       : ColorService             ,
   ) {
@@ -208,8 +208,8 @@ export class OnSiteApp implements OnInit {
       window["Platform"] = this.platform;
       window["PouchDB" ].defaults(this.pouchOptions);
 
-      // window[ "PouchDB"].debug.enable('*');
-      window[ "PouchDB"].debug.disable('*');
+      window[ "PouchDB"].debug.enable('*');
+      // window[ "PouchDB"].debug.disable('*');
       Log.l(`OnSite: about to register listeners...`);
       this.registerListeners();
       Log.l(`OnSite: about to preload audio...`);
@@ -721,12 +721,13 @@ export class OnSiteApp implements OnInit {
 
   public async resetAllAppData() {
     try {
-      Log.l(`resetAllAppData(): First deleting local databases...`)
-      let res:any = await this.db.deleteAllLocalDatabases();
-      Log.l(`resetAllAppData(): Deleted local databases, now clearing persistent storage...`)
-      res = await this.storage.persistentClear();
-      Log.l(`resetAllAppData(): All local databases and keys cleared.`);
-      return res;
+      // Log.l(`resetAllAppData(): First deleting local databases...`)
+      // let res:any = await this.db.deleteAllLocalDatabases();
+      // Log.l(`resetAllAppData(): Deleted local databases, now clearing persistent storage...`)
+      // res = await this.storage.persistentClear();
+      // Log.l(`resetAllAppData(): All local databases and keys cleared.`);
+      Log.l(`resetAllAppData(): This function is currently disabled due to pouchdb-all-dbs causing startup problems.`);
+      return true;
     } catch(err) {
       Log.l(`resetAllAppData(): Error during reset`);
       Log.e(err);

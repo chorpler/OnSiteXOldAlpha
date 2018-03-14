@@ -20,17 +20,17 @@ import { ClockComponentModule                                    } from 'compone
 import { StatusBar                                               } from '@ionic-native/status-bar'             ;
 import { IonicStorageModule                                      } from '@ionic/storage'                       ;
 import { SecureStorage, SecureStorageObject                      } from '@ionic-native/secure-storage'         ;
-import { Geofence                                                } from '@ionic-native/geofence'               ;
-import { BackgroundGeolocation, BackgroundGeolocationConfig      } from '@ionic-native/background-geolocation' ;
-import { BackgroundGeolocationResponse                           } from '@ionic-native/background-geolocation' ;
-import { Network                                                 } from '@ionic-native/network'                ;
+// import { AppUpdate                                               } from '@ionic-native/app-update'             ;
 // import { Push, PushObject, PushOptions                           } from '@ionic-native/push'                   ;
 // import { LocalNotifications                                      } from '@ionic-native/local-notifications'    ;
-import { UniqueDeviceID                                          } from '@ionic-native/unique-device-id'       ;
+// import { UniqueDeviceID                                          } from '@ionic-native/unique-device-id'       ;
+// import { Geofence                                                } from '@ionic-native/geofence'               ;
+// import { BackgroundGeolocation, BackgroundGeolocationConfig      } from '@ionic-native/background-geolocation' ;
+// import { BackgroundGeolocationResponse                           } from '@ionic-native/background-geolocation' ;
+import { Network                                                 } from '@ionic-native/network'                ;
 import { Device                                                  } from '@ionic-native/device'                 ;
 import { AppVersion                                              } from '@ionic-native/app-version'            ;
 import { NativeAudio                                             } from '@ionic-native/native-audio'           ;
-// import { AppUpdate                                               } from '@ionic-native/app-update'             ;
 import { Camera, CameraOptions                                   } from '@ionic-native/camera'                 ;
 import { OpenNativeSettings                                      } from '@ionic-native/open-native-settings'   ;
 import { Vibration                                               } from '@ionic-native/vibration'              ;
@@ -43,7 +43,7 @@ import { UserData                                                } from 'provide
 import { ServerService                                           } from 'providers/server-service'             ;
 import { NetworkStatus                                           } from 'providers/network-status'             ;
 import { AlertService                                            } from 'providers/alerts'                     ;
-import { GeolocService                                           } from 'providers/geoloc-service'             ;
+// import { GeolocService                                           } from 'providers/geoloc-service'             ;
 import { PouchDBService                                          } from 'providers/pouchdb-service'            ;
 import { StorageService                                          } from 'providers/storage-service'            ;
 import { createTranslateLoader                                   } from 'config/customTranslateLoader'         ;
@@ -54,7 +54,7 @@ import { SmartAudio                                              } from 'provide
 import { MessageService                                          } from 'providers/message-service'            ;
 import { CommentService                                          } from 'providers/comment-service'            ;
 import { TabsService                                             } from 'providers/tabs-service'               ;
-import { IonDigitKeyboard                                        } from 'components/ion-digit-keyboard'        ;
+// import { IonDigitKeyboard                                        } from 'components/ion-digit-keyboard'        ;
 import { ColorService                                            } from 'providers/color-service'              ;
 
 @NgModule({
@@ -92,7 +92,7 @@ import { ColorService                                            } from 'provide
         ],
       }
     }),
-    IonDigitKeyboard,
+    // IonDigitKeyboard,
     PipesModule,
     ClockComponentModule,
     // MultiPickerModule,
@@ -116,20 +116,20 @@ import { ColorService                                            } from 'provide
     UserData,
     ServerService,
     NetworkStatus,
-    Geofence,
-    BackgroundGeolocation,
-    Network,
+    // AppUpdate,
+    // UniqueDeviceID,
     // Push,
     // LocalNotifications,
-    UniqueDeviceID,
+    // Geofence,
+    // BackgroundGeolocation,
+    Network,
     Device,
     // Sim,
     NativeAudio,
     OpenNativeSettings,
     Vibration,
-    // AppUpdate,
     Camera,
-    GeolocService,
+    // GeolocService,
     PouchDBService,
     StorageService,
     // TabsComponent,

@@ -11,7 +11,7 @@ import { AppVersion                                                          } f
 import { StorageService                                                      } from 'providers/storage-service'     ;
 import { Preferences                                                         } from 'providers/preferences'         ;
 import { UserData                                                            } from 'providers/user-data'           ;
-import { IonDigitKeyboardCmp, IonDigitKeyboardOptions                        } from 'components/ion-digit-keyboard' ;
+// import { IonDigitKeyboardCmp, IonDigitKeyboardOptions                        } from 'components/ion-digit-keyboard' ;
 import { TabsService                                                         } from 'providers/tabs-service'        ;
 import { Pages                                                               } from 'domain/onsitexdomain'          ;
 

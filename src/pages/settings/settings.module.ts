@@ -7,7 +7,7 @@ import { TranslateHttpLoader              } from '@ngx-translate/http-loader'   
 import { createTranslateLoader            } from 'config/customTranslateLoader'                            ;
 // import { TabsComponentModule              } from 'components/tabs/tabs.module'                             ;
 // import { ClockComponentModule             } from 'components/clock/clock.module'                           ;
-import { IonDigitKeyboard                 } from 'components/ion-digit-keyboard/ion-digit-keyboard.module' ;
+// import { IonDigitKeyboard                 } from 'components/ion-digit-keyboard/ion-digit-keyboard.module' ;
 
 @NgModule({
   declarations: [
@@ -24,7 +24,7 @@ import { IonDigitKeyboard                 } from 'components/ion-digit-keyboard/
     }),
     // TabsComponentModule,
     // ClockComponentModule,
-    IonDigitKeyboard,
+    // IonDigitKeyboard,
   ],
   exports: [
     Settings,
