@@ -5,8 +5,8 @@
       <span class="app-user" *ngIf="ud.getTechName()">{{ud.getTechName()}}</span>
     </ion-title>
     <ion-buttons right>
-      <button class="settings-advanced-button" ion-button icon-only (press)="showAdvanced()">
-        <ion-icon class="settings-advanced-icon" name="ios-settings-outline"></ion-icon>
+      <button class="settings-advanced-button" ion-button icon-only (press)="showAdvanced($event)">
+        <ion-icon class="settings-advanced-icon" [class.hidden]="!advanced" name="ios-warning-outline"></ion-icon>
       </button>
     </ion-buttons>
   </ion-navbar>
@@ -17,10 +17,16 @@
     <ion-item-group>
       <ion-item-divider class="perfectly-normal-divider" color="light">{{'app_info' | translate}}</ion-item-divider>
       <ion-item>
-        <ion-label>
-          {{'version' | translate}}: {{appName}}
-          <span class="settings-app-version" (tap)="ud.updatePerfectlyNormalEvent($event)">{{appVersion}}</span>
-        </ion-label>
+        <span class="wrapper-for-item-contents">
+          <span class="settings-label">{{'app_name' | translate}}</span>
+          <span class="settings-text">{{appName}}</span>
+        </span>
+      </ion-item>
+      <ion-item>
+        <span class="wrapper-for-item-contents">
+          <span class="settings-label">{{'version' | translate}}</span>
+          <span class="settings-text" (tap)="ud.updatePerfectlyNormalEvent($event)">{{appVersion}}</span>
+        </span>
       </ion-item>
     </ion-item-group>
     <ion-item-group>
@@ -32,22 +38,28 @@
         </ion-select>
       </ion-item>
       <ion-item>
-        <ion-label>{{'sounds' | translate}}</ion-label>
-        <ion-toggle [(ngModel)]="sounds" (ngModelChange)="toggleSounds()"></ion-toggle>
-      </ion-item>
-    </ion-item-group>
-    <ion-item-group *ngIf="advanced">
-      <ion-item-divider color="light">{{'user_settings' | translate}}</ion-item-divider>
-      <ion-item>
-        <ion-label>{{'stay_in_reports' | translate}}</ion-label>
-        <ion-toggle [(ngModel)]="stayInReports" (ngModelChange)="toggleStayInReports()"></ion-toggle>
-      </ion-item>
-      <ion-item>
         <ion-label>{{'weeks_to_show' | translate}}</ion-label>
         <ion-select [(ngModel)]="weeksToShow" (ionChange)="updateWeeksToShow(weeksToShow)">
           <ion-option *ngFor="let weeksToShow of weeksToShowList" [value]="weeksToShow">{{weeksToShow}}</ion-option>
         </ion-select>
       </ion-item>
+      <ion-item>
+        <ion-label>{{'sounds' | translate}}</ion-label>
+        <ion-toggle [(ngModel)]="sounds" (ngModelChange)="toggleSounds()"></ion-toggle>
+      </ion-item>
+    </ion-item-group>
+    <ion-item-group *ngIf="advanced">
+      <ion-item-divider color="light">{{'advanced_settings' | translate}}</ion-item-divider>
+      <ion-item>
+        <ion-label>{{'stay_in_reports' | translate}}</ion-label>
+        <ion-toggle [(ngModel)]="stayInReports" (ngModelChange)="toggleStayInReports()"></ion-toggle>
+      </ion-item>
+      <!-- <ion-item>
+        <ion-label>{{'weeks_to_show' | translate}}</ion-label>
+        <ion-select [(ngModel)]="weeksToShow" (ionChange)="updateWeeksToShow(weeksToShow)">
+          <ion-option *ngFor="let weeksToShow of weeksToShowList" [value]="weeksToShow">{{weeksToShow}}</ion-option>
+        </ion-select>
+      </ion-item> -->
     </ion-item-group>
     <ion-item-group>
       <ion-item-divider color="light">{{'app_functions' | translate}} </ion-item-divider>

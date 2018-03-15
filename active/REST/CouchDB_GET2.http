@@ -1,0 +1,2 @@
+GET https://securedb.sesaonsite.com/sesa-jobsites/_design/ref/_list/docRaw/all
+Authorization: Basic admin starmobile

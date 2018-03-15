@@ -166,6 +166,7 @@
     "object-keys": "^1.0.11",
     "pouchdb": "^6.4.3",
     "pouchdb-adapter-cordova-sqlite": "^2.0.2",
+    "pouchdb-adapter-fruitdown": "^6.4.3",
     "pouchdb-auth": "^4.0.0",
     "pouchdb-authentication": "^1.1.1",
     "pouchdb-browser": "6.4.3",

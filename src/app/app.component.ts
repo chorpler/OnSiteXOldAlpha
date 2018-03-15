@@ -1,5 +1,6 @@
 // import { HomePage                                     } from 'pages/home/home'                   ;
 // import { Sim                                          } from '@ionic-native/sim'                 ;
+import { Subscription                                 } from 'rxjs/Subscription'                  ;
 import { Component, ViewChild, OnInit,                } from '@angular/core'                      ;
 import { ComponentFactoryResolver, ViewContainerRef,  } from '@angular/core'                      ;
 import { ElementRef, NgZone,                          } from '@angular/core'                      ;
@@ -8,8 +9,8 @@ import { StatusBar                                    } from '@ionic-native/stat
 import { SplashScreen                                 } from '@ionic-native/splash-screen'        ;
 // import { Push, PushObject, PushOptions                } from '@ionic-native/push'                 ;
 // import { LocalNotifications                           } from '@ionic-native/local-notifications'  ;
-import { AppVersion                                   } from '@ionic-native/app-version'          ;
 // import { AppUpdate                                    } from '@ionic-native/app-update'           ;
+import { AppVersion                                   } from '@ionic-native/app-version'          ;
 import { OpenNativeSettings                           } from '@ionic-native/open-native-settings' ;
 import { UserData                                     } from 'providers/user-data'                ;
 import { PouchDBService                               } from 'providers/pouchdb-service'          ;
@@ -19,6 +20,7 @@ import { ServerService                                } from 'providers/server-s
 import { AuthSrvcs                                    } from 'providers/auth-srvcs'               ;
 import { AlertService                                 } from 'providers/alerts'                   ;
 import { NetworkStatus                                } from 'providers/network-status'           ;
+import { DispatchService, ClockAction,                } from 'providers/dispatch-service'         ;
 // import { GeolocService                                } from 'providers/geoloc-service'           ;
 import { Log, CONSOLE, moment, Moment                 } from 'domain/onsitexdomain'               ;
 import { MessageService                               } from 'providers/message-service'          ;
@@ -61,6 +63,7 @@ export class OnSiteApp implements OnInit {
   public static PREFS            : any     = new Preferences() ;
   public prefs                   : any     = OnSiteApp.PREFS   ;
   public status                  : any     = OnSiteApp.status  ;
+  public clockSub                : Subscription                ;
   public network                 : any                         ;
   public data                    : any                         ;
   private ui                     : any                         ;
@@ -84,6 +87,7 @@ export class OnSiteApp implements OnInit {
     // public localNotify  : LocalNotifications       ,
     public storage      : StorageService           ,
     public version      : AppVersion               ,
+    public dispatch     : DispatchService          ,
     public db           : DBService                ,
     public ud           : UserData                 ,
     public auth         : AuthSrvcs                ,
@@ -156,10 +160,22 @@ export class OnSiteApp implements OnInit {
     window['onsitedebug']['Jobsites']      = Jobsites      ;
     window['onsitedebug']['Schedule']      = Schedule      ;
     window['onsitedebug']['Schedules']     = Schedules     ;
-
   }
 
   public registerListeners() {
+    this.clockSub = this.dispatch.clockEventFired().subscribe((data:{action:ClockAction,text?:string}) => {
+      Log.l(`ClockEvent received:\n`, data);
+      let action:ClockAction = data.action;
+      if(action === 'show') {
+        this.ud.showClock = true;
+      } else if(action === 'hide') {
+        this.ud.showClock = false;
+      } else if(action === 'toggle') {
+        this.ud.showClock = !this.ud.showClock;
+      } else if(action === 'caption' && data.text !== undefined) {
+        this.clockCaption = data.text;
+      }
+    });
     this.platform.registerBackButtonAction(() => {
       let page = this.nav && this.nav.getActive ? this.nav.getActive() : {name: "none", id: "none"};
       if(page && page.id) {
@@ -208,8 +224,8 @@ export class OnSiteApp implements OnInit {
       window["Platform"] = this.platform;
       window["PouchDB" ].defaults(this.pouchOptions);
 
-      window[ "PouchDB"].debug.enable('*');
-      // window[ "PouchDB"].debug.disable('*');
+      // window[ "PouchDB"].debug.enable('*');
+      window[ "PouchDB"].debug.disable('*');
       Log.l(`OnSite: about to register listeners...`);
       this.registerListeners();
       Log.l(`OnSite: about to preload audio...`);
@@ -297,7 +313,7 @@ export class OnSiteApp implements OnInit {
     return true;
 }
 
-  public async onlineBoot() {
+  public async onlineBoot():Promise<boolean> {
     let lang = this.lang;
     try {
       this.clock.setCaption(lang['retrieving_preferences']);
@@ -328,7 +344,7 @@ export class OnSiteApp implements OnInit {
       let tech = this.ud.getData('employee')[0];
       this.clock.setCaption(lang['checking_for_new_messages']);
       let newMsgs = await this.checkForNewMessages();
-      let pp:PayrollPeriod[] = this.ud.createPayrollPeriods(tech, this.prefs.getPayrollPeriodCount());
+      let pp:PayrollPeriod[] = this.ud.createPayrollPeriods(tech, this.prefs.getUserPayrollPeriodCount());
       UserData.payrollPeriods = pp;
       // this.ud.getReportList();
       this.clock.clearCaption();
@@ -394,7 +410,7 @@ export class OnSiteApp implements OnInit {
       let phoneInfo = await this.ud.checkPhoneInfo();
       // let tech = this.ud.getData('employee')[0];
       let newMsgs = await this.checkForNewMessages();
-      let pp:PayrollPeriod[] = this.ud.createPayrollPeriods(this.data.employee[0], this.prefs.getPayrollPeriodCount());
+      let pp:PayrollPeriod[] = this.ud.createPayrollPeriods(this.data.employee[0], this.prefs.getUserPayrollPeriodCount());
       UserData.payrollPeriods = pp;
       // this.ud.getReportList();
       this.clock.clearCaption();
@@ -560,18 +576,21 @@ export class OnSiteApp implements OnInit {
     }
   }
 
-  public checkForNewMessages() {
+  public async checkForNewMessages() {
     let interval = this.prefs.getMessageCheckInterval();
     // Log.l("checkForNewMessages(): Interval is set to %d.", interval);
-    this.messageCheckTimeout = setInterval(() => {
+    this.messageCheckTimeout = setInterval(async () => {
       Log.l("checkForNewMessages(): Fetching new messages...");
-      if(this.ud.isOnline) {
-        this.msg.getMessages().then(res => {
+      try {
+        if(this.ud.isOnline) {
+          let res:any = await this.msg.getMessages();
           Log.l("checkForNewMessages(): Checked sucessfully.");
-        }).catch(err => {
-          Log.l("checkForNewMessages(): Caught error. Silently dying.");
-          Log.e(err);
-        });
+          return res;
+        }
+      } catch(err) {
+        Log.l(`checkForNewMessages(): Error caught checking for messages. Silently dying.`);
+        Log.e(err);
+        // throw new Error(err);
       }
     }, 1000 * 60 * interval);
   }

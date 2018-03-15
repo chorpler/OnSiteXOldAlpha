@@ -33,6 +33,7 @@ export class UserData {
   public static appdata               : any = {
     ready      : false,
     version    : "10.12.13",
+    title      : "SESA OnSite",
     homeLoading: false,
     attempts   : 0,
     homeReady  : false,
@@ -476,9 +477,9 @@ export class UserData {
     }
   }
 
-  public getReportsForTech() {
-    return this.reports;
-  }
+  // public getReportsForTech():Array<Report> {
+  //   return this.reports;
+  // }
 
   public setReportsForTech(reports:Array<Report>) {
     // let workReports = [];
@@ -579,36 +580,39 @@ export class UserData {
     // let others:Array<ReportOther>  = this.getData('otherReports').slice(0);
     let reports:Array<Report> = this.getData('reports');
     let others:Array<ReportOther>  = this.getData('otherReports');
-    let periods = this.getPayrollPeriods();
+    let periods:Array<PayrollPeriod> = this.getPayrollPeriods();
     let newReports:Array<Report> = [];
     let newOthers:Array<ReportOther> = [];
     for(let period of periods) {
-      let shifts = period.getPayrollShifts();
+      let shifts:Array<Shift> = period.getPayrollShifts();
       for(let shift of shifts) {
         let shiftDate = shift.getShiftDate().format("YYYY-MM-DD");
         for(let report of reports) {
+          // let report_date = report.report_date;
           let report_date = report.report_date;
           let shiftReports = shift.getShiftReports();
           if(shiftDate === report_date) {
             if(shiftReports.indexOf(report) > -1) {
               continue;
+            } else {
+              shift.addShiftReport(report);
+              newReports.push(report);
             }
-            shift.addShiftReport(report);
-            newReports.push(report);
           }
         }
-        for(let other of others) {
-          let other_date = other.report_date.format("YYYY-MM-DD");
-          if(shiftDate === other_date) {
-            shift.addOtherReport(other);
-            newOthers.push(other);
-          }
-        }
+        // for(let other of others) {
+        //   let other_date = other.report_date.format("YYYY-MM-DD");
+        //   if(shiftDate === other_date) {
+        //     shift.addOtherReport(other);
+        //     newOthers.push(other);
+        //   }
+        // }
       }
     }
-    UserData.data.reports = newReports;
-    UserData.data.otherReports = newOthers;
-    return UserData.data.reports;
+    return reports;
+    // UserData.data.reports = newReports;
+    // UserData.data.otherReports = newOthers;
+    // return UserData.data.reports;
   }
 
   public setReportList(list:Array<Report>) {
@@ -630,15 +634,17 @@ export class UserData {
         for(let other of others) {
           if(shiftOthers.indexOf(other) > -1) {
             continue;
-          }
-          let other_date = other.report_date.format("YYYY-MM-DD");
-          if(shiftDate === other_date) {
-            shift.addOtherReport(other);
-            newOthers.push(other);
+          } else {
+            let other_date = other.report_date.format("YYYY-MM-DD");
+            if(shiftDate === other_date) {
+              shift.addOtherReport(other);
+              newOthers.push(other);
+            }
           }
         }
       }
     }
+    return others;
 
     // let newReports = new Array<ReportOther>();
     // for (let period of periods) {
@@ -650,8 +656,8 @@ export class UserData {
     //     }
     //   }
     // }
-    UserData.otherReports = newOthers;
-    return UserData.otherReports;
+    // UserData.otherReports = newOthers;
+    // return UserData.otherReports;
   }
 
   public setReportOtherList(others:Array<ReportOther>) {
@@ -841,39 +847,39 @@ export class UserData {
     }
   }
 
-  public updateShifts(period?:PayrollPeriod) {
-    let periods = UserData.payrollPeriods;
-    let others = UserData.otherReports;
-    let reports = this.getReportList();
-    for(let period of periods) {
-      let shifts = period.getPayrollShifts();
-      for(let shift of shifts) {
-        // let shiftReports = shift.getShiftReports();
-        let shiftDate = shift.getShiftDate().format("YYYY-MM-DD");
-        let shiftReports = new Array<Report>();
-        let shiftOtherReports = new Array<ReportOther>();
-        let exists = false;
-        for(let report of reports) {
-          let rid = report._id;
+  // public updateShifts(period?:PayrollPeriod) {
+  //   let periods = UserData.payrollPeriods;
+  //   let others = UserData.otherReports;
+  //   let reports = this.getReportList();
+  //   for(let period of periods) {
+  //     let shifts = period.getPayrollShifts();
+  //     for(let shift of shifts) {
+  //       // let shiftReports = shift.getShiftReports();
+  //       let shiftDate = shift.getShiftDate().format("YYYY-MM-DD");
+  //       let shiftReports = new Array<Report>();
+  //       let shiftOtherReports = new Array<ReportOther>();
+  //       let exists = false;
+  //       for(let report of reports) {
+  //         let rid = report._id;
 
-        }
-        for(let report of reports) {
-          let reportDate = report.report_date;
-          if(shiftDate === reportDate) {
-            shiftReports.push(report);
-          }
-        }
-        for(let other of others) {
-          let otherDate = other.report_date.format("YYYY-MM-DD");
-          if(shiftDate === otherDate) {
-            shiftOtherReports.push(other);
-          }
-        }
-        shift.setShiftReports(shiftReports);
-        shift.setOtherReports(shiftOtherReports);
-      }
-    }
-  }
+  //       }
+  //       for(let report of reports) {
+  //         let reportDate = report.report_date;
+  //         if(shiftDate === reportDate) {
+  //           shiftReports.push(report);
+  //         }
+  //       }
+  //       for(let other of others) {
+  //         let otherDate = other.report_date.format("YYYY-MM-DD");
+  //         if(shiftDate === otherDate) {
+  //           shiftOtherReports.push(other);
+  //         }
+  //       }
+  //       shift.setShiftReports(shiftReports);
+  //       shift.setOtherReports(shiftOtherReports);
+  //     }
+  //   }
+  // }
 
   public addNewReport(newReport:Report) {
     Log.l("addNewReport(): Now adding report:\n", newReport);

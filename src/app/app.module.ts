@@ -42,6 +42,7 @@ import { DBService                                               } from 'provide
 import { UserData                                                } from 'providers/user-data'                  ;
 import { ServerService                                           } from 'providers/server-service'             ;
 import { NetworkStatus                                           } from 'providers/network-status'             ;
+import { DispatchService                                         } from 'providers/dispatch-service'           ;
 import { AlertService                                            } from 'providers/alerts'                     ;
 // import { GeolocService                                           } from 'providers/geoloc-service'             ;
 import { PouchDBService                                          } from 'providers/pouchdb-service'            ;
@@ -106,6 +107,7 @@ import { ColorService                                            } from 'provide
     LoadingController,
     ColorService,
     AlertController,
+    DispatchService,
     AlertService,
     {
       provide: ErrorHandler,

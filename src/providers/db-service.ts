@@ -656,31 +656,34 @@ export class DBService {
       let username = tech.getUsername();
       data.employee.push(tech);
         // this.getReportsForTech(username).then(res => {
-      let res:any = await this.getReportsForTech(username);
-      for (let doc of res) {
-        let report = new Report();
-        report.readFromDoc(doc);
-        data.reports.push(report);
-      }
-      res = await this.getReportsOtherForTech(username);
-      for(let doc of res) {
-        let other = new ReportOther();
-        other.readFromDoc(doc);
-        data.otherReports.push(other);
-      }
-      res = await this.getJobsites();
-      for (let doc of res) {
-        let site = new Jobsite();
-        site.readFromDoc(doc);
-        data.sites.push(site);
-      }
-      res = await this.getMessages();
-      for(let doc of res) {
-        let msg = new Message();
-        msg.readFromDoc(doc);
-        data.messages.push(msg);
-      }
-      res = await this.getAllConfigData();
+      let reports:Report[] = await this.getReportsForTech(username);
+      data.reports = reports;
+      // for (let doc of res) {
+      //   let report = new Report();
+      //   report.readFromDoc(doc);
+      //   data.reports.push(report);
+      // }
+      let others:ReportOther[] = await this.getReportsOtherForTech(username);
+      data.otherReports = others;
+      // for(let doc of res) {
+      //   let other = new ReportOther();
+      //   other.readFromDoc(doc);
+      //   data.otherReports.push(other);
+      // }
+      let sites:Jobsite[] = await this.getJobsites();
+      data.sites = sites;
+      // for (let doc of res) {
+      //   let site = new Jobsite();
+      //   site.readFromDoc(doc);
+      //   data.sites.push(site);
+      // }
+      let messages:Message[] = await this.getMessages();
+      // for(let doc of res) {
+      //   let msg = new Message();
+      //   msg.readFromDoc(doc);
+      //   data.messages.push(msg);
+      // }
+      let res:any = await this.getAllConfigData();
       let keys = Object.keys(res);
       for(let key of keys) {
         data.config[key] = res[key];
@@ -746,7 +749,7 @@ export class DBService {
     });
   }
 
-  public getMessages() {
+  public async getMessages():Promise<Array<Message>> {
     return this.fetchNewMessages();
   }
 

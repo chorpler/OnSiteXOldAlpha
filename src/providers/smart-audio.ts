@@ -62,7 +62,7 @@ export class SmartAudio {
       }
     } catch(err) {
       Log.l(`preload(): Error preloading audio file '${asset}' with key '${key}'.`);
-      Log.e(err);
+      // Log.e(err);
       // throw new Error(err);
     }
   }

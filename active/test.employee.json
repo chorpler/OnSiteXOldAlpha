@@ -1,0 +1,63 @@
+{
+  "_id": "org.couchdb.user:AaaaapleAaronson",
+  "_rev": "3-865e54f997833346aa8ed1458db53ed8",
+  "name": "AaaaapleAaronson",
+  "roles": [
+    "TECHNICIAN"
+  ],
+  "type": "user",
+  "active": true,
+  "updated": false,
+  "statusUpdates": [
+    {
+      "type": "created",
+      "user": "Chorpler",
+      "timestamp": "2018-03-07T14:31:20-06:00"
+    }
+  ],
+  "prefix": null,
+  "firstName": "Aaron",
+  "lastName": "Aaaaaple",
+  "middleName": null,
+  "suffix": null,
+  "technician": "Aaaaaple, Aaron",
+  "username": "AaaaapleAaronson",
+  "avatarName": "AaaaapleAaronson",
+  "avtrNameAsUser": true,
+  "userClass": [
+    "TECHNICIAN"
+  ],
+  "client": "SESA",
+  "location": "Weslaco",
+  "locID": "Office",
+  "workSite": "SE WESLACO OFFICE",
+  "site_number": 1075,
+  "shift": "AM",
+  "shiftLength": 8,
+  "shiftStartTime": 8,
+  "rotation": "CONTN WEEK",
+  "email": [
+    "AaaaapleAaronson@sesafleetservices.com"
+  ],
+  "phone": null,
+  "cell": null,
+  "address": {
+    "street": {
+      "street1": "",
+      "street2": ""
+    },
+    "city": "",
+    "state": "",
+    "country": "USA",
+    "zipcode": ""
+  },
+  "payRate": 12,
+  "created": "2018-03-07T14:31:20-06:00",
+  "lastUpdated": "2018-03-07T14:31:20-06:00",
+  "docID": "org.couchdb.user:AaaaapleAaronson",
+  "password_scheme": "pbkdf2",
+  "iterations": 10,
+  "derived_key": "2ac61934276f7560fb0c65445913ec2df60db840",
+  "salt": "80157631be8981061b7ebec568846680",
+  "shiftStartTimeHour": "08:00"
+}

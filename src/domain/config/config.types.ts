@@ -300,17 +300,11 @@ export interface ReportFlag {
 
 export enum Pages {
   'OnSiteHome'      = 0,
-  'ReportHistory'   = 1,
-  'Report History'  = 1,
   'Report'          = 1,
   'ReportView'      = 1,
   'Report View'     = 1,
-  'Flagged Reports' = 2,
-  'Reports Flagged' = 2,
-  'ReportsFlagged'  = 2,
-  'FlaggedReports'  = 2,
-  'Shift View'      = 2,
-  'ShiftView'       = 2,
+  'ReportHistory'   = 2,
+  'Report History'  = 2,
   'User'            = 3,
   'Message List'    = 4,
   'MessageList'     = 4,
@@ -320,6 +314,12 @@ export enum Pages {
   'Comment'         = 8,
   'Fancy Select'    = 9,
   'Testing'         = 10,
+  'Flagged Reports' = 11,
+  'Reports Flagged' = 11,
+  'ReportsFlagged'  = 11,
+  'FlaggedReports'  = 11,
+  'Shift View'      = 12,
+  'ShiftView'       = 12,
 }
 
 export enum Icons {

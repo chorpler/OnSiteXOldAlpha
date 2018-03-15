@@ -3,6 +3,7 @@ import { PouchDBService          } from './pouchdb-service'           ;
 import { UserData                } from './user-data'                 ;
 import { Preferences             } from './preferences'               ;
 import { AlertService            } from './alerts'                    ;
+import { DispatchService         } from './dispatch-service'          ;
 import { Log, moment, Moment, oo } from 'domain/onsitexdomain'        ;
 import { Message                 } from 'domain/onsitexdomain'        ;
 import { Comment                 } from 'domain/onsitexdomain'        ;
@@ -29,7 +30,12 @@ export class ServerService {
   public static prefs         : any    = new Preferences()                                      ;
   public prefs                : any    = ServerService.prefs                                        ;
 
-  constructor(public alert:AlertService, public pdbService:PouchDBService, public ud:UserData) {
+  constructor(
+    public dispatch   : DispatchService ,
+    public alert      : AlertService    ,
+    public pdbService : PouchDBService  ,
+    public ud         : UserData        ,
+  ) {
     Log.l("Hello ServerService provider");
     window["ServerServices"] = this;
     window["ServerService"] = ServerService;
@@ -567,23 +573,45 @@ export class ServerService {
       Log.l(db1);
       Log.l(db2);
       let rdbURL = this.getBaseURL() + "/" + dbname;
-      let batch_size = 1000;
+      let batch_size = 100;
       // let batch_size = 1;
       let pendingMax = 0;
       let opts:any = { live: false, retry: false, batch_size: batch_size };
       let u = this.ud.getUsername(), p = this.ud.getPassword();
       let res:any = await this.loginToDatabase(u, p, dbname);
       Log.l(`syncFromServerViaSelector(): Successfully logged in to remote->'${dbname}'`);
-      if(dbname === 'reports_ver101100' || dbname === 'sesa-reports-other' || dbname === 'aaa001_reports_ver101100') {
-        // let now = moment();
-        // let startDate = moment(now).subtract(5, 'weeks');
+      if(dbname === 'reports_ver101100' || dbname === 'aaa001_reports_ver101100') {
+        let now = moment();
+        let startDate = moment(now).subtract(4, 'weeks');
         // opts.filter = 'ref/forTechDate';
         // opts.query_
         // params = { username: u, start: startDate.format("YYYY-MM-DD"), end: now.format("YYYY-MM-DD") };
         let username:string = this.ud.getUsername();
         // let query = {selector: { username: {$eq: username}}, limit:10000};
-        let query = { "username": username };
-        opts.selector = query;
+        // let query = { "username": username };
+        let querySelector = {
+          "$and": [
+            { "username": { "$eq": username } },
+            { "rprtDate": { "$gte": startDate } },
+          ]
+        };
+        opts.selector = querySelector;
+      } else if(dbname === 'sesa-reports-other') {
+        let now = moment();
+        let startDate = moment(now).subtract(4, 'weeks');
+        // opts.filter = 'ref/forTechDate';
+        // opts.query_
+        // params = { username: u, start: startDate.format("YYYY-MM-DD"), end: now.format("YYYY-MM-DD") };
+        let username:string = this.ud.getUsername();
+        // let query = {selector: { username: {$eq: username}}, limit:10000};
+        // let query = { "username": username };
+        let querySelector = {
+          "$and": [
+            { "username": { "$eq": username } },
+            { "report_date": { "$gte": startDate } },
+          ]
+        };
+        opts.selector = querySelector;
       } else if(dbname === 'sesa-scheduling') {
         let now = moment();
         let fromDate = moment(now).subtract(4, 'weeks');
@@ -591,13 +619,14 @@ export class ServerService {
         opts.query_params = { fromDate: fromDate.format("YYYY-MM-DD"), toDate: now.format("YYYY-MM-DD") };
       }
       Log.l(`syncFromServerViaSelector(): Now replicating '${dbname}' with options:\n`, opts);
-      res = await db1.replicate.from(db2, opts).on('change', (info) => {
-        Log.l(`Replication '${dbname}': Change event:\n`, info);
-        let progress = this.getProgress(info.pending);
-        Log.l(`PROGRESS: '${progress}'`);
-      }).on('complete', (info) => {
-        Log.l(`Replication '${dbname}': Complete event:\n`, info);
-      });
+      res = await db1.replicate.from(db2, opts);
+      // .on('change', (info) => {
+      //   Log.l(`Replication '${dbname}': Change event:\n`, info);
+      //   let progress = this.getProgress(info.pending);
+      //   Log.l(`PROGRESS: '${progress}'`);
+      // }).on('complete', (info) => {
+      //   Log.l(`Replication '${dbname}': Complete event:\n`, info);
+      // });
       Log.l(`syncFromServerViaSelector(): Successfully replicated remote->'${dbname}'`);
       Log.l(res);
       return res;

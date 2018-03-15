@@ -1,0 +1,104 @@
+;cellar                      CNAME   cellar-lan.sesa.us.
+cellar                      IN      A       162.243.157.16
+www.cellar                  CNAME   cellar.sesa.us.
+updates                     CNAME   cellar.sesa.us.
+updates-lan                 CNAME   cellar.sesa.us.
+updates-wlan                CNAME   cellar.sesa.us.
+www.updates                 CNAME   cellar.sesa.us.
+db.cellar                   CNAME   cellar.sesa.us.
+cellar-lan                  CNAME   cellar.sesa.us.
+cellar-lan1                 CNAME   cellar.sesa.us.
+cellar-lan2                 CNAME   cellar.sesa.us.
+cellar-wlan                 CNAME   cellar.sesa.us.
+cellar-wlan1                CNAME   cellar.sesa.us.
+cellar-wlan2                CNAME   cellar.sesa.us.
+reports.db.cellar           CNAME   cellar.sesa.us.
+oldreports.db.cellar        CNAME   cellar.sesa.us.
+old01.reports.db.cellar     CNAME   cellar.sesa.us.
+old02.reports.db.cellar     CNAME   cellar.sesa.us.
+old03.reports.db.cellar     CNAME   cellar.sesa.us.
+old04.reports.db.cellar     CNAME   cellar.sesa.us.
+old05.reports.db.cellar     CNAME   cellar.sesa.us.
+reportsother.db.cellar      CNAME   cellar.sesa.us.
+others.db.cellar            CNAME   cellar.sesa.us.
+employees.db.cellar         CNAME   cellar.sesa.us.
+config.db.cellar            CNAME   cellar.sesa.us.
+jobsites.db.cellar          CNAME   cellar.sesa.us.
+scheduling.db.cellar        CNAME   cellar.sesa.us.
+schedulingbeta.db.cellar    CNAME   cellar.sesa.us.
+invoices.db.cellar          CNAME   cellar.sesa.us.
+be.invoices.db.cellar       CNAME   cellar.sesa.us.
+ps.invoices.db.cellar       CNAME   cellar.sesa.us.
+hb.invoices.db.cellar       CNAME   cellar.sesa.us.
+kn.invoices.db.cellar       CNAME   cellar.sesa.us.
+technicians.db.cellar       CNAME   cellar.sesa.us.
+messages.db.cellar          CNAME   cellar.sesa.us.
+comments.db.cellar          CNAME   cellar.sesa.us.
+phoneinfo.db.cellar         CNAME   cellar.sesa.us.
+sounds.db.cellar            CNAME   cellar.sesa.us.
+preauths.db.cellar          CNAME   cellar.sesa.us.
+worksites.db.cellar         CNAME   cellar.sesa.us.
+reports-old.db.cellar       CNAME   cellar.sesa.us.
+prefs.db.cellar             CNAME   cellar.sesa.us.
+preferences.db.cellar       CNAME   cellar.sesa.us.
+
+certbot-auto certonly --webroot -w /var/www/html/cellar -d cellar.sesa.us -d db.cellar.sesa.us -d reports.db.cellar.sesa.us -d oldreports.db.cellar.sesa.us -d old01.reports.db.cellar.sesa.us -d old02.reports.db.cellar.sesa.us -d old03.reports.db.cellar.sesa.us -d old04.reports.db.cellar.sesa.us -d old05.reports.db.cellar.sesa.us -d reportsother.db.cellar.sesa.us -d others.db.cellar.sesa.us -d employees.db.cellar.sesa.us -d config.db.cellar.sesa.us -d jobsites.db.cellar.sesa.us -d scheduling.db.cellar.sesa.us -d schedulingbeta.db.cellar.sesa.us -d invoices.db.cellar.sesa.us -d be.invoices.db.cellar.sesa.us -d ps.invoices.db.cellar.sesa.us -d hb.invoices.db.cellar.sesa.us -d kn.invoices.db.cellar.sesa.us -d technicians.db.cellar.sesa.us -d messages.db.cellar.sesa.us -d comments.db.cellar.sesa.us -d phoneinfo.db.cellar.sesa.us -d sounds.db.cellar.sesa.us -d preauths.db.cellar.sesa.us -d worksites.db.cellar.sesa.us -d reports-old.db.cellar.sesa.us -d prefs.db.cellar.sesa.us -d preferences.db.cellar.sesa.us
+
+
+
+
+
+certbot-auto certonly --webroot -w /var/www/html/cellar -d cellar-lan.sesa.us -d cellar-lan1.sesa.us -d cellar-lan2.sesa.us -d cellar-wlan.sesa.us -d cellar-wlan1.sesa.us -d cellar-wlan2.sesa.us -d www.cellar.sesa.us -d updates.sesa.us -d www.updates.sesa.us -d db.cellar.sesa.us -d reports.db.cellar.sesa.us -d oldreports.db.cellar.sesa.us -d old01.reports.db.cellar.sesa.us -d old02.reports.db.cellar.sesa.us -d old03.reports.db.cellar.sesa.us -d old04.reports.db.cellar.sesa.us -d old05.reports.db.cellar.sesa.us -d reportsother.db.cellar.sesa.us -d others.db.cellar.sesa.us -d employees.db.cellar.sesa.us -d config.db.cellar.sesa.us -d jobsites.db.cellar.sesa.us -d scheduling.db.cellar.sesa.us -d schedulingbeta.db.cellar.sesa.us -d invoices.db.cellar.sesa.us -d be.invoices.db.cellar.sesa.us -d ps.invoices.db.cellar.sesa.us -d hb.invoices.db.cellar.sesa.us -d kn.invoices.db.cellar.sesa.us -d technicians.db.cellar.sesa.us -d messages.db.cellar.sesa.us -d comments.db.cellar.sesa.us -d phoneinfo.db.cellar.sesa.us -d sounds.db.cellar.sesa.us -d preauths.db.cellar.sesa.us -d worksites.db.cellar.sesa.us -d reports-old.db.cellar.sesa.us -d prefs.db.cellar.sesa.us -d preferences.db.cellar.sesa.us
+
+
+
+
+
+
+	ServerName  cellar.sesa.us
+	ServerAlias cellar-lan.sesa.us
+	ServerAlias cellar-lan1.sesa.us
+	ServerAlias cellar-lan2.sesa.us
+	ServerAlias cellar-wlan.sesa.us
+	ServerAlias cellar-wlan1.sesa.us
+	ServerAlias cellar-wlan2.sesa.us
+	ServerAlias www.cellar.sesa.us
+	ServerAlias updates.sesa.us
+	ServerAlias updates-lan.sesa.us
+	ServerAlias updates-wlan.sesa.us
+	ServerAlias www.updates.sesa.us
+	ServerAlias db.cellar.sesa.us
+	ServerAlias utils.cellar.sesa.us
+	ServerAlias fauxton.cellar.sesa.us
+	ServerAlias reports.db.cellar.sesa.us
+	ServerAlias oldreports.db.cellar.sesa.us
+	ServerAlias old01.reports.db.cellar.sesa.us
+	ServerAlias old02.reports.db.cellar.sesa.us
+	ServerAlias old03.reports.db.cellar.sesa.us
+	ServerAlias old04.reports.db.cellar.sesa.us
+	ServerAlias old05.reports.db.cellar.sesa.us
+	ServerAlias reportsother.db.cellar.sesa.us
+	ServerAlias others.db.cellar.sesa.us
+	ServerAlias employees.db.cellar.sesa.us
+	ServerAlias config.db.cellar.sesa.us
+	ServerAlias jobsites.db.cellar.sesa.us
+	ServerAlias scheduling.db.cellar.sesa.us
+	ServerAlias schedulingbeta.db.cellar.sesa.us
+	ServerAlias invoices.db.cellar.sesa.us
+	ServerAlias be.invoices.db.cellar.sesa.us
+	ServerAlias ps.invoices.db.cellar.sesa.us
+	ServerAlias hb.invoices.db.cellar.sesa.us
+	ServerAlias kn.invoices.db.cellar.sesa.us
+	ServerAlias technicians.db.cellar.sesa.us
+	ServerAlias messages.db.cellar.sesa.us
+	ServerAlias comments.db.cellar.sesa.us
+	ServerAlias phoneinfo.db.cellar.sesa.us
+	ServerAlias sounds.db.cellar.sesa.us
+	ServerAlias preauths.db.cellar.sesa.us
+	ServerAlias worksites.db.cellar.sesa.us
+	ServerAlias reports-old.db.cellar.sesa.us
+	ServerAlias prefs.db.cellar.sesa.us
+	ServerAlias preferences.db.cellar.sesa.us
+
+
+certbot-auto certonly --webroot -w /var/www/html/cellar -d cellar.sesa.us -d cellar-lan.sesa.us -d cellar-lan1.sesa.us -d cellar-lan2.sesa.us -d cellar-wlan.sesa.us -d cellar-wlan1.sesa.us -d cellar-wlan2.sesa.us -d www.cellar.sesa.us -d updates.sesa.us -d updates-lan.sesa.us -d updates-wlan.sesa.us -d www.updates.sesa.us -d db.cellar.sesa.us -d utils.cellar.sesa.us -d fauxton.cellar.sesa.us -d reports.db.cellar.sesa.us -d oldreports.db.cellar.sesa.us -d old01.reports.db.cellar.sesa.us -d old02.reports.db.cellar.sesa.us -d old03.reports.db.cellar.sesa.us -d old04.reports.db.cellar.sesa.us -d old05.reports.db.cellar.sesa.us -d reportsother.db.cellar.sesa.us -d others.db.cellar.sesa.us -d employees.db.cellar.sesa.us -d config.db.cellar.sesa.us -d jobsites.db.cellar.sesa.us -d scheduling.db.cellar.sesa.us -d schedulingbeta.db.cellar.sesa.us -d invoices.db.cellar.sesa.us -d be.invoices.db.cellar.sesa.us -d ps.invoices.db.cellar.sesa.us -d hb.invoices.db.cellar.sesa.us -d kn.invoices.db.cellar.sesa.us -d technicians.db.cellar.sesa.us -d messages.db.cellar.sesa.us -d comments.db.cellar.sesa.us -d phoneinfo.db.cellar.sesa.us -d sounds.db.cellar.sesa.us -d preauths.db.cellar.sesa.us -d worksites.db.cellar.sesa.us -d reports-old.db.cellar.sesa.us -d prefs.db.cellar.sesa.us -d preferences.db.cellar.sesa.us

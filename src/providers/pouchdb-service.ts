@@ -84,19 +84,9 @@ export class PouchDBService {
       if(PouchDB && PouchDB['default']) {
         pouchdb = PouchDB.default;
       }
+      let opts = PouchDBService.getPouchAdapter();
+      Log.l(`PouchInit(): setting up PouchDB with options:\n`, opts);
       // let pouchdb = (PouchDB as any).default;
-      let platform = PouchDBService.devicePlatform;
-      if(platform.is('ios')) {
-        PouchDBService.pdbAdapter = {
-          adapter: 'cordova-sqlite',
-          iosDatabaseLocation: 'Library',
-          androidDatabaseImplementation: 2,
-        };
-      } else {
-        PouchDBService.pdbAdapter = {
-          adapter: 'idb',
-        };
-      }
       addPouchDBPlugin(pouchdb, PDBAuth);
       addPouchDBPlugin(pouchdb, pdbUpsert);
       addPouchDBPlugin(pouchdb, pdbFind);
@@ -117,6 +107,38 @@ export class PouchDBService {
     } else {
       return PouchDBService.StaticPouchDB;
     }
+  }
+
+  public static getPouchAdapter():any {
+    let platform = PouchDBService.devicePlatform;
+    let agent = window.navigator.userAgent;
+    let options:any = { adapter: 'idb' };
+    if(platform.is('cordova')) {
+      if(platform.is('ios')) {
+        options = {
+          adapter: 'cordova-sqlite',
+          iosDatabaseLocation: 'Library',
+          androidDatabaseImplementation: 2,
+        };
+      }
+    } else {
+      if(PouchDBService.isDesktopSafari()) {
+        options = {
+          adapter: 'fruitdown',
+        }
+      }
+    }
+    PouchDBService.pdbAdapter = options;
+    return options;
+  }
+
+  public static isDesktopSafari():boolean {
+    let out:boolean = false;
+    let agent = window.navigator.userAgent;
+    if(agent.indexOf("Macintosh") !== -1 && agent.indexOf("Version/") !== -1) {
+      out = true;
+    }
+    return out;
   }
 
   // public static getAuthPouchDB() {
@@ -153,11 +175,11 @@ export class PouchDBService {
   }
 
 
-  public addDB(dbname: string) {
+  public addDB(dbname:string) {
     return PouchDBService.addDB(dbname);
   }
 
-  public static addDB(dbname: string) {
+  public static addDB(dbname:string) {
     let dbmap = PouchDBService.pdb;
     // let opts = {adapter: 'websql'};
     // let opts = {adapter: 'idb'};
@@ -175,11 +197,11 @@ export class PouchDBService {
     }
   }
 
-  public addRDB(dbname: string) {
+  public addRDB(dbname:string) {
     return PouchDBService.addRDB(dbname);
   }
 
-  public static addRDB(dbname: string) {
+  public static addRDB(dbname:string) {
     let rdbmap = PouchDBService.rdb;
     let PREFS = PouchDBService.PREFS;
     let SERVER = PREFS.getServer();

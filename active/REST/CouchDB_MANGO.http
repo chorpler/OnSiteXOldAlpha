@@ -1,0 +1,38 @@
+POST https://securedb.sesaonsite.com/_users/_find HTTP/1.1
+Authorization: Basic YWRtaW46c3Rhcm1vYmlsZQ==
+content-type: application/json
+
+{
+  "selector": {
+    "jobsite": {
+      "$type": "object"
+    }
+  },
+  "limit": 20000
+}
+
+# POST https://securedb.sesaonsite.com/_users/_find HTTP/1.1
+# Authorization: Basic YWRtaW46c3Rhcm1vYmlsZQ==
+# content-type: application/json
+
+# {
+#   "selector": {
+#     "jobsite": {
+#       "$type": "object"
+#     }
+#   },
+#   "limit": 20000
+# }
+
+# POST https://securedb.sesaonsite.com/_users/_find HTTP/1.1
+# Authorization: Basic YWRtaW46c3Rhcm1vYmlsZQ==
+# content-type: application/json
+# {
+#   "selector": {
+#     "sort_number": {
+#       "$ne": null
+#     }
+#   },
+#   "limit": 20000
+# }
+

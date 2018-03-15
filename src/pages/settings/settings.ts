@@ -3,6 +3,7 @@ import { IonicPage, NavController, Platform, ModalController, ViewController } f
 import { DBService                                                           } from 'providers/db-service'          ;
 import { Login                                                               } from 'pages/login/login'             ;
 import { Log, moment, Moment                                                 } from 'domain/onsitexdomain'          ;
+import { Employee, PayrollPeriod                                             } from 'domain/onsitexdomain'          ;
 import { AuthSrvcs                                                           } from 'providers/auth-srvcs'          ;
 import { ServerService                                                       } from 'providers/server-service'      ;
 import { AlertService                                                        } from 'providers/alerts'              ;
@@ -35,16 +36,17 @@ export class Settings implements OnInit,OnDestroy,AfterViewInit {
   public sounds          : boolean    = false             ;
   public stayInReports   : boolean    = true              ;
   public dataReady       : boolean    = false             ;
-  public static PREFS    : any        = new Preferences() ;
-  public prefs           : any        = Settings.PREFS    ;
+  // public static PREFS    : any        = new Preferences() ;
+  // public prefs           : any        = Settings.PREFS    ;
   public keysetup        : any                            ;
   public advanced        : boolean    = false             ;
   public weeksToShowList : Array<number> = []             ;
-  public weeksToShow     : number        = this.prefs.getPayrollPeriodCount();
+  public weeksToShow     : number        = this.prefs.getUserPayrollPeriodCount();
 
   constructor(
     public navCtrl   : NavController    ,
     public platform  : Platform         ,
+    public prefs     : Preferences      ,
     public auth      : AuthSrvcs        ,
     public server    : ServerService        ,
     public alert     : AlertService     ,
@@ -121,7 +123,7 @@ export class Settings implements OnInit,OnDestroy,AfterViewInit {
 
     this.sounds = this.prefs.USER.audio;
 
-    if (this.platform.is('cordova')) {
+    if(this.platform.is('cordova')) {
       this.version.getAppName().then(res => {
         this.appName = res;
         return this.version.getVersionNumber();
@@ -136,6 +138,7 @@ export class Settings implements OnInit,OnDestroy,AfterViewInit {
       });
     } else {
       this.appVersion = this.ud.appdata.version;
+      this.appName    = this.ud.appdata.title;
       this.dataReady = true;
     }
   }
@@ -273,7 +276,7 @@ export class Settings implements OnInit,OnDestroy,AfterViewInit {
       Log.e(err);
       let out = await this.alert.hideSpinnerPromise(spinnerID);
       out = await this.alert.showAlert(lang['error'], lang['manual_sync_error']);
-  }
+    }
   }
 
   public syncHelp() {
@@ -281,17 +284,20 @@ export class Settings implements OnInit,OnDestroy,AfterViewInit {
     this.alert.showAlert(lang['sync_data'], lang['sync_data_help']);
   }
 
-  public showAdvanced() {
+  public showAdvanced(event?:any) {
+    Log.l(`showAdvanced(): Toggling advanced options. Event was:\n`, event);
     this.advanced = !this.advanced;
   }
 
   public updateWeeksToShow(weeks:number) {
     let lang = this.lang;
     let count = Number(weeks);
-    this.prefs.setPayrollPeriodCount(weeks);
+    this.prefs.setUserPayrollPeriodCount(weeks);
     this.savePreferences().then(res => {
       Log.l("saved weeks to show.");
-      this.ud.reloadApp();
+      // this.ud.reloadApp();
+      let tech:Employee = this.ud.getTechProfile();
+      let pp:PayrollPeriod[] = this.ud.createPayrollPeriods(tech, count);
     }).catch(err => {
       Log.l("updateWeeksToShow(): error saving weeks to show.");
       Log.e(err);

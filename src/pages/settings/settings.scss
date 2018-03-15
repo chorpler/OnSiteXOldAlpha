@@ -23,9 +23,9 @@ page-settings {
     border: 0 !important;
     box-shadow: none !important;
   }
-  .perfectly-normal-icon {
+  // .perfectly-normal-icon {
 
-  }
+  // }
   .settings-app-version {
     cursor: pointer;
   }
@@ -35,7 +35,25 @@ page-settings {
     background: transparent;
   }
   .settings-advanced-icon {
-    color: transparent;
-    background: transparent;
+    color: green;
+    &.hidden {
+      color: transparent;
+      background: transparent;
+    }
+  }
+  .wrapper-for-item-contents {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-content: center;
+    align-items: center;
+    .settings-label {
+      flex: 0 1 auto;
+      text-align: left;
+    }
+    .settings-text {
+      flex: 0 1 auto;
+      text-align: right;
+    }
   }
 }

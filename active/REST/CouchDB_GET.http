@@ -1,0 +1,4 @@
+GET https://jobsites.db.cellar.sesa.us
+Authorization: Basic YWRtaW46c3Rhcm1vYmlsZQ==
+# GET https://securedb.sesaonsite.com/sesa-config/locid
+# Authorization: Basic admin starmobile

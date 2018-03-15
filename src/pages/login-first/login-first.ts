@@ -43,7 +43,7 @@ export class LoginFirst implements OnInit {
   public lang           : string[] = []                  ;
   public langStrings    : string[] = [
     "login_first_title",
-    "login_first_title",
+    "login_first_message_title",
     "login_first_message",
     "login_first_offline_title",
     "login_first_offline_message",
@@ -105,7 +105,7 @@ export class LoginFirst implements OnInit {
       } else {
         this.initializeForm();
         this.version = this.ud.getVersion();
-        let out = await this.alert.showAlertPromise(lang['login_first_title'], lang['login_first_message']);
+        let out = await this.alert.showAlertPromise(lang['login_first_message_title'], lang['login_first_message']);
         setTimeout(() => {
           this.usernameInput.setFocus();
         }, focusDelay);
@@ -159,8 +159,8 @@ export class LoginFirst implements OnInit {
         this.ud.setLoginStatus(true);
         let out = await this.alert.hideSpinnerPromise(spinnerID);
         // let dbs = Object.keys(this.prefs.DB);
-        let dbs = [
-          'reports',
+        let dbkeys = [
+          // 'reports',
           'reports_other',
           'config',
           'scheduling',
@@ -168,10 +168,11 @@ export class LoginFirst implements OnInit {
         ];
         let syncText = lang['synchronizing_db'];
         let spinnerText = sprintf("%s:\n'%s'", syncText);
+        this.ud.showClock = true;
         spinnerID = await this.alert.showSpinnerPromise(spinnerText);
         let spinner = this.alert.getSpinner(spinnerID);
 
-        for(let key of dbs) {
+        for(let key of dbkeys) {
           // if(key === 'reports' || key === 'reports_other' || key === 'config') {
             let dbname = this.prefs.DB[key];
             spinnerText = sprintf("%s:\n'%s'", syncText, dbname);
@@ -187,6 +188,7 @@ export class LoginFirst implements OnInit {
         // this.events.publish('startup:finished', true);
         // this.events.publish('login:finished', true);
         // this.ud.reloadApp();
+        this.ud.showClock = false;
         if(this.mode === 'modal') {
           creds['justLoggedIn'] = true;
           this.ud.setAppLoaded(true);
@@ -195,10 +197,11 @@ export class LoginFirst implements OnInit {
           this.viewCtrl.dismiss(creds);
         } else {
           // this.tabServ.setTabDisable(false);
-          creds['justLoggedIn'] = true;
-          this.ud.setAppLoaded(true);
-          this.tabServ.enableTabs();
-          this.tabServ.goToPage('OnSiteHome', creds);
+          // creds['justLoggedIn'] = true;
+          // this.ud.setAppLoaded(true);
+          // this.tabServ.enableTabs();
+          // this.tabServ.goToPage('OnSiteHome', creds);
+          this.ud.reloadApp();
         }
         // }).catch((err) => {
         //   Log.l("loginAttempt(): Error validating and saving user info.");
@@ -207,11 +210,13 @@ export class LoginFirst implements OnInit {
         //   this.alert.hideSpinner();
         // });
       } else {
-        this.alert.hideSpinner();
+        let res = await this.alert.hideSpinnerPromise(spinnerID);
+        this.ud.showClock = false;
         let loginAlert = this.translate.instant(['offline_alert_title', 'offline_alert_message']);
         this.alert.showAlert(loginAlert['offline_alert_title'], loginAlert['offline_alert_message']);
       }
     } catch(err) {
+      this.ud.showClock = false;
       Log.l(`loginClicked(): Error during login attempt!`);
       Log.e(err);
       throw new Error(err);

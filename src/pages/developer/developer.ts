@@ -34,7 +34,7 @@ export class DeveloperPage implements OnInit,OnDestroy,AfterViewInit {
   public showID         : boolean       = this.prefs.getShowID()    ;
   public showRev        : boolean       = this.prefs.getShowRev()   ;
   public showTimes      : boolean       = this.prefs.getShowTimes() ;
-  public payrollPeriodCount:number      = this.prefs.getPayrollPeriodCount();
+  public payrollPeriodCount:number      = this.prefs.getUserPayrollPeriodCount();
   public showSite       : boolean       = this.prefs.getShowSite()  ;
 
   constructor(

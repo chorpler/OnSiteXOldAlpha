@@ -379,7 +379,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
   //     this.ud.setSesaConfig(res);
   //     res = await this.ud.checkPhoneInfo();
   //     let phoneInfo = res;
-  //     // let pp = this.ud.createPayrollPeriods(tech, this.prefs.getPayrollPeriodCount());
+  //     // let pp = this.ud.createPayrollPeriods(tech, this.prefs.getUserPayrollPeriodCount());
   //     if(phoneInfo) {
   //       try {
   //         Log.l("newLoginSetup(): Got phone data:\n", phoneInfo);
@@ -458,7 +458,7 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
       // let res:any = await this.server.getReportsForTech(techid);
       // res = await this.db.getReportsForTech(techid);
       // this.ud.setDataItem('reports', res);
-      Log.l(`HomePage: fetchTechReports(${techid}): Success! Result:\n`, res);
+      // Log.l(`HomePage: fetchTechReports(${techid}): Success! Result:\n`, res);
       // for(let report of res) {
         // this.ud.addNewReport(report);
       // }
