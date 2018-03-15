@@ -3,7 +3,8 @@
 // import * as pdbFind     from 'pouchdb-find'           ;
 // import * as pdbUpsert   from 'pouchdb-upsert'         ;
 // import * as pdbAllDBs   from 'pouchdb-all-dbs'        ;
-import * as pdbSQLite   from 'pouchdb-adapter-cordova-sqlite';
+import * as pdbSQLite   from 'pouchdb-adapter-cordova-sqlite'   ;
+// import * as pdbFruitdown        from 'pouchdb-adapter-fruitdown';
 // import { Injectable   } from '@angular/core'          ;
 import { Platform     } from 'ionic-angular'          ;
 // import { Log                  } from 'domain/onsitexdomain'   ;
@@ -91,6 +92,7 @@ export class PouchDBService {
       addPouchDBPlugin(pouchdb, pdbUpsert);
       addPouchDBPlugin(pouchdb, pdbFind);
       addPouchDBPlugin(pouchdb, pdbSQLite);
+      // addPouchDBPlugin(pouchdb, pdbFruitdown);
       // addPouchDBPlugin(pouchdb, pdbAllDBs);
       // let pdbauth:any = (PDBAuth as any).default;
       // pouchdb.plugin(pdbSQLite);
@@ -124,7 +126,8 @@ export class PouchDBService {
     } else {
       if(PouchDBService.isDesktopSafari()) {
         options = {
-          adapter: 'fruitdown',
+          // adapter: 'fruitdown',
+          adapter: 'websql',
         }
       }
     }
