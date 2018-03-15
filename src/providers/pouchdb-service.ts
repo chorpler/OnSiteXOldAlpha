@@ -117,11 +117,14 @@ export class PouchDBService {
     let options:any = { adapter: 'idb' };
     if(platform.is('cordova')) {
       if(platform.is('ios')) {
+        // options = {
+        //   adapter: 'cordova-sqlite',
+        //   iosDatabaseLocation: 'Library',
+        //   androidDatabaseImplementation: 2,
+        // };
         options = {
-          adapter: 'cordova-sqlite',
-          iosDatabaseLocation: 'Library',
-          androidDatabaseImplementation: 2,
-        };
+          adapter: 'idb',
+        }
       }
     } else {
       if(PouchDBService.isDesktopSafari()) {

@@ -76,18 +76,6 @@
     "ios",
     "desktop"
   ],
-  "cordovaPlugins": [
-    "cordova-plugin-device",
-    "cordova-plugin-console",
-    "cordova-plugin-whitelist",
-    "cordova-plugin-splashscreen",
-    "cordova-plugin-statusbar",
-    "ionic-plugin-keyboard",
-    "cordova-plugin-network-information",
-    "cordova-plugin-secure-storage",
-    "cordova-open-native-settings",
-    "cordova-plugin-vibration"
-  ],
   "dependencies": {
     "@angular/animations": "^5.2.8",
     "@angular/common": "^5.2.8",
