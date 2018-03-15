@@ -125,7 +125,6 @@
     "chartjs-plugin-datalabels": "^0.2.0",
     "chartjs-plugin-stacked100": "^0.4.4",
     "cordova": "^8.0.0",
-    "cordova-android": "^7.0.0",
     "cordova-browser": "^5.0.3",
     "cordova-ios": "4.5.4",
     "cordova-open-native-settings": "^1.5.0",
@@ -166,7 +165,6 @@
     "object-keys": "^1.0.11",
     "pouchdb": "^6.4.3",
     "pouchdb-adapter-cordova-sqlite": "^2.0.2",
-    "pouchdb-adapter-fruitdown": "^6.4.3",
     "pouchdb-auth": "^4.0.0",
     "pouchdb-authentication": "^1.1.1",
     "pouchdb-browser": "6.4.3",
@@ -230,7 +228,6 @@
       "cordova-sqlite-evcore-extbuild-free": {}
     },
     "platforms": [
-      "android",
       "ios"
     ]
   },
