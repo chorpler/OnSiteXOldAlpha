@@ -29,9 +29,9 @@
 import { Injectable                  } from '@angular/core'        ;
 import { Log, oo, ooPatch, ooPointer } from 'domain/onsitexdomain' ;
 
-export const version = 67               ;
+export const version = 67                  ;
 // export var   adapter = 'websql'         ;
-export var   adapter = 'idb'            ;
+export var   adapter = 'idb'               ;
 // export var   adapter = 'memory'         ;
 // export var   adapter = 'cordova-sqlite' ;
 // export var   adapter = 'worker'         ;
