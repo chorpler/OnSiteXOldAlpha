@@ -3,7 +3,7 @@
 // import * as pdbFind     from 'pouchdb-find'           ;
 // import * as pdbUpsert   from 'pouchdb-upsert'         ;
 // import * as pdbAllDBs   from 'pouchdb-all-dbs'        ;
-import * as pdbSQLite   from 'pouchdb-adapter-cordova-sqlite'   ;
+// import * as pdbSQLite   from 'pouchdb-adapter-cordova-sqlite'   ;
 // import * as pdbFruitdown        from 'pouchdb-adapter-fruitdown';
 // import { Injectable   } from '@angular/core'          ;
 import { Platform     } from 'ionic-angular'          ;
@@ -91,7 +91,7 @@ export class PouchDBService {
       addPouchDBPlugin(pouchdb, PDBAuth);
       addPouchDBPlugin(pouchdb, pdbUpsert);
       addPouchDBPlugin(pouchdb, pdbFind);
-      addPouchDBPlugin(pouchdb, pdbSQLite);
+      // addPouchDBPlugin(pouchdb, pdbSQLite);
       // addPouchDBPlugin(pouchdb, pdbFruitdown);
       // addPouchDBPlugin(pouchdb, pdbAllDBs);
       // let pdbauth:any = (PDBAuth as any).default;
@@ -123,7 +123,7 @@ export class PouchDBService {
         //   androidDatabaseImplementation: 2,
         // };
         options = {
-          adapter: 'idb',
+          // adapter: 'idb',
         }
       }
     } else {

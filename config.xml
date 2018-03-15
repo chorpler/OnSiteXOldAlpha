@@ -104,9 +104,8 @@
     <plugin name="cordova-plugin-badge" spec="^0.8.7" />
     <plugin name="cordova-plugin-vibration" spec="^3.0.1" />
     <plugin name="cordova-plugin-camera" spec="^4.0.2" />
-    <plugin name="cordova-sqlite-evcore-extbuild-free" spec="^0.9.3" />
-    <engine name="ios" spec="4.5.4" />
-    <engine name="android" spec="~6.4.0" />
     <allow-navigation href="http://192.168.0.6:8100" />
     <plugin name="ionic-plugin-keyboard" spec="^2.2.1" />
+    <engine name="ios" spec="4.5.4" />
+    <engine name="android" spec="6.4.0" />
 </widget>
