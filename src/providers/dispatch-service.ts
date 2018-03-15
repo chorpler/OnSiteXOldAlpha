@@ -6,7 +6,7 @@ import { Employee, Jobsite, Report, ReportOther,    } from 'domain/onsitexdomain
 import { Shift, PayrollPeriod, Schedule, Schedules, } from 'domain/onsitexdomain' ;
 import { Notice,                                    } from 'domain/onsitexdomain' ;
 
-export type AppEvents = 'openpage' | 'authenticate' | 'login' | 'logout' | 'updatedata' | 'options' | 'saveprefs' | 'testnotifications' | 'menuclosed' | 'starttime' | 'endtime' | 'elapsedtime';
+export type OSAppEvent = 'openpage' | 'authenticate' | 'login' | 'logout' | 'updatedata' | 'options' | 'saveprefs' | 'testnotifications' | 'menuclosed' | 'starttime' | 'endtime' | 'elapsedtime';
 export type ClockAction = 'show' | 'hide' | 'toggle' | 'caption';
 
 @Injectable()
@@ -27,7 +27,7 @@ export class DispatchService {
   private appReady       = new Subject<boolean>();
   private prefsChange    = new Subject<any>();
   private showOptions    = new Subject<any>();
-  private appEvent       = new Subject<{channel:AppEvents, event:any}>();
+  private appEvent       = new Subject<{channel:OSAppEvent, event:any}>();
   private clockEvent     = new Subject<{action:ClockAction, text?:string}>()
 
   public constructor() {
@@ -102,7 +102,7 @@ export class DispatchService {
     this.subject.next();
   }
 
-  public triggerAppEvent(channel:AppEvents, event?:any) {
+  public triggerAppEvent(channel:OSAppEvent, event?:any) {
     this.appEvent.next({channel: channel, event: event});
   }
 

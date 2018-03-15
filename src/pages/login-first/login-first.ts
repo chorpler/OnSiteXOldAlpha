@@ -1,19 +1,20 @@
-import { sprintf                                                                           } from 'sprintf-js'               ;
-import { Component, OnInit, ViewChild, ElementRef, NgZone,                                 } from '@angular/core'            ;
-import { IonicPage, NavController, NavParams, Platform, LoadingController, AlertController } from 'ionic-angular'            ;
-import { PopoverController, ViewController, Events,                                        } from 'ionic-angular'            ;
-import { FormGroup, FormControl, Validators                                                } from "@angular/forms"           ;
-import { AuthSrvcs                                                                         } from 'providers/auth-srvcs'     ;
-import { ServerService                                                                     } from 'providers/server-service' ;
-import { DBService                                                                         } from 'providers/db-service'     ;
-import { AlertService                                                                      } from 'providers/alerts'         ;
-import { NetworkStatus                                                                     } from 'providers/network-status' ;
-import { UserData                                                                          } from 'providers/user-data'      ;
-import { Preferences                                                                       } from 'providers/preferences'    ;
-import { Employee                                                                          } from 'domain/onsitexdomain'    ;
-import { Log                                                                               } from 'domain/onsitexdomain'  ;
-import { TranslateService                                                                  } from '@ngx-translate/core'      ;
-import { TabsService                                                                       } from 'providers/tabs-service'   ;
+import { sprintf                                                                           } from 'sprintf-js'                 ;
+import { Component, OnInit, ViewChild, ElementRef, NgZone,                                 } from '@angular/core'              ;
+import { IonicPage, NavController, NavParams, Platform, LoadingController, AlertController } from 'ionic-angular'              ;
+import { PopoverController, ViewController, Events,                                        } from 'ionic-angular'              ;
+import { FormGroup, FormControl, Validators                                                } from "@angular/forms"             ;
+import { AuthSrvcs                                                                         } from 'providers/auth-srvcs'       ;
+import { ServerService                                                                     } from 'providers/server-service'   ;
+import { DBService                                                                         } from 'providers/db-service'       ;
+import { AlertService                                                                      } from 'providers/alerts'           ;
+import { NetworkStatus                                                                     } from 'providers/network-status'   ;
+import { UserData                                                                          } from 'providers/user-data'        ;
+import { Preferences                                                                       } from 'providers/preferences'      ;
+import { Employee                                                                          } from 'domain/onsitexdomain'       ;
+import { Log                                                                               } from 'domain/onsitexdomain'       ;
+import { TranslateService                                                                  } from '@ngx-translate/core'        ;
+import { TabsService                                                                       } from 'providers/tabs-service'     ;
+import { DispatchService, ClockAction, OSAppEvent,                                         } from 'providers/dispatch-service' ;
 
 export const focusDelay = 500;
 
@@ -60,6 +61,7 @@ export class LoginFirst implements OnInit {
   constructor(
     public navCtrl   : NavController    ,
     public navParams : NavParams        ,
+    public dispatch  : DispatchService  ,
     public platform  : Platform         ,
     public auth      : AuthSrvcs        ,
     public server    : ServerService    ,
@@ -188,7 +190,7 @@ export class LoginFirst implements OnInit {
         // this.events.publish('startup:finished', true);
         // this.events.publish('login:finished', true);
         // this.ud.reloadApp();
-        this.ud.showClock = false;
+        // this.ud.showClock = false;
         if(this.mode === 'modal') {
           creds['justLoggedIn'] = true;
           this.ud.setAppLoaded(true);
@@ -201,7 +203,8 @@ export class LoginFirst implements OnInit {
           // this.ud.setAppLoaded(true);
           // this.tabServ.enableTabs();
           // this.tabServ.goToPage('OnSiteHome', creds);
-          this.ud.reloadApp();
+          // this.ud.reloadApp();
+          this.dispatch.triggerAppEvent('login', creds);
         }
         // }).catch((err) => {
         //   Log.l("loginAttempt(): Error validating and saving user info.");

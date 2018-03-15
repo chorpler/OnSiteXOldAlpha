@@ -27,6 +27,8 @@ import { SecureStorage, SecureStorageObject                      } from '@ionic-
 // import { Geofence                                                } from '@ionic-native/geofence'               ;
 // import { BackgroundGeolocation, BackgroundGeolocationConfig      } from '@ionic-native/background-geolocation' ;
 // import { BackgroundGeolocationResponse                           } from '@ionic-native/background-geolocation' ;
+// import { GeolocService                                           } from 'providers/geoloc-service'             ;
+// import { IonDigitKeyboard                                        } from 'components/ion-digit-keyboard'        ;
 import { Network                                                 } from '@ionic-native/network'                ;
 import { Device                                                  } from '@ionic-native/device'                 ;
 import { AppVersion                                              } from '@ionic-native/app-version'            ;
@@ -44,7 +46,6 @@ import { ServerService                                           } from 'provide
 import { NetworkStatus                                           } from 'providers/network-status'             ;
 import { DispatchService                                         } from 'providers/dispatch-service'           ;
 import { AlertService                                            } from 'providers/alerts'                     ;
-// import { GeolocService                                           } from 'providers/geoloc-service'             ;
 import { PouchDBService                                          } from 'providers/pouchdb-service'            ;
 import { StorageService                                          } from 'providers/storage-service'            ;
 import { createTranslateLoader                                   } from 'config/customTranslateLoader'         ;
@@ -55,7 +56,7 @@ import { SmartAudio                                              } from 'provide
 import { MessageService                                          } from 'providers/message-service'            ;
 import { CommentService                                          } from 'providers/comment-service'            ;
 import { TabsService                                             } from 'providers/tabs-service'               ;
-// import { IonDigitKeyboard                                        } from 'components/ion-digit-keyboard'        ;
+import { Keyboard                                                } from '@ionic-native/keyboard'               ;
 import { ColorService                                            } from 'providers/color-service'              ;
 
 @NgModule({
@@ -105,6 +106,7 @@ import { ColorService                                            } from 'provide
     SecureStorage,
     TabsService,
     LoadingController,
+    Keyboard,
     ColorService,
     AlertController,
     DispatchService,

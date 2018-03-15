@@ -925,35 +925,41 @@ export class ServerService {
       let data = { employee: [], sites: [], reports: [], otherReports: [], payrollPeriods: [], shifts: [], messages: [], config: {} };
       let username = tech.getUsername();
       data.employee.push(tech);
+      this.dispatch.triggerClockEvent('caption', 'sesa-reports')
       let res:any = await this.syncReportsFromServer();
       res = await this.getReportsForTech(username);
       data.reports = res;
       // for(let doc of res) {
-      //   let report = new Report();
-      //   report.readFromDoc(doc);
-      //   data.reports.push(report);
-      // }
+        //   let report = new Report();
+        //   report.readFromDoc(doc);
+        //   data.reports.push(report);
+        // }
+      this.dispatch.triggerClockEvent('caption', 'sesa-reports-other')
       res = await this.getReportsOtherForTech(username);
       // for(let doc of res) {
-      //   let other = new ReportOther();
-      //   other.readFromDoc(doc);
-      //   data.otherReports.push(other);
-      // }
-      data.otherReports = res;
+        //   let other = new ReportOther();
+        //   other.readFromDoc(doc);
+        //   data.otherReports.push(other);
+        // }
+        data.otherReports = res;
+      this.dispatch.triggerClockEvent('caption', 'sesa-jobsites')
       res = await this.getJobsites();
       data.sites = res;
       // Log.l()
       // for(let doc of res) {
-      //   let site = new Jobsite();
-      //   site.readFromDoc(doc);
-      //   data.sites.push(site);
-      // }
+        //   let site = new Jobsite();
+        //   site.readFromDoc(doc);
+        //   data.sites.push(site);
+        // }
+      this.dispatch.triggerClockEvent('caption', 'sesa-messages')
       res = await this.getMessages();
-      for(let doc of res) {
-        let msg = new Message();
-        msg.readFromDoc(doc);
-        data.messages.push(msg);
-      }
+      // for(let doc of res) {
+        //   let msg = new Message();
+        //   msg.readFromDoc(doc);
+        //   data.messages.push(msg);
+        // }
+      data.messages = res;
+      this.dispatch.triggerClockEvent('caption', 'sesa-config')
       res = await this.getAllConfigData();
       let keys = Object.keys(res);
       for(let key of keys) {

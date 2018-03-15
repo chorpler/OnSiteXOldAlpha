@@ -20,7 +20,7 @@ import { ServerService                                } from 'providers/server-s
 import { AuthSrvcs                                    } from 'providers/auth-srvcs'               ;
 import { AlertService                                 } from 'providers/alerts'                   ;
 import { NetworkStatus                                } from 'providers/network-status'           ;
-import { DispatchService, ClockAction,                } from 'providers/dispatch-service'         ;
+import { DispatchService, ClockAction, OSAppEvent     } from 'providers/dispatch-service'         ;
 // import { GeolocService                                } from 'providers/geoloc-service'           ;
 import { Log, CONSOLE, moment, Moment                 } from 'domain/onsitexdomain'               ;
 import { MessageService                               } from 'providers/message-service'          ;
@@ -41,6 +41,7 @@ import { Schedules, Jobsites,                         } from 'domain/onsitexdoma
 import { TabsService                                  } from 'providers/tabs-service'             ;
 import { ClockComponent                               } from 'components/clock'                   ;
 import { ColorService                                 } from 'providers/color-service'            ;
+import { Keyboard                                     } from '@ionic-native/keyboard'             ;
 
 export const homePage:string = "OnSiteHome";
 // export const homePage:string = "Testing";
@@ -64,6 +65,7 @@ export class OnSiteApp implements OnInit {
   public prefs                   : any     = OnSiteApp.PREFS   ;
   public status                  : any     = OnSiteApp.status  ;
   public clockSub                : Subscription                ;
+  public appEventSub             : Subscription                ;
   public network                 : any                         ;
   public data                    : any                         ;
   private ui                     : any                         ;
@@ -73,6 +75,8 @@ export class OnSiteApp implements OnInit {
   public messageCheckTimeout     : any                         ;
   public timeoutHandle           : any                         ;
   public hiddenArray             : Array<boolean>              ;
+  public keyboardOpen            : boolean = false             ;
+  public clockToggleable         : boolean = true              ;
 
   constructor(
     // public sim          : Sim                      ,
@@ -82,6 +86,7 @@ export class OnSiteApp implements OnInit {
     public splashScreen : SplashScreen             ,
     public zone         : NgZone                   ,
     public cfResolver   : ComponentFactoryResolver ,
+    public keyboard     : Keyboard                 ,
     public net          : NetworkStatus            ,
     // public push         : Push                     ,
     // public localNotify  : LocalNotifications       ,
@@ -128,6 +133,7 @@ export class OnSiteApp implements OnInit {
           "checking_for_new_messages",
           "retrieving_local_data",
           "function_in_development",
+          "tap_to_hide_clock",
         ];
         this.initializeApp(res);
       } else {
@@ -163,6 +169,13 @@ export class OnSiteApp implements OnInit {
   }
 
   public registerListeners() {
+    this.appEventSub = this.dispatch.appEventFired().subscribe((data:{channel:OSAppEvent, event:any}) => {
+      Log.l(`OSAppEvent received:\n`, data);
+      let channel = data.channel;
+      if(channel === 'login') {
+        this.postLoginSetup();
+      }
+    });
     this.clockSub = this.dispatch.clockEventFired().subscribe((data:{action:ClockAction,text?:string}) => {
       Log.l(`ClockEvent received:\n`, data);
       let action:ClockAction = data.action;
@@ -173,8 +186,14 @@ export class OnSiteApp implements OnInit {
       } else if(action === 'toggle') {
         this.ud.showClock = !this.ud.showClock;
       } else if(action === 'caption' && data.text !== undefined) {
-        this.clockCaption = data.text;
+        this.updateClockCaption(data.text);
       }
+    });
+    this.keyboard.onKeyboardShow().subscribe(() => {
+      this.keyboardOpen = true;
+    });
+    this.keyboard.onKeyboardHide().subscribe(() => {
+      this.keyboardOpen = false;
     });
     this.platform.registerBackButtonAction(() => {
       let page = this.nav && this.nav.getActive ? this.nav.getActive() : {name: "none", id: "none"};
@@ -203,6 +222,7 @@ export class OnSiteApp implements OnInit {
   }
 
   public async initializeApp(vagueParameter:any) {
+    let lang = this.lang;
     try {
       Log.l("AppComponent: Initializing app...");
       this.hiddenArray = this.tabServ.getHiddenArray();
@@ -240,10 +260,13 @@ export class OnSiteApp implements OnInit {
             Log.l("OnSite: no boot error! Now checking first login...");
             let firstBoot = await this.isFirstLogin();
             if(firstBoot) {
-              Log.l("OnSite.initializeApp(): bootApp() detected first boot, going to first boot page.");
+              Log.l("OnSite.initializeApp(): detected first boot, going to first boot page.");
               this.ud.showClock = false;
+              this.clockToggleable = false;
               this.ud.setAppLoaded(true);
-              this.clock.setCaption("(Tap to hide clock)");
+              // this.clock.setCaption("(Tap to hide clock)");
+              let text:string = this.lang['tap_to_hide_clock'];
+              this.clockCaption = text;
               this.rootPage = 'First Login';
               return;
             } else {
@@ -252,7 +275,8 @@ export class OnSiteApp implements OnInit {
               if(res) {
                 Log.l("OnSite.initializeApp(): bootApp() returned successfully!");
                 // let hide = await this.alert.hideSpinnerPromise();
-                this.clock.setCaption("(Tap to hide clock)");
+                let text:string = this.lang['tap_to_hide_clock'];
+                this.clockCaption = text;
                 this.ud.showClock = false;
                 Log.l("OnSiteApp: boot finished, setting home page to 'OnSiteHome'.")
                 this.ud.setAppLoaded(true);
@@ -305,8 +329,11 @@ export class OnSiteApp implements OnInit {
   public goToLogin() {
     Log.l("goToLogin(): Going to Login page.");
     if(this.clock) {
-      this.clock.setCaption("(Tap to hide clock)");
+      // this.clock.setCaption("(Tap to hide clock)");
+      let text:string = this.lang['tap_to_hide_clock'];
+      this.clockCaption = text;
     }
+    this.clockToggleable = false;
     this.ud.showClock = false;
     this.ud.setAppLoaded(true);
     this.rootPage = 'Login';
@@ -316,14 +343,17 @@ export class OnSiteApp implements OnInit {
   public async onlineBoot():Promise<boolean> {
     let lang = this.lang;
     try {
-      this.clock.setCaption(lang['retrieving_preferences']);
+      // let text:string = this.lang['tap_to_hide_clock'];
+      this.clockCaption = lang['retrieving_preferences'];
+      // this.clock.setCaption(lang['retrieving_preferences']);
       let out:any = await this.checkPreferences();
       Log.l("OnSite.onlineBoot(): Done messing with preferences, now checking login...");
       let language = this.prefs.getLanguage();
       if (language !== 'en') {
         this.translate.use(language);
       }
-      this.clock.setCaption(lang['checking_login_status']);
+      // this.clock.setCaption(lang['checking_login_status']);
+      this.clockCaption = lang['checking_login_status'];
       out = await this.checkLogin();
       if(out === false) {
         // this.rootPage = 'Login';
@@ -334,7 +364,8 @@ export class OnSiteApp implements OnInit {
       // let androidUpdate = await this.checkForAndroidUpdate();
       //   Log.l("OnSite.onlineBoot(): Done with Android update check. Now getting all data from server.");
       // return
-      this.clock.setCaption(lang['refreshing_data']);
+      // this.clock.setCaption(lang['refreshing_data']);
+      this.clockCaption = lang['refreshing_data'];
       let res = await this.server.getAllData(this.tech);
       this.data = res;
       this.ud.setData(this.data);
@@ -342,12 +373,14 @@ export class OnSiteApp implements OnInit {
       Log.l("OnSite.onlineBoot(): Checked new messages.");
       let phoneInfo = await this.ud.checkPhoneInfo();
       let tech = this.ud.getData('employee')[0];
-      this.clock.setCaption(lang['checking_for_new_messages']);
+      // this.clock.setCaption(lang['checking_for_new_messages']);
+      this.clockCaption = lang['checking_for_new_messages'];
       let newMsgs = await this.checkForNewMessages();
       let pp:PayrollPeriod[] = this.ud.createPayrollPeriods(tech, this.prefs.getUserPayrollPeriodCount());
       UserData.payrollPeriods = pp;
       // this.ud.getReportList();
-      this.clock.clearCaption();
+      // this.clock.clearCaption();
+      this.clockCaption = "";
       if(phoneInfo) {
         Log.l("OnSite.onlineBoot(): Got phone data:\n", phoneInfo);
         let savePhoneInfo = await this.server.savePhoneInfo(tech, phoneInfo);
@@ -367,7 +400,8 @@ export class OnSiteApp implements OnInit {
               //   });
               // });
     } catch(err) {
-      this.clock.clearCaption();
+      // this.clock.clearCaption();
+      this.clockCaption = "";
       Log.l(`onlineBoot(): Error while checking for online status!`);
       Log.e(err);
       // throw new Error(err);
@@ -401,7 +435,8 @@ export class OnSiteApp implements OnInit {
       let tech:Employee = await this.getEmployeeRecord();
       this.tech = tech;
       this.ud.setTechProfile(tech);
-      this.clock.setCaption(lang['retrieving_local_data']);
+      // this.clock.setCaption(lang['retrieving_local_data']);
+      this.clockCaption = lang['retrieving_local_data'];
       let res = await this.db.getAllData(this.tech);
       this.data = res;
       this.ud.setData(this.data);
@@ -413,7 +448,8 @@ export class OnSiteApp implements OnInit {
       let pp:PayrollPeriod[] = this.ud.createPayrollPeriods(this.data.employee[0], this.prefs.getUserPayrollPeriodCount());
       UserData.payrollPeriods = pp;
       // this.ud.getReportList();
-      this.clock.clearCaption();
+      // this.clock.clearCaption();
+      this.clockCaption = "";
       if(phoneInfo) {
         Log.l("OnSite.offlineBoot(): Got phone data:\n", phoneInfo);
         // let savePhoneInfo = await this.server.savePhoneInfo(tech, phoneInfo);
@@ -423,7 +459,8 @@ export class OnSiteApp implements OnInit {
         return true;
       }
     } catch(err) {
-      this.clock.clearCaption();
+      // this.clock.clearCaption();
+      this.clockCaption = "";
       Log.l(`offlineBoot(): Error while checking for online status!`);
       Log.e(err);
       throw new Error(err);
@@ -753,6 +790,58 @@ export class OnSiteApp implements OnInit {
       Log.e(err);
       throw new Error(err);
     }
+  }
+
+  public toggleClock(evt?:any) {
+    Log.l(`toggleClock(): Event was:\n`, evt);
+    let home = this.rootPage;
+    if(home) {
+      if(home !== 'First Login' && home !== 'Login') {
+        this.ud.showClock = !this.ud.showClock;
+      }
+      Log.l(`toggleClock(): Clock toggled to state '${this.ud.showClock}'.`);
+    } else {
+      Log.l(`toggleClock(): Clock not toggleable.`);
+    }
+  }
+
+  public async postLoginSetup():Promise<any> {
+    try {
+      let res:any = await this.onlineBoot();
+      // Additional code
+      if(res === false) {
+        this.goToLogin();
+        return false;
+      } else {
+        let text:string = this.lang['tap_to_hide_clock'];
+        this.clockCaption = text;
+        this.ud.showClock = false;
+        Log.l("OnSiteApp.postLoginSetup(): boot finished, setting home page to 'OnSiteHome'.")
+        this.ud.setAppLoaded(true);
+        this.clockToggleable = true;
+        this.rootPage = 'OnSiteHome';
+        return true;
+      }
+    } catch(err) {
+      Log.l(`postLoginSetup(): Error setting up data after login!`);
+      Log.e(err);
+      // throw new Error(err);
+      let out:any = await this.alert.showAlert("ERROR", `Error after successful login: '${err.message}'`);
+    }
+  }
+
+  public updateClockCaption(text:string) {
+    let lang = this.lang;
+    if(typeof text !== 'string' || text === "") {
+      this.clockCaption = "";
+    } else {
+      let line1:string = lang['refreshing_data'];
+      let line2:string = text;
+      let caption = sprintf("%s<br>\n%s", line1, line2);
+      this.clockCaption = caption;
+      Log.l(`updateClockCaption(): set caption to:\n`, caption);
+    }
+    return this.clockCaption;
   }
 }
 

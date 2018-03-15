@@ -1,6 +1,6 @@
-<div class="waiting-clock" *ngIf="ud.showClock" (tap)="ud.showClock=!ud.showClock">
+<div class="waiting-clock" *ngIf="ud.showClock" (tap)="toggleClock($event)">
   <clock #clock [caption]="clockCaption"></clock>
 </div>
 <ion-nav [hidden]="ud.showClock" class="ionic-root-nav-element" [(root)]="rootPage"></ion-nav>
-<onsite-tabs></onsite-tabs>
+<onsite-tabs [hidden]="ud.showClock" *ngIf="!keyboardOpen"></onsite-tabs>
 <ng-template #tabsTarget></ng-template>

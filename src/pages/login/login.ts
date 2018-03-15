@@ -1,18 +1,19 @@
-import { Component, OnInit                                                                 } from '@angular/core'            ;
-import { IonicPage, NavController, NavParams, Platform, LoadingController, AlertController } from 'ionic-angular'            ;
-import { PopoverController, ViewController, Events                                         } from 'ionic-angular'            ;
-import { FormGroup, FormControl, Validators                                                } from "@angular/forms"           ;
-import { AuthSrvcs                                                                         } from 'providers/auth-srvcs'     ;
-import { ServerService                                                                         } from 'providers/server-service'     ;
-import { DBService                                                                           } from 'providers/db-service'       ;
-import { AlertService                                                                      } from 'providers/alerts'         ;
-import { NetworkStatus                                                                     } from 'providers/network-status' ;
-import { UserData                                                                          } from 'providers/user-data'      ;
-import { Preferences                                                                       } from 'providers/preferences'    ;
-import { Employee                                                                          } from 'domain/onsitexdomain'    ;
-import { Log                                                                               } from 'domain/onsitexdomain'  ;
-import { TranslateService                                                                  } from '@ngx-translate/core'      ;
-import { TabsService                                                                       } from 'providers/tabs-service'   ;
+import { Component, OnInit                                                                 } from '@angular/core'              ;
+import { IonicPage, NavController, NavParams, Platform, LoadingController, AlertController } from 'ionic-angular'              ;
+import { PopoverController, ViewController, Events                                         } from 'ionic-angular'              ;
+import { FormGroup, FormControl, Validators                                                } from "@angular/forms"             ;
+import { AuthSrvcs                                                                         } from 'providers/auth-srvcs'       ;
+import { ServerService                                                                     } from 'providers/server-service'   ;
+import { DBService                                                                         } from 'providers/db-service'       ;
+import { AlertService                                                                      } from 'providers/alerts'           ;
+import { NetworkStatus                                                                     } from 'providers/network-status'   ;
+import { UserData                                                                          } from 'providers/user-data'        ;
+import { Preferences                                                                       } from 'providers/preferences'      ;
+import { Employee                                                                          } from 'domain/onsitexdomain'       ;
+import { Log                                                                               } from 'domain/onsitexdomain'       ;
+import { TranslateService                                                                  } from '@ngx-translate/core'        ;
+import { TabsService                                                                       } from 'providers/tabs-service'     ;
+import { DispatchService, ClockAction, OSAppEvent,                                         } from 'providers/dispatch-service' ;
 
 @IonicPage({name: 'Login'})
 @Component({
@@ -41,6 +42,7 @@ export class Login implements OnInit {
     public navCtrl  : NavController,
     public navParams: NavParams,
     public platform : Platform,
+    public dispatch : DispatchService,
     private auth    : AuthSrvcs,
     private server  : ServerService,
     private db      : DBService,
@@ -109,6 +111,8 @@ export class Login implements OnInit {
         Log.l("About to call auth.login()");
         let res:any = await this.auth.login();
         Log.l("Login succeeded.", res);
+        let out:any = this.alert.hideSpinnerPromise(spinnerID);
+        this.dispatch.triggerClockEvent('show');
         res = await this.server.getUserData(this.username);
         let udoc = res;
         udoc.updated = true;
@@ -125,21 +129,22 @@ export class Login implements OnInit {
         this.ud.storeCredentials(creds);
         this.ud.setLoginStatus(true);
         this.alert.hideSpinnerPromise(spinnerID);
-        this.events.publish('startup:finished', true);
-        this.events.publish('login:finished', true);
+        // this.events.publish('startup:finished', true);
+        // this.events.publish('login:finished', true);
+        this.dispatch.triggerAppEvent('login', creds);
         // this.ud.reloadApp();
-        if(this.mode === 'modal') {
-          creds.justLoggedIn = true;
-          // this.tabServ.setTabDisable(false);
-          this.tabServ.enableTabs();
-          this.viewCtrl.dismiss(creds);
-          return true;
-        } else {
-          // this.tabServ.setTabDisable(false);
-          this.tabServ.enableTabs();
-          this.tabServ.goToPage('OnSiteHome', creds);
-          return true;
-        }
+        // if(this.mode === 'modal') {
+        //   creds.justLoggedIn = true;
+        //   // this.tabServ.setTabDisable(false);
+        //   this.tabServ.enableTabs();
+        //   this.viewCtrl.dismiss(creds);
+        //   return true;
+        // } else {
+        //   // this.tabServ.setTabDisable(false);
+        //   this.tabServ.enableTabs();
+        //   this.tabServ.goToPage('OnSiteHome', creds);
+        //   return true;
+        // }
       } else {
         this.alert.hideSpinnerPromise(spinnerID);
         let loginAlert = this.translate.instant(['offline_alert_title', 'offline_alert_message']);

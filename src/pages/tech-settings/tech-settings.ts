@@ -525,7 +525,7 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
         if(site) {
           this.site = site;
         }
-        Log.l("onSubmit(): Now attempting to save tech profile:");
+        Log.l("onSubmit(): Now attempting to save tech profile:\n", this.reportMeta);
         let res:any = await this.db.saveTechProfile(this.reportMeta);
         Log.l("onSubmit(): Saved techProfile successfully. Now updating shift info for new site:\n", this.site);
         this.ud.updateAllShiftInfo(this.site, tech);
@@ -551,7 +551,8 @@ export class TechSettingsPage implements OnInit,OnDestroy,AfterViewInit {
     } catch(err) {
       Log.l("onSubmit(): Error saving techProfile!");
       Log.e(err);
-      let out = await this.alert.showAlert(lang['error'], lang['error_saving_tech_profile'])
+      let out = await this.alert.hideSpinnerPromise(spinnerID);
+      out = await this.alert.showAlert(lang['error'], lang['error_saving_tech_profile'])
     }
   }
 

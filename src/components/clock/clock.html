@@ -19,5 +19,6 @@
     <div #containerMinutes id="containerMinutes" class="containerMinutes" [style.transform]="rotate(minutes)"><div class="minutesHnd rotateMinutes"></div></div>
     <div #containerHours   id="containerHours"   class="containerHours"   [style.transform]="rotate(hours)"  ><div class="hoursHnd rotateHours"    ></div></div>
   </div>
-  <div class="clock-text">{{caption}}</div>
+  <!-- <div class="clock-text">{{caption}}</div> -->
+  <div class="clock-text" [innerHTML]="caption"></div>
 </div>

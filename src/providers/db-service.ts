@@ -345,36 +345,66 @@ export class DBService {
     })
   }
 
-  public addLocalDoc(dbname:string, newDoc:any) {
-    return new Promise((resolve, reject) => {
+  public async addLocalDoc(dbname:string, newDoc:any) {
+    try {
       let db1 = this.addDB(dbname);
-      Log.l("addLocalDoc(): 01) Now removing and adding local doc:\n", newDoc);
-      db1.get(newDoc._id).then(res => {
-        Log.l("addLocalDoc(): 02) Now removing result:\n",res);
-        return db1.remove(res);
-      }).catch((err) => {
-        Log.l("addLocalDoc(): 03) Caught error removing res!");
-        Log.e(err);
-        Log.l("addLocalDoc(): 04) Now removing original doc:\n", newDoc);
-        return db1.remove(newDoc);
-      }).catch((err) => {
-        Log.l("addLocalDoc(): 05) Caught error removing newDoc!");
-        Log.e(err);
-        Log.l("addLocalDoc(): 06) Now continuing to save doc.");
-        return Promise.resolve();
-      }).then(() => {
-        Log.l("addLocalDoc(): 07) No more copy of local doc, now putting back:\n", newDoc);
-        delete newDoc._rev;
-        return db1.put(newDoc);
-      }).then((res) => {
-        Log.l(`addLocalDoc(): 08) Added local document '${newDoc._id}'.`)
-        resolve(res);
-      }).catch((err) => {
-        Log.l(`addLocalDoc(): 09) Error adding local doc ${newDoc._id}.`);
-        Log.e(err)
-        reject(err);
+      let id;
+      if(!(newDoc['_id'] && newDoc['_id'].indexOf('_local') !== -1)) {
+        throw new Error("Can't add a local doc that doesn't have a valid ID that begins with _local");
+      } else {
+        id = newDoc['_id'];
+      }
+      Log.l(`addLocalDoc(): About to try adding document:\n`, newDoc);
+      let res:any = await db1.upsert(id, (doc) => {
+        if(doc && doc._rev) {
+          let rev = doc._rev;
+          doc = newDoc;
+          doc._rev = rev;
+        } else {
+          doc = newDoc;
+          delete doc._rev;
+        }
+        return doc;
       });
-    });
+      if(!res.ok && !res.updated) {
+        throw new Error(`saveReport(): Upsert error for local doc '${id}'`);
+      } else {
+        return res;
+      }
+    } catch(err) {
+      Log.l(`addLocalDoc(): Error adding local doc:\n`, newDoc);
+      Log.e(err);
+      throw new Error(err);
+    }
+    // return new Promise((resolve, reject) => {
+    //   let db1 = this.addDB(dbname);
+    //   Log.l("addLocalDoc(): 01) Now removing and adding local doc:\n", newDoc);
+    //   db1.get(newDoc._id).then(res => {
+    //     Log.l("addLocalDoc(): 02) Now removing result:\n",res);
+    //     return db1.remove(res);
+    //   }).catch((err) => {
+    //     Log.l("addLocalDoc(): 03) Caught error removing res!");
+    //     Log.e(err);
+    //     Log.l("addLocalDoc(): 04) Now removing original doc:\n", newDoc);
+    //     return db1.remove(newDoc);
+    //   }).catch((err) => {
+    //     Log.l("addLocalDoc(): 05) Caught error removing newDoc!");
+    //     Log.e(err);
+    //     Log.l("addLocalDoc(): 06) Now continuing to save doc.");
+    //     return Promise.resolve();
+    //   }).then(() => {
+    //     Log.l("addLocalDoc(): 07) No more copy of local doc, now putting back:\n", newDoc);
+    //     delete newDoc._rev;
+    //     return db1.put(newDoc);
+    //   }).then((res) => {
+    //     Log.l(`addLocalDoc(): 08) Added local document '${newDoc._id}'.`)
+    //     resolve(res);
+    //   }).catch((err) => {
+    //     Log.l(`addLocalDoc(): 09) Error adding local doc ${newDoc._id}.`);
+    //     Log.e(err)
+    //     reject(err);
+    //   });
+    // });
   }
 
   public deleteLocalDoc(dbname:string, doc) {
@@ -416,6 +446,22 @@ export class DBService {
     }
   }
 
+  // public async saveTechProfile(newDoc:any) {
+  //   try {
+  //     Log.l("Attempting to save local techProfile...");
+  //     let dbname = this.prefs.DB.employee;
+  //     let reportsDBName = this.prefs.DB.reports;
+  //     let eDB = this.
+  //     return this.saveLocalDoc(newDoc);
+
+  //     return res;
+  //   } catch(err) {
+  //     Log.l(`saveTechProfile(): Error saving tech profile!`);
+  //     Log.e(err);
+  //     throw new Error(err);
+  //   }
+  // }
+
   public saveTechProfile(doc) {
     Log.l("Attempting to save local techProfile...");
     let rdb1, uid, newProfileDoc, strID, strRev;
@@ -426,9 +472,15 @@ export class DBService {
         Log.l(doc);
         strID = res['_id'];
         newProfileDoc = { ...res, ...doc, "_id": strID};
+        let sstm = newProfileDoc['shiftStartTimeMoment'];
+        if(sstm) {
+          if(isMoment(sstm)) {
+            newProfileDoc['shiftStartTimeMoment'] = sstm.format();
+          }
+        }
         Log.l("saveTechProfile(): Merged profile is:");
         Log.l(newProfileDoc);
-        Log.l("saveTechProfile(): now attempting save...");
+        Log.l("saveTechProfile(): now attempting save doc:\n", newProfileDoc);
         return this.addLocalDoc(this.prefs.DB.reports, newProfileDoc);
       }).then((res) => {
         rdb1 = this.server.addRDB(this.prefs.DB.employees);
