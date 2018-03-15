@@ -230,7 +230,8 @@
       "cordova-sqlite-evcore-extbuild-free": {}
     },
     "platforms": [
-      "android"
+      "android",
+      "ios"
     ]
   },
   "false": {}
