@@ -123,8 +123,8 @@ export class PouchDBService {
         //   androidDatabaseImplementation: 2,
         // };
         options = {
-          // adapter: 'idb',
-        }
+          adapter: 'websql',
+        };
       }
     } else {
       if(PouchDBService.isDesktopSafari()) {
