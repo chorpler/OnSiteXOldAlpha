@@ -6,7 +6,7 @@ content-type: application/json
   "selector": {
     "$and": [
       { "username": { "$eq": "Chorpler" } },
-      { "report_date": { "$gte": "2018-02-12" } }
+      { "report_date": { "$gte": "2017-02-12" } }
     ]
   },
   "limit": 20000
