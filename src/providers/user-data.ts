@@ -32,7 +32,7 @@ export interface ConfigKey {
 export class UserData {
   public static appdata               : any = {
     ready      : false,
-    version    : "10.12.13",
+    version    : "10.12.14",
     title      : "SESA OnSite",
     homeLoading: false,
     attempts   : 0,
