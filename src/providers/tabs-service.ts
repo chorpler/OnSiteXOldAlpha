@@ -46,8 +46,9 @@ export class TabsService {
   public pageLoadedEvent:Subject<any> = new Subject<any>();
 
   constructor(
-    public ud        : UserData  ,
-    public vibration : Vibration ,
+    public ud        : UserData    ,
+    public vibration : Vibration   ,
+    public prefs     : Preferences ,
   ) {
     window['onsitetabsservice'] = this;
     Log.l("TabsService constructor called");
@@ -84,7 +85,9 @@ export class TabsService {
     if(this.isDisabled() && value !== 'Login') {
       return;
     }
-    this.vibration.vibrate(50);
+    if(this.prefs.USER.vibration) {
+      this.vibration.vibrate(30);
+    }
     if(typeof value === 'string') {
       if(value === 'Login') {
         let out:any = {page: value};

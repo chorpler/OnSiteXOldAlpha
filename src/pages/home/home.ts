@@ -671,7 +671,9 @@ export class HomePage implements OnInit,OnDestroy,AfterViewInit {
     Log.l("toggleClock(): Event is:\n", event);
     // this.dataReady = !this.dataReady;
     this.ud.showClock = !this.ud.showClock;
-    this.vibration.vibrate([100, 200, 100, 70, 100, 70, 100, 120, 100, 500, 100, 150, 100]);
+    // if(this.prefs.USER.vibration) {
+    //   this.vibration.vibrate([100, 200, 100, 70, 100, 70, 100, 120, 100, 500, 100, 150, 100]);
+    // }
     if(this.ud.showClock) {
       this.app.clockCaption = lang['tap_to_hide_clock'];
     }

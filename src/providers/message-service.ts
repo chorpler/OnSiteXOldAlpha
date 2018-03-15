@@ -73,9 +73,9 @@ export class MessageService {
   public static getNewMessageCount():number {
     let badges = 0;
     let msgs = MessageService.messages || [];
-    let messages = msgs.filter(a => {
-      return !a['read'];
-    })
+    let messages = msgs.filter((a:Message) => {
+      return a.read !== true;
+    });
     MessageService.messageInfo.new_messages = messages.length;
     return MessageService.messageInfo.new_messages;
   }

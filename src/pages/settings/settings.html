@@ -47,6 +47,10 @@
         <ion-label>{{'sounds' | translate}}</ion-label>
         <ion-toggle [(ngModel)]="sounds" (ngModelChange)="toggleSounds()"></ion-toggle>
       </ion-item>
+      <ion-item>
+        <ion-label>{{'vibration' | translate}}</ion-label>
+        <ion-toggle [(ngModel)]="prefs.USER.vibration" (ngModelChange)="toggleVibration($event)"></ion-toggle>
+      </ion-item>
     </ion-item-group>
     <ion-item-group *ngIf="advanced">
       <ion-item-divider color="light">{{'advanced_settings' | translate}}</ion-item-divider>

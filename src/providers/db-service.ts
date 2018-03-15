@@ -683,6 +683,7 @@ export class DBService {
       //   msg.readFromDoc(doc);
       //   data.messages.push(msg);
       // }
+      data.messages = messages;
       let res:any = await this.getAllConfigData();
       let keys = Object.keys(res);
       for(let key of keys) {

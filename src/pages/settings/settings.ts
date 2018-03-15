@@ -1,20 +1,21 @@
-import { Component, OnInit, NgZone, OnDestroy, AfterViewInit                 } from '@angular/core'                 ;
-import { IonicPage, NavController, Platform, ModalController, ViewController } from 'ionic-angular'                 ;
-import { DBService                                                           } from 'providers/db-service'          ;
-import { Login                                                               } from 'pages/login/login'             ;
-import { Log, moment, Moment                                                 } from 'domain/onsitexdomain'          ;
-import { Employee, PayrollPeriod                                             } from 'domain/onsitexdomain'          ;
-import { AuthSrvcs                                                           } from 'providers/auth-srvcs'          ;
-import { ServerService                                                       } from 'providers/server-service'      ;
-import { AlertService                                                        } from 'providers/alerts'              ;
-import { TranslateService                                                    } from '@ngx-translate/core'           ;
-import { AppVersion                                                          } from '@ionic-native/app-version'     ;
-import { StorageService                                                      } from 'providers/storage-service'     ;
-import { Preferences                                                         } from 'providers/preferences'         ;
-import { UserData                                                            } from 'providers/user-data'           ;
 // import { IonDigitKeyboardCmp, IonDigitKeyboardOptions                        } from 'components/ion-digit-keyboard' ;
-import { TabsService                                                         } from 'providers/tabs-service'        ;
-import { Pages                                                               } from 'domain/onsitexdomain'          ;
+import { Component, OnInit, NgZone, OnDestroy, AfterViewInit                 } from '@angular/core'             ;
+import { IonicPage, NavController, Platform, ModalController, ViewController } from 'ionic-angular'             ;
+import { DBService                                                           } from 'providers/db-service'      ;
+import { Login                                                               } from 'pages/login/login'         ;
+import { Log, moment, Moment                                                 } from 'domain/onsitexdomain'      ;
+import { Employee, PayrollPeriod                                             } from 'domain/onsitexdomain'      ;
+import { AuthSrvcs                                                           } from 'providers/auth-srvcs'      ;
+import { ServerService                                                       } from 'providers/server-service'  ;
+import { AlertService                                                        } from 'providers/alerts'          ;
+import { TranslateService                                                    } from '@ngx-translate/core'       ;
+import { AppVersion                                                          } from '@ionic-native/app-version' ;
+import { StorageService                                                      } from 'providers/storage-service' ;
+import { Preferences                                                         } from 'providers/preferences'     ;
+import { UserData                                                            } from 'providers/user-data'       ;
+import { Vibration                                                           } from '@ionic-native/vibration'   ;
+import { TabsService                                                         } from 'providers/tabs-service'    ;
+import { Pages                                                               } from 'domain/onsitexdomain'      ;
 
 
 @IonicPage({ name: 'Settings' })
@@ -46,6 +47,7 @@ export class Settings implements OnInit,OnDestroy,AfterViewInit {
   constructor(
     public navCtrl   : NavController    ,
     public platform  : Platform         ,
+    public vibration : Vibration        ,
     public prefs     : Preferences      ,
     public auth      : AuthSrvcs        ,
     public server    : ServerService        ,
@@ -206,6 +208,21 @@ export class Settings implements OnInit,OnDestroy,AfterViewInit {
       Log.l("toggleSounds(): Error saving preferences.");
       Log.e(err);
     });
+  }
+
+  public async toggleVibration(evt?:any) {
+    try {
+      let res:any = await this.savePreferences();
+      Log.l(`toggleVibration(): vibration toggled to '${this.prefs.USER.vibration}'.`)
+      if(this.prefs.USER.vibration) {
+        this.vibration.vibrate(50);
+      }
+      return res;
+    } catch(err) {
+      Log.l(`toggleVibration(): Error toggling vibration.`);
+      Log.e(err);
+      throw new Error(err);
+    }
   }
 
   public toggleStayInReports() {
