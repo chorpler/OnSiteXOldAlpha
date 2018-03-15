@@ -141,7 +141,7 @@ export class PouchDBService {
   public static isDesktopSafari():boolean {
     let out:boolean = false;
     let agent = window.navigator.userAgent;
-    if(agent.indexOf("Macintosh") !== -1 && agent.indexOf("Version/") !== -1) {
+    if((agent.indexOf("Macintosh") !== -1 || agent.indexOf("iPod") !== -1 || agent.indexOf("iPhone") !== 1 || agent.indexOf("iPad") !== 1) && (agent.indexOf("Version/") !== -1 || agent.indexOf("Mobile/") !== -1)) {
       out = true;
     }
     return out;
