@@ -71,7 +71,7 @@ export class ServerService {
 
   public static getRemoteDatabaseURL(dbname?: string) {
     let url1 = ServerService.getBaseURL();
-    let name = dbname || "_session";
+    let name = dbname || "sesa-config";
     url1 = `${url1}/${name}`;
     return url1;
   }
@@ -149,7 +149,8 @@ export class ServerService {
   public loginToServer(user:string, pass:string, dbname?:string, auto?:boolean) {
   	let adapter = this.prefs.SERVER.protocol;
     return new Promise((resolve,reject) => {
-      let dbURL = '_session';
+      // let dbURL = '_session';
+      let dbURL = 'sesa-config';
   		if(dbname) {
   			dbURL = dbname;
   		}

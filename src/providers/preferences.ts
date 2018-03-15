@@ -1,8 +1,9 @@
 /**
  * Name: Preferences provider (Console)
- * Vers: 67
- * Date: 2018-03-06
+ * Vers: 68
+ * Date: 2018-03-15
  * Auth: David Sargeant
+ * Logs: 68 2018-03-15: Added vibration key to USER
  * Logs: 67 2018-03-06: Added jobsites keys in CONSOLE
  * Logs: 66 2018-03-05: Added hbpreauth keys in CONSOLE
  * Logs: 65 2018-03-03: Changed to using JSON8 and JSON8Patch to merge instead of replacing new Preferences
@@ -58,7 +59,7 @@ export var messages       = 'sesa-messages'        ;
 export var comments       = 'sesa-comments'        ;
 export var phoneInfo      = 'sesa-tech-phones'     ;
 export var sounds         = 'sesa-sounds'          ;
-export var login          = '_session'             ;
+export var login          = 'sesa-login'           ;
 export var geolocation    = 'sesa-geolocation'     ;
 export var preauths       = 'sesa-preauths'        ;
 export var worksites      = 'sesa-worksites'       ;
@@ -162,6 +163,7 @@ export class Preferences {
     stayInReports: false,
     spinnerSpeed: 10,
     messageCheckInterval: 15,
+    vibration: true,
   };
   public static DEVELOPER: any = {
     showDocID: false,
@@ -301,11 +303,19 @@ export class Preferences {
 
   public static setUsername(username:string):string {
     Preferences.SERVER.ropts.auth.username = username;
+    let p = Preferences.SERVER.ropts.auth.password;
+    if(p) {
+      Preferences.setAuth(username, p);
+    }
     return Preferences.SERVER.ropts.auth.username;
   }
 
   public static setPassword(password:string):string {
     Preferences.SERVER.ropts.auth.password = password;
+    let u = Preferences.SERVER.ropts.auth.username;
+    if(u) {
+      Preferences.setAuth(u, password);
+    }
     return Preferences.SERVER.ropts.auth.password;
   }
 
@@ -724,6 +734,7 @@ export class Preferences {
       stayInReports: false,
       spinnerSpeed: 10,
       messageCheckInterval: 15,
+      vibration: true,
     };
     Preferences.CONSOLE = {
       global: {

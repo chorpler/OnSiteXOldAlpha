@@ -225,7 +225,7 @@ export class OnSiteApp implements OnInit {
       window["PouchDB" ].defaults(this.pouchOptions);
 
       // window[ "PouchDB"].debug.enable('*');
-      window[ "PouchDB"].debug.disable('*');
+      // window[ "PouchDB"].debug.disable('*');
       Log.l(`OnSite: about to register listeners...`);
       this.registerListeners();
       Log.l(`OnSite: about to preload audio...`);
@@ -648,7 +648,8 @@ export class OnSiteApp implements OnInit {
       let u = loginData['username'];
       let p = loginData['password'];
       this.ui = {u:u, p:p};
-      res = await this.server.loginToServer(u, p, '_session');
+      // res = await this.server.loginToServer(u, p, '_session');
+      res = await this.server.loginToServer(u, p);
       Log.l("checkLogin(): Successfully logged in! Now retrieving config...");
       let profile = this.ud.getTechProfile();
       let tech:Employee = this.ud.getTechProfile();

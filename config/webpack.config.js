@@ -73,8 +73,8 @@ var optimizedProdLoaders = [
       {
         loader: '@angular-devkit/build-optimizer/webpack-loader',
         options: {
-          sourceMap: false
-          // sourceMap: true
+          // sourceMap: false
+          sourceMap: true
         }
       },
     ]
@@ -89,8 +89,8 @@ var optimizedProdLoaders = [
       {
         loader: '@angular-devkit/build-optimizer/webpack-loader',
         options: {
-          // sourceMap: true
-          sourceMap: false
+          sourceMap: true
+          // sourceMap: false
         }
       },
 
